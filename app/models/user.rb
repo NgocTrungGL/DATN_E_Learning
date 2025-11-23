@@ -41,6 +41,17 @@ dependent: :nullify
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
 foreign_key: :creator_id, dependent: :nullify
+
+  def enrolled_in? course
+    enrollments.exists?(course_id: course.id)
+  end
+
+  def can_access_course? course
+    return true if admin?
+
+    enrollments.active.exists?(course_id: course.id)
+  end
+
   private
 
   def build_default_profile

@@ -1,7 +1,7 @@
 class Admin::QuizzesController < Admin::BaseController
   before_action :set_quiz, only: [:show, :edit, :update, :destroy]
   before_action :load_collections, only: [:new, :create, :edit, :update]
-
+  before_action :check_enrollment_access, only: [:show]
   # GET /admin/quizzes
   def index
     @quizzes = Quiz.includes(:course, :lesson).all
@@ -78,5 +78,13 @@ class Admin::QuizzesController < Admin::BaseController
       :pass_score,
       :random_mode
     )
+  end
+
+  def check_enrollment_access
+    course = @lesson.course
+    return if current_user&.can_access_course?(course)
+
+    redirect_to course_path(course),
+                alert: "Bạn cần đăng ký (hoặc chờ duyệt) để xem bài học này."
   end
 end

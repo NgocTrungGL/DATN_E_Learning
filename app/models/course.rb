@@ -12,5 +12,9 @@ optional: true
   has_many :progress_trackings, dependent: :destroy
   # Validation
   validates :title, presence: true
+  validates :price, numericality: {greater_than_or_equal_to: 0}
   scope :recent, ->{order(created_at: :desc)}
+  def free?
+    price.to_f.zero?
+  end
 end
