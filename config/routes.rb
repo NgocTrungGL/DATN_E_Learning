@@ -1,6 +1,17 @@
 Rails.application.routes.draw do
   devise_for :users
+  # === THÊM CÁC DÒNG NÀY (CHO USER) ===
 
+  # Tạo routes: /profile (GET), /profile (PATCH/PUT), /profile/edit (GET)
+  # trỏ đến ProfilesController
+  resource :profile, only: [:edit, :update]
+
+  # Tạo routes: /password/edit (GET), /password (PATCH/PUT)
+  # trỏ đến PasswordsController
+  get "password/edit", to: "passwords#edit"
+  patch "password", to: "passwords#update"
+
+  # === KẾT THÚC ===
   root "courses#index"
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'

@@ -1,34 +1,141 @@
-<h1><%= @lesson.title %></h1>
-<p><%= @lesson.description %></p>
+<%
+  # --- LOGIC TÌM BÀI TRƯỚC / BÀI TIẾP ---
+  # Lấy danh sách tất cả bài học trong khóa học, sắp xếp theo thứ tự chương và bài
+  # (Lưu ý: Trong dự án thực tế, logic này nên đưa vào Model hoặc Service)
+  all_lessons = @lesson.course.course_modules.order(:order_index).flat_map { |mod| mod.lessons.order(:order_index) }
 
-<div class="my-4 p-5 bg-light border rounded">
-  <p class="text-center">(Nội dung bài học/Video sẽ hiển thị ở đây)</p>
-  </div>
+  current_index = all_lessons.index(@lesson)
 
-<hr>
+  # Tìm bài trước (chỉ nếu không phải bài đầu tiên)
+  prev_lesson = current_index > 0 ? all_lessons[current_index - 1] : nil
 
-<%# 1. Kiểm tra xem bài học này có bài quiz không %>
-<% if @lesson.quizzes.any? %>
-  <%# (Chúng ta giả định mỗi lesson chỉ có 1 quiz) %>
-  <% quiz = @lesson.quizzes.first %>
+  # Tìm bài tiếp theo
+  next_lesson = all_lessons[current_index + 1]
+%>
 
-  <div class="card bg-light text-center p-4">
-    <div class="card-body">
-      <h4 class="card-title">Bài kiểm tra: <%= quiz.title %></h4>
-      <p class="card-text"><%= quiz.description %></p>
+<div class="container-fluid px-0 overflow-hidden">
+  <div class="row g-0">
 
-      <%# 2. Dùng 'button_to' (nó sẽ gửi 'POST') %>
-      <%= button_to "Bắt đầu làm bài",
-            quiz_quiz_attempts_path(quiz),
-            method: :post,
-            class: "btn btn-primary btn-lg" %>
+    <div class="col-lg-9 bg-white min-vh-100 d-flex flex-column overflow-auto" style="height: 100vh;">
 
-      <small class="text-muted d-block mt-2">
-        Thời gian: <%= quiz.time_limit || "Không giới hạn" %> phút.
-        Điểm đậu: <%= quiz.pass_score %>%
-      </small>
+      <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-black text-white border-bottom border-secondary flex-shrink-0">
+        <div class="d-flex align-items-center">
+          <%= link_to course_path(@lesson.course), class: "text-white text-decoration-none me-3 btn btn-sm btn-outline-light border-0" do %>
+            <i class="bi bi-arrow-left"></i> Thoát
+          <% end %>
+          <span class="fw-bold text-truncate" style="max-width: 300px;"><%= @lesson.course.title %></span>
+        </div>
+        <small class="text-muted d-none d-md-block"><%= @lesson.title %></small>
+      </div>
+
+<div class="ratio ratio-16x9 bg-black flex-shrink-0">
+  <% embed_link = youtube_embed_url(@lesson.video_url) %>
+
+  <% if embed_link %>
+    <iframe
+  src="<%= embed_link %>"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen>
+</iframe>
+  <% else %>
+    <div class="d-flex align-items-center justify-content-center text-white h-100">
+      <div class="text-center">
+        <i class="bi bi-file-play display-1 opacity-50"></i>
+        <p class="mt-3 mb-0">
+          <% if @lesson.video_url.present? %>
+            Link video không hỗ trợ hoặc bị lỗi.<br>
+            <small class="text-muted"><%= @lesson.video_url %></small>
+          <% else %>
+            Bài học dạng văn bản
+          <% end %>
+        </p>
+      </div>
     </div>
+  <% end %>
+</div>
+
+      <div class="p-4 p-md-5">
+        <div class="container" style="max-width: 900px;">
+          <h1 class="fw-bold h2 mb-3"><%= @lesson.title %></h1>
+
+          <div class="text-secondary lh-lg mb-5">
+            <%= simple_format(@lesson.description) %>
+          </div>
+
+          <% if @lesson.quizzes.any? %>
+            <% quiz = @lesson.quizzes.first %>
+            <div class="card border-primary mb-5">
+              <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between p-4 bg-primary-subtle text-primary-emphasis">
+                <div class="mb-3 mb-md-0">
+                  <h5 class="fw-bold mb-1"><i class="bi bi-lightning-fill"></i> Bài tập thực hành</h5>
+                  <p class="mb-0 small"><%= quiz.title %> (<%= quiz.total_questions %> câu hỏi)</p>
+                </div>
+                <%= button_to "Làm bài ngay", quiz_quiz_attempts_path(quiz), method: :post, class: "btn btn-primary px-4 fw-bold" %>
+              </div>
+            </div>
+          <% end %>
+
+          <hr class="my-5">
+
+          <div class="d-flex justify-content-between pb-5">
+            <% if prev_lesson %>
+              <%= link_to lesson_path(prev_lesson), class: "btn btn-outline-secondary px-4" do %>
+                <i class="bi bi-chevron-left"></i> Bài trước
+              <% end %>
+            <% else %>
+              <button class="btn btn-outline-secondary px-4" disabled><i class="bi bi-chevron-left"></i> Bài trước</button>
+            <% end %>
+
+            <% if next_lesson %>
+              <%= link_to lesson_path(next_lesson), class: "btn btn-primary px-4" do %>
+                Bài tiếp theo <i class="bi bi-chevron-right"></i>
+              <% end %>
+            <% else %>
+              <button class="btn btn-outline-primary px-4" disabled>Hết bài <i class="bi bi-check-circle"></i></button>
+            <% end %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 bg-light border-start d-none d-lg-flex flex-column" style="height: 100vh;">
+      <div class="p-3 border-bottom bg-white flex-shrink-0">
+        <h6 class="mb-0 fw-bold text-uppercase text-muted small">Nội dung khóa học</h6>
+        <div class="progress mt-2" style="height: 5px;">
+          <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="accordion accordion-flush overflow-auto flex-grow-1" id="sidebarAccordion">
+        <% @lesson.course.course_modules.order(:order_index).each do |mod| %>
+          <div class="accordion-item bg-light">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed bg-light text-dark fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#sb_collapse<%= mod.id %>">
+                <%= mod.title %>
+              </button>
+            </h2>
+
+            <div id="sb_collapse<%= mod.id %>" class="accordion-collapse collapse <%= 'show' if mod.lessons.include?(@lesson) %>">
+              <div class="list-group list-group-flush">
+                <% mod.lessons.order(:order_index).each do |l| %>
+                  <% is_active = (l == @lesson) %>
+                  <%= link_to lesson_path(l), class: "list-group-item list-group-item-action border-0 py-2 ps-4 #{'active-lesson bg-primary-subtle text-primary fw-bold' if is_active}" do %>
+                    <div class="d-flex align-items-start">
+                      <i class="bi <%= l.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> me-2 mt-1 <%= is_active ? 'text-primary' : 'text-muted' %>"></i>
+                      <span class="small"><%= l.title %></span>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
   </div>
-<% end %>
-<hr>
-<%= link_to "Quay lại Khóa học", course_path(@lesson.course), class: "btn btn-outline-secondary mt-3" %>
+</div>

@@ -27,6 +27,8 @@ class User < ApplicationRecord
             presence: true,
             format: {with: VALID_PASSWORD_REGEX},
             if: ->{new_record? || !password.nil?}
+  accepts_nested_attributes_for :profile
+  after_create :build_default_profile
   has_many :enrollments, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
 
@@ -39,4 +41,9 @@ dependent: :nullify
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
 foreign_key: :creator_id, dependent: :nullify
+  private
+
+  def build_default_profile
+    create_profile
+  end
 end

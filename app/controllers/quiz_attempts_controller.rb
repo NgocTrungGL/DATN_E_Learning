@@ -1,7 +1,8 @@
 class QuizAttemptsController < ApplicationController
-  # authenticate_user!
+  before_action :authenticate_user!
   before_action :set_quiz_attempt, only: [:show]
   # POST /quizzes/:quiz_id/quiz_attempts
+  layout "learning", only: [:show]
   def create
     @quiz = Quiz.find(params[:quiz_id])
     @quiz_attempt = @quiz.quiz_attempts.new(

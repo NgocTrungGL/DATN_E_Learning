@@ -1,0 +1,49 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-5">
+      <h2 class="fw-bold mb-4">Đổi Mật khẩu</h2>
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <%= form_with(url: password_path, method: :patch) do |f| %>
+
+            <% if flash[:alert] %>
+              <div class="alert alert-danger"><%= flash[:alert] %></div>
+            <% end %>
+
+            <!-- Hiển thị lỗi validation (ví dụ: pass quá ngắn) -->
+            <% if controller.instance_variable_get(:@user)&.errors&.any? %>
+              <div class="alert alert-danger">
+                <% controller.instance_variable_get(:@user).errors.full_messages.each do |msg| %>
+                  <div><%= msg %></div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= f.label :current_password, "Mật khẩu cũ", class: "form-label" %>
+              <%= f.password_field :current_password, class: "form-control", required: true %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :password, "Mật khẩu mới", class: "form-label" %>
+              <%= f.password_field :password, class: "form-control", required: true, placeholder: "Tối thiểu 6 ký tự" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :password_confirmation, "Xác nhận mật khẩu mới", class: "form-label" %>
+              <%= f.password_field :password_confirmation, class: "form-control", required: true %>
+            </div>
+
+            <div class="d-grid gap-2">
+              <%= f.submit "Cập nhật Mật khẩu", class: "btn btn-primary" %>
+              <%= link_to "Hủy (Về trang hồ sơ)", edit_profile_path, class: "btn btn-light text-center" %>
+            </div>
+
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

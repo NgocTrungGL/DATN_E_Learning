@@ -2,7 +2,7 @@ class LessonsController < ApplicationController
   # before_action :authenticate_user!
 
   before_action :set_lesson, only: %i(show)
-
+  layout "learning", only: [:show]
   # GET /lessons/1
   def show
     @course = @lesson.course

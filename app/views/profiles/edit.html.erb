@@ -1,0 +1,87 @@
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Thông báo thành công -->
+      <% if flash[:notice] %>
+        <div class="alert alert-success"><%= flash[:notice] %></div>
+      <% end %>
+
+      <h2 class="fw-bold mb-4">Chỉnh sửa Hồ sơ</h2>
+
+      <!-- Form chính (trỏ đến ProfilesController#update) -->
+      <%= form_with(model: @user, url: profile_path, method: :patch) do |f| %>
+
+        <% if @user.errors.any? %>
+          <div class="alert alert-danger">
+            <% @user.errors.full_messages.each do |msg| %>
+              <div><%= msg %></div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- Phần 1: Thông tin User -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header"><h5 class="mb-0">Thông tin tài khoản</h5></div>
+          <div class="card-body">
+
+            <div class="mb-3">
+              <%= f.label :name, "Họ và tên", class: "form-label" %>
+              <%= f.text_field :name, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :email, "Email", class: "form-label" %>
+              <%= f.email_field :email, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :avatar_url, "URL Ảnh đại diện", class: "form-label" %>
+              <%= f.text_field :avatar_url, class: "form-control", placeholder: "https://..." %>
+              <small class="text-muted">Dán link ảnh (ví dụ: từ Gravatar, Imgur...)</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phần 2: Thông tin Profile (lồng) -->
+        <%= f.fields_for :profile do |profile_form| %>
+          <div class="card shadow-sm mb-4">
+            <div class="card-header"><h5 class="mb-0">Thông tin cá nhân</h5></div>
+            <div class="card-body">
+
+              <div class="mb-3">
+                <%= profile_form.label :bio, "Tiểu sử", class: "form-label" %>
+                <%= profile_form.text_area :bio, rows: 3, class: "form-control", placeholder: "Giới thiệu ngắn về bạn..." %>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <%= profile_form.label :phone, "Số điện thoại", class: "form-label" %>
+                  <%= profile_form.text_field :phone, class: "form-control" %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= profile_form.label :gender, "Giới tính", class: "form-label" %>
+                  <%= profile_form.select :gender, Profile.genders.keys.map { |k| [k.humanize, k] }, { prompt: "Chọn giới tính" }, class: "form-select" %>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <%= profile_form.label :dob, "Ngày sinh", class: "form-label" %>
+                <%= profile_form.date_field :dob, class: "form-control" %>
+              </div>
+
+            </div>
+          </div>
+        <% end %> <!-- Kết thúc fields_for -->
+
+        <div class="d-flex justify-content-between align-items-center">
+          <%= f.submit "Lưu thay đổi", class: "btn btn-primary btn-lg" %>
+
+          <%= link_to "Đổi mật khẩu", password_edit_path, class: "btn btn-outline-secondary" %>
+        </div>
+
+      <% end %> <!-- Kết thúc form_with -->
+
+    </div>
+  </div>
+</div>
