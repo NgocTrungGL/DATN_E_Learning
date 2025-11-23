@@ -1,9 +1,10 @@
 class Admin::EnrollmentsController < Admin::BaseController
   # GET /admin/enrollments
-  def indexs
-    @pending_enrollments = Enrollment.pending
-                                     .includes(:user,
-                                               :course).order(created_at: :desc)
+  def index
+    @pending_enrollments = Enrollment.pending.includes(:user,
+                                                       :course)
+                                     .order(created_at: :desc)
+
     @history_enrollments = Enrollment.where.not(status: :pending).includes(
       :user, :course
     ).order(updated_at: :desc).limit(50)

@@ -1,16 +1,10 @@
 <%
-  # --- LOGIC TÌM BÀI TRƯỚC / BÀI TIẾP ---
-  # Lấy danh sách tất cả bài học trong khóa học, sắp xếp theo thứ tự chương và bài
-  # (Lưu ý: Trong dự án thực tế, logic này nên đưa vào Model hoặc Service)
   all_lessons = @lesson.course.course_modules.order(:order_index).flat_map { |mod| mod.lessons.order(:order_index) }
-
   current_index = all_lessons.index(@lesson)
-
-  # Tìm bài trước (chỉ nếu không phải bài đầu tiên)
   prev_lesson = current_index > 0 ? all_lessons[current_index - 1] : nil
-
-  # Tìm bài tiếp theo
   next_lesson = all_lessons[current_index + 1]
+
+  course_progress = current_user.course_progress_percentage(@lesson.course)
 %>
 
 <div class="container-fluid px-0 overflow-hidden">
@@ -28,41 +22,61 @@
         <small class="text-muted d-none d-md-block"><%= @lesson.title %></small>
       </div>
 
-<div class="ratio ratio-16x9 bg-black flex-shrink-0">
-  <% embed_link = youtube_embed_url(@lesson.video_url) %>
-
-  <% if embed_link %>
-    <iframe
-  src="<%= embed_link %>"
-  title="YouTube video player"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  referrerpolicy="strict-origin-when-cross-origin"
-  allowfullscreen>
-</iframe>
-  <% else %>
-    <div class="d-flex align-items-center justify-content-center text-white h-100">
-      <div class="text-center">
-        <i class="bi bi-file-play display-1 opacity-50"></i>
-        <p class="mt-3 mb-0">
-          <% if @lesson.video_url.present? %>
-            Link video không hỗ trợ hoặc bị lỗi.<br>
-            <small class="text-muted"><%= @lesson.video_url %></small>
-          <% else %>
-            Bài học dạng văn bản
-          <% end %>
-        </p>
+      <div class="ratio ratio-16x9 bg-black flex-shrink-0">
+        <% embed_link = youtube_embed_url(@lesson.video_url) %>
+        <% if embed_link %>
+          <iframe
+            src="<%= embed_link %>"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+          </iframe>
+        <% else %>
+          <div class="d-flex align-items-center justify-content-center text-white h-100">
+            <div class="text-center">
+              <i class="bi bi-file-play display-1 opacity-50"></i>
+              <p class="mt-3 mb-0">
+                <% if @lesson.video_url.present? %>
+                  Link video không hỗ trợ hoặc bị lỗi.<br>
+                  <small class="text-muted"><%= @lesson.video_url %></small>
+                <% else %>
+                  Bài học dạng văn bản
+                <% end %>
+              </p>
+            </div>
+          </div>
+        <% end %>
       </div>
-    </div>
-  <% end %>
-</div>
 
       <div class="p-4 p-md-5">
         <div class="container" style="max-width: 900px;">
+
           <h1 class="fw-bold h2 mb-3"><%= @lesson.title %></h1>
 
-          <div class="text-secondary lh-lg mb-5">
+          <div class="text-secondary lh-lg mb-4">
             <%= simple_format(@lesson.description) %>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between mb-5 p-3 bg-light rounded border">
+            <div>
+              <span class="fw-bold me-2">Trạng thái:</span>
+              <% if current_user.lesson_completed?(@lesson) %>
+                <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle-fill"></i> Đã hoàn thành</span>
+              <% else %>
+                <span class="badge bg-secondary rounded-pill">Chưa hoàn thành</span>
+              <% end %>
+            </div>
+
+            <%= button_to lesson_complete_path(@lesson), method: :post,
+                  class: "btn #{current_user.lesson_completed?(@lesson) ? 'btn-outline-secondary' : 'btn-success fw-bold'}" do %>
+              <% if current_user.lesson_completed?(@lesson) %>
+                <i class="bi bi-x-lg"></i> Bỏ đánh dấu
+              <% else %>
+                <i class="bi bi-check2-circle"></i> Đánh dấu hoàn thành
+              <% end %>
+            <% end %>
           </div>
 
           <% if @lesson.quizzes.any? %>
@@ -73,7 +87,13 @@
                   <h5 class="fw-bold mb-1"><i class="bi bi-lightning-fill"></i> Bài tập thực hành</h5>
                   <p class="mb-0 small"><%= quiz.title %> (<%= quiz.total_questions %> câu hỏi)</p>
                 </div>
-                <%= button_to "Làm bài ngay", quiz_quiz_attempts_path(quiz), method: :post, class: "btn btn-primary px-4 fw-bold" %>
+
+                <%# Nếu đã làm xong quiz thì hiện badge, chưa thì hiện nút làm bài %>
+                <% if current_user.quiz_completed?(quiz) %>
+                   <button class="btn btn-success disabled px-4 fw-bold"><i class="bi bi-check-all"></i> Đã đậu</button>
+                <% else %>
+                   <%= button_to "Làm bài ngay", quiz_quiz_attempts_path(quiz), method: :post, class: "btn btn-primary px-4 fw-bold" %>
+                <% end %>
               </div>
             </div>
           <% end %>
@@ -103,10 +123,14 @@
     </div>
 
     <div class="col-lg-3 bg-light border-start d-none d-lg-flex flex-column" style="height: 100vh;">
+
       <div class="p-3 border-bottom bg-white flex-shrink-0">
-        <h6 class="mb-0 fw-bold text-uppercase text-muted small">Nội dung khóa học</h6>
-        <div class="progress mt-2" style="height: 5px;">
-          <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0 fw-bold text-uppercase text-muted small">Nội dung khóa học</h6>
+          <span class="badge bg-success"><%= course_progress %>%</span>
+        </div>
+        <div class="progress" style="height: 6px;">
+          <div class="progress-bar bg-success" role="progressbar" style="width: <%= course_progress %>%" aria-valuenow="<%= course_progress %>" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
       </div>
 
@@ -123,10 +147,16 @@
               <div class="list-group list-group-flush">
                 <% mod.lessons.order(:order_index).each do |l| %>
                   <% is_active = (l == @lesson) %>
-                  <%= link_to lesson_path(l), class: "list-group-item list-group-item-action border-0 py-2 ps-4 #{'active-lesson bg-primary-subtle text-primary fw-bold' if is_active}" do %>
-                    <div class="d-flex align-items-start">
-                      <i class="bi <%= l.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> me-2 mt-1 <%= is_active ? 'text-primary' : 'text-muted' %>"></i>
-                      <span class="small"><%= l.title %></span>
+                  <% is_completed = current_user.lesson_completed?(l) %> <%= link_to lesson_path(l), class: "list-group-item list-group-item-action border-0 py-2 ps-4 #{'active-lesson bg-primary-subtle text-primary fw-bold' if is_active}" do %>
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-start">
+                        <i class="bi <%= l.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> me-2 mt-1 <%= is_active ? 'text-primary' : 'text-muted' %>"></i>
+                        <span class="small"><%= l.title %></span>
+                      </div>
+
+                      <% if is_completed %>
+                        <i class="bi bi-check-circle-fill text-success ms-2"></i>
+                      <% end %>
                     </div>
                   <% end %>
                 <% end %>

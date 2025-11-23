@@ -52,6 +52,22 @@ foreign_key: :creator_id, dependent: :nullify
     enrollments.active.exists?(course_id: course.id)
   end
 
+  def lesson_completed? lesson
+    progress_trackings.completed.exists?(lesson:)
+  end
+
+  def quiz_completed? quiz
+    progress_trackings.completed.exists?(quiz:)
+  end
+
+  def course_progress_percentage course
+    total_items = course.lessons.count + course.quizzes.count
+    return 0 if total_items.zero?
+
+    completed_items = progress_trackings.where(course:,
+                                               status: :completed).count
+    (completed_items.to_f / total_items * 100).round
+  end
   private
 
   def build_default_profile

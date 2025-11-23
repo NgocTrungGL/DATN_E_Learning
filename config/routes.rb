@@ -1,13 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
-  # === THÊM CÁC DÒNG NÀY (CHO USER) ===
-
-  # Tạo routes: /profile (GET), /profile (PATCH/PUT), /profile/edit (GET)
-  # trỏ đến ProfilesController
   resource :profile, only: [:edit, :update]
 
-  # Tạo routes: /password/edit (GET), /password (PATCH/PUT)
-  # trỏ đến PasswordsController
   get "password/edit", to: "passwords#edit"
   patch "password", to: "passwords#update"
 
@@ -36,6 +30,10 @@ Rails.application.routes.draw do
   resources :quiz_attempts, only: [:show] do
     resources :quiz_answers, only: [:create], shallow: false
   end
+
+  resources :lessons, only: [:show] do
+    post :complete, to: 'progress_trackings#mark_lesson_complete'
+  end
   # ==================================================
   # ADMIN Routes
   # ==================================================
@@ -61,14 +59,14 @@ Rails.application.routes.draw do
     resources :quiz_questions, only: [:destroy]
     resources :enrollments, only: [:index] do
       member do
-        patch :approve # Tạo route: /admin/enrollments/:id/approve
+        patch :approve
         patch :reject
       end
     end
     resources :enrollments, only: [:index] do
       member do
-        patch :approve # Route để duyệt: /admin/enrollments/:id/approve
-        patch :reject  # Route để từ chối: /admin/enrollments/:id/reject
+        patch :approve
+        patch :reject
       end
     end
   end

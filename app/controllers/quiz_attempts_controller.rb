@@ -52,14 +52,7 @@ class QuizAttemptsController < ApplicationController
   end
 
   def finalize_attempt!
-    correct_count = @quiz_attempt.quiz_answers.where(is_correct: true).count
-    total_questions = @quiz_attempt.quiz.questions.count
-
-    score = 0
-    if total_questions.positive?
-      score = (correct_count.to_f / total_questions) * 100
-    end
-
+    score = calculate_score
     is_passed = score >= @quiz_attempt.quiz.pass_score
 
     @quiz_attempt.update!(
@@ -68,5 +61,27 @@ class QuizAttemptsController < ApplicationController
       score:,
       is_passed:
     )
+
+    update_progress_tracking if is_passed
+  end
+
+  def calculate_score
+    correct_count = @quiz_attempt.quiz_answers.where(is_correct: true).count
+    total_questions = @quiz_attempt.quiz.questions.count
+
+    return 0 unless total_questions.positive?
+
+    (correct_count.to_f / total_questions) * 100
+  end
+
+  def update_progress_tracking
+    ProgressTracking.find_or_create_by!(
+      user: current_user,
+      quiz: @quiz_attempt.quiz,
+      progress_type: "quiz"
+    ) do |progress|
+      progress.status = :completed
+      progress.progress_value = 100
+    end
   end
 end
