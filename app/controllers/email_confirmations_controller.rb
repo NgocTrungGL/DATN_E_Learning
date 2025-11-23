@@ -1,18 +1,36 @@
 class EmailConfirmationsController < ApplicationController
   skip_before_action :authenticate_user!
   def edit
-    user = User.find_signed(params[:id], purpose: :account_activation)
+    user = find_user_by_signed_id
+    return unless user
 
-    if user && user.confirmed_at.nil?
-      user.update!(confirmed_at: Time.current)
+    return if handle_already_confirmed(user)
 
-      session[:user_id] = user.id
+    confirm_user(user)
+  end
 
-      redirect_back_or root_path
-      flash[:notice] = t("email_confirmation.success")
-    else
-      redirect_to root_path,
-                  alert: t("email_confirmation.invalid_link")
-    end
+  private
+
+  def find_user_by_signed_id
+    user = User.find_signed(params[:id], purpose: :account_activation,
+expires_in: 24.hours)
+    return user if user.present?
+
+    redirect_to root_path,
+                alert: t("email_confirmation.expired_or_invalid_link")
+    nil
+  end
+
+  def handle_already_confirmed user
+    return false if user.confirmed_at.nil?
+
+    redirect_to root_path, alert: t("email_confirmation.already_confirmed")
+    true
+  end
+
+  def confirm_user user
+    user.update!(confirmed_at: Time.current)
+    session[:user_id] = user.id
+    redirect_back_or root_path, notice: t("email_confirmation.success")
   end
 end

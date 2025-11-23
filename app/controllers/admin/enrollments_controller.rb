@@ -13,11 +13,12 @@ class Admin::EnrollmentsController < Admin::BaseController
   # PATCH /admin/enrollments/:id/approve
   def approve
     enrollment = Enrollment.find(params[:id])
-    if enrollment.active!
+    if enrollment.update(status: :active)
       redirect_to admin_enrollments_path,
                   notice: "Đã duyệt học viên #{enrollment.user.name}."
     else
-      redirect_to admin_enrollments_path, alert: "Không thể duyệt."
+      redirect_to admin_enrollments_path,
+                  alert: "Không thể duyệt."
     end
   end
 

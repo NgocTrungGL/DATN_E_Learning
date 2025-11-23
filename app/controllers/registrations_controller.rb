@@ -14,7 +14,7 @@ class RegistrationsController < ApplicationController
     if @user.save
       UserMailer.account_activation(@user).deliver_now
       redirect_to root_path,
-                  info: t("registrations.check_email")
+                  notice: t("registrations.check_email")
     else
       render :new, status: :unprocessable_entity
     end

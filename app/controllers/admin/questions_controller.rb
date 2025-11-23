@@ -1,6 +1,7 @@
 class Admin::QuestionsController < Admin::BaseController
   before_action :set_question, only: [:show, :edit, :update, :destroy]
   before_action :check_usage, only: [:destroy]
+  before_action :load_courses, only: [:new, :edit]
 
   def index
     @questions = Question.includes(:course, :lesson).all
@@ -11,7 +12,6 @@ class Admin::QuestionsController < Admin::BaseController
   def new
     @question = Question.new
     4.times{@question.question_options.build}
-    @courses = Course.order(:title)
   end
 
   def create
@@ -29,7 +29,6 @@ class Admin::QuestionsController < Admin::BaseController
     (4 - @question.question_options.count).times do
       @question.question_options.build
     end
-    @courses = Course.order(:title)
   end
 
   def update
@@ -65,8 +64,7 @@ class Admin::QuestionsController < Admin::BaseController
       :difficulty,
       :course_id,
       :lesson_id,
-      question_options_attributes: [:id, :option_text, :is_correct,
-:_destroy]
+      question_options_attributes: [:id, :option_text, :is_correct, :_destroy]
     )
   end
 
@@ -75,5 +73,9 @@ class Admin::QuestionsController < Admin::BaseController
 
     @question.errors.add(:base, t(".in_use"))
     redirect_to admin_questions_path, alert: t(".in_use")
+  end
+
+  def load_courses
+    @courses = Course.order(:title)
   end
 end

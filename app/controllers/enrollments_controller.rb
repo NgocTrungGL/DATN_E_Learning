@@ -19,8 +19,10 @@ class EnrollmentsController < ApplicationController
     else
 
       @enrollment.status = :pending
-      message = "Yêu cầu đăng ký đã được gửi.
-      Vui lòng chờ Admin duyệt thanh toán."
+      message = <<~TEXT
+        Yêu cầu đăng ký đã được gửi.
+        Vui lòng chờ Admin duyệt thanh toán.
+      TEXT
     end
 
     if @enrollment.save
