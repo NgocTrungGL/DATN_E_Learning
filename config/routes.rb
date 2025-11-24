@@ -1,73 +1,92 @@
 Rails.application.routes.draw do
+  root "courses#index"
+
   resource :profile, only: [:edit, :update]
 
-  get "password/edit", to: "passwords#edit"
-  patch "password", to: "passwords#update"
+  # Password
+  get  "password/edit", to: "passwords#edit"
+  patch "password",     to: "passwords#update"
 
-  # === KẾT THÚC ===
-  root "courses#index"
-  get '/login', to: 'sessions#new'
-  post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
-  get '/signup', to: 'registrations#new'
-  post '/signup', to: 'registrations#create'
+  # Sessions
+  get    "/login",  to: "sessions#new"
+  post   "/login",  to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
+
+  # Registration
+  get  "/signup", to: "registrations#new"
+  post "/signup", to: "registrations#create"
+
+  # Email Confirmations
   resources :email_confirmations, only: [:edit]
-  resources :courses, only: [:index, :show]
-  resources :categories, only: [:index, :show]
-  resources :lessons, only: [:show]
 
+  # ================================
+  # Courses (User side)
+  # ================================
   resources :courses, only: [:index, :show] do
-  # Nest enrollment vào course
-  resources :enrollments, only: [:create]
-  end
-  #    POST /quizzes/:quiz_id/quiz_attempts
-  resources :quizzes, only: [] do
-    resources :quiz_attempts, only: [:create], shallow: false
-  end
-  #    GET /quiz_attempts/:id
-  #    POST /quiz_attempts/:quiz_attempt_id/quiz_answers
-  resources :quiz_attempts, only: [:show] do
-    resources :quiz_answers, only: [:create], shallow: false
+    resources :enrollments, only: [:create]   # POST /courses/:course_id/enrollments
   end
 
-  resources :lessons, only: [:show] do
+  resources :my_courses, only: [:index]
+  resources :categories, only: [:index, :show]
+  resources :lessons,    only: [:show] do
     post :complete, to: 'progress_trackings#mark_lesson_complete'
   end
-  # ==================================================
-  # ADMIN Routes
-  # ==================================================
+
+  # ================================
+  # Quiz
+  # ================================
+  resources :quizzes, only: [] do
+    resources :quiz_attempts, only: [:create]
+  end
+
+  resources :quiz_attempts, only: [:show] do
+    resources :quiz_answers, only: [:create]
+    patch :finish, on: :member
+  end
+
+  # ================================
+  # Admin
+  # ================================
   namespace :admin do
-    # root to: "dashboard#index"
-    # Quản lý Danh mục
+    # ========= Categories =========
     resources :categories
-    # Quản lý Ngân hàng câu hỏi
-    resources :questions
-    # Quản lý Khóa học, Chương, Bài học
+
+    # ========= Courses + Modules + Lessons =========
     resources :courses do
       resources :course_modules, shallow: true do
         resources :lessons, shallow: true
       end
+
+      member do
+        get :lessons    # /admin/courses/:id/lessons
+      end
     end
 
-    # (POST /admin/quizzes/:quiz_id/quiz_questions)
+    # Sorting modules and lessons
+    resources :course_modules, only: [] do
+      collection { patch :sort }  # /admin/course_modules/sort
+    end
+
+    resources :lessons, only: [] do
+      collection { patch :sort }  # /admin/lessons/sort
+    end
+
+    # ========= Quiz Bank =========
+    resources :questions
     resources :quizzes do
-      resources :quiz_questions, only: [:create], shallow: false
+      resources :quiz_questions, only: [:create]
     end
-
-    # (DELETE /admin/quiz_questions/:id)
     resources :quiz_questions, only: [:destroy]
-    resources :enrollments, only: [:index] do
-      member do
-        patch :approve
-        patch :reject
-      end
-    end
-    resources :enrollments, only: [:index] do
-      member do
-        patch :approve
-        patch :reject
-      end
-    end
-  end
 
+    # ========= Enrollments =========
+    resources :enrollments, only: [:index] do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
+
+    # ========= Users =========
+    resources :users, only: [:index, :show, :update, :destroy]
+  end
 end

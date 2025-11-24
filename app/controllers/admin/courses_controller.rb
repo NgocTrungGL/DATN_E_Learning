@@ -54,6 +54,22 @@ class Admin::CoursesController < Admin::BaseController
     end
   end
 
+  def lessons
+    course = Course.find_by(id: params[:id])
+
+    if course.nil?
+      return render json: {error: "Course not found"},
+                    status: :not_found
+    end
+
+    @lessons = Lesson.joins(:course_module)
+                     .where(course_modules: {course_id: course.id})
+                     .order("course_modules.order_index", "lessons.order_index")
+                     .select(:id, :title)
+
+    render json: @lessons
+  end
+
   private
 
   def set_course

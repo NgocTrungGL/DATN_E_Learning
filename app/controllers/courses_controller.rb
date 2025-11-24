@@ -6,8 +6,8 @@ class CoursesController < ApplicationController
 
   def show
     @course = Course.includes(course_modules: :lessons).find_by(id: params[:id])
-    return unless @course.nil?
+    return redirect_to courses_path if @course.nil?
 
-    redirect_to courses_path
+    @big_quizzes = @course.quizzes.big
   end
 end

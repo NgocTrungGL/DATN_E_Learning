@@ -5,6 +5,7 @@ class Admin::CourseModulesController < Admin::BaseController
   # GET /admin/courses/1/course_modules/new
   def new
     @course_module = @course.course_modules.build
+    load_course_content
   end
 
   # POST /admin/courses/1/course_modules
@@ -12,15 +13,19 @@ class Admin::CourseModulesController < Admin::BaseController
     @course_module = @course.course_modules.build(course_module_params)
 
     if @course_module.save
-      redirect_to admin_course_path(@course),
-                  notice: t("admin.course_modules.create.success")
+      redirect_to new_admin_course_course_module_path(@course),
+                  notice: "Đã thêm chương mới thành công."
     else
+      load_course_content
       render :new, status: :unprocessable_entity
     end
   end
 
   # GET /admin/course_modules/1/edit
-  def edit; end
+  def edit
+    @course = @course_module.course
+    load_course_content
+  end
 
   # GET /admin/course_modules/1
   def show; end
@@ -28,9 +33,12 @@ class Admin::CourseModulesController < Admin::BaseController
   # PATCH/PUT /admin/course_modules/1
   def update
     if @course_module.update(course_module_params)
-      redirect_to admin_course_path(@course_module.course),
-                  notice: t("admin.course_modules.update.success")
+      redirect_to new_admin_course_course_module_path(@course_module.course),
+                  notice: "Chương đã được cập nhật.
+                  Bạn có thể thêm chương tiếp theo."
     else
+      @course = @course_module.course
+      load_course_content
       render :edit, status: :unprocessable_entity
     end
   end
@@ -52,7 +60,19 @@ class Admin::CourseModulesController < Admin::BaseController
     end
   end
 
+  # PATCH /admin/course_modules/sort
+  def sort
+    params[:course_module].each_with_index do |id, index|
+      CourseModule.where(id:).update_all(order_index: index + 1)
+    end
+
+    head :ok
+  end
   private
+  def load_course_content
+    @modules = @course.course_modules.order(:order_index)
+    @big_quizzes = @course.quizzes.where(lesson_id: nil).order(:created_at)
+  end
 
   def set_course
     @course = Course.find_by(id: params[:course_id])

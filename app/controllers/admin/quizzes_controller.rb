@@ -83,10 +83,10 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def check_enrollment_access
-    course = @quiz.lesson.course
+    course = @quiz.course
     return if current_user&.can_access_course?(course)
 
     redirect_to course_path(course),
-                alert: "Bạn cần đăng ký (hoặc chờ duyệt) để xem bài học này."
+                alert: "Bạn cần đăng ký khóa học để làm bài này."
   end
 end

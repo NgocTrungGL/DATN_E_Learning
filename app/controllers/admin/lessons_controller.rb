@@ -7,16 +7,28 @@ class Admin::LessonsController < Admin::BaseController
   # GET /admin/course_modules/1/lessons/new
   def new
     @lesson = @course_module.lessons.build
+
+    max_order = @course_module.lessons.maximum(:order_index) || 0
+    @lesson.order_index = max_order + 1
+
+    @lessons = @course_module.lessons.order(:order_index)
   end
 
   # POST /admin/course_modules/1/lessons
   def create
     @lesson = @course_module.lessons.build(lesson_params)
 
+    if @lesson.order_index.blank?
+      max_order = @course_module.lessons.maximum(:order_index) || 0
+      @lesson.order_index = max_order + 1
+    end
+
     if @lesson.save
-      redirect_to admin_course_path(@course_module.course),
-                  notice: t("admin.lessons.create.success")
+
+      redirect_to new_admin_course_module_lesson_path(@course_module),
+                  notice: "Bài học mới đã được thêm."
     else
+      @lessons = @course_module.lessons.order(:order_index)
       render :new, status: :unprocessable_entity
     end
   end
@@ -54,6 +66,13 @@ class Admin::LessonsController < Admin::BaseController
     end
   end
 
+  # PATCH /admin/lessons/sort
+  def sort
+    params[:lesson].each_with_index do |id, index|
+      Lesson.where(id:).update_all(order_index: index + 1)
+    end
+    head :ok
+  end
   private
 
   def set_course_module

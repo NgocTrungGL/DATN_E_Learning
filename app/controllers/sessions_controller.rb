@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   def new
     return unless logged_in?
 
-    redirect_based_on_role
+    redirect_after_login(current_user)
   end
 
   # POST /login
@@ -26,12 +26,19 @@ class SessionsController < ApplicationController
 
   private
 
-  def redirect_based_on_role user = current_user
+  def redirect_after_login user
     if user.admin?
       redirect_to admin_courses_path
     else
-      redirect_to root_path
+      redirect_back_or root_path
     end
+  end
+
+  def login user
+    session[:user_id] = user.id
+    flash[:notice] = t("sessions.login_success")
+
+    redirect_after_login(user)
   end
 
   def valid_credentials? user
@@ -46,11 +53,5 @@ class SessionsController < ApplicationController
   def render_account_not_activated
     flash.now[:alert] = t("sessions.account_not_activated")
     render :new, status: :unprocessable_entity
-  end
-
-  def login user
-    session[:user_id] = user.id
-    flash[:notice] = t("sessions.login_success")
-    redirect_back_or root_path
   end
 end

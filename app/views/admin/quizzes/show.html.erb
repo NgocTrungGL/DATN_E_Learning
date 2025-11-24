@@ -2,7 +2,7 @@
 <h2><%= @quiz.title %></h2>
 <p>
   <strong>Thuộc Khóa học:</strong> <%= @quiz.course.title %><br>
-  <strong>Thuộc Bài học:</strong> <%= @quiz.lesson.title %>
+  <strong>Thuộc Bài học:</strong> <%= @quiz.lesson&.title || "Bài kiểm tra chung (Cuối khóa)" %>
 </p>
 
 <hr>

@@ -12,8 +12,7 @@ class EmailConfirmationsController < ApplicationController
   private
 
   def find_user_by_signed_id
-    user = User.find_signed(params[:id], purpose: :account_activation,
-expires_in: 24.hours)
+    user = User.find_signed(params[:id], purpose: :account_activation)
     return user if user.present?
 
     redirect_to root_path,
