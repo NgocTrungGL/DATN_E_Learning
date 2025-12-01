@@ -26,15 +26,20 @@ class Ability
     can :read, :all
     can :access, :instructor_dashboard
 
-    can [:update, :destroy], Course, creator_id: user.id
-    can :create, Course
-
+    can :manage, Course, creator_id: user.id
     can :manage, CourseModule, course: {creator_id: user.id}
     can :manage, Lesson, course_module: {course: {creator_id: user.id}}
-    can :manage, Quiz, course: {creator_id: user.id}
+
+    # Quiz & Question
+    can :manage, Quiz, creator_id: user.id
     can :manage, Question, creator_id: user.id
+    can :manage, QuizQuestion, quiz: {creator_id: user.id}
+
+    can :read, User, enrollments: {course: {creator_id: user.id}}
+    can :read, Enrollment, course: {creator_id: user.id}
 
     cannot :create, InstructorProfile
+    cannot :read, InstructorProfile
   end
 
   def student_rules user

@@ -1,0 +1,49 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3>Học viên khóa: <%= @course.title %></h3>
+  <%= link_to "Quay lại khóa học", instructor_course_path(@course), class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Học viên</th>
+          <th>Ngày đăng ký</th>
+          <th>Trạng thái</th>
+          <th>Tiến độ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @enrollments.each do |enrollment| %>
+          <tr>
+            <td>
+              <div class="fw-bold"><%= enrollment.user.name %></div>
+              <div class="small text-muted"><%= enrollment.user.email %></div>
+            </td>
+            <td><%= enrollment.created_at.strftime("%d/%m/%Y") %></td>
+            <td>
+              <% if enrollment.active? %>
+                <span class="badge bg-success">Đang học</span>
+              <% elsif enrollment.pending? %>
+                <span class="badge bg-warning text-dark">Chờ thanh toán</span>
+              <% else %>
+                <span class="badge bg-danger">Bị từ chối</span>
+              <% end %>
+            </td>
+            <td>
+              <% progress = enrollment.user.course_progress_percentage(@course) %>
+              <div class="progress" style="height: 5px; width: 100px;">
+                <div class="progress-bar" style="width: <%= progress %>%"></div>
+              </div>
+              <small class="text-muted"><%= progress %>%</small>
+            </td>
+          </tr>
+        <% end %>
+        <% if @enrollments.empty? %>
+          <tr><td colspan="4" class="text-center py-4 text-muted">Chưa có học viên nào.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

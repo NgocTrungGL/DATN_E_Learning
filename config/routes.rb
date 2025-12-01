@@ -1,79 +1,47 @@
+# ==============================
+# config/routes.rb
+# ==============================
 Rails.application.routes.draw do
   root "courses#index"
-
-  # ================================
-  # Devise (User Auth)
-  # ================================
   devise_for :users
 
-  # Profile
+  # --- USER ---
   resource :profile, only: [:edit, :update]
-
-  # Email confirmation
+  get "password/edit", to: "passwords#edit"
+  patch "password", to: "passwords#update"
   resources :email_confirmations, only: [:edit]
+  resource :instructor_registration, only: [:new, :create, :show]
+  resources :my_courses, only: [:index]
 
-  # ================================
-  # Courses (User side)
-  # ================================
+  resources :categories, only: [:index, :show]
   resources :courses, only: [:index, :show] do
     resources :enrollments, only: [:create]
   end
-
-  resources :my_courses, only: [:index]
-  resources :categories, only: [:index, :show]
-  resource :instructor_registration, only: [:new, :create, :show]
   resources :lessons, only: [:show] do
     post :complete, to: "progress_trackings#mark_lesson_complete"
   end
-
-  # ================================
-  # Quiz
-  # ================================
   resources :quizzes, only: [] do
-    resources :quiz_attempts, only: [:create]
+    resources :quiz_attempts, only: [:create], shallow: false
   end
-
   resources :quiz_attempts, only: [:show] do
-    resources :quiz_answers, only: [:create]
+    resources :quiz_answers, only: [:create], shallow: false
     patch :finish, on: :member
   end
 
-  # ================================
-  # Admin
-  # ================================
+  # --- ADMIN ---
   namespace :admin do
-    # Categories
-    resources :categories
+    resources :users, only: [:index, :show, :update, :destroy]
 
-    # Courses + Modules + Lessons
-    resources :courses do
-      resources :course_modules, shallow: true do
-        resources :lessons, shallow: true
-      end
-
-      # /admin/courses/:id/lessons
+    # Quản lý giảng viên
+    resources :instructor_profiles,
+              path: "instructors",
+              controller: "instructor_profiles" do
       member do
-        get :lessons
+        patch :approve
+        patch :reject
       end
     end
 
-    # Sorting
-    resources :course_modules, only: [] do
-      collection { patch :sort }
-    end
-
-    resources :lessons, only: [] do
-      collection { patch :sort }
-    end
-
-    # Quiz Bank
-    resources :questions
-    resources :quizzes do
-      resources :quiz_questions, only: [:create]
-    end
-    resources :quiz_questions, only: [:destroy]
-
-    # Enrollments
     resources :enrollments, only: [:index] do
       member do
         patch :approve
@@ -81,24 +49,46 @@ Rails.application.routes.draw do
       end
     end
 
-    # Users
-    resources :users, only: [:index, :show, :update, :destroy]
-  end
-  # ================================
-  # Instructor
-  # ================================
-  namespace :instructor do
-    root to: "dashboard#index"
-    resources :courses
-  end
-
-  namespace :admin do
-
-    resources :instructors, only: [:index, :show] do
+    resources :categories
+    resources :courses do
       member do
-        patch :approve
-        patch :reject
+        get :lessons
+      end
+      resources :course_modules, shallow: true do
+        resources :lessons, shallow: true
       end
     end
+
+    resources :course_modules, only: [] do
+      collection { patch :sort }
+    end
+    resources :lessons, only: [] do
+      collection { patch :sort }
+    end
+
+    resources :questions
+    resources :quizzes do
+      resources :quiz_questions, only: [:create], shallow: false
+    end
+    resources :quiz_questions, only: [:destroy]
+  end
+
+  # --- INSTRUCTOR ---
+  namespace :instructor do
+    root to: "dashboard#index"
+    resources :courses do
+      get :students, on: :member
+      resources :course_modules, shallow: true do
+        collection { patch :sort }
+        resources :lessons, shallow: true do
+          collection { patch :sort }
+        end
+      end
+    end
+    resources :questions
+    resources :quizzes do
+      resources :quiz_questions, only: [:create], shallow: false
+    end
+    resources :quiz_questions, only: [:destroy]
   end
 end
