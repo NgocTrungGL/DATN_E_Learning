@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_23_155844) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_01_045928) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -54,6 +54,23 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_23_155844) do
     t.index ["course_id"], name: "index_enrollments_on_course_id"
     t.index ["user_id", "course_id"], name: "index_enrollments_on_user_id_and_course_id", unique: true
     t.index ["user_id"], name: "index_enrollments_on_user_id"
+  end
+
+  create_table "instructor_profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "bio_detailed"
+    t.string "linkedin_url"
+    t.string "cv_url"
+    t.string "website_url"
+    t.string "bank_name"
+    t.string "bank_account_number"
+    t.string "bank_account_name"
+    t.string "status", default: "pending", null: false
+    t.text "admin_note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "phone"
+    t.index ["user_id"], name: "index_instructor_profiles_on_user_id"
   end
 
   create_table "lessons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -177,13 +194,20 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_23_155844) do
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
-    t.string "password_digest", null: false
+    t.string "encrypted_password", null: false
     t.string "role", default: "student", null: false
     t.string "avatar_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "confirmed_at"
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.string "confirmation_token"
+    t.datetime "confirmation_sent_at"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "categories", "categories", column: "parent_id"
@@ -192,6 +216,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_23_155844) do
   add_foreign_key "courses", "users", column: "created_by", on_delete: :nullify
   add_foreign_key "enrollments", "courses"
   add_foreign_key "enrollments", "users"
+  add_foreign_key "instructor_profiles", "users"
   add_foreign_key "lessons", "course_modules", on_delete: :cascade
   add_foreign_key "profiles", "users", on_delete: :cascade
   add_foreign_key "progress_trackings", "courses"

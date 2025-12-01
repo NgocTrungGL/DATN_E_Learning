@@ -163,3 +163,15 @@ form {
   outline: none;
   box-shadow: none;
 }
+/* Style cho Search Box trong Navbar */
+.search-box {
+  background-color: #f7f9fa; /* Màu xám nhạt */
+  border: 1px solid #2d2f31; /* Viền tối màu (hoặc nhạt hơn nếu thích) */
+  border-radius: 999px; /* Bo tròn con nhộng */
+  padding: 0 10px;
+}
+
+.search-box input:focus {
+  box-shadow: none !important; /* Tắt viền xanh mặc định của Bootstrap */
+  background-color: transparent;
+}

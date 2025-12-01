@@ -5,8 +5,10 @@ class User < ApplicationRecord
     student: "student"
   }
   has_one :profile, dependent: :destroy
-  has_secure_password
-
+  has_one :instructor_profile, dependent: :destroy
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+         :confirmable
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   VALID_PASSWORD_REGEX = /\A
     (?=.*[a-z])
@@ -23,10 +25,6 @@ class User < ApplicationRecord
             uniqueness: true,
             format: {with: VALID_EMAIL_REGEX}
 
-  validates :password,
-            presence: true,
-            format: {with: VALID_PASSWORD_REGEX},
-            if: ->{new_record? || !password.nil?}
   accepts_nested_attributes_for :profile
   after_create :build_default_profile
   has_many :enrollments, dependent: :destroy
