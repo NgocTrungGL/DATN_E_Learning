@@ -22,15 +22,9 @@
   </div>
 
   <div class="mb-3">
-    <%= form.label :created_by, t('courses.form.created_by'), class: 'form-label' %>
-    <%= form.number_field :created_by, class: 'form-control' %>
-  </div>
-
-  <div class="mb-3">
     <%= form.label :price, "Giá khóa học (VND)", class: "form-label" %>
     <div class="input-group">
       <span class="input-group-text">₫</span>
-      <%# step: 1000 để nhập số chẵn nghìn, min: 0 để không nhập số âm %>
       <%= form.number_field :price, class: "form-control", step: 1000, min: 0, placeholder: "Nhập 0 nếu miễn phí" %>
     </div>
     <div class="form-text">Nhập 0 để tạo khóa học miễn phí.</div>
@@ -39,7 +33,6 @@
   <div class="mt-4">
     <%= form.submit t('admin.courses.form.submit'), class: 'btn btn-success' %>
 
-    <%# ĐÃ SỬA: Link quay lại phải trỏ về admin_courses_path %>
     <%= link_to t('courses.form.back'), admin_courses_path, class: 'btn btn-secondary' %>
   </div>
 

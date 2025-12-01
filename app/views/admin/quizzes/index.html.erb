@@ -21,7 +21,13 @@
           <small><%= truncate(quiz.description, length: 70) %></small>
         </td>
         <td><%= quiz.course.title %></td>
-        <td><%= quiz.lesson.title %></td>
+        <td>
+          <% if quiz.lesson %>
+            <%= quiz.lesson.title %>
+          <% else %>
+            <span class="badge bg-info text-dark">Bài kiểm tra chung</span>
+          <% end %>
+        </td>
         <td>
           <%# Link 'show' này là nơi chúng ta sẽ thêm câu hỏi (Phần 3) %>
           <%= link_to "Quản lý câu hỏi", admin_quiz_path(quiz), class: "btn btn-sm btn-info" %>

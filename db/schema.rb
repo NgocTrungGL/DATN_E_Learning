@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_18_083341) do
+ActiveRecord::Schema[7.0].define(version: 2025_11_23_155844) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -159,7 +159,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_18_083341) do
 
   create_table "quizzes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "course_id", null: false
-    t.bigint "lesson_id", null: false
+    t.bigint "lesson_id"
     t.string "title", limit: 200, null: false
     t.text "description"
     t.integer "total_questions", default: 10

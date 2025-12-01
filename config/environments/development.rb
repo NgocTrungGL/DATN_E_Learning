@@ -74,11 +74,12 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: host }
 
   config.action_mailer.smtp_settings = {
+    address: ENV["EMAIL_ADDRESS"],
+    port: 587,
+    domain: ENV["MAIL_DOMAIN"],
     user_name: ENV["MAILTRAP_USERNAME"],
     password: ENV["MAILTRAP_PASSWORD"],
-    address: ENV["EMAIL_ADDRESS"],
-    domain: ENV["MAIL_DOMAIN"],
-    port: 587,
-    authentication: :plain,
-}
+    authentication: :login,
+    enable_starttls_auto: true
+  }
 end

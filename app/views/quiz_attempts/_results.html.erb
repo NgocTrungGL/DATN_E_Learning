@@ -1,29 +1,48 @@
-<div class="text-center">
-  <h2>Hoàn thành!</h2>
+<div class="d-flex justify-content-center mt-5">
+  <div class="card shadow-lg p-4" style="max-width: 520px; width: 100%; border-radius: 18px;">
+    <div class="text-center">
+      <h2 class="fw-bold mb-3">🎉 Hoàn thành Quiz!</h2>
 
-  <h3 class="my-4">
-    Kết quả:
-    <span class="fw-bold
-                 <%= quiz_attempt.is_passed? ? 'text-success' : 'text-danger' %>">
-      <%= quiz_attempt.is_passed? ? "Đã đậu" : "Chưa đậu" %>
-    </span>
-  </h3>
+      <h4 class="my-4">
+        Kết quả:
+        <span class="fw-bold
+          <%= quiz_attempt.is_passed? ? 'text-success' : 'text-danger' %>">
+          <%= quiz_attempt.is_passed? ? "Đã đậu ✔️" : "Chưa đậu ❌" %>
+        </span>
+      </h4>
 
-  <p classs="fs-4">
-    Điểm của bạn: <strong><%= number_to_percentage(quiz_attempt.score, precision: 2) %></strong>
-  </p>
-  <p>
-    (Cần đạt: <%= number_to_percentage(quiz_attempt.quiz.pass_score, precision: 0) %>)
-  </p>
+      <div class="mb-3">
+        <p class="fs-4 mb-1">
+          Điểm của bạn:
+          <strong class="text-primary">
+            <%= number_to_percentage(quiz_attempt.score, precision: 2) %>
+          </strong>
+        </p>
 
-  <p class="text-muted">
-    Bài thi kết thúc lúc: <%= quiz_attempt.finished_at.strftime("%H:%M:%S %d/%m/%Y") %>
-  </p>
+        <p class="text-muted">
+          (Yêu cầu đạt:
+            <%= number_to_percentage(quiz_attempt.quiz.pass_score, precision: 0) %>)
+        </p>
+      </div>
 
-  <hr>
+      <p class="text-secondary fst-italic">
+        🕒 Bài thi kết thúc lúc:
+        <br>
+        <strong><%= quiz_attempt.finished_at.strftime("%H:%M:%S %d/%m/%Y") %></strong>
+      </p>
 
-  <%# Quay lại bài học %>
-  <%= link_to "Quay lại Bài học",
-        lesson_path(quiz_attempt.quiz.lesson),
-        class: "btn btn-secondary" %>
+      <hr class="my-4">
+
+      <% if quiz_attempt.quiz.lesson %>
+        <%= link_to "⬅️ Quay lại Bài học",
+              lesson_path(quiz_attempt.quiz.lesson),
+              class: "btn btn-outline-primary w-100 py-2 fw-semibold" %>
+      <% else %>
+        <%= link_to "⬅️ Quay lại Khóa học",
+              course_path(quiz_attempt.quiz.course),
+              class: "btn btn-outline-primary w-100 py-2 fw-semibold" %>
+      <% end %>
+
+    </div>
+  </div>
 </div>

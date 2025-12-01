@@ -41,6 +41,7 @@ dependent: :nullify
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
 foreign_key: :creator_id, dependent: :nullify
+  scope :recent, ->{order(created_at: :desc)}
 
   def enrolled_in? course
     enrollments.exists?(course_id: course.id)
@@ -67,6 +68,10 @@ foreign_key: :creator_id, dependent: :nullify
     completed_items = progress_trackings.where(course:,
                                                status: :completed).count
     (completed_items.to_f / total_items * 100).round
+  end
+
+  def generate_activation_token
+    signed_id(purpose: :account_activation, expires_in: 24.hours)
   end
   private
 

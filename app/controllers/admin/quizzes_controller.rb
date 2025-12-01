@@ -58,8 +58,10 @@ class Admin::QuizzesController < Admin::BaseController
   private
 
   def set_quiz
-    @quiz = Quiz.includes(:course).find_by(id: params[:id]) ||
-            redirect_to(admin_quizzes_path, alert: t("admin.quizzes.not_found"))
+    @quiz = Quiz.includes(:course).find_by(id: params[:id])
+    return if @quiz.present?
+
+    redirect_to admin_quizzes_path, alert: t("admin.quizzes.not_found")
   end
 
   def load_collections
@@ -81,10 +83,10 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def check_enrollment_access
-    course = @lesson.course
+    course = @quiz.course
     return if current_user&.can_access_course?(course)
 
     redirect_to course_path(course),
-                alert: "Bạn cần đăng ký (hoặc chờ duyệt) để xem bài học này."
+                alert: "Bạn cần đăng ký khóa học để làm bài này."
   end
 end

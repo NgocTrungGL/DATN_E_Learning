@@ -1,8 +1,11 @@
 <%= form_with(model: [:admin, @question]) do |f| %>
+
   <% if @question.errors.any? %>
-    <div class="alert alert-danger">
-      <h2><%= pluralize(@question.errors.count, "lỗi") %> đã xảy ra:</h2>
-      <ul>
+    <div class="alert alert-danger shadow-sm">
+      <h5 class="fw-bold mb-2">
+        <%= pluralize(@question.errors.count, "lỗi") %> đã xảy ra:
+      </h5>
+      <ul class="mb-0">
         <% @question.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -10,67 +13,95 @@
     </div>
   <% end %>
 
-  <div class="card">
-    <div class="card-body">
-      <div class="mb-3">
-        <%= f.label :question_text, "Nội dung câu hỏi", class: "form-label" %>
-        <%= f.text_area :question_text, rows: 4, class: "form-control", required: true %>
+  <div class="card shadow-lg border-0">
+    <div class="card-header bg-primary text-white py-3">
+      <h4 class="mb-0 fw-semibold">✏️ Tạo / Chỉnh sửa Câu hỏi</h4>
+    </div>
+
+    <div class="card-body p-4">
+
+      <!-- Section: Thông tin câu hỏi -->
+      <h5 class="fw-bold mb-3">📌 Thông tin câu hỏi</h5>
+
+      <div class="mb-4">
+        <%= f.label :question_text, "Nội dung câu hỏi", class: "form-label fw-semibold" %>
+        <%= f.text_area :question_text, rows: 4, class: "form-control shadow-sm", required: true %>
       </div>
 
       <div class="row">
-        <div class="col-md-6 mb-3">
-          <%= f.label :question_type, "Loại câu hỏi", class: "form-label" %>
-          <%= f.select :question_type, Question.question_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select" %>
+        <div class="col-md-6 mb-4">
+          <%= f.label :question_type, "Loại câu hỏi", class: "form-label fw-semibold" %>
+          <%= f.select :question_type,
+                Question.question_types.keys.map { |k| [k.humanize, k] },
+                {},
+                class: "form-select shadow-sm" %>
         </div>
-        <div class="col-md-6 mb-3">
-          <%= f.label :difficulty, "Độ khó", class: "form-label" %>
-          <%= f.select :difficulty, Question.difficulties.keys.map { |k| [k.humanize, k] }, {}, class: "form-select" %>
+
+        <div class="col-md-6 mb-4">
+          <%= f.label :difficulty, "Độ khó", class: "form-label fw-semibold" %>
+          <%= f.select :difficulty,
+                Question.difficulties.keys.map { |k| [k.humanize, k] },
+                {},
+                class: "form-select shadow-sm" %>
         </div>
       </div>
 
       <hr>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <%= f.label :course_id, "Gắn vào Khóa học (Bắt buộc)", class: "form-label" %>
+      <!-- Section: Khóa học / Bài học -->
+      <h5 class="fw-bold mb-3">📚 Liên kết khóa học & bài học</h5>
 
-          <%# Dropdown này lấy dữ liệu từ @courses trong controller %>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <%= f.label :course_id, "Gắn vào Khóa học (bắt buộc)", class: "form-label fw-semibold" %>
           <%= f.collection_select :course_id, @courses, :id, :title,
                 { prompt: "--- Chọn một khóa học ---" },
-                { class: "form-select", required: true } %>
+                { class: "form-select shadow-sm", required: true } %>
         </div>
 
-        <div class="col-md-6 mb-3">
-          <%= f.label :lesson_id, "Gắn vào Bài học (Tùy chọn)", class: "form-label" %>
-
-          <%# Tạm thời dùng number_field - Sẽ nâng cấp sau %>
-          <%= f.number_field :lesson_id, class: "form-control", placeholder: "Nhập ID bài học (nếu có)" %>
-          <small class="form-text text-muted">Bạn có thể để trống và gắn vào sau.</small>
-        </div>
+        <%# <div class="col-md-6 mb-4">
+          <%= f.label :lesson_id, "Gắn vào Bài học (tùy chọn)", class: "form-label fw-semibold" %>
+          <%# <%= f.number_field :lesson_id, %>
+                <%# class: "form-control shadow-sm",
+                placeholder: "Nhập ID bài học (nếu có)" %>
+          <%# <small class="text-muted">Có thể để trống.</small>
+        </div> %>
       </div>
+
       <hr>
 
-      <h4>Các lựa chọn trả lời</h4>
-      <p class="text-muted">Đánh dấu vào ô "Đúng" cho (các) đáp án chính xác.</p>
+      <!-- Section: Các lựa chọn -->
+      <h5 class="fw-bold mb-3">📝 Các lựa chọn trả lời</h5>
+      <p class="text-muted">Đánh dấu vào ô “Đúng” để chọn đáp án chính xác.</p>
 
-      <div id="question_options">
+      <div id="question_options" class="bg-light p-3 rounded-3 border">
+
         <%= f.fields_for :question_options do |option_form| %>
-          <div class="input-group mb-3">
-            <span class="input-group-text">
-              <%= option_form.check_box :is_correct, class: "form-check-input" %>
-              <%= option_form.label :is_correct, "Đúng", class: "ms-2" %>
-            </span>
 
-            <%= option_form.text_field :option_text, class: "form-control", placeholder: "Nội dung lựa chọn..." %>
+          <div class="border rounded px-3 py-2 mb-3 bg-white shadow-sm">
+            <div class="d-flex align-items-center gap-3">
+
+              <div class="form-check m-0">
+                <%= option_form.check_box :is_correct, class: "form-check-input" %>
+              </div>
+
+              <%= option_form.text_field :option_text,
+                    class: "form-control",
+                    placeholder: "Nhập nội dung đáp án..." %>
+
+            </div>
           </div>
+
         <% end %>
+
       </div>
 
     </div>
   </div>
 
-  <div class="mt-4">
-    <%= f.submit "Lưu câu hỏi", class: "btn btn-primary" %>
-    <%= link_to "Hủy", admin_questions_path, class: "btn btn-secondary" %>
+  <div class="mt-4 d-flex gap-2">
+    <%= f.submit "💾 Lưu câu hỏi", class: "btn btn-primary px-4 py-2 fw-semibold" %>
+    <%= link_to "🔙 Hủy", admin_questions_path, class: "btn btn-secondary px-4 py-2" %>
   </div>
+
 <% end %>

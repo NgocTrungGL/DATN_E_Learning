@@ -1,0 +1,60 @@
+<div class="bg-dark text-white py-5 mb-4">
+  <div class="container">
+    <h1 class="fw-bold">Học tập</h1>
+    <p class="lead">Các khóa học bạn đã đăng ký.</p>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <% if @enrollments.empty? %>
+    <div class="text-center py-5">
+      <i class="bi bi-journal-x display-1 text-muted"></i>
+      <p class="mt-3">Bạn chưa đăng ký khóa học nào.</p>
+      <%= link_to "Khám phá khóa học ngay", root_path, class: "btn btn-primary" %>
+    </div>
+  <% else %>
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+      <% @enrollments.each do |enrollment| %>
+        <% course = enrollment.course %>
+        <% progress = current_user.course_progress_percentage(course) %>
+
+        <div class="col">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="position-relative" style="height: 160px;">
+              <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/400x250' %>"
+                   class="card-img-top h-100 w-100" style="object-fit: cover;">
+              <div class="position-absolute top-50 start-50 translate-middle">
+                <%= link_to lesson_path(course.course_modules.first.lessons.first), class: "btn btn-light rounded-circle shadow" do %>
+                  <i class="bi bi-play-fill text-primary fs-4"></i>
+                <% end if course.course_modules.any? && course.course_modules.first.lessons.any? %>
+              </div>
+            </div>
+
+            <div class="card-body d-flex flex-column">
+              <h6 class="card-title fw-bold text-truncate" title="<%= course.title %>">
+                <%= course.title %>
+              </h6>
+              <small class="text-muted mb-2"><%= course.creator&.name || "Admin" %></small>
+
+              <div class="mt-auto">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span>Đã hoàn thành</span>
+                  <span class="fw-bold"><%= progress %>%</span>
+                </div>
+                <div class="progress" style="height: 5px;">
+                  <div class="progress-bar bg-success" style="width: <%= progress %>%"></div>
+                </div>
+
+                <% if progress == 100 %>
+                  <div class="mt-2 text-center">
+                    <span class="badge bg-warning text-dark"><i class="bi bi-trophy-fill"></i> Đã hoàn thành</span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -93,3 +93,73 @@ form {
   object-fit: cover;
   object-position: center;
 }
+
+@media (min-width: 992px) {
+  .dropdown-menu .dropdown-toggle:after {
+    border-top: .3em solid transparent;
+    border-right: 0;
+    border-bottom: .3em solid transparent;
+    border-left: .3em solid;
+  }
+
+  .dropdown-menu .dropdown-menu {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .dropdown-menu li {
+    position: relative;
+  }
+
+  .dropdown-menu .submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: -7px;
+  }
+
+  .dropdown-menu .submenu-left {
+    right: 100%;
+    left: auto;
+  }
+
+  .dropdown-menu > li:hover {
+    background-color: #f1f1f1;
+  }
+
+  .dropdown-menu > li:hover > .submenu {
+    display: block;
+  }
+}
+/* Search Box Gọn & Hiện Đại */
+.search-box {
+  max-width: 350px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  padding: 4px 12px;
+  border-radius: 25px;
+  transition: all 0.25s ease;
+}
+
+.search-box:hover {
+  background: #ffffff;
+  border-color: #cfcfcf;
+}
+
+.search-icon {
+  font-size: 15px;
+  color: #888;
+  margin-right: 8px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 15px;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: none;
+}
