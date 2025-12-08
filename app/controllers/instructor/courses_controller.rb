@@ -2,7 +2,7 @@ class Instructor::CoursesController < Instructor::BaseController
   load_and_authorize_resource
 
   def index
-    @courses = @courses.order(created_at: :desc)
+    @courses = current_user.created_courses.order(created_at: :desc)
   end
 
   def show
@@ -46,6 +46,9 @@ class Instructor::CoursesController < Instructor::BaseController
   end
 
   private
+  def set_course
+    @course = current_user.created_courses.find(params[:id])
+  end
 
   def course_params
     params.require(:course).permit(:title, :description, :price,

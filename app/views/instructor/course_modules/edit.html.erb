@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-md-5">
+    <div class="card shadow-sm sticky-top" style="top: 20px; z-index: 1;">
+      <div class="card-header bg-white py-3">
+        <h5 class="mb-0 text-primary"><i class="bi bi-plus-circle"></i> Cập nhật</h5>
+        <small class="text-muted"><%= @course.title %></small>
+      </div>
+      <div class="card-body">
+        <%= form_with(model: [:instructor, @course_module]) do |f| %>
+          <div class="mb-3">
+            <%= f.label :title, "Tên chương", class: "form-label fw-bold" %>
+            <%= f.text_field :title, class: "form-control", autofocus: true %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :description, "Mô tả", class: "form-label" %>
+            <%= f.text_area :description, rows: 2, class: "form-control" %>
+          </div>
+          <%= f.hidden_field :order_index %>
+          <div class="d-grid gap-2 mt-4">
+            <%= f.submit "Lưu & Thêm tiếp", class: "btn btn-primary fw-bold" %>
+            <%= link_to "Xong", new_instructor_course_course_module_path(@course), class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7 mt-4 mt-md-0">
+    <h5 class="mb-3 text-secondary">Danh sách chương (Kéo thả để sắp xếp)</h5>
+    <div class="list-group shadow-sm"
+         data-controller="sortable"
+         data-sortable-url-value="<%= sort_instructor_course_modules_path %>"> <% @modules.each do |mod| %>
+        <div class="list-group-item d-flex align-items-center p-3" data-id="<%= mod.id %>">
+          <div class="drag-handle me-3 text-muted" style="cursor: grab;"><i class="bi bi-grip-vertical fs-4"></i></div>
+          <div class="flex-grow-1 fw-bold"><%= mod.title %></div>
+          <div class="btn-group">
+            <%= link_to edit_instructor_course_module_path(mod), class: "btn btn-sm btn-light text-primary" do %><i class="bi bi-pencil"></i><% end %>
+            <%= button_to instructor_course_module_path(mod), method: :delete, class: "btn btn-sm btn-light text-danger", data: { confirm: "Xóa?" } do %><i class="bi bi-trash"></i><% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

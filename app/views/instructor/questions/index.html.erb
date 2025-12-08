@@ -1,0 +1,61 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold"><i class="bi bi-question-square me-2"></i> Ngân hàng câu hỏi</h2>
+  <%= link_to new_instructor_question_path, class: "btn btn-primary" do %>
+    <i class="bi bi-plus-circle"></i> Tạo câu hỏi mới
+  <% end %>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 40%;">Câu hỏi</th>
+          <th>Loại / Độ khó</th>
+          <th>Thuộc về</th>
+          <th class="text-end">Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @questions.each do |question| %>
+          <tr>
+            <td>
+              <div class="fw-bold text-truncate" style="max-width: 400px;" title="<%= question.question_text %>">
+                <%= question.question_text %>
+              </div>
+              <small class="text-muted">
+                Đúng: <span class="text-success"><%= question.question_options.find { |o| o.is_correct }&.option_text || "Chưa set" %></span>
+              </small>
+            </td>
+            <td>
+              <span class="badge bg-secondary"><%= question.question_type %></span>
+              <span class="badge <%= question.difficulty == 'hard' ? 'bg-danger' : (question.difficulty == 'medium' ? 'bg-warning text-dark' : 'bg-success') %>">
+                <%= question.difficulty %>
+              </span>
+            </td>
+            <td>
+              <% if question.course %>
+                <div class="small fw-bold text-primary"><%= question.course.title %></div>
+              <% end %>
+              <% if question.lesson %>
+                <div class="small text-muted"><i class="bi bi-play-circle"></i> <%= question.lesson.title %></div>
+              <% end %>
+            </td>
+            <td class="text-end">
+              <%= link_to edit_instructor_question_path(question), class: "btn btn-sm btn-outline-secondary me-1" do %>
+                <i class="bi bi-pencil"></i>
+              <% end %>
+              <%= button_to instructor_question_path(question), method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: "Xóa câu này?" } do %>
+                <i class="bi bi-trash"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+
+        <% if @questions.empty? %>
+          <tr><td colspan="4" class="text-center py-5 text-muted">Bạn chưa tạo câu hỏi nào.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

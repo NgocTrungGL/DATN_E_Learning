@@ -1,0 +1,73 @@
+<%= form_with(model: [:instructor, @question]) do |f| %>
+  <% if @question.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0"><% @question.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white fw-bold">Nội dung câu hỏi</div>
+        <div class="card-body">
+          <div class="mb-3">
+            <%= f.label :question_text, "Câu hỏi", class: "form-label" %>
+            <%= f.text_area :question_text, rows: 3, class: "form-control", required: true %>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <%= f.label :question_type, "Loại", class: "form-label" %>
+              <%= f.select :question_type, Question.question_types.keys, {}, class: "form-select" %>
+            </div>
+            <div class="col-md-6 mb-3">
+              <%= f.label :difficulty, "Độ khó", class: "form-label" %>
+              <%= f.select :difficulty, Question.difficulties.keys, {}, class: "form-select" %>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row">
+             <div class="col-md-6 mb-3">
+                <%= f.label :course_id, "Gắn vào Khóa học (Của tôi)", class: "form-label" %>
+                <%= f.collection_select :course_id, @courses, :id, :title, { prompt: "Chọn khóa học" }, { class: "form-select", required: true } %>
+             </div>
+             <div class="col-md-6 mb-3">
+                <%= f.label :lesson_id, "Gắn vào Bài học (Tùy chọn)", class: "form-label" %>
+                <%= f.number_field :lesson_id, class: "form-control", placeholder: "Nhập ID bài học" %>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white fw-bold">Các lựa chọn</div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush">
+            <%= f.fields_for :question_options do |o_form| %>
+              <div class="list-group-item">
+                <div class="input-group">
+                  <div class="input-group-text">
+                    <%= o_form.check_box :is_correct, class: "form-check-input mt-0" %>
+                  </div>
+                  <%= o_form.text_field :option_text, class: "form-control", placeholder: "Nhập đáp án..." %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <div class="p-3 text-muted small">
+            * Tích vào ô vuông để chọn đáp án đúng.
+          </div>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2 mt-3">
+        <%= f.submit "Lưu câu hỏi", class: "btn btn-primary fw-bold" %>
+        <%= link_to "Hủy", instructor_questions_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
+  </div>
+<% end %>
