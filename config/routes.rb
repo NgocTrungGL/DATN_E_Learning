@@ -85,7 +85,7 @@ Rails.application.routes.draw do
   # ==================================================
   namespace :instructor do
     root to: "dashboard#index"
-
+    resources :quizzes
     # 1. Quản lý Khóa học & Nội dung lồng nhau
     resources :courses do
       get :students, on: :member

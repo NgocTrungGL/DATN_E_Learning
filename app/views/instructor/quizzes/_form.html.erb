@@ -1,0 +1,92 @@
+<%= form_with(model: [:instructor, quiz], local: true) do |f| %>
+
+  <% if quiz.errors.any? %>
+    <div class="alert alert-danger">
+      <h5 class="alert-heading">Đã xảy ra lỗi:</h5>
+      <ul class="mb-0">
+        <% quiz.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-white fw-bold">Thông tin cơ bản</div>
+        <div class="card-body">
+          <div class="mb-3">
+            <%= f.label :title, "Tên bài kiểm tra", class: "form-label fw-bold" %>
+            <%= f.text_field :title, class: "form-control", placeholder: "Nhập tên bài kiểm tra..." %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :description, "Mô tả / Hướng dẫn", class: "form-label" %>
+            <%= f.text_area :description, rows: 4, class: "form-control" %>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <%= f.label :course_id, "Thuộc khóa học", class: "form-label" %>
+              <%= f.collection_select :course_id, @courses, :id, :title, { prompt: "-- Chọn khóa học --" }, { class: "form-select" } %>
+            </div>
+            <div class="col-md-6 mb-3">
+              <%= f.label :lesson_id, "Thuộc bài học (Không bắt buộc)", class: "form-label" %>
+              <%= f.collection_select :lesson_id, @lessons, :id, :title, { include_blank: "-- Không chọn --" }, { class: "form-select" } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm bg-light">
+        <div class="card-header fw-bold">Cấu hình thi</div>
+        <div class="card-body">
+
+          <div class="mb-3">
+            <%= f.label :total_questions, "Số lượng câu hỏi", class: "form-label" %>
+            <div class="input-group">
+              <%= f.number_field :total_questions, class: "form-control" %>
+              <span class="input-group-text">câu</span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :time_limit, "Thời gian làm bài", class: "form-label" %>
+            <div class="input-group">
+              <%= f.number_field :time_limit, class: "form-control", placeholder: "Để trống nếu không giới hạn" %>
+              <span class="input-group-text">phút</span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :pass_score, "Điểm đạt tối thiểu", class: "form-label" %>
+            <div class="input-group">
+              <%= f.number_field :pass_score, in: 0..100, class: "form-control" %>
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+
+          <div class="mb-3 form-check">
+            <%= f.check_box :random_mode, class: "form-check-input" %>
+            <%= f.label :random_mode, "Lấy câu hỏi ngẫu nhiên", class: "form-check-label" %>
+            <div class="form-text text-muted small">
+              Nếu chọn, hệ thống sẽ tự động lấy câu hỏi từ ngân hàng.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="d-flex justify-content-end gap-2 mb-5">
+    <%= link_to "Hủy bỏ", instructor_quizzes_path, class: "btn btn-secondary" %>
+    <%= f.submit "Lưu bài kiểm tra", class: "btn btn-primary px-4" %>
+  </div>
+
+<% end %>
