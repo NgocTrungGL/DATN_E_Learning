@@ -1,0 +1,100 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 fw-bold text-gray-800 border-start border-4 border-primary ps-3">
+      Quản lý Hỏi đáp
+    </h2>
+    <div class="badge bg-light text-dark border p-2">
+      Tổng cộng: <%= @comments.count %> bình luận
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr class="text-uppercase text-secondary small fw-bold">
+              <th class="ps-4 py-3" style="width: 20%;">Người dùng</th>
+              <th style="width: 15%;">Loại</th>
+              <th style="width: 20%;">Vị trí (Bài học)</th>
+              <th style="width: 30%;">Nội dung bình luận</th>
+              <th style="width: 15%;" class="text-end pe-4">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @comments.each do |comment| %>
+              <tr>
+                <td class="ps-4">
+                  <div class="d-flex align-items-center">
+                    <img src="https://ui-avatars.com/api/?name=<%= comment.user.name %>&background=random" class="rounded-circle me-2" width="32" height="32">
+                    <div>
+                      <div class="fw-bold text-dark"><%= comment.user.name %></div>
+                      <span class="badge bg-secondary" style="font-size: 0.65rem;"><%= comment.user.role.capitalize %></span>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <% if comment.parent_id.nil? %>
+                    <span class="badge bg-primary text-white">
+                      <i class="bi bi-question-circle-fill me-1"></i> Câu hỏi gốc
+                    </span>
+                  <% else %>
+                    <span class="badge bg-secondary text-white">
+                      <i class="bi bi-reply-fill me-1"></i> Trả lời
+                    </span>
+                    <div class="small text-muted mt-1" style="font-size: 0.75rem">
+                      của ID #<%= comment.parent_id %>
+                    </div>
+                  <% end %>
+                </td>
+
+                <td>
+                  <div class="d-flex align-items-center text-secondary">
+                    <i class="bi bi-play-circle me-2"></i>
+                    <div class="text-truncate" style="max-width: 180px;" title="<%= comment.lesson.title %>">
+                      <%= comment.lesson.title %>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-1">
+                    Khóa: <%= comment.lesson.course.title.truncate(20) %>
+                  </small>
+                </td>
+
+                <td>
+                  <div class="text-dark small mb-1 text-break">
+                    <%= comment.body.truncate(120) %>
+                  </div>
+                  <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i><%= time_ago_in_words(comment.created_at) %> trước
+                  </small>
+                </td>
+
+                <td class="text-end pe-4">
+                  <%= link_to lesson_path(comment.lesson, anchor: "comment-#{comment.id}"), class: "btn btn-link btn-sm text-decoration-none text-secondary", target: "_blank", title: "Xem thực tế" do %>
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  <% end %>
+
+                  <%= link_to admin_comment_path(comment),
+                      data: { turbo_method: :delete, turbo_confirm: "CẢNH BÁO QUAN TRỌNG:\n\nNếu bạn xóa bình luận này, TẤT CẢ các câu trả lời con (Replies) của nó cũng sẽ bị xóa theo!\n\nBạn có chắc chắn muốn tiếp tục?" },
+                      class: "btn btn-outline-danger btn-sm shadow-sm ms-1" do %>
+                    <i class="bi bi-trash-fill me-1"></i> Xóa
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+
+            <% if @comments.empty? %>
+              <tr>
+                <td colspan="5" class="text-center py-5 text-muted">
+                  <i class="bi bi-chat-square-dots fs-1 d-block mb-3 opacity-50"></i>
+                  Chưa có thảo luận nào trong hệ thống.
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

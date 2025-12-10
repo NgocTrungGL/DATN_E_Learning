@@ -29,7 +29,7 @@ class User < ApplicationRecord
   after_create :build_default_profile
   has_many :enrollments, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
-
+  has_many :comments, dependent: :destroy
   has_many :quiz_attempts, dependent: :destroy
   has_many :progress_trackings, dependent: :destroy
 

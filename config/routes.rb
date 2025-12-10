@@ -37,8 +37,10 @@ Rails.application.routes.draw do
 
   # --- ADMIN ---
   namespace :admin do
+    get 'dashboard', to: 'dashboard#index'
     resources :users, only: [:index, :show, :update, :destroy]
-
+    resources :reviews, only: [:index, :destroy]
+    resources :comments, only: [:index, :destroy]
     # Quản lý giảng viên
     resources :instructor_profiles,
               path: "instructors",
