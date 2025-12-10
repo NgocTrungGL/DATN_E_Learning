@@ -6,7 +6,7 @@ class Lesson < ApplicationRecord
   validates :title, presence: true
 
   default_scope{order(order_index: :asc)}
-
+  has_many :comments, dependent: :destroy
   has_many :quizzes, dependent: :destroy
   has_many :questions, dependent: :nullify
   has_many :progress_trackings, dependent: :nullify

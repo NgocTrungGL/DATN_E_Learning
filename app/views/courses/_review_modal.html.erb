@@ -1,0 +1,40 @@
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="reviewModalLabel">Đánh giá khóa học</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <%= form_with(model: [course, Review.new], local: true) do |f| %>
+
+          <div class="mb-3 text-center">
+            <label class="form-label fw-bold mb-2">Bạn chấm mấy điểm?</label>
+            <div class="rating-css">
+              <div class="star-icon justify-content-center">
+                <% 5.downto(1) do |i| %>
+                  <%= f.radio_button :rating, i, id: "rating#{i}", class: "d-none" %>
+                  <label for="rating<%= i %>" class="bi bi-star-fill fs-2 mx-1 text-secondary" style="cursor: pointer;" onclick="this.style.color='gold';"></label>
+                <% end %>
+              </div>
+            </div>
+            <style>
+              .star-icon { display: flex; flex-direction: row-reverse; }
+              .star-icon input:checked ~ label, .star-icon label:hover, .star-icon label:hover ~ label { color: #ffc107 !important; }
+            </style>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :content, "Nhận xét của bạn", class: "form-label fw-bold" %>
+            <%= f.text_area :content, class: "form-control", rows: 4, placeholder: "Chia sẻ cảm nhận của bạn về nội dung, giảng viên..." %>
+          </div>
+
+          <div class="d-grid gap-2">
+            <%= f.submit "Gửi đánh giá", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

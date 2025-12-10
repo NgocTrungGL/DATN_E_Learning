@@ -6,7 +6,7 @@ optional: true
   has_many :lessons, through: :course_modules
   has_many :enrollments, dependent: :restrict_with_error
   has_many :enrolled_users, through: :enrollments, source: :user
-
+  has_many :reviews, dependent: :destroy
   has_many :quizzes, dependent: :destroy
   has_many :questions, dependent: :nullify
   has_many :progress_trackings, dependent: :destroy

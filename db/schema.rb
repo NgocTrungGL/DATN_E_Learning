@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_06_065316) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_09_153714) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -19,6 +19,17 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_06_065316) do
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
     t.index ["parent_id"], name: "index_categories_on_parent_id"
+  end
+
+  create_table "comments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "lesson_id", null: false
+    t.text "body"
+    t.integer "parent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lesson_id"], name: "index_comments_on_lesson_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "course_modules", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -191,6 +202,17 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_06_065316) do
     t.index ["lesson_id"], name: "index_quizzes_on_lesson_id"
   end
 
+  create_table "reviews", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "course_id", null: false
+    t.integer "rating"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_reviews_on_course_id"
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
@@ -211,6 +233,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_06_065316) do
   end
 
   add_foreign_key "categories", "categories", column: "parent_id"
+  add_foreign_key "comments", "lessons"
+  add_foreign_key "comments", "users"
   add_foreign_key "course_modules", "courses", on_delete: :cascade
   add_foreign_key "courses", "categories"
   add_foreign_key "courses", "users", column: "created_by", on_delete: :nullify
@@ -237,4 +261,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_06_065316) do
   add_foreign_key "quizzes", "courses"
   add_foreign_key "quizzes", "lessons"
   add_foreign_key "quizzes", "users", column: "created_by"
+  add_foreign_key "reviews", "courses"
+  add_foreign_key "reviews", "users"
 end

@@ -14,6 +14,13 @@ Rails.application.routes.draw do
   resources :my_courses, only: [:index]
 
   resources :categories, only: [:index, :show]
+  resources :courses do
+    resources :reviews, only: [:create, :destroy]
+  end
+
+  resources :lessons do
+    resources :comments, only: [:create, :destroy]
+  end
   resources :courses, only: [:index, :show] do
     resources :enrollments, only: [:create]
   end
