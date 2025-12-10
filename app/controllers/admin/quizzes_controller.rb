@@ -4,7 +4,8 @@ class Admin::QuizzesController < Admin::BaseController
   before_action :check_enrollment_access, only: [:show]
   # GET /admin/quizzes
   def index
-    @quizzes = Quiz.includes(:course, :lesson).all
+    @pagy, @quizzes = pagy(Quiz.includes(:course,
+                                         :lesson).order(created_at: :desc))
   end
 
   # GET /admin/quizzes/1

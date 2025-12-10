@@ -1,0 +1,35 @@
+<div class="inst-topbar">
+  <div class="d-flex align-items-center">
+    <button type="button" class="btn btn-light d-lg-none me-3"><i class="bi bi-list"></i></button>
+    <span class="fw-bold text-secondary text-uppercase ls-1 small">Khu vực Giảng dạy</span>
+  </div>
+
+  <div class="d-flex align-items-center">
+    <%= link_to root_path, class: "btn btn-outline-primary btn-sm me-4 rounded-pill px-3", target: "_blank" do %>
+      <i class="bi bi-box-arrow-up-right me-1"></i> Trang chủ
+    <% end %>
+
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" id="instUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="https://ui-avatars.com/api/?name=<%= current_user.name %>&background=ffc107&color=000" width="38" height="38" class="rounded-circle me-2 border border-2 border-white shadow-sm">
+        <div class="d-none d-sm-block lh-1 text-start">
+          <div class="fw-bold small"><%= current_user.name %></div>
+          <span class="badge bg-success text-white" style="font-size: 0.6rem;">Instructor</span>
+        </div>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+        <li>
+          <%= link_to edit_user_registration_path, class: "dropdown-item small py-2" do %>
+            <i class="bi bi-person-gear me-2 text-primary"></i> Tài khoản
+          <% end %>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-danger small py-2" do %>
+            <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+          <% end %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

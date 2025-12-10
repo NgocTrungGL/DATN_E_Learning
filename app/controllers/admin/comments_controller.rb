@@ -2,7 +2,8 @@ class Admin::CommentsController < Admin::BaseController
   load_and_authorize_resource class: Comment.name
 
   def index
-    @comments = @comments.includes(:user, :lesson).order(created_at: :desc)
+    @pagy, @comments = pagy(@comments
+    .includes(:user, :lesson).order(created_at: :desc))
   end
 
   def destroy

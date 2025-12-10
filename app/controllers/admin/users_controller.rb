@@ -2,7 +2,7 @@ class Admin::UsersController < Admin::BaseController
   before_action :set_user, only: [:destroy]
   before_action :prevent_self_delete, only: [:destroy]
   def index
-    @users = User.recent
+    @pagy, @users = pagy(User.recent)
   end
 
   def destroy

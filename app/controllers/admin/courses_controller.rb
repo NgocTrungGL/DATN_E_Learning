@@ -2,7 +2,7 @@ class Admin::CoursesController < Admin::BaseController
   before_action :set_course, only: %i(show edit update destroy)
 
   def index
-    @courses = Course.includes(:category).recent
+    @pagy, @courses = pagy(Course.includes(:category).recent, items: 10)
   end
 
   def show

@@ -4,7 +4,8 @@ class Admin::QuestionsController < Admin::BaseController
   before_action :load_courses, only: [:new, :edit]
 
   def index
-    @questions = Question.includes(:course, :lesson).all
+    @pagy, @questions = pagy(Question
+    .includes(:course, :lesson).order(created_at: :desc))
   end
 
   def show; end
