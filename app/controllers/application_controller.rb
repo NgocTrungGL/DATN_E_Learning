@@ -1,28 +1,25 @@
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!
-  helper_method :current_user, :logged_in?, :admin?
+  def after_sign_in_path_for resource
+    if resource.admin?
+      admin_courses_path
+    elsif resource.instructor?
+      root_path
+    else
+      root_path
+    end
+  end
 
+  rescue_from CanCan::AccessDenied do |_exception|
+    if current_user.nil?
+      redirect_to new_user_session_path, alert: "Vui lòng đăng nhập."
+    elsif current_user.instructor?
+      redirect_to instructor_root_path,
+                  alert: "Bạn không có quyền thực hiện hành động này."
+    else
+      redirect_to root_path, alert: "Truy cập bị từ chối."
+    end
+  end
   private
-
-  def current_user
-    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
-  end
-
-  def logged_in?
-    current_user.present?
-  end
-
-  def authenticate_user!
-    return if logged_in?
-
-    redirect_to login_path, alert: t("sessions.require_login")
-  end
-
-  def authorize_admin!
-    return if current_user&.admin?
-
-    redirect_to root_path, alert: t("admin.authorization.denied")
-  end
 
   def store_location
     session[:forwarding_url] = request.original_url if request.get?

@@ -47,7 +47,17 @@
             <i class="bi bi-people-fill"></i> Học viên
           <% end %>
         </li>
+        <li class="nav-item">
+          <%= link_to admin_enrollments_path, class: "nav-link #{'active' if controller_name == 'enrollments'}" do %>
+            <i class="bi bi-cash-coin"></i> Duyệt Ghi danh
+          <% end %>
+        </li>
 
+        <li class="nav-item">
+          <%= link_to admin_instructors_path, class: "nav-link #{'active' if controller_name == 'instructors'}" do %>
+            <i class="bi bi-person-lines-fill"></i> Duyệt Giảng viên
+          <% end %>
+        </li>
       </ul>
 
       <ul class="navbar-nav ms-auto">
@@ -64,13 +74,13 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <%= link_to edit_profile_path, class: "dropdown-item" do %>
+              <%= link_to edit_user_registration_path, class: "dropdown-item" do %>
                 <i class="bi bi-person"></i> Hồ sơ cá nhân
               <% end %>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <%= button_to logout_path, method: :delete, class: "dropdown-item text-danger w-100" do %>
+              <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-danger w-100" do %>
                 <i class="bi bi-power"></i> Đăng xuất
               <% end %>
             </li>

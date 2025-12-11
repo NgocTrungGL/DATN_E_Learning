@@ -1,0 +1,37 @@
+<h2>Duyệt Giảng viên</h2>
+<table class="table table-hover align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Ứng viên</th>
+      <th>Thông tin</th>
+      <th>CV</th>
+      <th>Trạng thái</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @instructor_profiles.each do |profile| %>
+      <tr>
+        <td>
+          <div class="fw-bold"><%= profile.user.name %></div>
+          <small class="text-muted"><%= profile.user.email %></small>
+        </td>
+        <td>
+          <small>SĐT: <%= profile.phone %></small><br>
+          <small>LinkedIn: <%= link_to "Link", profile.linkedin_url, target: "_blank" %></small>
+        </td>
+        <td><%= link_to "Xem CV", profile.cv_url, target: "_blank", class: "btn btn-sm btn-outline-info" %></td>
+        <td>
+          <% badge_color = profile.pending? ? "bg-warning text-dark" : (profile.approved? ? "bg-success" : "bg-danger") %>
+          <span class="badge <%= badge_color %>"><%= profile.status.humanize %></span>
+        </td>
+        <td>
+          <% if profile.pending? %>
+            <%= button_to "Duyệt", approve_admin_instructor_path(profile), method: :patch, class: "btn btn-success btn-sm d-inline" %>
+            <%= button_to "Từ chối", reject_admin_instructor_path(profile), method: :patch, class: "btn btn-outline-danger btn-sm d-inline" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
