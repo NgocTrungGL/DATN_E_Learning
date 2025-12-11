@@ -4,7 +4,9 @@
 Rails.application.routes.draw do
   root "courses#index"
   devise_for :users
+  post 'create-checkout-session', to: 'checkouts#create'
 
+  post 'webhooks', to: 'webhooks#create'
   # --- USER ---
   resource :profile, only: [:edit, :update]
   get "password/edit", to: "passwords#edit"
@@ -41,6 +43,8 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :show, :update, :destroy]
     resources :reviews, only: [:index, :destroy]
     resources :comments, only: [:index, :destroy]
+    resources :revenues, only: [:index]
+    resources :enrollments, only: [:index, :destroy]
     # Quản lý giảng viên
     resources :instructor_profiles,
               path: "instructors",
@@ -51,12 +55,6 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :enrollments, only: [:index] do
-      member do
-        patch :approve
-        patch :reject
-      end
-    end
 
     resources :categories
     resources :courses do
@@ -94,6 +92,7 @@ Rails.application.routes.draw do
   # ==================================================
   namespace :instructor do
     root to: "dashboard#index"
+    resources :revenues, only: [:index]
     resources :quizzes
     # 1. Quản lý Khóa học & Nội dung lồng nhau
     resources :courses do
