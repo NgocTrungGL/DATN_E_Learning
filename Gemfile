@@ -50,7 +50,7 @@ gem "bootsnap", require: false
 gem "cancancan"
 gem "devise"
 gem "pagy", "~> 5.10"
-
+gem "stripe"
 # Use Sass to process CSS
 # gem "sassc-rails"
 

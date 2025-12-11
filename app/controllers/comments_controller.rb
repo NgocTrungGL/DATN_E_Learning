@@ -22,11 +22,11 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    @comment = current_user.comments.find_by(id: params[:id])
-
-    if @comment
+    @comment = Comment.find_by(id: params[:id])
+    if @comment && can?(:destroy, @comment)
       @comment.destroy
-      redirect_back(fallback_location: root_path, notice: "Đã xóa bình luận.")
+      redirect_back(fallback_location: root_path,
+                    notice: "Đã xóa bình luận.")
     else
       redirect_back(fallback_location: root_path,
                     alert: "Bạn không có quyền xóa bình luận này.")

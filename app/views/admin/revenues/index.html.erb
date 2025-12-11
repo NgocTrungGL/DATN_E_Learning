@@ -1,0 +1,117 @@
+<div class="container-fluid py-4">
+  <h2 class="h3 fw-bold text-gray-800 mb-4 border-start border-4 border-info ps-3">Tài chính Hệ thống</h2>
+
+  <div class="row mb-4 g-3">
+
+    <div class="col-xl-4 col-md-6">
+      <div class="card bg-info text-white shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs fw-bold text-uppercase mb-1 opacity-75">Ví Admin (30% Phí)</div>
+              <div class="h2 mb-0 fw-bold">
+                <%= number_to_currency(@wallet.balance, unit: "₫", precision: 0, format: "%n %u") %>
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-safe2-fill fs-1 opacity-50"></i>
+            </div>
+          </div>
+          <p class="mb-0 mt-2 small opacity-75">Số tiền thực tế bạn có thể rút.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-success">
+        <div class="card-body">
+          <div class="text-xs fw-bold text-success text-uppercase mb-1">Tổng doanh thu (Lifetime)</div>
+          <div class="h3 mb-0 fw-bold text-gray-800">
+            <%= number_to_currency(@total_platform_revenue, unit: "₫", precision: 0, format: "%n %u") %>
+          </div>
+          <p class="text-muted small mt-2 mb-0">Tổng số tiền phí 30% đã thu được từ trước đến nay.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-warning">
+        <div class="card-body">
+          <div class="text-xs fw-bold text-warning text-uppercase mb-1">Tổng tiền System Hold</div>
+          <div class="h3 mb-0 fw-bold text-gray-800">
+            <%= number_to_currency(@total_system_balance, unit: "₫", precision: 0, format: "%n %u") %>
+          </div>
+          <p class="text-muted small mt-2 mb-0">Tổng số dư của tất cả các ví (Admin + Giảng viên).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow border-0">
+    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+      <h6 class="m-0 fw-bold text-primary">Nhật ký doanh thu (Platform Fee)</h6>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4">Mã GD</th>
+              <th>Loại giao dịch</th>
+              <th>Số tiền (30%)</th>
+              <th>Nguồn gốc</th>
+              <th>Thời gian</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @transactions.each do |txn| %>
+              <tr>
+                <td class="ps-4 font-monospace text-muted small">#<%= txn.id %></td>
+
+                <td>
+                  <% if txn.platform_fee? %>
+                    <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
+                      <i class="bi bi-pie-chart-fill me-1"></i> Phí nền tảng
+                    </span>
+                  <% else %>
+                    <span class="badge bg-secondary"><%= txn.transaction_type %></span>
+                  <% end %>
+                </td>
+
+                <td class="fw-bold fs-5 text-success">
+                  +<%= number_to_currency(txn.amount, unit: "₫", precision: 0, format: "%n %u") %>
+                </td>
+
+                <td>
+                  <% if txn.source.is_a?(Enrollment) %>
+                    <div>Đơn hàng: <strong><%= txn.source.course.title %></strong></div>
+                    <div class="small text-muted">
+                      Giá gốc: <%= number_to_currency(txn.source.price, unit: "₫", precision: 0) %>
+                      | HV: <%= txn.source.user.name %>
+                    </div>
+                  <% end %>
+                </td>
+
+                <td class="text-muted small">
+                  <%= txn.created_at.strftime("%d/%m/%Y %H:%M") %>
+                </td>
+              </tr>
+            <% end %>
+
+            <% if @transactions.empty? %>
+              <tr>
+                <td colspan="5" class="text-center py-5 text-muted">Chưa có doanh thu nào.</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <% if @pagy.pages > 1 %>
+    <div class="mt-4 d-flex justify-content-center">
+      <%== pagy_bootstrap_nav(@pagy) %>
+    </div>
+  <% end %>
+</div>

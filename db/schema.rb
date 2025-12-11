@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_10_034307) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -62,6 +62,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_034307) do
     t.string "status", default: "pending"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "price", precision: 15, scale: 2
     t.index ["course_id"], name: "index_enrollments_on_course_id"
     t.index ["user_id", "course_id"], name: "index_enrollments_on_user_id_and_course_id", unique: true
     t.index ["user_id"], name: "index_enrollments_on_user_id"
@@ -233,6 +234,25 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_034307) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "wallet_transactions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "wallet_id", null: false
+    t.decimal "amount", precision: 15, scale: 2
+    t.integer "transaction_type"
+    t.string "source_type"
+    t.integer "source_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["wallet_id"], name: "index_wallet_transactions_on_wallet_id"
+  end
+
+  create_table "wallets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "balance", precision: 15, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_wallets_on_user_id", unique: true
+  end
+
   add_foreign_key "categories", "categories", column: "parent_id"
   add_foreign_key "comments", "lessons"
   add_foreign_key "comments", "users"
@@ -264,4 +284,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_034307) do
   add_foreign_key "quizzes", "users", column: "created_by"
   add_foreign_key "reviews", "courses"
   add_foreign_key "reviews", "users"
+  add_foreign_key "wallet_transactions", "wallets"
+  add_foreign_key "wallets", "users"
 end

@@ -30,6 +30,8 @@ class User < ApplicationRecord
   has_many :enrollments, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :comments, dependent: :destroy
+  has_many :reviews, dependent: :destroy
+  has_one :wallet, dependent: :destroy
   has_many :quiz_attempts, dependent: :destroy
   has_many :progress_trackings, dependent: :destroy
 
@@ -39,6 +41,7 @@ dependent: :nullify
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
 foreign_key: :created_by, dependent: :nullify
+  after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}
 
   def enrolled_in? course
@@ -75,5 +78,9 @@ foreign_key: :created_by, dependent: :nullify
 
   def build_default_profile
     create_profile
+  end
+
+  def create_default_wallet
+    create_wallet(balance: 0)
   end
 end
