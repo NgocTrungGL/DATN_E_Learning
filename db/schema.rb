@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_11_085915) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -95,6 +95,19 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_module_id"], name: "index_lessons_on_course_module_id"
+  end
+
+  create_table "payout_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "amount", precision: 15, scale: 2, default: "0.0"
+    t.integer "status", default: 0
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "bank_name"
+    t.string "bank_account_num"
+    t.string "bank_account_name"
+    t.index ["user_id"], name: "index_payout_requests_on_user_id"
   end
 
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -263,6 +276,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
   add_foreign_key "enrollments", "users"
   add_foreign_key "instructor_profiles", "users"
   add_foreign_key "lessons", "course_modules", on_delete: :cascade
+  add_foreign_key "payout_requests", "users"
   add_foreign_key "profiles", "users", on_delete: :cascade
   add_foreign_key "progress_trackings", "courses"
   add_foreign_key "progress_trackings", "lessons"

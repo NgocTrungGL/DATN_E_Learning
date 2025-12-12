@@ -54,7 +54,12 @@ Rails.application.routes.draw do
         patch :reject
       end
     end
-
+    resources :payouts, only: [:index] do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
 
     resources :categories
     resources :courses do
@@ -93,6 +98,7 @@ Rails.application.routes.draw do
   namespace :instructor do
     root to: "dashboard#index"
     resources :revenues, only: [:index]
+    resources :payouts, only: [:create]
     resources :quizzes
     # 1. Quản lý Khóa học & Nội dung lồng nhau
     resources :courses do

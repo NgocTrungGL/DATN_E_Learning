@@ -6,6 +6,7 @@ class LessonsController < ApplicationController
   # GET /lessons/1
   def show
     @course = @lesson.course
+    authorize! :access_content, @course
   end
 
   private

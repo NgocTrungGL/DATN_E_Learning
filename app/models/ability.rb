@@ -36,6 +36,9 @@ class Ability
     instructor_quiz_rules
     instructor_enrollment_rules
 
+    instructor_content_access_rules
+    # -------------------------------------------------
+
     can :read, Review
     can :create, Comment
     can :destroy, Comment, user_id: @user.id
@@ -73,18 +76,29 @@ class Ability
     cannot [:approve, :reject], Enrollment
   end
 
+  def instructor_content_access_rules
+    can :access_content, Course, created_by: @user.id
+
+    can :access_content, Course do |course|
+      @user.enrollments.active.exists?(course_id: course.id)
+    end
+  end
+
   #############################################################
   # Student
   #############################################################
   def student_rules
-    can :read, [Course, Category]
+    can :read, [Category]
+    can :read, Course
+
     can :create, [Review, Comment]
     can :destroy, Review, user_id: @user.id
     can :destroy, Comment, user_id: @user.id
 
-    can :read, Lesson do |lesson|
-      @user.can_access_course?(lesson.course)
+    can :access_content, Course do |course|
+      @user.enrollments.active.exists?(course_id: course.id)
     end
+    # ---------------------------------------
 
     can :create, InstructorProfile do
       !@user.instructor_profile&.persisted?

@@ -34,7 +34,7 @@ class User < ApplicationRecord
   has_one :wallet, dependent: :destroy
   has_many :quiz_attempts, dependent: :destroy
   has_many :progress_trackings, dependent: :destroy
-
+  has_many :payout_requests, dependent: :destroy
   has_many :created_courses, class_name: Course.name, foreign_key: :created_by,
 dependent: :nullify
   has_many :created_quizzes, class_name: Quiz.name, foreign_key: :created_by,
@@ -74,6 +74,7 @@ foreign_key: :created_by, dependent: :nullify
   def generate_activation_token
     signed_id(purpose: :account_activation, expires_in: 24.hours)
   end
+
   private
 
   def build_default_profile

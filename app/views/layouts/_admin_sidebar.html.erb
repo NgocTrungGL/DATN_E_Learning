@@ -62,7 +62,12 @@
         <i class="bi bi-cash-coin"></i> Duyệt Ghi danh
       <% end %>
     </li>
-
+    <li>
+      <%= link_to admin_payouts_path, class: "#{'active' if controller_name == 'payouts'}" do %>
+        <i class="bi bi-bank2 text-danger"></i>
+        <span>Yêu cầu rút tiền</span>
+      <% end %>
+    </li>
     <li>
       <%= link_to admin_instructors_path, class: "#{'active' if controller_name == 'instructors'}" do %>
         <i class="bi bi-person-lines-fill"></i> Duyệt Giảng viên
