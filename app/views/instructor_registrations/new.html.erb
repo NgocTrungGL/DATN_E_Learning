@@ -6,29 +6,43 @@
     <div class="card-body">
       <%= form_with(model: @profile, url: instructor_registration_path, local: true) do |f| %>
 
+        <% if @profile.errors.any? %>
+          <div class="alert alert-danger">
+            <ul>
+              <% @profile.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
         <div class="mb-3">
-          <%= f.label :bio_detailed, "Giới thiệu kinh nghiệm giảng dạy", class: "form-label" %>
-          <%= f.text_area :bio_detailed, rows: 5, class: "form-control", required: true %>
+          <%= f.label :bio_detailed, "Giới thiệu kinh nghiệm giảng dạy", class: "form-label fw-bold" %>
+          <%= f.text_area :bio_detailed, rows: 5, class: "form-control", required: true, placeholder: "Hãy kể về kinh nghiệm và chuyên môn của bạn..." %>
         </div>
 
         <div class="row">
           <div class="col-md-6 mb-3">
-            <%= f.label :phone, "Số điện thoại", class: "form-label" %>
+            <%= f.label :phone, "Số điện thoại", class: "form-label fw-bold" %>
             <%= f.text_field :phone, class: "form-control", required: true %>
           </div>
           <div class="col-md-6 mb-3">
-            <%= f.label :linkedin_url, "LinkedIn Profile", class: "form-label" %>
-            <%= f.text_field :linkedin_url, class: "form-control" %>
+            <%= f.label :linkedin_url, "LinkedIn Profile", class: "form-label fw-bold" %>
+            <%= f.text_field :linkedin_url, class: "form-control", placeholder: "https://linkedin.com/in/..." %>
           </div>
         </div>
 
         <div class="mb-3">
-          <%= f.label :cv_url, "Link CV (Google Drive/Dropbox)", class: "form-label" %>
+          <%= f.label :cv_url, "Link CV (Google Drive/Dropbox)", class: "form-label fw-bold" %>
           <%= f.text_field :cv_url, class: "form-control", required: true, placeholder: "https://..." %>
-          <div class="form-text">Hãy chắc chắn link này ở chế độ công khai.</div>
+          <div class="form-text text-muted">Vui lòng đảm bảo link ở chế độ công khai (Public).</div>
         </div>
 
-        <button type="submit" class="btn btn-success w-100 fw-bold">Gửi đơn đăng ký</button>
+        <div class="d-grid mt-4">
+          <button type="submit" class="btn btn-success btn-lg fw-bold">
+            <i class="bi bi-send-check-fill me-2"></i> Gửi đơn đăng ký
+          </button>
+        </div>
       <% end %>
     </div>
   </div>

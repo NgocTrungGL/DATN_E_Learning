@@ -71,6 +71,13 @@ Rails.application.routes.draw do
       resources :quiz_questions, only: [:create], shallow: false
     end
     resources :quiz_questions, only: [:destroy]
+
+    resources :instructors, only: [:index, :show] do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
   end
 
   # --- INSTRUCTOR ---
