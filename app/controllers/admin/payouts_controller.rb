@@ -8,29 +8,13 @@ class Admin::PayoutsController < Admin::BaseController
   end
 
   def approve
-    @payout = PayoutRequest.find(params[:id])
-    authorize! :update, @payout
+    payout = find_and_authorize_payout
+    return insufficient_balance_redirect if insufficient_balance?(payout)
 
-    if @payout.user.wallet.balance < @payout.amount
-      redirect_back fallback_location: admin_payouts_path,
-                    alert: "Số dư giảng viên không đủ."
-      return
-    end
-
-    ActiveRecord::Base.transaction do
-      @payout.approved!
-      WalletTransaction.create!(
-        wallet: @payout.user.wallet,
-        amount: -@payout.amount,
-        transaction_type: :withdrawal,
-        source: @payout
-      )
-    end
-    redirect_back fallback_location: admin_payouts_path,
-                  notice: "Đã duyệt yêu cầu."
+    approve_payout!(payout)
+    success_redirect
   rescue StandardError => e
-    redirect_back fallback_location: admin_payouts_path,
-                  alert: "Lỗi: #{e.message}"
+    error_redirect(e)
   end
 
   def reject
@@ -43,5 +27,47 @@ class Admin::PayoutsController < Admin::BaseController
       redirect_back fallback_location: admin_payouts_path,
                     alert: "Lỗi hệ thống."
     end
+  end
+  private
+
+  def find_and_authorize_payout
+    payout = PayoutRequest.find(params[:id])
+    authorize! :update, payout
+    payout
+  end
+
+  def insufficient_balance? payout
+    payout.user.wallet.balance < payout.amount
+  end
+
+  def insufficient_balance_redirect
+    redirect_back fallback_location: admin_payouts_path,
+                  alert: "Số dư giảng viên không đủ."
+  end
+
+  def approve_payout! payout
+    ActiveRecord::Base.transaction do
+      payout.approved!
+      create_wallet_transaction(payout)
+    end
+  end
+
+  def create_wallet_transaction payout
+    WalletTransaction.create!(
+      wallet: payout.user.wallet,
+      amount: -payout.amount,
+      transaction_type: :withdrawal,
+      source: payout
+    )
+  end
+
+  def success_redirect
+    redirect_back fallback_location: admin_payouts_path,
+                  notice: "Đã duyệt yêu cầu."
+  end
+
+  def error_redirect error
+    redirect_back fallback_location: admin_payouts_path,
+                  alert: "Lỗi: #{error.message}"
   end
 end

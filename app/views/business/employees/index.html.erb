@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold text-primary"><i class="bi bi-people me-2"></i>Danh sách nhân viên</h2>
+  <%= link_to new_business_employee_path, class: "btn btn-primary shadow-sm" do %>
+    <i class="bi bi-person-plus-fill me-2"></i> Thêm nhân viên mới
+  <% end %>
+</div>
+
+<div class="card shadow border-0">
+  <div class="card-body p-0">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="bg-light text-uppercase small fw-bold">
+        <tr>
+          <th class="px-4 py-3">Họ và tên</th>
+          <th class="py-3">Email đăng nhập</th>
+          <th class="py-3">Ngày tham gia</th>
+          <th class="py-3 text-end px-4">Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @employees.any? %>
+          <% @employees.each do |emp| %>
+            <tr>
+              <td class="px-4">
+                <div class="d-flex align-items-center">
+                  <img src="https://ui-avatars.com/api/?name=<%= emp.name %>&background=random" class="rounded-circle me-3" width="40">
+                  <span class="fw-bold"><%= emp.name %></span>
+                </div>
+              </td>
+              <td><%= emp.email %></td>
+              <td><%= emp.created_at.strftime("%d/%m/%Y") %></td>
+              <td class="text-end px-4">
+                <%= link_to "Sửa", edit_business_employee_path(emp), class: "btn btn-sm btn-outline-secondary me-1" %>
+                <%= link_to "Xóa", business_employee_path(emp), data: { turbo_method: :delete, turbo_confirm: "Bạn chắc chắn muốn xóa nhân viên này?" }, class: "btn btn-sm btn-outline-danger" %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="4" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+              Chưa có nhân viên nào. Hãy thêm nhân viên đầu tiên!
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

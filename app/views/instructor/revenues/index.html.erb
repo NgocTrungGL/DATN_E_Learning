@@ -41,7 +41,14 @@
       </div>
     </div>
   </div>
-
+  <div class="card shadow border-0 mb-4">
+    <div class="card-header py-3 bg-white">
+      <h6 class="m-0 fw-bold text-success">Biểu đồ thu nhập (30 ngày qua)</h6>
+    </div>
+    <div class="card-body">
+      <%= column_chart @income_chart_data, prefix: "₫", thousands: ",", colors: ["#1cc88a"], height: "300px", empty: "Bạn chưa có doanh thu trong 30 ngày qua" %>
+    </div>
+  </div>
   <div class="card shadow border-0">
     <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
       <h6 class="m-0 fw-bold text-primary">Lịch sử biến động số dư</h6>

@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for resource
     if resource.admin?
       admin_courses_path
+    elsif resource.company_admin?
+      business_root_path
     elsif resource.instructor?
       root_path
     else

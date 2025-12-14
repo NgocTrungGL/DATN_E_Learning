@@ -3,3 +3,5 @@ import "controllers";
 import "bootstrap";
 import "popper";
 import "bootstrap";
+import "Chart.bundle";
+import "chartkick"; // 3. Tải Chartkick cuối cùng

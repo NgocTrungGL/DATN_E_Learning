@@ -4,7 +4,6 @@ class Instructor::PayoutsController < Instructor::BaseController
     @payout = current_user.payout_requests.new(payout_params)
 
     if @payout.save
-      # Gửi email thông báo cho Admin ở đây nếu cần
       redirect_to instructor_revenues_path,
                   notice: "Yêu cầu đã được gửi. Vui lòng chờ Admin xử lý."
     else

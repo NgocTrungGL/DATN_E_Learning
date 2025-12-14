@@ -2,38 +2,40 @@ class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    payload = request.body.read
-    sig_header = request.env["HTTP_STRIPE_SIGNATURE"]
-    event = nil
+    event = build_stripe_event
+    return head :bad_request unless event
 
-    endpoint_secret = ENV["STRIPE_SIGNING_SECRET"]
-
-    begin
-      event = Stripe::Webhook.construct_event(
-        payload, sig_header, endpoint_secret
-      )
-    rescue JSON::ParserError
-      return head :bad_request
-    rescue Stripe::SignatureVerificationError
-      return head :bad_request
-    end
-
-    if event["type"] == "checkout.session.completed"
-      session = event["data"]["object"]
-
-      enrollment_id = session["metadata"]["enrollment_id"]
-
-      enrollment = Enrollment.find_by(id: enrollment_id)
-
-      if enrollment && !enrollment.active?
-        ActiveRecord::Base.transaction do
-          enrollment.update!(status: :active)
-
-          DistributeRevenueService.new(enrollment).perform
-        end
-      end
-    end
+    handle_event(event)
 
     head :ok
+  end
+
+  private
+
+  def build_stripe_event
+    Stripe::Webhook.construct_event(
+      request.body.read,
+      request.env["HTTP_STRIPE_SIGNATURE"],
+      ENV["STRIPE_SIGNING_SECRET"]
+    )
+  rescue JSON::ParserError, Stripe::SignatureVerificationError
+    nil
+  end
+
+  def handle_event event
+    return unless event["type"] == "checkout.session.completed"
+
+    session = event["data"]["object"]
+    activate_enrollment(session["metadata"]["enrollment_id"])
+  end
+
+  def activate_enrollment enrollment_id
+    enrollment = Enrollment.find_by(id: enrollment_id)
+    return unless enrollment && !enrollment.active?
+
+    ActiveRecord::Base.transaction do
+      enrollment.update!(status: :active)
+      DistributeRevenueService.new(enrollment).perform
+    end
   end
 end

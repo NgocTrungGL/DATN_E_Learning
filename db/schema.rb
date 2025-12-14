@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_11_085915) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_15_160146) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -95,6 +95,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_11_085915) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_module_id"], name: "index_lessons_on_course_module_id"
+  end
+
+  create_table "organizations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.string "domain"
+    t.integer "plan"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["domain"], name: "index_organizations_on_domain", unique: true
+    t.index ["name"], name: "index_organizations_on_name", unique: true
   end
 
   create_table "payout_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -242,8 +252,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_11_085915) do
     t.datetime "remember_created_at"
     t.string "confirmation_token"
     t.datetime "confirmation_sent_at"
+    t.bigint "organization_id"
+    t.string "unconfirmed_email"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -298,6 +311,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_11_085915) do
   add_foreign_key "quizzes", "users", column: "created_by"
   add_foreign_key "reviews", "courses"
   add_foreign_key "reviews", "users"
+  add_foreign_key "users", "organizations"
   add_foreign_key "wallet_transactions", "wallets"
   add_foreign_key "wallets", "users"
 end

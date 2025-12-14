@@ -1,0 +1,23 @@
+<% flash.each do |type, message| %>
+  <%
+    # Chuyển đổi loại thông báo của Rails sang class màu của Bootstrap
+    alert_class = case type.to_s
+      when 'notice' then 'success'  # Màu xanh
+      when 'alert'  then 'danger'   # Màu đỏ
+      when 'error'  then 'danger'   # Màu đỏ
+      else 'info'                   # Màu xanh dương
+    end
+  %>
+
+  <div class="alert alert-<%= alert_class %> alert-dismissible fade show mb-3 shadow-sm" role="alert">
+    <% if type.to_s == 'notice' %>
+      <i class="bi bi-check-circle-fill me-2"></i>
+    <% elsif type.to_s == 'alert' %>
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <% end %>
+
+    <%= message %>
+
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

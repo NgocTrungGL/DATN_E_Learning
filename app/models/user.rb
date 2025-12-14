@@ -1,8 +1,11 @@
 class User < ApplicationRecord
+  belongs_to :organization, optional: true
   enum role: {
     admin: "admin",
     instructor: "instructor",
-    student: "student"
+    student: "student",
+    company_admin: "company_admin",
+    employee: "employee"
   }
   has_one :profile, dependent: :destroy
   has_one :instructor_profile, dependent: :destroy
