@@ -1,0 +1,81 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold">Quản lý bài kiểm tra</h2>
+      <p class="text-muted">Danh sách các đề thi bạn đã tạo.</p>
+    </div>
+    <%= link_to new_instructor_quiz_path, class: "btn btn-primary" do %>
+      <i class="bi bi-plus-lg"></i> Tạo bài kiểm tra mới
+    <% end %>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">Tên bài thi</th>
+              <th>Khóa học / Bài học</th>
+              <th class="text-center">Cấu hình</th>
+              <th class="text-center">Trạng thái</th>
+              <th class="text-end pe-4">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @quizzes.any? %>
+              <% @quizzes.each do |quiz| %>
+                <tr>
+                  <td class="ps-4">
+                    <div class="fw-bold"><%= quiz.title %></div>
+                    <small class="text-muted d-block text-truncate" style="max-width: 250px;">
+                      <%= quiz.description.presence || "Không có mô tả" %>
+                    </small>
+                  </td>
+                  <td>
+                    <div><%= quiz.course.title %></div>
+                    <% if quiz.lesson %>
+                      <span class="badge bg-light text-dark border mt-1">
+                        Bài: <%= quiz.lesson.title %>
+                      </span>
+                    <% else %>
+                      <small class="text-muted fst-italic">Chung cho khóa học</small>
+                    <% end %>
+                  </td>
+                  <td class="text-center">
+                    <div class="small">
+                      <div><b><%= quiz.total_questions %></b> câu hỏi</div>
+                      <div><b><%= quiz.time_limit || "∞" %></b> phút</div>
+                      <div>Đạt: <b><%= quiz.pass_score %>%</b></div>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <% if quiz.random_mode %>
+                      <span class="badge bg-success">Ngẫu nhiên</span>
+                    <% else %>
+                      <span class="badge bg-secondary">Cố định</span>
+                    <% end %>
+                  </td>
+                  <td class="text-end pe-4">
+                    <%= link_to "Sửa", edit_instructor_quiz_path(quiz), class: "btn btn-sm btn-outline-primary me-1" %>
+                    <%= link_to "Xóa", instructor_quiz_path(quiz), data: { turbo_method: :delete, turbo_confirm: "Bạn có chắc muốn xóa?" }, class: "btn btn-sm btn-outline-danger" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="5" class="text-center py-5">
+                  <div class="text-muted">
+                    <h5>Chưa có dữ liệu</h5>
+                    <p>Bạn chưa tạo bài kiểm tra nào.</p>
+                    <%= link_to "Tạo ngay", new_instructor_quiz_path, class: "btn btn-sm btn-primary mt-2" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
