@@ -1,0 +1,35 @@
+<div class="admin-topbar">
+  <div class="d-flex align-items-center text-secondary">
+    <i class="bi bi-list fs-4 d-lg-none me-3" id="sidebarCollapse"></i> <span class="fw-bold text-uppercase ls-1">Khu vực quản trị hệ thống</span>
+  </div>
+
+  <div class="d-flex align-items-center">
+
+    <%= link_to root_path, class: "btn btn-outline-secondary btn-sm me-4", target: "_blank" do %>
+      <i class="bi bi-box-arrow-up-right me-1"></i> Xem trang chủ
+    <% end %>
+
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" id="adminUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="https://ui-avatars.com/api/?name=<%= current_user.name %>&background=0d6efd&color=fff" alt="" width="35" height="35" class="rounded-circle me-2">
+        <div class="d-none d-sm-block">
+          <div class="fw-bold small"><%= current_user.name %></div>
+          <div class="text-muted" style="font-size: 0.7rem;">Administrator</div>
+        </div>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="adminUserDropdown">
+        <li>
+          <%= link_to edit_user_registration_path, class: "dropdown-item small py-2" do %>
+            <i class="bi bi-person me-2"></i> Hồ sơ cá nhân
+          <% end %>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-danger small py-2" do %>
+            <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+          <% end %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

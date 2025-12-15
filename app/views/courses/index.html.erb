@@ -32,21 +32,36 @@
                 <%= course.title %>
               </h6>
 
-              <small class="text-muted d-block mb-1"><%= course.creator&.name %></small>
+              <small class="text-muted d-block mb-1"><%= course.creator&.name || "Admin" %></small>
 
               <div class="mb-1">
-                <span class="text-warning fw-bold small">4.5</span>
-                <i class="bi bi-star-fill text-warning small"></i>
-                <i class="bi bi-star-fill text-warning small"></i>
-                <i class="bi bi-star-fill text-warning small"></i>
-                <i class="bi bi-star-fill text-warning small"></i>
-                <i class="bi bi-star-half text-warning small"></i>
-                <span class="text-muted small">(123)</span>
-              </div>
+                <% if course.reviews.present? && course.reviews.any? %>
+                  <%
+                     # Tính điểm trung bình
+                     avg_rating = course.reviews.average(:rating).to_f
+                     review_count = course.reviews.count
+                  %>
 
+                  <span class="text-warning fw-bold small"><%= avg_rating.round(1) %></span>
+
+                  <%# Vẽ sao dựa trên điểm trung bình %>
+                  <% 5.times do |i| %>
+                    <% if i < avg_rating.floor %>
+                      <i class="bi bi-star-fill text-warning small"></i> <% elsif (i == avg_rating.floor) && (avg_rating % 1 >= 0.5) %>
+                      <i class="bi bi-star-half text-warning small"></i> <% else %>
+                      <i class="bi bi-star text-warning small"></i> <% end %>
+                  <% end %>
+
+                  <span class="text-muted small">(<%= review_count %>)</span>
+                <% else %>
+                  <div class="text-muted small fst-italic py-1">
+                    <i class="bi bi-star"></i> Chưa có đánh giá
+                  </div>
+                <% end %>
+              </div>
               <div class="fw-bold">
                 <% if course.free? %>
-                  Miễn phí
+                  <span class="text-success">Miễn phí</span>
                 <% else %>
                   <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0) %>
                 <% end %>

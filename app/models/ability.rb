@@ -2,14 +2,14 @@ class Ability
   include CanCan::Ability
 
   def initialize user
-    user ||= User.new
+    @user = user || User.new
 
-    if user.admin?
+    if @user.admin?
       admin_rules
-    elsif user.instructor?
-      instructor_rules(user)
-    elsif user.student?
-      student_rules(user)
+    elsif @user.instructor?
+      instructor_rules
+    elsif @user.student?
+      student_rules
     else
       guest_rules
     end
@@ -17,79 +17,86 @@ class Ability
 
   private
 
+  #############################################################
+  # Admin
+  #############################################################
   def admin_rules
     can :manage, :all
     can :access, :admin_dashboard
   end
 
-  # --- INSTRUCTOR ---
-  def instructor_rules user
-    basic_instructor_access
-    category_rules
-    course_rules user
-    module_and_lesson_rules user
-    quiz_rules user
-    enrollment_rules user
+  #############################################################
+  # Instructor
+  #############################################################
+  def instructor_rules
+    instructor_basic_access
+    instructor_category_rules
+    instructor_course_rules
+    instructor_module_lesson_rules
+    instructor_quiz_rules
+    instructor_enrollment_rules
+
+    can :read, Review
+    can :create, Comment
+    can :destroy, Comment, user_id: @user.id
   end
 
-  def basic_instructor_access
+  def instructor_basic_access
     can :read, :all
     can :access, :instructor_dashboard
   end
 
-  def category_rules
+  def instructor_category_rules
     can :read, Category
     cannot [:create, :update, :destroy], Category
   end
 
-  def course_rules user
+  def instructor_course_rules
     can :create, Course
-    can [:update, :destroy], Course, created_by: user.id
+    can [:update, :destroy], Course, created_by: @user.id
   end
 
-  def module_and_lesson_rules user
-    can :manage, CourseModule,
-        course: {created_by: user.id}
-
-    can :manage, Lesson,
-        course_module: {course: {created_by: user.id}}
+  def instructor_module_lesson_rules
+    can :manage, CourseModule, course: {created_by: @user.id}
+    can :manage, Lesson, course_module: {course: {created_by: @user.id}}
   end
 
-  def quiz_rules user
-    can :manage, Quiz, created_by: user.id
+  def instructor_quiz_rules
+    can :manage, Quiz, created_by: @user.id
     can :create, Question
-    can [:read, :update, :destroy], Question,
-        created_by: user.id
-
-    can :manage, QuizQuestion,
-        quiz: {created_by: user.id}
+    can [:read, :update, :destroy], Question, created_by: @user.id
+    can :manage, QuizQuestion, quiz: {created_by: @user.id}
   end
 
-  def enrollment_rules user
-    can :read, Enrollment,
-        course: {created_by: user.id}
-
+  def instructor_enrollment_rules
+    can :read, Enrollment, course: {created_by: @user.id}
     cannot [:approve, :reject], Enrollment
   end
 
-  # --- STUDENT ---
-  def student_rules user
-    can :read, Course
-    can :read, Category
+  #############################################################
+  # Student
+  #############################################################
+  def student_rules
+    can :read, [Course, Category]
+    can :create, [Review, Comment]
+    can :destroy, Review, user_id: @user.id
+    can :destroy, Comment, user_id: @user.id
 
     can :read, Lesson do |lesson|
-      user.can_access_course?(lesson.course)
+      @user.can_access_course?(lesson.course)
     end
 
     can :create, InstructorProfile do
-      !user.instructor_profile&.persisted?
+      !@user.instructor_profile&.persisted?
     end
 
-    can :read, InstructorProfile, user_id: user.id
+    can :read, InstructorProfile, user_id: @user.id
   end
 
+  #############################################################
+  # Guest
+  #############################################################
   def guest_rules
-    can :read, Course
-    can :read, Category
+    can :read, [Course, Category]
   end
 end

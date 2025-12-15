@@ -1,0 +1,93 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 fw-bold text-gray-800 border-start border-4 border-warning ps-3">
+      Quản lý Đánh giá
+    </h2>
+    <div class="badge bg-light text-dark border p-2">
+      Tổng cộng: <%= @reviews.count %> đánh giá
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr class="text-uppercase text-secondary small fw-bold">
+              <th class="ps-4 py-3" style="width: 20%;">Học viên</th>
+              <th style="width: 25%;">Khóa học</th>
+              <th style="width: 15%;">Điểm số</th>
+              <th style="width: 25%;">Nội dung</th>
+              <th style="width: 15%;" class="text-end pe-4">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @reviews.each do |review| %>
+              <tr>
+                <td class="ps-4">
+                  <div class="d-flex align-items-center">
+                    <img src="https://ui-avatars.com/api/?name=<%= review.user.name %>&background=random" class="rounded-circle me-2" width="32" height="32">
+                    <div>
+                      <div class="fw-bold text-dark"><%= review.user.name %></div>
+                      <small class="text-muted" style="font-size: 0.8rem;"><%= review.user.email %></small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <span class="badge bg-info bg-opacity-10 text-info border border-info mb-1">
+                    ID: <%= review.course.id %>
+                  </span>
+                  <div class="fw-bold text-truncate" style="max-width: 200px;" title="<%= review.course.title %>">
+                    <%= review.course.title %>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="text-warning">
+                    <% review.rating.times do %>
+                      <i class="bi bi-star-fill"></i>
+                    <% end %>
+                    <% (5 - review.rating).times do %>
+                      <i class="bi bi-star text-muted opacity-25"></i>
+                    <% end %>
+                  </div>
+                  <small class="text-muted"><%= review.rating %>/5 điểm</small>
+                </td>
+
+                <td>
+                  <div class="bg-light p-2 rounded small text-secondary fst-italic">
+                    "<%= review.content.truncate(80) %>"
+                  </div>
+                  <small class="text-muted d-block mt-1">
+                    <%= time_ago_in_words(review.created_at) %> trước
+                  </small>
+                </td>
+
+                <td class="text-end pe-4">
+                  <%= link_to admin_review_path(review),
+                      data: { turbo_method: :delete, turbo_confirm: "CẢNH BÁO: Bạn có chắc chắn muốn xóa đánh giá này không?" },
+                      class: "btn btn-outline-danger btn-sm shadow-sm" do %>
+                    <i class="bi bi-trash-fill me-1"></i> Xóa
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+
+            <% if @reviews.empty? %>
+              <tr>
+                <td colspan="5" class="text-center py-5 text-muted">
+                  <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                  Chưa có đánh giá nào trong hệ thống.
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <%# <div class="card-footer bg-white border-top-0 d-flex justify-content-center pt-4"> %>
+      <%#= paginate @reviews %>
+    <%# </div> %>
+  </div>
+</div>

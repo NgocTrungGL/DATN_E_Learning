@@ -9,6 +9,14 @@
         <h1 class="display-4 fw-bold"><%= @course.title %></h1>
         <p class="lead"><%= @course.description %></p>
 
+        <div class="mb-3 text-warning">
+          <span class="fw-bold fs-5"><%= @course.reviews.average(:rating).to_f.round(1) %>/5</span>
+          <i class="bi bi-star-fill"></i>
+          <a href="#course-reviews" class="text-white-50 text-decoration-none ms-2 small">
+            (<%= @course.reviews.count %> đánh giá)
+          </a>
+        </div>
+
         <div class="mt-4">
           <% if current_user %>
             <%# --- TRƯỜNG HỢP 1: ĐÃ ĐĂNG NHẬP --- %>
@@ -99,10 +107,10 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-8">
+
       <h3 class="mb-4 border-bottom pb-2">Nội dung khóa học</h3>
 
-      <div class="accordion" id="accordionCourse">
-
+      <div class="accordion mb-5" id="accordionCourse">
         <% @course.course_modules.order(:order_index).each_with_index do |mod, index| %>
           <div class="accordion-item">
             <h2 class="accordion-header" id="heading<%= mod.id %>">
@@ -138,14 +146,13 @@
         <% if @big_quizzes.any? %>
           <% @big_quizzes.each do |quiz| %>
             <% accordion_id = "big_quiz_#{quiz.id}" %>
-
-            <div class="accordion-item border-warning mt-2"> <h2 class="accordion-header" id="heading_<%= accordion_id %>">
+            <div class="accordion-item border-warning mt-2">
+               <h2 class="accordion-header" id="heading_<%= accordion_id %>">
                 <button class="accordion-button collapsed bg-warning-subtle text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_<%= accordion_id %>">
                   <i class="bi bi-trophy-fill me-2 text-warning"></i>
                   Bài kiểm tra: <%= quiz.title %>
                 </button>
               </h2>
-
               <div id="collapse_<%= accordion_id %>" class="accordion-collapse collapse" data-bs-parent="#accordionCourse">
                 <div class="accordion-body bg-light">
                   <div class="row align-items-center">
@@ -157,7 +164,6 @@
                         <span><i class="bi bi-bullseye"></i> Đạt: <%= quiz.pass_score %>%</span>
                       </div>
                     </div>
-
                     <div class="col-md-4 text-end mt-3 mt-md-0">
                       <% if current_user && current_user.can_access_course?(@course) %>
                         <% if current_user.quiz_completed?(quiz) %>
@@ -181,9 +187,32 @@
             </div>
           <% end %>
         <% end %>
-        </div>
-    </div>
+      </div>
 
+      <div id="course-reviews" class="mt-5">
+
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+          <h3 class="mb-0">Đánh giá từ học viên</h3>
+
+          <% if user_signed_in? %>
+            <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#reviewModal">
+              <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
+            </button>
+
+            <%= render "review_modal", course: @course %>
+
+          <% else %>
+            <%= link_to login_path, class: "btn btn-outline-secondary btn-sm" do %>
+              Đăng nhập để đánh giá
+            <% end %>
+          <% end %>
+        </div>
+
+        <%= render "reviews_list", reviews: @course.reviews.recent %>
+
+      </div>
+
+    </div>
     <div class="col-lg-4">
       <div class="card shadow-sm mb-4 border-0">
         <div class="card-body">

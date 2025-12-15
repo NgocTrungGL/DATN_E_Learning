@@ -1,0 +1,78 @@
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <%= link_to admin_dashboard_path, class: "text-white text-decoration-none fs-5 fw-bold d-flex align-items-center" do %>
+      <i class="bi bi-shield-lock-fill text-warning fs-3 me-2"></i>
+      <span>ADMIN PORTAL</span>
+    <% end %>
+  </div>
+
+  <ul class="list-unstyled components">
+    <li>
+      <%= link_to admin_dashboard_path, class: "#{'active' if controller_name == 'dashboard'}" do %>
+        <i class="bi bi-speedometer2"></i> Dashboard
+      <% end %>
+    </li>
+
+    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Nội dung đào tạo</li>
+
+    <li>
+      <%= link_to admin_courses_path, class: "#{'active' if controller_name == 'courses'}" do %>
+        <i class="bi bi-collection-play"></i> Khóa học
+      <% end %>
+    </li>
+
+    <li>
+      <%= link_to admin_categories_path, class: "#{'active' if controller_name == 'categories'}" do %>
+        <i class="bi bi-tags"></i> Danh mục
+      <% end %>
+    </li>
+
+    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Kiểm tra & Đánh giá</li>
+
+    <li>
+      <%= link_to admin_quizzes_path, class: "#{'active' if controller_name == 'quizzes'}" do %>
+        <i class="bi bi-card-checklist"></i> Bài kiểm tra
+      <% end %>
+    </li>
+
+    <li>
+      <%= link_to admin_questions_path, class: "#{'active' if controller_name == 'questions'}" do %>
+        <i class="bi bi-question-square"></i> Ngân hàng câu hỏi
+      <% end %>
+    </li>
+
+    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Tương tác & Cộng đồng</li>
+
+    <li>
+      <%= link_to admin_reviews_path, class: "#{'active' if controller_name == 'reviews'}" do %>
+        <i class="bi bi-star"></i> Đánh giá (Reviews)
+      <% end %>
+    </li>
+
+    <li>
+      <%= link_to admin_comments_path, class: "#{'active' if controller_name == 'comments'}" do %>
+        <i class="bi bi-chat-dots"></i> Hỏi đáp (Comments)
+      <% end %>
+    </li>
+
+    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Người dùng & Tài chính</li>
+
+    <li>
+      <%= link_to admin_enrollments_path, class: "#{'active' if controller_name == 'enrollments'}" do %>
+        <i class="bi bi-cash-coin"></i> Duyệt Ghi danh
+      <% end %>
+    </li>
+
+    <li>
+      <%= link_to admin_instructors_path, class: "#{'active' if controller_name == 'instructors'}" do %>
+        <i class="bi bi-person-lines-fill"></i> Duyệt Giảng viên
+      <% end %>
+    </li>
+
+    <li>
+      <%= link_to admin_users_path, class: "#{'active' if controller_name == 'users'}" do %>
+        <i class="bi bi-people-fill"></i> Người dùng hệ thống
+      <% end %>
+    </li>
+  </ul>
+</nav>

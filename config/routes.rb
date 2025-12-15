@@ -14,6 +14,13 @@ Rails.application.routes.draw do
   resources :my_courses, only: [:index]
 
   resources :categories, only: [:index, :show]
+  resources :courses do
+    resources :reviews, only: [:create, :destroy]
+  end
+
+  resources :lessons do
+    resources :comments, only: [:create, :destroy]
+  end
   resources :courses, only: [:index, :show] do
     resources :enrollments, only: [:create]
   end
@@ -30,8 +37,10 @@ Rails.application.routes.draw do
 
   # --- ADMIN ---
   namespace :admin do
+    get 'dashboard', to: 'dashboard#index'
     resources :users, only: [:index, :show, :update, :destroy]
-
+    resources :reviews, only: [:index, :destroy]
+    resources :comments, only: [:index, :destroy]
     # Quản lý giảng viên
     resources :instructor_profiles,
               path: "instructors",
