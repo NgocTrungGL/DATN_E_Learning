@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_01_045928) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_06_065316) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -130,11 +130,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_01_045928) do
     t.text "question_text", null: false
     t.string "question_type", default: "single"
     t.string "difficulty", default: "medium"
-    t.bigint "creator_id"
+    t.bigint "created_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_questions_on_course_id"
-    t.index ["creator_id"], name: "index_questions_on_creator_id"
+    t.index ["created_by"], name: "index_questions_on_created_by"
     t.index ["lesson_id"], name: "index_questions_on_lesson_id"
   end
 
@@ -181,13 +181,13 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_01_045928) do
     t.text "description"
     t.integer "total_questions", default: 10
     t.integer "time_limit"
-    t.bigint "creator_id"
+    t.bigint "created_by"
     t.integer "pass_score", default: 70
     t.boolean "random_mode", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_quizzes_on_course_id"
-    t.index ["creator_id"], name: "index_quizzes_on_creator_id"
+    t.index ["created_by"], name: "index_quizzes_on_created_by"
     t.index ["lesson_id"], name: "index_quizzes_on_lesson_id"
   end
 
@@ -226,7 +226,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_01_045928) do
   add_foreign_key "question_options", "questions"
   add_foreign_key "questions", "courses"
   add_foreign_key "questions", "lessons"
-  add_foreign_key "questions", "users", column: "creator_id"
+  add_foreign_key "questions", "users", column: "created_by"
   add_foreign_key "quiz_answers", "question_options"
   add_foreign_key "quiz_answers", "questions"
   add_foreign_key "quiz_answers", "quiz_attempts"
@@ -236,5 +236,5 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_01_045928) do
   add_foreign_key "quiz_questions", "quizzes"
   add_foreign_key "quizzes", "courses"
   add_foreign_key "quizzes", "lessons"
-  add_foreign_key "quizzes", "users", column: "creator_id"
+  add_foreign_key "quizzes", "users", column: "created_by"
 end

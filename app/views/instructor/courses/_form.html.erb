@@ -1,0 +1,39 @@
+<%= form_with(model: [:instructor, @course]) do |f| %>
+  <% if @course.errors.any? %>
+    <div class="alert alert-danger">
+      <ul><% @course.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %></ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= f.label :title, "Tên khóa học", class: "form-label fw-bold" %>
+    <%= f.text_field :title, class: "form-control", required: true %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :description, "Mô tả", class: "form-label fw-bold" %>
+    <%= f.text_area :description, rows: 3, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :thumbnail_url, "Link Ảnh bìa", class: "form-label fw-bold" %>
+    <%= f.text_field :thumbnail_url, class: "form-control" %>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :category_id, "Danh mục", class: "form-label fw-bold" %>
+      <%= f.collection_select :category_id, Category.all, :id, :name, { include_blank: "Chọn danh mục" }, { class: "form-select", required: true } %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :price, "Giá bán (VND)", class: "form-label fw-bold" %>
+      <div class="input-group">
+        <span class="input-group-text">₫</span>
+        <%= f.number_field :price, class: "form-control", step: 1000, min: 0 %>
+      </div>
+      <div class="form-text">Nhập 0 để miễn phí.</div>
+    </div>
+  </div>
+  <div class="mt-4">
+    <%= f.submit "Lưu Khóa Học", class: "btn btn-primary fw-bold" %>
+    <%= link_to "Hủy", instructor_courses_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

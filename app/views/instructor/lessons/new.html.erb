@@ -1,0 +1,50 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="card shadow-sm sticky-top" style="top: 20px; z-index: 1;">
+      <div class="card-header bg-white py-3">
+        <h5 class="mb-0 text-primary"><i class="bi bi-file-play"></i> Thêm Bài Học</h5>
+        <small>Chương: <strong><%= @course_module.title %></strong></small>
+      </div>
+      <div class="card-body">
+        <%= form_with(model: [:instructor, @course_module, @lesson]) do |f| %>
+          <div class="mb-3">
+            <%= f.label :title, "Tên bài học", class: "form-label fw-bold" %>
+            <%= f.text_field :title, class: "form-control", autofocus: true %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :description, "Nội dung", class: "form-label" %>
+            <%= f.text_area :description, rows: 3, class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :video_url, "Link Video (YouTube)", class: "form-label fw-bold" %>
+            <%= f.text_field :video_url, class: "form-control" %>
+          </div>
+          <%= f.hidden_field :order_index %>
+          <div class="d-grid gap-2 mt-4">
+            <%= f.submit "Lưu & Thêm tiếp", class: "btn btn-primary fw-bold" %>
+            <%= link_to "Quay lại Khóa học", instructor_course_path(@course_module.course), class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 mt-4 mt-md-0">
+    <h5 class="mb-3 text-secondary">Danh sách bài học (Kéo thả)</h5>
+    <div class="list-group shadow-sm"
+         data-controller="sortable"
+         data-sortable-url-value="<%= sort_instructor_lessons_path %>"> <% @lessons.each do |l| %>
+        <div class="list-group-item d-flex align-items-center p-3" data-id="<%= l.id %>">
+          <div class="drag-handle me-3 text-muted" style="cursor: grab;"><i class="bi bi-grip-vertical fs-4"></i></div>
+          <div class="me-3 text-center" style="width: 30px;">
+            <i class="bi <%= l.video_url.present? ? 'bi-play-circle-fill text-danger' : 'bi-file-text-fill text-primary' %> fs-4"></i>
+          </div>
+          <div class="flex-grow-1 text-truncate"><%= l.title %></div>
+          <div class="btn-group">
+            <%= link_to edit_instructor_lesson_path(l), class: "btn btn-sm btn-light text-primary" do %><i class="bi bi-pencil"></i><% end %>
+            <%= button_to instructor_lesson_path(l), method: :delete, class: "btn btn-sm btn-light text-danger", data: { confirm: "Xóa?" } do %><i class="bi bi-trash"></i><% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

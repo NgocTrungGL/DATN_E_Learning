@@ -80,18 +80,36 @@ Rails.application.routes.draw do
     end
   end
 
-  # --- INSTRUCTOR ---
+# ==================================================
+  # 5. INSTRUCTOR NAMESPACE (GIẢNG VIÊN)
+  # ==================================================
   namespace :instructor do
     root to: "dashboard#index"
+
+    # 1. Quản lý Khóa học & Nội dung lồng nhau
     resources :courses do
       get :students, on: :member
+
       resources :course_modules, shallow: true do
-        collection { patch :sort }
+        # XÓA collection { patch :sort } Ở ĐÂY
         resources :lessons, shallow: true do
-          collection { patch :sort }
+          # XÓA collection { patch :sort } Ở ĐÂY
         end
       end
     end
+
+    # 2. Route Sắp xếp (Đưa ra ngoài để có helper ngắn gọn)
+    # Helper: sort_instructor_course_modules_path
+    resources :course_modules, only: [] do
+      collection { patch :sort }
+    end
+
+    # Helper: sort_instructor_lessons_path
+    resources :lessons, only: [] do
+      collection { patch :sort }
+    end
+
+    # 3. Quản lý Quiz & Câu hỏi
     resources :questions
     resources :quizzes do
       resources :quiz_questions, only: [:create], shallow: false
