@@ -2,7 +2,8 @@ class Instructor::CoursesController < Instructor::BaseController
   load_and_authorize_resource
 
   def index
-    @courses = current_user.created_courses.order(created_at: :desc)
+    @pagy, @courses = pagy(current_user
+    .created_courses.order(created_at: :desc))
   end
 
   def show

@@ -86,8 +86,15 @@
         </table>
       </div>
     </div>
-    <%# <div class="card-footer bg-white border-top-0 d-flex justify-content-center pt-4"> %>
-      <%#= paginate @reviews %>
-    <%# </div> %>
   </div>
 </div>
+<% if @pagy.pages > 1 %>
+  <div class="d-flex justify-content-center mt-4">
+    <%== pagy_bootstrap_nav(@pagy) %>
+  </div>
+
+  <div class="text-center text-muted small mt-2">
+    Hiển thị <b><%= @pagy.items %></b> đánh giá / trang
+    (Tổng <b><%= @pagy.count %></b> đánh giá)
+  </div>
+<% end %>

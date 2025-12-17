@@ -3,9 +3,11 @@ class Instructor::QuestionsController < Instructor::BaseController
   skip_load_resource only: :index
 
   def index
-    @questions = current_user.created_questions
-                             .includes(:course, :lesson)
-                             .order(created_at: :desc)
+    @pagy, @questions = pagy(
+      current_user.created_questions
+                  .includes(:course, :lesson)
+                  .order(created_at: :desc)
+    )
   end
 
   def show; end

@@ -38,3 +38,13 @@
     </tbody>
   </table>
 </div>
+<% if @pagy.pages > 1 %>
+  <div class="d-flex justify-content-center mt-4">
+    <%== pagy_bootstrap_nav(@pagy) %>
+  </div>
+
+  <div class="text-center text-muted small mt-2">
+    Hiển thị <b><%= @pagy.items %></b> danh mục / trang
+    (Tổng <b><%= @pagy.count %></b> danh mục)
+  </div>
+<% end %>

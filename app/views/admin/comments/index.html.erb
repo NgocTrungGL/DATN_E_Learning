@@ -98,3 +98,13 @@
     </div>
   </div>
 </div>
+<% if @pagy.pages > 1 %>
+  <div class="d-flex justify-content-center mt-4">
+    <%== pagy_bootstrap_nav(@pagy) %>
+  </div>
+
+  <div class="text-center text-muted small mt-2">
+    Hiển thị <b><%= @pagy.items %></b> bình luận / trang
+    (Tổng <b><%= @pagy.count %></b> bình luận)
+  </div>
+<% end %>
