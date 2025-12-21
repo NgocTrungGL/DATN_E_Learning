@@ -61,12 +61,22 @@ Rails.application.routes.draw do
     end
 
     resources :categories
+
+    # 1. ADMIN TỰ TẠO/SỬA KHÓA HỌC CỦA MÌNH
     resources :courses do
       member do
         get :lessons
       end
       resources :course_modules, shallow: true do
         resources :lessons, shallow: true
+      end
+    end
+
+    # 2. ADMIN DUYỆT KHÓA HỌC CỦA GIẢNG VIÊN (MỚI)
+    resources :course_reviews, only: [:index] do
+      member do
+        patch :approve
+        patch :reject
       end
     end
 
@@ -82,14 +92,6 @@ Rails.application.routes.draw do
       resources :quiz_questions, only: [:create], shallow: false
     end
     resources :quiz_questions, only: [:destroy]
-
-    # Route cũ instructor (nếu bạn muốn giữ để xem danh sách chung)
-    resources :instructors, only: [:index, :show] do
-      member do
-        patch :approve
-        patch :reject
-      end
-    end
   end
 
   # --- INSTRUCTOR NAMESPACE (GIẢNG VIÊN) ---
@@ -100,7 +102,11 @@ Rails.application.routes.draw do
     resources :quizzes
 
     resources :courses do
-      get :students, on: :member
+      member do
+        get :students
+        patch :submit_for_review # <--- (MỚI) Giảng viên gửi duyệt
+      end
+
       resources :course_modules, shallow: true do
         resources :lessons, shallow: true
       end

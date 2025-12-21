@@ -22,14 +22,13 @@ class Ability
   private
 
   #############################################################
-  # HELPER:
+  # HELPER
   #############################################################
   def can_access_course_content
     can :access_content, Course do |course|
       has_enrollment = @user.enrollments.active.exists?(course_id: course.id)
       has_license = @user.licenses.exists?(course_id: course.id,
                                            status: :assigned)
-
       is_creator = (course.created_by == @user.id)
 
       has_enrollment || has_license || is_creator
@@ -38,9 +37,7 @@ class Ability
 
   def common_interaction_rules
     can :read, [Category, Course, Review, Comment]
-
     can :create, [Review, Comment]
-
     can :destroy, Review, user_id: @user.id
     can :destroy, Comment, user_id: @user.id
   end
@@ -65,7 +62,6 @@ class Ability
     instructor_enrollment_rules
 
     can_access_course_content
-
     common_interaction_rules
   end
 
@@ -81,7 +77,7 @@ class Ability
 
   def instructor_course_rules
     can :create, Course
-    can [:update, :destroy], Course, created_by: @user.id
+    can [:update, :destroy, :submit_for_review], Course, created_by: @user.id
   end
 
   def instructor_module_lesson_rules
@@ -106,10 +102,9 @@ class Ability
   #############################################################
   def business_rules
     common_interaction_rules
-
     can :access, :business_dashboard
-
     can :manage, Organization, user_id: @user.id
+
     if @user.organization
       can :read, License, organization_id: @user.organization.id
       can :update, License, organization_id: @user.organization.id
@@ -123,9 +118,7 @@ class Ability
   #############################################################
   def b2b_rules
     common_interaction_rules
-
     can_access_course_content
-
     cannot :access,
            [:admin_dashboard, :instructor_dashboard, :business_dashboard]
   end
@@ -135,7 +128,6 @@ class Ability
   #############################################################
   def student_rules
     common_interaction_rules
-
     can_access_course_content
 
     can :create, InstructorProfile do
