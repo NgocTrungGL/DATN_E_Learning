@@ -2,17 +2,17 @@ class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    event = build_stripe_event
+    event = construct_event
     return head :bad_request unless event
 
-    handle_event(event)
+    handle_checkout_completed(event) if checkout_completed?(event)
 
     head :ok
   end
 
   private
 
-  def build_stripe_event
+  def construct_event
     Stripe::Webhook.construct_event(
       request.body.read,
       request.env["HTTP_STRIPE_SIGNATURE"],
@@ -22,20 +22,48 @@ class WebhooksController < ApplicationController
     nil
   end
 
-  def handle_event event
-    return unless event["type"] == "checkout.session.completed"
-
-    session = event["data"]["object"]
-    activate_enrollment(session["metadata"]["enrollment_id"])
+  def checkout_completed? event
+    event["type"] == "checkout.session.completed"
   end
 
-  def activate_enrollment enrollment_id
-    enrollment = Enrollment.find_by(id: enrollment_id)
-    return unless enrollment && !enrollment.active?
+  def handle_checkout_completed event
+    session = event["data"]["object"]
 
-    ActiveRecord::Base.transaction do
-      enrollment.update!(status: :active)
-      DistributeRevenueService.new(enrollment).perform
+    course = Course.find(session.dig("metadata", "course_id"))
+    user   = User.find(session.dig("metadata", "user_id"))
+
+    if license_purchase?(session)
+      create_licenses(session, course)
+    else
+      create_enrollment(course, user)
     end
+  end
+
+  def license_purchase? session
+    session.dig("metadata", "purchase_type") == "license"
+  end
+
+  def create_licenses session, course
+    organization = Organization.find(session.dig("metadata", "organization_id"))
+    quantity     = session.dig("metadata", "quantity").to_i
+    total_paid   = session["amount_total"].to_d
+    unit_price   = total_paid / quantity
+
+    quantity.times do
+      License.create!(
+        organization:,
+        course:,
+        price: unit_price,
+        status: :available
+      )
+    end
+  end
+
+  def create_enrollment course, user
+    Enrollment.create!(
+      course:,
+      user:,
+      price: course.price
+    )
   end
 end

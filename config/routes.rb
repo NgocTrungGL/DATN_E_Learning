@@ -131,8 +131,10 @@ Rails.application.routes.draw do
   namespace :business do
     root 'dashboard#index'
 
-    # === QUAN TRỌNG: DÒNG BẠN ĐANG THIẾU ===
     resources :employees
-    # =======================================
+    resources :licenses, only: [:index] do
+      post :assign, on: :collection
+    end
+    resources :course_market, only: [:index]
   end
 end

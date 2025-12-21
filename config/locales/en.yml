@@ -218,3 +218,11 @@ en:
   email_confirmation:
     success: "Tài khoản đã được kích hoạt thành công!"
     invalid_link: "Liên kết xác nhận không hợp lệ hoặc đã hết hạn."
+  number:
+    currency:
+      format:
+        unit: "đ"           # Đổi $ thành đ
+        precision: 0        # Tiền Việt không dùng số lẻ (bỏ .00)
+        delimiter: "."      # Dùng dấu chấm phân cách hàng nghìn (1.000.000)
+        separator: ","      # Dấu phẩy ngăn cách thập phân (nếu có)
+        format: "%n %u"     # Hiển thị: Số trước - Đơn vị sau (Ví dụ: 500.000 đ)

@@ -2,7 +2,9 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="reviewModalLabel">Đánh giá khóa học</h5>
+        <h5 class="modal-title fw-bold" id="reviewModalLabel">
+          <i class="bi bi-pencil-square me-2 text-primary"></i>Đánh giá khóa học
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -11,27 +13,31 @@
 
           <div class="mb-3 text-center">
             <label class="form-label fw-bold mb-2">Bạn chấm mấy điểm?</label>
-            <div class="rating-css">
-              <div class="star-icon justify-content-center">
-                <% 5.downto(1) do |i| %>
-                  <%= f.radio_button :rating, i, id: "rating#{i}", class: "d-none" %>
-                  <label for="rating<%= i %>" class="bi bi-star-fill fs-2 mx-1 text-secondary" style="cursor: pointer;" onclick="this.style.color='gold';"></label>
-                <% end %>
-              </div>
+
+            <div class="rating-box d-flex justify-content-center">
+              <% 5.downto(1) do |i| %>
+                <%= f.radio_button :rating, i, id: "rating#{i}", class: "d-none rating-input" %>
+                <label for="rating<%= i %>" class="bi bi-star-fill fs-1 mx-1 rating-label" title="<%= i %> sao"></label>
+              <% end %>
             </div>
+
             <style>
-              .star-icon { display: flex; flex-direction: row-reverse; }
-              .star-icon input:checked ~ label, .star-icon label:hover, .star-icon label:hover ~ label { color: #ffc107 !important; }
+              .rating-box { flex-direction: row-reverse; }
+              .rating-label { color: #ddd; cursor: pointer; transition: color 0.2s; }
+              .rating-label:hover, .rating-label:hover ~ .rating-label { color: #ffc107 !important; }
+              .rating-input:checked ~ .rating-label { color: #ffc107; }
             </style>
           </div>
 
-          <div class="mb-3">
+          <div class="mb-4">
             <%= f.label :content, "Nhận xét của bạn", class: "form-label fw-bold" %>
-            <%= f.text_area :content, class: "form-control", rows: 4, placeholder: "Chia sẻ cảm nhận của bạn về nội dung, giảng viên..." %>
+            <%= f.text_area :content, class: "form-control bg-light", rows: 4, placeholder: "Chia sẻ cảm nhận chân thực...", required: true %>
           </div>
 
           <div class="d-grid gap-2">
-            <%= f.submit "Gửi đánh giá", class: "btn btn-primary" %>
+            <%= f.button type: "submit", class: "btn btn-primary fw-bold" do %>
+              <i class="bi bi-send-fill me-2"></i> Gửi đánh giá
+            <% end %>
           </div>
         <% end %>
       </div>

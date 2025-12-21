@@ -10,7 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_15_160146) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_19_071831) do
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -97,6 +125,21 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_15_160146) do
     t.index ["course_module_id"], name: "index_lessons_on_course_module_id"
   end
 
+  create_table "licenses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "course_id", null: false
+    t.bigint "user_id"
+    t.string "code"
+    t.integer "status", default: 0
+    t.decimal "price", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_licenses_on_course_id"
+    t.index ["organization_id", "course_id", "status"], name: "index_licenses_on_organization_id_and_course_id_and_status"
+    t.index ["organization_id"], name: "index_licenses_on_organization_id"
+    t.index ["user_id"], name: "index_licenses_on_user_id"
+  end
+
   create_table "organizations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "domain"
@@ -148,7 +191,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_15_160146) do
     t.index ["user_id", "quiz_id"], name: "index_progress_trackings_on_user_id_and_quiz_id", unique: true
     t.index ["user_id"], name: "index_progress_trackings_on_user_id"
   end
-
   create_table "question_options", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "question_id", null: false
     t.text "option_text", null: false
@@ -279,6 +321,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_15_160146) do
     t.index ["user_id"], name: "index_wallets_on_user_id", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "categories", "categories", column: "parent_id"
   add_foreign_key "comments", "lessons"
   add_foreign_key "comments", "users"
@@ -289,6 +333,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_15_160146) do
   add_foreign_key "enrollments", "users"
   add_foreign_key "instructor_profiles", "users"
   add_foreign_key "lessons", "course_modules", on_delete: :cascade
+  add_foreign_key "licenses", "courses"
+  add_foreign_key "licenses", "organizations"
+  add_foreign_key "licenses", "users"
   add_foreign_key "payout_requests", "users"
   add_foreign_key "profiles", "users", on_delete: :cascade
   add_foreign_key "progress_trackings", "courses"

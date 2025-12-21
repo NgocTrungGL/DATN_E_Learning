@@ -1,7 +1,7 @@
 class ReviewsController < ApplicationController
   before_action :authenticate_user!
   before_action :check_enrollment, only: [:create]
-
+  before_action :check_eligibility, only: [:create]
   def create
     @course = find_course or return redirect_missing_course
 
@@ -81,5 +81,17 @@ class ReviewsController < ApplicationController
   def handle_failed
     redirect_to course_path(@course),
                 alert: "Lỗi: #{@review.errors.full_messages.to_sentence}"
+  end
+
+  def check_eligibility
+    enrollment = current_user.enrollments.find_by(course: @course)
+
+    return if enrollment&.active? && enrollment&.can_review?
+
+    current_percent = enrollment&.current_progress_percentage || 0
+
+    redirect_to course_path(@course),
+                alert: "Tiến độ hiện tại: #{current_percent}%
+                . Bạn cần đạt ít nhất 70% để đánh giá."
   end
 end

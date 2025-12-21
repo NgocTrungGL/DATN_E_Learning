@@ -15,10 +15,11 @@
     <% end %>
 
     <small class="text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">ĐÀO TẠO</small>
-
-    <a href="#" class="list-group-item list-group-item-action mb-2 text-muted">
+    <%= link_to business_licenses_path, class: "list-group-item list-group-item-action mb-2 #{'active' if controller_name == 'licenses'}" do %>
       <i class="bi bi-ticket-perforated me-2"></i> Kho License khóa học
-      <i class="bi bi-lock-fill ms-auto small"></i>
-    </a>
+    <% end %>
+    <%= link_to business_course_market_index_path, class: "list-group-item list-group-item-action mb-2" do %>
+      <i class="bi bi-cart-plus me-2"></i> Mua thêm License
+    <% end %>
   </div>
 </div>

@@ -1,0 +1,32 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <div class="card border-0 shadow-lg rounded-3">
+        <div class="card-header bg-warning text-dark text-center py-3">
+          <h4 class="fw-bold mb-0"><i class="bi bi-key-fill me-2"></i>Quên Mật Khẩu?</h4>
+        </div>
+
+        <div class="card-body p-4 bg-light">
+          <p class="text-muted small mb-3 text-center">Nhập email của bạn và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.</p>
+
+          <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+            <%= render "devise/shared/error_messages", resource: resource %>
+
+            <div class="form-floating mb-3">
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", id: "floatingInput", placeholder: "name@example.com" %>
+              <%= f.label :email, "Địa chỉ Email", for: "floatingInput" %>
+            </div>
+
+            <div class="d-grid gap-2">
+              <%= f.submit "Gửi hướng dẫn", class: "btn btn-warning fw-bold text-dark" %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="card-footer bg-white text-center py-3 small">
+          <%= link_to "Quay lại đăng nhập", new_session_path(resource_name), class: "text-decoration-none" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

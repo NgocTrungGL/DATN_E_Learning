@@ -18,25 +18,23 @@
         </div>
 
         <div class="mt-4">
-          <%# --- PHẦN 1: HIỂN THỊ GIÁ TIỀN (LUÔN HIỆN VỚI KHÓA TRẢ PHÍ) --- %>
+          <%# --- PHẦN 1: HIỂN THỊ GIÁ TIỀN --- %>
           <% unless @course.free? %>
              <div class="mb-3 d-flex align-items-center">
                <h2 class="text-warning fw-bold mb-0 me-3">
                  <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
                </h2>
 
-               <%# Chú thích nhỏ cho Admin/Tác giả để biết đây là giá niêm yết %>
                <% if current_user && (current_user.admin? || current_user == @course.creator) %>
                   <span class="badge bg-light text-secondary border opacity-75">Giá niêm yết</span>
                <% end %>
              </div>
           <% end %>
 
-          <%# --- PHẦN 2: NÚT HÀNH ĐỘNG (ACTION BUTTONS) --- %>
+          <%# --- PHẦN 2: NÚT HÀNH ĐỘNG --- %>
           <% if current_user %>
 
-            <%# --- TRƯỜNG HỢP A: ĐƯỢC PHÉP VÀO HỌC (Dùng CanCanCan) --- %>
-            <%# Logic này bao gồm: Admin, Tác giả, và Học viên đã mua %>
+            <%# --- A: ĐƯỢC PHÉP VÀO HỌC (Check Enrollment/License/Creator) --- %>
             <% if can? :access_content, @course %>
 
                <% first_lesson = @course.course_modules.first&.lessons&.first %>
@@ -44,7 +42,6 @@
                  <%= link_to lesson_path(first_lesson), class: "btn btn-success btn-lg px-4 me-2 shadow" do %>
                    <i class="bi bi-play-circle-fill"></i> Vào học ngay
 
-                   <%# Hiển thị text quyền hạn cho rõ ràng %>
                    <% if current_user.admin? %>
                      <span class="fs-6 fw-normal ms-1">(Admin)</span>
                    <% elsif current_user == @course.creator %>
@@ -57,13 +54,10 @@
 
             <% else %>
 
-              <%# --- TRƯỜNG HỢP B: CHƯA ĐƯỢC HỌC -> HIỆN NÚT MUA/ĐĂNG KÝ --- %>
-
-              <%# Kiểm tra xem có đơn hàng nào đang treo (Pending) không %>
+              <%# --- B: CHƯA ĐƯỢC HỌC -> MUA/ĐĂNG KÝ --- %>
               <% pending_enrollment = current_user.enrollments.find_by(course: @course, status: :pending) %>
 
               <% if pending_enrollment %>
-                 <%# B1. Đang chờ thanh toán %>
                  <div class="d-flex align-items-center">
                    <button class="btn btn-warning btn-lg px-4 me-3 disabled text-dark fw-bold">
                      <i class="bi bi-clock-history"></i> Đang chờ thanh toán
@@ -78,14 +72,11 @@
                  </p>
 
               <% else %>
-                 <%# B2. Chưa mua -> Nút Mua mới %>
                  <% if @course.free? %>
-                    <%# Khóa miễn phí %>
                     <%= button_to course_enrollments_path(@course), method: :post, class: "btn btn-primary btn-lg px-4 shadow" do %>
                       <i class="bi bi-person-plus-fill"></i> Đăng ký học miễn phí
                     <% end %>
                  <% else %>
-                    <%# Khóa trả phí (Stripe) %>
                     <%= button_to create_checkout_session_path(course_id: @course.id),
                           method: :post,
                           class: "btn btn-primary btn-lg px-4 shadow border-0 bg-gradient",
@@ -102,7 +93,7 @@
             <% end %>
 
           <% else %>
-            <%# --- TRƯỜNG HỢP 3: CHƯA ĐĂNG NHẬP --- %>
+            <%# --- C: CHƯA ĐĂNG NHẬP --- %>
             <div class="d-flex align-items-center">
               <%= link_to login_path, class: "btn btn-outline-light btn-lg px-4" do %>
                 Đăng nhập để đăng ký
@@ -139,7 +130,6 @@
               <div class="accordion-body p-0">
                 <div class="list-group list-group-flush">
                   <% mod.lessons.order(:order_index).each do |lesson| %>
-                    <%# Link bài học (Controller sẽ chặn nếu không có quyền) %>
                     <%= link_to lesson_path(lesson), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3" do %>
                       <span>
                         <i class="bi <%= lesson.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> me-2 text-muted"></i>
@@ -183,9 +173,7 @@
                       </div>
                     </div>
                     <div class="col-md-4 text-end mt-3 mt-md-0">
-                      <%# --- SỬA Ở ĐÂY: Dùng can? :access_content --- %>
                       <% if can? :access_content, @course %>
-
                         <% if current_user.quiz_completed?(quiz) %>
                           <button class="btn btn-success fw-bold disabled w-100 btn-sm">
                             <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
@@ -195,7 +183,6 @@
                             <i class="bi bi-play-circle-fill"></i> Làm bài ngay
                           <% end %>
                         <% end %>
-
                       <% else %>
                         <button class="btn btn-secondary w-100 disabled btn-sm" title="Vui lòng đăng ký khóa học">
                           <i class="bi bi-lock-fill"></i> Bị khóa
@@ -210,7 +197,8 @@
         <% end %>
       </div>
 
-      <div id="course-reviews" class="mt-5">
+      <%# --- PHẦN ĐÁNH GIÁ (REVIEWS) --- %>
+<div id="course-reviews" class="mt-5">
 
         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
           <h3 class="mb-0">Đánh giá từ học viên</h3>
@@ -221,21 +209,70 @@
             <% has_reviewed = @course.reviews.exists?(user: current_user) %>
             <% is_creator = (current_user == @course.creator) %>
 
+            <%# --- TRƯỜNG HỢP 1: HỌC VIÊN ĐANG HỌC --- %>
             <% if enrollment&.active? && !has_reviewed && !is_creator %>
-              <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#reviewModal">
-                <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
-              </button>
 
-              <%= render "review_modal", course: @course %>
+              <%# === LOGIC MỚI: LUÔN HIỆN NÚT "VIẾT ĐÁNH GIÁ" === %>
+
+              <% if enrollment.can_review? %>
+                <%# A. ĐỦ ĐIỀU KIỆN -> Mở Modal Review thật %>
+                <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                  <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
+                </button>
+
+                <%# Render Modal nhập liệu %>
+                <%= render "review_modal", course: @course %>
+
+              <% else %>
+                <%# B. CHƯA ĐỦ ĐIỀU KIỆN -> Vẫn hiện nút y hệt, nhưng mở Modal Cảnh báo %>
+                <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#eligibilityModal">
+                  <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
+                </button>
+
+                <%# --- MODAL CẢNH BÁO (Thêm trực tiếp tại đây) --- %>
+                <div class="modal fade" id="eligibilityModal" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header border-0 pb-0">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body text-center pb-4">
+                        <div class="mb-3 text-warning">
+                          <i class="bi bi-exclamation-circle-fill" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="fw-bold">Chưa đủ điều kiện đánh giá</h4>
+                        <p class="text-muted mt-3">
+                          Để đảm bảo tính khách quan, bạn cần hoàn thành ít nhất <strong>70%</strong> nội dung khóa học.
+                        </p>
+
+                        <div class="bg-light p-3 rounded mt-3 d-inline-block">
+                          Tiến độ hiện tại:
+                          <strong class="text-danger fs-5"><%= enrollment.current_progress_percentage %>%</strong>
+                          <span class="text-muted">/ 70%</span>
+                        </div>
+
+                        <div class="mt-4">
+                          <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">
+                            Tiếp tục học ngay
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <%# ----------------------------------------------- %>
+
+              <% end %>
+              <%# =============================================== %>
 
             <% elsif is_creator %>
                <span class="text-muted small fst-italic border px-2 py-1 rounded bg-light">
-                 <i class="bi bi-info-circle"></i> Giảng viên không thể tự đánh giá
+                 <i class="bi bi-info-circle"></i> Giảng viên
                </span>
 
             <% elsif has_reviewed %>
               <span class="text-success fw-bold small">
-                <i class="bi bi-check-circle-fill"></i> Bạn đã đánh giá khóa học này
+                <i class="bi bi-check-circle-fill"></i> Đã đánh giá
               </span>
 
             <% else %>
@@ -260,7 +297,19 @@
         <div class="card-body">
           <h5 class="card-title fw-bold text-uppercase text-muted small">Giảng viên</h5>
           <div class="d-flex align-items-center mt-3">
-             <img src="https://ui-avatars.com/api/?name=<%= @course.creator&.name %>&background=random" class="rounded-circle me-3" width="60">
+             <div class="avatar-wrapper avatar-lg me-3">
+                <% if @course.creator&.avatar_url.present? %>
+                  <img
+                    src="<%= @course.creator.avatar_url %>"
+                    alt="<%= @course.creator.name %>"
+                    class="avatar-img">
+                <% else %>
+                  <div class="avatar-text avatar-lg-text">
+                    <%= @course.creator&.name&.first&.upcase || "?" %>
+                  </div>
+                <% end %>
+              </div>
+
              <div>
                <h6 class="mb-0 fw-bold"><%= @course.creator&.name || "Admin" %></h6>
                <small class="text-muted">Senior Instructor</small>
@@ -280,4 +329,4 @@
       </div>
     </div>
   </div>
-</div>
+</div>s

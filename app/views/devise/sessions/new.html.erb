@@ -1,0 +1,49 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <div class="card border-0 shadow-lg rounded-3 overflow-hidden">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h4 class="fw-bold mb-0"><i class="bi bi-box-arrow-in-right me-2"></i>Đăng Nhập</h4>
+        </div>
+
+        <div class="card-body p-4 bg-light">
+          <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+
+            <div class="form-floating mb-3">
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", id: "floatingInput", placeholder: "name@example.com" %>
+              <%= f.label :email, "Địa chỉ Email", for: "floatingInput" %>
+            </div>
+
+            <div class="form-floating mb-3">
+              <%= f.password_field :password, autocomplete: "current-password", class: "form-control", id: "floatingPassword", placeholder: "Password" %>
+              <%= f.label :password, "Mật khẩu", for: "floatingPassword" %>
+            </div>
+
+            <% if devise_mapping.rememberable? %>
+              <div class="form-check mb-3">
+                <%= f.check_box :remember_me, class: "form-check-input" %>
+                <%= f.label :remember_me, "Ghi nhớ đăng nhập", class: "form-check-label text-secondary small" %>
+              </div>
+            <% end %>
+
+            <div class="d-grid gap-2">
+              <%= f.button type: "submit", class: "btn btn-primary btn-lg fw-bold" do %>
+                 Đăng nhập
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="card-footer bg-white text-center py-3 small">
+          <div class="mb-2">
+            Chưa có tài khoản?
+            <%= link_to "Đăng ký ngay", new_registration_path(resource_name), class: "text-decoration-none fw-bold" %>
+          </div>
+          <div>
+            <%= link_to "Quên mật khẩu?", new_password_path(resource_name), class: "text-muted text-decoration-none" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

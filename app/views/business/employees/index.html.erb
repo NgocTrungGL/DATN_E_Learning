@@ -22,7 +22,8 @@
             <tr>
               <td class="px-4">
                 <div class="d-flex align-items-center">
-                  <img src="https://ui-avatars.com/api/?name=<%= emp.name %>&background=random" class="rounded-circle me-3" width="40">
+                  <img src="<%= emp.avatar_url.presence || "https://ui-avatars.com/api/?name=#{emp.name}&background=random" %>"
+                 class="rounded-circle" width="40" height="40">
                   <span class="fw-bold"><%= emp.name %></span>
                 </div>
               </td>

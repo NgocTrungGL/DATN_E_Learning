@@ -26,7 +26,19 @@
               <tr>
                 <td class="ps-4">
                   <div class="d-flex align-items-center">
-                    <img src="https://ui-avatars.com/api/?name=<%= comment.user.name %>&background=random" class="rounded-circle me-2" width="32" height="32">
+                    <div class="avatar-wrapper avatar-sm me-2">
+                      <% if comment.user.avatar_url.present? %>
+                        <img
+                          src="<%= comment.user.avatar_url %>"
+                          alt="<%= comment.user.name %>"
+                          class="avatar-img">
+                      <% else %>
+                        <div class="avatar-text avatar-sm-text">
+                          <%= comment.user.name.first.upcase %>
+                        </div>
+                      <% end %>
+                    </div>
+
                     <div>
                       <div class="fw-bold text-dark"><%= comment.user.name %></div>
                       <span class="badge bg-secondary" style="font-size: 0.65rem;"><%= comment.user.role.capitalize %></span>

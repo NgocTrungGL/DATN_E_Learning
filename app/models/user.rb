@@ -34,6 +34,7 @@ class User < ApplicationRecord
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :comments, dependent: :destroy
   has_many :reviews, dependent: :destroy
+  has_many :licenses, dependent: :nullify
   has_one :wallet, dependent: :destroy
   has_many :quiz_attempts, dependent: :destroy
   has_many :progress_trackings, dependent: :destroy
@@ -78,6 +79,9 @@ foreign_key: :created_by, dependent: :nullify
     signed_id(purpose: :account_activation, expires_in: 24.hours)
   end
 
+  def has_license_for? course
+    licenses.where(course_id: course.id, status: :assigned).exists?
+  end
   private
 
   def build_default_profile
