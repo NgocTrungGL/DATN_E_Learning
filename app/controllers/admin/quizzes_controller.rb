@@ -26,8 +26,15 @@ class Admin::QuizzesController < Admin::BaseController
     @quiz.creator = current_user
 
     if @quiz.save
-      redirect_to admin_quiz_path(@quiz),
-                  notice: t("admin.quizzes.create.success")
+      if @quiz.random_selection?
+        redirect_to admin_quizzes_path,
+                    notice: "Đã tạo
+                    Bài kiểm tra cuối khóa thành công (Chế độ Random)."
+      else
+        redirect_to admin_quiz_path(@quiz),
+                    notice: "Tạo Quiz thành công.
+                    Hãy thêm câu hỏi thủ công bên dưới."
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -39,8 +46,13 @@ class Admin::QuizzesController < Admin::BaseController
   # PATCH/PUT /admin/quizzes/1
   def update
     if @quiz.update(quiz_params)
-      redirect_to admin_quiz_path(@quiz),
-                  notice: t("admin.quizzes.update.success")
+      if @quiz.random_selection?
+        redirect_to admin_quizzes_path,
+                    notice: t("admin.quizzes.update.success")
+      else
+        redirect_to admin_quiz_path(@quiz),
+                    notice: t("admin.quizzes.update.success")
+      end
     else
       render :edit, status: :unprocessable_entity
     end
@@ -70,16 +82,23 @@ class Admin::QuizzesController < Admin::BaseController
     @lessons = Lesson.order(:title)
   end
 
+  # def quiz_params
+  #   params.require(:quiz).permit(
+  #     :title,
+  #     :description,
+  #     :course_id,
+  #     :lesson_id,
+  #     :total_questions,
+  #     :time_limit,
+  #     :pass_score,
+  #     :random_mode
+  #   )
+  # end
   def quiz_params
     params.require(:quiz).permit(
-      :title,
-      :description,
-      :course_id,
-      :lesson_id,
-      :total_questions,
-      :time_limit,
-      :pass_score,
-      :random_mode
+      :title, :description, :course_id, :lesson_id,
+      :total_questions, :time_limit, :pass_score,
+      :scoring_type, :easy_count, :medium_count, :hard_count
     )
   end
 

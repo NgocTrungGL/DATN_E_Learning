@@ -1,69 +1,48 @@
 class WebhooksController < ApplicationController
-  skip_before_action :verify_authenticity_token
+  skip_before_action :verify_authenticity_token, raise: false
 
   def create
-    event = construct_event
-    return head :bad_request unless event
+    payload = request.body.read
+    sig_header = request.env["HTTP_STRIPE_SIGNATURE"]
+    endpoint_secret = ENV["STRIPE_SIGNING_SECRET"]
+    event = nil
 
-    handle_checkout_completed(event) if checkout_completed?(event)
+    begin
+      event = Stripe::Webhook.construct_event(
+        payload, sig_header, endpoint_secret
+      )
+    rescue JSON::ParserError, Stripe::SignatureVerificationError
+      head :bad_request
+      return
+    end
 
-    head :ok
+    case event.type
+    when "checkout.session.completed"
+      session = event.data.object
+      handle_checkout_session(session)
+    end
+
+    render json: {message: "success"}
   end
 
   private
 
-  def construct_event
-    Stripe::Webhook.construct_event(
-      request.body.read,
-      request.env["HTTP_STRIPE_SIGNATURE"],
-      ENV["STRIPE_SIGNING_SECRET"]
-    )
-  rescue JSON::ParserError, Stripe::SignatureVerificationError
-    nil
-  end
+  def handle_checkout_session session
+    user_id = session.metadata["user_id"]
+    course_id = session.metadata["course_id"]
 
-  def checkout_completed? event
-    event["type"] == "checkout.session.completed"
-  end
+    return if user_id.blank? || course_id.blank?
 
-  def handle_checkout_completed event
-    session = event["data"]["object"]
+    user = User.find_by(id: user_id)
+    course = Course.find_by(id: course_id)
 
-    course = Course.find(session.dig("metadata", "course_id"))
-    user   = User.find(session.dig("metadata", "user_id"))
+    return unless user && course
 
-    if license_purchase?(session)
-      create_licenses(session, course)
-    else
-      create_enrollment(course, user)
-    end
-  end
+    enrollment = Enrollment.find_or_initialize_by(user:, course:)
 
-  def license_purchase? session
-    session.dig("metadata", "purchase_type") == "license"
-  end
-
-  def create_licenses session, course
-    organization = Organization.find(session.dig("metadata", "organization_id"))
-    quantity     = session.dig("metadata", "quantity").to_i
-    total_paid   = session["amount_total"].to_d
-    unit_price   = total_paid / quantity
-
-    quantity.times do
-      License.create!(
-        organization:,
-        course:,
-        price: unit_price,
-        status: :available
-      )
-    end
-  end
-
-  def create_enrollment course, user
-    Enrollment.create!(
-      course:,
-      user:,
-      price: course.price
+    enrollment.update(
+      price: session.amount_total,
+      status: :active
     )
   end
 end

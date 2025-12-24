@@ -8,10 +8,10 @@ class Ability
       admin_rules
     elsif @user.instructor?
       instructor_rules
-    elsif @user.business?
-      business_rules
-    elsif @user.b2b?
-      b2b_rules
+    elsif @user.company_admin?
+      company_admin_rules
+    elsif @user.employee?
+      employee_rules
     elsif @user.student?
       student_rules
     else
@@ -26,12 +26,23 @@ class Ability
   #############################################################
   def can_access_course_content
     can :access_content, Course do |course|
+      # Check enrollment (Student)
       has_enrollment = @user.enrollments.active.exists?(course_id: course.id)
+
+      # Check license (Employee/Company Admin)
       has_license = @user.licenses.exists?(course_id: course.id,
                                            status: :assigned)
+
+      # Check creator (Instructor)
       is_creator = (course.created_by == @user.id)
 
       has_enrollment || has_license || is_creator
+    end
+  end
+
+  def can_read_lesson_rule
+    can :read, Lesson do |lesson|
+      lesson.free_preview? || can?(:access_content, lesson.course)
     end
   end
 
@@ -62,6 +73,9 @@ class Ability
     instructor_enrollment_rules
 
     can_access_course_content
+
+    can_read_lesson_rule
+
     common_interaction_rules
   end
 
@@ -98,11 +112,13 @@ class Ability
   end
 
   #############################################################
-  # 3. Business
+  # 3. Company Admin
   #############################################################
-  def business_rules
+  def company_admin_rules
     common_interaction_rules
+
     can :access, :business_dashboard
+
     can :manage, Organization, user_id: @user.id
 
     if @user.organization
@@ -111,14 +127,19 @@ class Ability
     end
 
     can_access_course_content
+
+    can_read_lesson_rule
   end
 
   #############################################################
-  # 4. B2B
+  # 4. Employee (Thay cho B2B)
   #############################################################
-  def b2b_rules
+  def employee_rules
     common_interaction_rules
     can_access_course_content
+
+    can_read_lesson_rule
+
     cannot :access,
            [:admin_dashboard, :instructor_dashboard, :business_dashboard]
   end
@@ -133,7 +154,10 @@ class Ability
     can :create, InstructorProfile do
       !@user.instructor_profile&.persisted?
     end
+
     can :read, InstructorProfile, user_id: @user.id
+
+    can_read_lesson_rule
   end
 
   #############################################################
@@ -141,5 +165,7 @@ class Ability
   #############################################################
   def guest_rules
     can :read, [Course, Category, Review, Comment]
+
+    can :read, Lesson, free_preview: true
   end
 end

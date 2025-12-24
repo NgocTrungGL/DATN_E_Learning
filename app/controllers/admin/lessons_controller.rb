@@ -1,7 +1,7 @@
 class Admin::LessonsController < Admin::BaseController
   before_action :set_course_module, only: [:new, :create]
   before_action :set_lesson, only: [:show, :edit, :update, :destroy]
-
+  # GET /admin/lessons/1
   def show; end
 
   # GET /admin/course_modules/1/lessons/new

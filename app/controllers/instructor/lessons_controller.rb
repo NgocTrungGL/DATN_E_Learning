@@ -106,7 +106,8 @@ class Instructor::LessonsController < Instructor::BaseController
             :description,
             :video_url,
             :attachment_url,
-            :order_index
+            :order_index,
+            :free_preview
           )
   end
 end

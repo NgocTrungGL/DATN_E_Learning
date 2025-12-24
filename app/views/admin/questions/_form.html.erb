@@ -1,14 +1,9 @@
-<%= form_with(model: [:admin, @question]) do |f| %>
+<%= form_with(model: [:admin, @question], data: { controller: "question-form" }) do |f| %>
 
   <% if @question.errors.any? %>
     <div class="alert alert-danger shadow-sm">
-      <h5 class="fw-bold mb-2">
-        <%= pluralize(@question.errors.count, "lỗi") %> đã xảy ra:
-      </h5>
       <ul class="mb-0">
-        <% @question.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
+        <% @question.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
       </ul>
     </div>
   <% end %>
@@ -19,8 +14,6 @@
     </div>
 
     <div class="card-body p-4">
-
-      <!-- Section: Thông tin câu hỏi -->
       <h5 class="fw-bold mb-3">📌 Thông tin câu hỏi</h5>
 
       <div class="mb-4">
@@ -34,66 +27,49 @@
           <%= f.select :question_type,
                 Question.question_types.keys.map { |k| [k.humanize, k] },
                 {},
-                class: "form-select shadow-sm" %>
+                class: "form-select shadow-sm",
+                data: { question_form_target: "typeSelect", action: "change->question-form#toggleType" } %>
         </div>
 
         <div class="col-md-6 mb-4">
           <%= f.label :difficulty, "Độ khó", class: "form-label fw-semibold" %>
-          <%= f.select :difficulty,
-                Question.difficulties.keys.map { |k| [k.humanize, k] },
-                {},
-                class: "form-select shadow-sm" %>
+          <%= f.select :difficulty, Question.difficulties.keys.map { |k| [k.humanize, k] }, {}, class: "form-select shadow-sm" %>
         </div>
       </div>
 
       <hr>
 
-      <!-- Section: Khóa học / Bài học -->
-      <h5 class="fw-bold mb-3">📚 Liên kết khóa học & bài học</h5>
-
+      <h5 class="fw-bold mb-3">📚 Liên kết khóa học</h5>
       <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-12 mb-4">
           <%= f.label :course_id, "Gắn vào Khóa học (bắt buộc)", class: "form-label fw-semibold" %>
-          <%= f.collection_select :course_id, @courses, :id, :title,
-                { prompt: "--- Chọn một khóa học ---" },
-                { class: "form-select shadow-sm", required: true } %>
+          <%= f.collection_select :course_id, @courses, :id, :title, { prompt: "--- Chọn một khóa học ---" }, { class: "form-select shadow-sm", required: true } %>
         </div>
-
-        <%# <div class="col-md-6 mb-4">
-          <%= f.label :lesson_id, "Gắn vào Bài học (tùy chọn)", class: "form-label fw-semibold" %>
-          <%# <%= f.number_field :lesson_id, %>
-                <%# class: "form-control shadow-sm",
-                placeholder: "Nhập ID bài học (nếu có)" %>
-          <%# <small class="text-muted">Có thể để trống.</small>
-        </div> %>
       </div>
 
       <hr>
 
-      <!-- Section: Các lựa chọn -->
       <h5 class="fw-bold mb-3">📝 Các lựa chọn trả lời</h5>
-      <p class="text-muted">Đánh dấu vào ô “Đúng” để chọn đáp án chính xác.</p>
+      <p class="text-muted" data-question-form-target: "instructionText">
+        Đánh dấu vào ô để chọn đáp án đúng.
+      </p>
 
-      <div id="question_options" class="bg-light p-3 rounded-3 border">
-
+      <div id="question_options" data-question-form-target="optionsList" class="bg-light p-3 rounded-3 border">
         <%= f.fields_for :question_options do |option_form| %>
-
-          <div class="border rounded px-3 py-2 mb-3 bg-white shadow-sm">
-            <div class="d-flex align-items-center gap-3">
-
-              <div class="form-check m-0">
-                <%= option_form.check_box :is_correct, class: "form-check-input" %>
-              </div>
-
-              <%= option_form.text_field :option_text,
-                    class: "form-control",
-                    placeholder: "Nhập nội dung đáp án..." %>
-
-            </div>
-          </div>
-
+          <%= render "question_option_fields", f: option_form %>
         <% end %>
+      </div>
 
+      <div class="mt-3" data-question-form-target="addButtonContainer">
+        <template data-question-form-target="template">
+          <%= f.fields_for :question_options, QuestionOption.new, child_index: 'NEW_RECORD' do |option_form| %>
+            <%= render "question_option_fields", f: option_form %>
+          <% end %>
+        </template>
+
+        <button type="button" class="btn btn-outline-primary btn-sm dashed-border" data-action="question-form#addAssociation">
+          <i class="bi bi-plus-circle me-1"></i> Thêm lựa chọn khác
+        </button>
       </div>
 
     </div>

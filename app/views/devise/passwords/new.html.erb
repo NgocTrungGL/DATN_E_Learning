@@ -9,11 +9,19 @@
         <div class="card-body p-4 bg-light">
           <p class="text-muted small mb-3 text-center">Nhập email của bạn và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.</p>
 
-          <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+          <%# --- QUAN TRỌNG: Sửa url thành user_password_path --- %>
+          <%= form_for(resource, as: resource_name, url: user_password_path, html: { method: :post }) do |f| %>
+
+            <%# Hiển thị lỗi nếu nhập sai email %>
             <%= render "devise/shared/error_messages", resource: resource %>
 
             <div class="form-floating mb-3">
-              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", id: "floatingInput", placeholder: "name@example.com" %>
+              <%= f.email_field :email,
+                  autofocus: true,
+                  autocomplete: "email",
+                  class: "form-control",
+                  id: "floatingInput",
+                  placeholder: "name@example.com" %>
               <%= f.label :email, "Địa chỉ Email", for: "floatingInput" %>
             </div>
 
@@ -24,7 +32,13 @@
         </div>
 
         <div class="card-footer bg-white text-center py-3 small">
-          <%= link_to "Quay lại đăng nhập", new_session_path(resource_name), class: "text-decoration-none" %>
+          <%# --- QUAN TRỌNG: Sửa thành new_user_session_path --- %>
+          <%= link_to "Quay lại đăng nhập", new_user_session_path, class: "text-decoration-none" %>
+
+          <span class="mx-2 text-muted">|</span>
+
+          <%# Thêm link Đăng ký cho tiện %>
+          <%= link_to "Đăng ký mới", new_user_registration_path, class: "text-decoration-none" %>
         </div>
       </div>
     </div>

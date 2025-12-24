@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_21_090117) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -37,6 +37,23 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_21_090117) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "cart_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "cart_id", null: false
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cart_id", "course_id"], name: "index_cart_items_on_cart_id_and_course_id", unique: true
+    t.index ["cart_id"], name: "index_cart_items_on_cart_id"
+    t.index ["course_id"], name: "index_cart_items_on_course_id"
+  end
+
+  create_table "carts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_carts_on_user_id"
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -124,6 +141,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_21_090117) do
     t.integer "order_index", default: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "free_preview", default: false
     t.index ["course_module_id"], name: "index_lessons_on_course_module_id"
   end
 
@@ -225,6 +243,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_21_090117) do
     t.json "selected_option_ids"
     t.boolean "is_correct", default: false
     t.datetime "answered_at"
+    t.decimal "score_earned", precision: 5, scale: 2, default: "0.0"
     t.index ["question_id"], name: "index_quiz_answers_on_question_id"
     t.index ["question_option_id"], name: "index_quiz_answers_on_question_option_id"
     t.index ["quiz_attempt_id"], name: "index_quiz_answers_on_quiz_attempt_id"
@@ -266,6 +285,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_21_090117) do
     t.boolean "random_mode", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "easy_count", default: 0
+    t.integer "medium_count", default: 0
+    t.integer "hard_count", default: 0
+    t.integer "scoring_type", default: 0
     t.index ["course_id"], name: "index_quizzes_on_course_id"
     t.index ["created_by"], name: "index_quizzes_on_created_by"
     t.index ["lesson_id"], name: "index_quizzes_on_lesson_id"
@@ -326,6 +349,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_21_090117) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cart_items", "carts"
+  add_foreign_key "cart_items", "courses"
+  add_foreign_key "carts", "users"
   add_foreign_key "categories", "categories", column: "parent_id"
   add_foreign_key "comments", "lessons"
   add_foreign_key "comments", "users"

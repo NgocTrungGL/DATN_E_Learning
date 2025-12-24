@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
       redirect_to root_path, alert: "Truy cập bị từ chối."
     end
   end
+  helper_method :current_cart
   protected
 
   def configure_permitted_parameters
@@ -39,5 +40,11 @@ class ApplicationController < ActionController::Base
   def redirect_back_or default, options = {}
     redirect_to(session[:forwarding_url] || default, options)
     session.delete(:forwarding_url)
+  end
+
+  def current_cart
+    return unless user_signed_in?
+
+    @current_cart ||= current_user.current_cart
   end
 end

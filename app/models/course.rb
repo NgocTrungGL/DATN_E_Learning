@@ -18,7 +18,9 @@ optional: true
     published: 2,
     rejected: 3
   }
-
+  def total_students
+    enrollments.active.count
+  end
   scope :available, ->{where(status: :published)}
   # Validation
   validates :title, presence: true

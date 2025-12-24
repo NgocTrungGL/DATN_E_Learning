@@ -45,11 +45,16 @@ dependent: :nullify
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
 foreign_key: :created_by, dependent: :nullify
+  has_one :cart, dependent: :destroy
   after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}
 
   def enrolled_in? course
     enrollments.exists?(course_id: course.id)
+  end
+
+  def current_cart
+    cart || create_cart
   end
 
   def can_access_course? course

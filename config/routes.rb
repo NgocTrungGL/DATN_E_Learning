@@ -5,7 +5,12 @@ Rails.application.routes.draw do
   # --- THANH TOÁN ---
   post 'create-checkout-session', to: 'checkouts#create'
   post 'webhooks', to: 'webhooks#create'
+  resource :cart, only: [:show]
+  post 'checkout-cart', to: 'checkouts#create_from_cart', as: 'checkout_cart'
 
+  # Route trang thành công
+  get 'checkout-success', to: 'checkouts#success', as: 'checkout_success'
+  resources :cart_items, only: [:create, :destroy]
   # --- USER (PROFILE & SETTINGS) ---
   resource :profile, only: [:edit, :update]
   get "password/edit", to: "passwords#edit"
