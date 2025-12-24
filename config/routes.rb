@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   root "courses#index"
   devise_for :users
+  post 'create-checkout-session', to: 'checkouts#create'
 
   # --- THANH TOÁN ---
   post 'create-checkout-session', to: 'checkouts#create'

@@ -100,4 +100,19 @@
       <% end %>
     </li>
   </ul>
+  <li class="header-text">QUẢN LÝ TÀI CHÍNH</li>
+
+    <li>
+      <%= link_to admin_revenues_path, class: "#{'active' if controller_name == 'revenues'}" do %>
+        <i class="bi bi-cash-coin text-success"></i>
+        <span>Doanh thu hệ thống</span>
+      <% end %>
+    </li>
+
+    <li>
+      <%= link_to admin_enrollments_path, class: "#{'active' if controller_name == 'enrollments'}" do %>
+        <i class="bi bi-receipt-cutoff"></i>
+        <span>Duyệt Ghi danh</span>
+      <% end %>
+    </li>
 </nav>
