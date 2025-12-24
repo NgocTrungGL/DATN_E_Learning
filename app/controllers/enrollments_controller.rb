@@ -11,22 +11,21 @@ class EnrollmentsController < ApplicationController
       return
     end
 
-    @enrollment = current_user.enrollments.new(course: @course)
-
-    if @course.free?
-      @enrollment.status = :active
-      message = "Đăng ký thành công! Bạn có thể bắt đầu học ngay."
-    else
-
-      @enrollment.status = :pending
-      message = <<~TEXT
-        Yêu cầu đăng ký đã được gửi.
-        Vui lòng chờ Admin duyệt thanh toán.
-      TEXT
+    unless @course.free?
+      redirect_to course_path(@course),
+                  alert: "Vui lòng thanh toán để tham gia khóa học này."
+      return
     end
 
+    @enrollment = current_user.enrollments.new(
+      course: @course,
+      status: :active,
+      price: 0
+    )
+
     if @enrollment.save
-      redirect_to course_path(@course), notice: message
+      redirect_to course_path(@course),
+                  notice: "Đăng ký thành công! Bạn có thể bắt đầu học ngay."
     else
       redirect_to course_path(@course),
                   alert: "Không thể đăng ký. Vui lòng thử lại."

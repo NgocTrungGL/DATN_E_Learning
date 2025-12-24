@@ -26,7 +26,7 @@
               <% enrollment = current_user.enrollments.find_by(course: @course) %>
 
               <% if enrollment.active? %>
-                 <%# A1. Đã Active -> Vào học (Bài đầu tiên) %>
+                 <%# A1. Đã Active (Đã mua thành công) -> Vào học %>
                  <% first_lesson = @course.course_modules.first&.lessons&.first %>
                  <% if first_lesson %>
                    <%= link_to lesson_path(first_lesson), class: "btn btn-success btn-lg px-4 me-2 shadow" do %>
@@ -37,12 +37,25 @@
                  <% end %>
 
               <% elsif enrollment.pending? %>
-                 <%# A2. Đang chờ duyệt %>
-                 <button class="btn btn-warning btn-lg px-4 me-2 disabled text-dark fw-bold">
-                   <i class="bi bi-clock-history"></i> Đang chờ duyệt thanh toán
-                 </button>
+                 <%# A2. Đang chờ thanh toán (Pending) %>
+                 <%# LƯU Ý: Với Stripe, Pending thường là đang ở trang thanh toán nhưng chưa xong. %>
+                 <%# Cho phép thanh toán lại nếu user lỡ tắt tab %>
+
+                 <div class="d-flex align-items-center">
+                   <button class="btn btn-warning btn-lg px-4 me-3 disabled text-dark fw-bold">
+                     <i class="bi bi-clock-history"></i> Đang chờ thanh toán
+                   </button>
+
+                   <%# Nút Thanh toán lại (Stripe) %>
+                   <%= button_to create_checkout_session_path(course_id: @course.id),
+                        method: :post,
+                        class: "btn btn-outline-light btn-sm",
+                        data: { turbo: false } do %>
+                    <i class="bi bi-credit-card"></i> Tiếp tục thanh toán
+                  <% end %>
+                 </div>
                  <p class="text-white-50 mt-2 small">
-                   <i class="bi bi-info-circle"></i> Admin đang kiểm tra giao dịch. Vui lòng quay lại sau.
+                   <i class="bi bi-info-circle"></i> Đơn hàng đã được tạo. Vui lòng hoàn tất thanh toán để vào học.
                  </p>
 
               <% else %>
@@ -52,7 +65,7 @@
               <% end %>
 
             <% else %>
-              <%# B. Chưa đăng ký -> Hiển thị nút Đăng ký/Mua %>
+              <%# B. Chưa đăng ký -> Hiển thị nút Mua %>
 
               <% if @course.free? %>
                 <%# B1. Khóa học Miễn phí %>
@@ -60,22 +73,27 @@
                   <i class="bi bi-person-plus-fill"></i> Đăng ký học miễn phí
                 <% end %>
               <% else %>
-                <%# B2. Khóa học Trả phí %>
+
+                <%# --- B2. KHÓA HỌC TRẢ PHÍ (STRIPE INTEGRATION) --- %>
                 <div class="d-flex align-items-center flex-wrap">
                   <h2 class="text-warning me-4 mb-0 fw-bold">
                     <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
                   </h2>
 
-                  <%= button_to course_enrollments_path(@course),
+                  <%# Nút Mua ngay gọi tới CheckoutsController %>
+                  <%= button_to create_checkout_session_path(course_id: @course.id),
                         method: :post,
-                        class: "btn btn-primary btn-lg px-4 shadow",
-                        data: { confirm: "Xác nhận gửi yêu cầu đăng ký khóa học này?" } do %>
-                    <i class="bi bi-cart-check-fill"></i> Đăng ký mua ngay
+                        class: "btn btn-primary btn-lg px-4 shadow border-0 bg-gradient",
+                        style: "background-color: #635bff;", # Màu tím đặc trưng của Stripe
+                        data: { turbo: false } do %> <%# turbo: false LÀ BẮT BUỘC %>
+                    <i class="bi bi-credit-card-2-front-fill me-2"></i> Mua ngay
                   <% end %>
                 </div>
                 <p class="text-white-50 mt-2 small">
-                  * Sau khi đăng ký, vui lòng chuyển khoản để Admin kích hoạt khóa học.
+                  <i class="bi bi-shield-lock-fill"></i> Thanh toán bảo mật qua Stripe. Kích hoạt ngay lập tức.
                 </p>
+                <%# ------------------------------------------------ %>
+
               <% end %>
             <% end %>
 
@@ -122,7 +140,7 @@
               <div class="accordion-body p-0">
                 <div class="list-group list-group-flush">
                   <% mod.lessons.order(:order_index).each do |lesson| %>
-                    <%# Link đến bài học (Controller sẽ chặn nếu chưa mua) %>
+                    <%# Link bài học %>
                     <%= link_to lesson_path(lesson), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3" do %>
                       <span>
                         <i class="bi <%= lesson.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> me-2 text-muted"></i>
@@ -195,11 +213,31 @@
           <h3 class="mb-0">Đánh giá từ học viên</h3>
 
           <% if user_signed_in? %>
-            <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#reviewModal">
-              <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
-            </button>
 
-            <%= render "review_modal", course: @course %>
+            <% enrollment = current_user.enrollments.find_by(course: @course) %>
+            <% has_reviewed = @course.reviews.exists?(user: current_user) %>
+            <% is_creator = (current_user == @course.creator) %>
+
+            <% if enrollment&.active? && !has_reviewed && !is_creator %>
+              <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
+              </button>
+
+              <%= render "review_modal", course: @course %>
+
+            <% elsif is_creator %>
+               <span class="text-muted small fst-italic border px-2 py-1 rounded bg-light">
+                 <i class="bi bi-info-circle"></i> Giảng viên không thể tự đánh giá
+               </span>
+
+            <% elsif has_reviewed %>
+              <span class="text-success fw-bold small">
+                <i class="bi bi-check-circle-fill"></i> Bạn đã đánh giá khóa học này
+              </span>
+
+            <% else %>
+              <span class="text-muted small fst-italic">Đăng ký học để đánh giá</span>
+            <% end %>
 
           <% else %>
             <%= link_to login_path, class: "btn btn-outline-secondary btn-sm" do %>
@@ -213,6 +251,7 @@
       </div>
 
     </div>
+
     <div class="col-lg-4">
       <div class="card shadow-sm mb-4 border-0">
         <div class="card-body">

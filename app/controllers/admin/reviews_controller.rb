@@ -1,5 +1,5 @@
 class Admin::ReviewsController < Admin::BaseController
-  load_and_authorize_resource class: "Review"
+  load_and_authorize_resource class: Review.name
 
   def index
     @pagy, @reviews = pagy(@reviews.includes(:user,

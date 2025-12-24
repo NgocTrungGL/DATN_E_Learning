@@ -17,14 +17,14 @@ class ReviewsController < ApplicationController
   end
 
   def destroy
-    @review = current_user.reviews.find_by(id: params[:id])
-
-    if @review
+    @review = Review.find_by(id: params[:id])
+    if @review && can?(:destroy, @review)
       @review.destroy
-      redirect_back(fallback_location: root_path, notice: "Đã xóa đánh giá.")
+      redirect_back(fallback_location: root_path,
+                    notice: "Đã xóa đánh giá.")
     else
       redirect_back(fallback_location: root_path,
-                    alert: "Không tìm thấy đánh giá or bạn không có quyền xóa.")
+                    alert: "Không có quyền xóa hoặc đánh giá không tồn tại.")
     end
   end
 

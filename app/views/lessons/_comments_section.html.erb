@@ -33,14 +33,16 @@
               <small class="text-muted" style="font-size: 0.85rem"><%= time_ago_in_words(comment.created_at) %> trước</small>
             </div>
 
-            <% if current_user == comment.user %>
+<% if can?(:destroy, comment) %>
               <div class="dropdown">
                 <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="bi bi-three-dots-vertical"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                   <li>
-                    <%= link_to lesson_comment_path(@lesson, comment), data: { turbo_method: :delete, turbo_confirm: "Xóa bình luận này?" }, class: "dropdown-item text-danger small" do %>
+                    <%= link_to lesson_comment_path(@lesson, comment),
+                        data: { turbo_method: :delete, turbo_confirm: "Xóa bình luận này?" },
+                        class: "dropdown-item text-danger small" do %>
                       <i class="bi bi-trash me-2"></i> Xóa bình luận
                     <% end %>
                   </li>
@@ -72,9 +74,11 @@
                       </div>
                       <div class="d-flex align-items-center">
                         <small class="text-muted me-2" style="font-size: 0.75rem"><%= time_ago_in_words(reply.created_at) %></small>
-                        <% if current_user == reply.user %>
-                          <%= link_to lesson_comment_path(@lesson, reply), data: { turbo_method: :delete, turbo_confirm: "Xóa câu trả lời?" }, class: "text-secondary small text-decoration-none hover-text-danger" do %>
-                            <i class="bi bi-x"></i>
+                        <% if can?(:destroy, reply) %>
+                          <%= link_to lesson_comment_path(@lesson, reply),
+                              data: { turbo_method: :delete, turbo_confirm: "Xóa câu trả lời?" },
+                              class: "text-secondary small text-decoration-none hover-text-danger" do %>
+                            <i class="bi bi-x-lg"></i>
                           <% end %>
                         <% end %>
                       </div>
