@@ -13,6 +13,7 @@ class Admin::QuestionsController < Admin::BaseController
   def new
     @question = Question.new
     4.times{@question.question_options.build}
+    @courses = Course.all
   end
 
   def create
@@ -27,9 +28,11 @@ class Admin::QuestionsController < Admin::BaseController
   end
 
   def edit
-    (4 - @question.question_options.count).times do
-      @question.question_options.build
-    end
+    missing_count = 4 - @question.question_options.count
+    missing_count
+      .times{@question.question_options.build} if missing_count.positive?
+
+    @courses = Course.all
   end
 
   def update

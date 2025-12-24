@@ -1,15 +1,13 @@
 class Admin::CoursesController < Admin::BaseController
-  before_action :set_course, only: %i(show edit update destroy)
-
   def index
-    @pagy, @courses = pagy(Course.includes(:category).recent, items: 10)
+    @pagy, @courses = pagy(
+      Course.includes(:category, :creator)
+            .order(status: :asc, created_at: :desc).recent
+    )
   end
 
   def show
-    @course = Course.includes(course_modules: :lessons).find_by(id: params[:id])
-    return unless @course.nil?
-
-    redirect_to courses_path
+    @big_quizzes = @course.quizzes.big
   end
 
   def new
@@ -19,6 +17,9 @@ class Admin::CoursesController < Admin::BaseController
   def create
     @course = Course.new(course_params)
     @course.creator = current_user
+
+    @course.status = :published
+
     if @course.save
       redirect_to admin_course_path(@course),
                   notice: t("admin.courses.create.success")
@@ -43,14 +44,10 @@ class Admin::CoursesController < Admin::BaseController
       redirect_to admin_courses_path,
                   notice: t("admin.courses.destroy.success")
     else
-
       error_message = @course.errors.full_messages.join(", ")
-
-      alert_message = error_message.presence ||
-                      t("admin.courses.destroy.failure")
-
-      redirect_to admin_courses_path,
-                  alert: alert_message
+      alert_message = error_message
+                      .presence || t("admin.courses.destroy.failure")
+      redirect_to admin_courses_path, alert: alert_message
     end
   end
 
@@ -58,8 +55,7 @@ class Admin::CoursesController < Admin::BaseController
     course = Course.find_by(id: params[:id])
 
     if course.nil?
-      return render json: {error: "Course not found"},
-                    status: :not_found
+      return render json: {error: "Course not found"}, status: :not_found
     end
 
     @lessons = Lesson.joins(:course_module)
@@ -77,7 +73,7 @@ class Admin::CoursesController < Admin::BaseController
 
     return unless @course.nil?
 
-    redirect_to admin_courses_path
+    redirect_to admin_courses_path, alert: "Khóa học không tồn tại."
   end
 
   def course_params

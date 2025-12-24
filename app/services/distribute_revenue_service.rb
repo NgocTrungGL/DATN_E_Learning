@@ -3,6 +3,7 @@ class DistributeRevenueService
     @enrollment = enrollment
     @course = enrollment.course
     @instructor = @course.creator
+
     @amount = @enrollment.price || @course.price
   end
 

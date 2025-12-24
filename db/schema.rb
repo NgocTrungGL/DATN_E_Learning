@@ -10,7 +10,52 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "cart_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "cart_id", null: false
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cart_id", "course_id"], name: "index_cart_items_on_cart_id_and_course_id", unique: true
+    t.index ["cart_id"], name: "index_cart_items_on_cart_id"
+    t.index ["course_id"], name: "index_cart_items_on_course_id"
+  end
+
+  create_table "carts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_carts_on_user_id"
+  end
+
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -51,8 +96,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "price", precision: 10, scale: 2, default: "0.0"
+    t.integer "status", default: 0
     t.index ["category_id"], name: "index_courses_on_category_id"
     t.index ["created_by"], name: "fk_rails_8984e96f9b"
+    t.index ["status"], name: "index_courses_on_status"
   end
 
   create_table "enrollments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -94,7 +141,46 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
     t.integer "order_index", default: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "free_preview", default: false
     t.index ["course_module_id"], name: "index_lessons_on_course_module_id"
+  end
+
+  create_table "licenses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "course_id", null: false
+    t.bigint "user_id"
+    t.string "code"
+    t.integer "status", default: 0
+    t.decimal "price", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_licenses_on_course_id"
+    t.index ["organization_id", "course_id", "status"], name: "index_licenses_on_organization_id_and_course_id_and_status"
+    t.index ["organization_id"], name: "index_licenses_on_organization_id"
+    t.index ["user_id"], name: "index_licenses_on_user_id"
+  end
+
+  create_table "organizations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.string "domain"
+    t.integer "plan"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["domain"], name: "index_organizations_on_domain", unique: true
+    t.index ["name"], name: "index_organizations_on_name", unique: true
+  end
+
+  create_table "payout_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "amount", precision: 15, scale: 2, default: "0.0"
+    t.integer "status", default: 0
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "bank_name"
+    t.string "bank_account_num"
+    t.string "bank_account_name"
+    t.index ["user_id"], name: "index_payout_requests_on_user_id"
   end
 
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -157,6 +243,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
     t.json "selected_option_ids"
     t.boolean "is_correct", default: false
     t.datetime "answered_at"
+    t.decimal "score_earned", precision: 5, scale: 2, default: "0.0"
     t.index ["question_id"], name: "index_quiz_answers_on_question_id"
     t.index ["question_option_id"], name: "index_quiz_answers_on_question_option_id"
     t.index ["quiz_attempt_id"], name: "index_quiz_answers_on_quiz_attempt_id"
@@ -198,6 +285,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
     t.boolean "random_mode", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "easy_count", default: 0
+    t.integer "medium_count", default: 0
+    t.integer "hard_count", default: 0
+    t.integer "scoring_type", default: 0
     t.index ["course_id"], name: "index_quizzes_on_course_id"
     t.index ["created_by"], name: "index_quizzes_on_created_by"
     t.index ["lesson_id"], name: "index_quizzes_on_lesson_id"
@@ -229,8 +320,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
     t.datetime "remember_created_at"
     t.string "confirmation_token"
     t.datetime "confirmation_sent_at"
+    t.bigint "organization_id"
+    t.string "unconfirmed_email"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -253,6 +347,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
     t.index ["user_id"], name: "index_wallets_on_user_id", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cart_items", "carts"
+  add_foreign_key "cart_items", "courses"
+  add_foreign_key "carts", "users"
   add_foreign_key "categories", "categories", column: "parent_id"
   add_foreign_key "comments", "lessons"
   add_foreign_key "comments", "users"
@@ -263,6 +362,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
   add_foreign_key "enrollments", "users"
   add_foreign_key "instructor_profiles", "users"
   add_foreign_key "lessons", "course_modules", on_delete: :cascade
+  add_foreign_key "licenses", "courses"
+  add_foreign_key "licenses", "organizations"
+  add_foreign_key "licenses", "users"
+  add_foreign_key "payout_requests", "users"
   add_foreign_key "profiles", "users", on_delete: :cascade
   add_foreign_key "progress_trackings", "courses"
   add_foreign_key "progress_trackings", "lessons"
@@ -284,6 +387,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_10_162006) do
   add_foreign_key "quizzes", "users", column: "created_by"
   add_foreign_key "reviews", "courses"
   add_foreign_key "reviews", "users"
+  add_foreign_key "users", "organizations"
   add_foreign_key "wallet_transactions", "wallets"
   add_foreign_key "wallets", "users"
 end

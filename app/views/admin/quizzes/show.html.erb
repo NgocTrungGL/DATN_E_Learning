@@ -1,76 +1,190 @@
-<h1>Quản lý câu hỏi cho Quiz:</h1>
-<h2><%= @quiz.title %></h2>
-<p>
-  <strong>Thuộc Khóa học:</strong> <%= @quiz.course.title %><br>
-  <strong>Thuộc Bài học:</strong> <%= @quiz.lesson&.title || "Bài kiểm tra chung (Cuối khóa)" %>
-</p>
-
-<hr>
-
-<div class="row">
-  <div class="col-md-7">
-    <h3>Câu hỏi trong bài kiểm tra (<%= @quiz_questions.count %>)</h3>
-
-    <table class="table table-striped">
-      <tbody>
-        <% @quiz_questions.each do |quiz_question| %>
-          <tr>
-            <td>
-              <%= truncate(quiz_question.question.question_text, length: 100) %>
-              <small class="text-muted d-block">
-                (Loại: <%= quiz_question.question.question_type %>,
-                Độ khó: <%= quiz_question.question.difficulty %>)
-              </small>
-            </td>
-            <td style="width: 100px;" class="text-end">
-              <%# Dùng button_to để gửi DELETE %>
-              <%= button_to "Xóa", admin_quiz_question_path(quiz_question),
-                    method: :delete,
-                    data: { turbo_confirm: "Xóa câu hỏi này khỏi bài kiểm tra?" },
-                    class: "btn btn-sm btn-outline-danger" %>
-            </td>
-          </tr>
-        <% end %>
-        <% if @quiz_questions.empty? %>
-          <tr><td colspan="2" class="text-muted">Chưa có câu hỏi nào. Hãy thêm từ bên phải.</td></tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="col-md-5">
-    <div class="card bg-light">
-      <div class="card-body">
-        <h5 class="card-title">Thêm câu hỏi từ Ngân hàng</h5>
-        <p class="card-text">Chọn câu hỏi từ khóa học <strong><%= @quiz.course.title %></strong> để thêm vào:</p>
-
-        <%# Form này gửi POST đến Admin::QuizQuestionsController#create %>
-        <%= form_with(url: admin_quiz_quiz_questions_path(@quiz), method: :post) do |f| %>
-
-          <div class="mb-3">
-            <%= f.label :question_id, "Câu hỏi có sẵn", class: "form-label" %>
-
-            <%# Dropdown này lấy từ @available_questions trong controller %>
-            <%= f.collection_select :question_id, @available_questions, :id, :question_text,
-                  { prompt: "--- Chọn câu hỏi để thêm ---" },
-                  { class: "form-select", required: true } %>
-          </div>
-
-          <%= f.submit "Thêm vào Quiz", class: "btn btn-primary" %>
-        <% end %>
-
-        <hr>
-        <p class="text-muted small">
-          Không thấy câu hỏi bạn cần?
-          <%= link_to "Tạo câu hỏi mới", new_admin_question_path(course_id: @quiz.course_id), target: "_blank" %>
-          (Sẽ tự động chọn khóa học này).
-        </p>
+<div class="container py-4">
+  <%# --- HEADER: THÔNG TIN CHUNG --- %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-0">
+        <i class="bi bi-file-text me-2"></i><%= @quiz.title %>
+      </h2>
+      <div class="text-muted mt-2">
+        <span class="me-3"><i class="bi bi-book"></i> <strong>Khóa học:</strong> <%= @quiz.course.title %></span>
+        <span>
+          <i class="bi bi-layers"></i> <strong>Vị trí:</strong>
+          <% if @quiz.lesson %>
+            <%= @quiz.lesson.title %> (Mini Quiz)
+          <% else %>
+            <span class="badge bg-primary">Bài kiểm tra chung (Cuối khóa)</span>
+          <% end %>
+        </span>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="mt-4">
-  <%= link_to "Chỉnh sửa cài đặt Quiz", edit_admin_quiz_path(@quiz), class: "btn btn-secondary" %>
-  <%= link_to "Quay lại danh sách Quizzes", admin_quizzes_path, class: "btn btn-outline-secondary" %>
+    <div>
+      <%= link_to edit_admin_quiz_path(@quiz), class: "btn btn-outline-primary" do %>
+        <i class="bi bi-gear"></i> Cấu hình
+      <% end %>
+      <%= link_to admin_quizzes_path, class: "btn btn-secondary" do %>
+        <i class="bi bi-arrow-left"></i> Quay lại
+      <% end %>
+    </div>
+  </div>
+
+  <hr>
+
+  <%# --- LOGIC PHÂN CHIA GIAO DIỆN --- %>
+  <% if @quiz.random_selection? %>
+
+    <%# === GIAO DIỆN 1: RANDOM MODE (BÀI THI LỚN) === %>
+    <div class="alert alert-info shadow-sm">
+      <h5 class="alert-heading"><i class="bi bi-shuffle"></i> Chế độ Ngẫu nhiên (Random Mode)</h5>
+      <p class="mb-0">
+        Đây là bài thi tổng hợp. Hệ thống sẽ <strong>tự động lấy câu hỏi</strong> từ Ngân hàng câu hỏi của khóa học mỗi khi học viên bắt đầu làm bài.
+        <br>
+        Bạn <strong>không cần</strong> thêm câu hỏi thủ công vào đây. Hãy đảm bảo Ngân hàng câu hỏi có đủ số lượng cần thiết.
+      </p>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-light fw-bold">
+        Cấu hình đề thi hiện tại
+      </div>
+      <div class="card-body">
+        <div class="row text-center py-3">
+          <div class="col-md-3 border-end">
+            <h6 class="text-muted text-uppercase small">Tổng số câu hỏi</h6>
+            <h1 class="display-4 fw-bold text-primary"><%= @quiz.total_questions %></h1>
+          </div>
+          <div class="col-md-3 border-end">
+            <h6 class="text-muted text-uppercase small">Số câu Dễ</h6>
+            <h2 class="fw-bold text-success"><%= @quiz.easy_count %></h2>
+          </div>
+          <div class="col-md-3 border-end">
+            <h6 class="text-muted text-uppercase small">Số câu Trung bình</h6>
+            <h2 class="fw-bold text-warning"><%= @quiz.medium_count %></h2>
+          </div>
+          <div class="col-md-3">
+            <h6 class="text-muted text-uppercase small">Số câu Khó</h6>
+            <h2 class="fw-bold text-danger"><%= @quiz.hard_count %></h2>
+          </div>
+        </div>
+
+        <div class="mt-3 text-center">
+          <span class="badge bg-secondary p-2">
+            Kiểu chấm điểm:
+            <%= @quiz.weighted? ? "Phân cấp (Khó x3, TB x2)" : "Đồng cấp (Mọi câu bằng điểm)" %>
+          </span>
+        </div>
+      </div>
+      <div class="card-footer bg-white text-muted small">
+        <i class="bi bi-info-circle"></i> Để thay đổi số lượng câu hỏi, vui lòng bấm nút "Cấu hình" ở trên.
+      </div>
+    </div>
+
+  <% else %>
+
+    <%# === GIAO DIỆN 2: MANUAL MODE (MINI QUIZ) === %>
+    <div class="row">
+      <%# --- CỘT TRÁI: DANH SÁCH CÂU HỎI ĐÃ THÊM --- %>
+      <div class="col-md-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">Câu hỏi đã chọn (<%= @quiz_questions.count %>)</h4>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Nội dung câu hỏi</th>
+                <th class="text-end">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @quiz_questions.each do |quiz_question| %>
+                <tr>
+                  <td>
+                    <p class="mb-1 fw-bold text-dark">
+                      <%= truncate(quiz_question.question.question_text, length: 80) %>
+                    </p>
+                    <div class="small">
+                      <span class="badge bg-light text-dark border">
+                        <%= quiz_question.question.question_type == 'single' ? '1 Đáp án' : 'Nhiều đáp án' %>
+                      </span>
+                      <% difficulty_color = case quiz_question.question.difficulty
+                         when 'easy' then 'success'
+                         when 'medium' then 'warning'
+                         when 'hard' then 'danger'
+                         end %>
+                      <span class="badge bg-<%= difficulty_color %> bg-opacity-10 text-<%= difficulty_color %>">
+                        <%= quiz_question.question.difficulty.capitalize %>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <%= button_to admin_quiz_question_path(quiz_question),
+                          method: :delete,
+                          data: { turbo_confirm: "Gỡ câu hỏi này khỏi bài kiểm tra?" },
+                          class: "btn btn-sm btn-outline-danger",
+                          title: "Gỡ bỏ" do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+
+              <% if @quiz_questions.empty? %>
+                <tr>
+                  <td colspan="2" class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    Chưa có câu hỏi nào được thêm.<br>
+                    Hãy chọn câu hỏi từ cột bên phải.
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <%# --- CỘT PHẢI: FORM THÊM CÂU HỎI --- %>
+      <div class="col-md-5">
+        <div class="card bg-light border-0 shadow-sm sticky-top" style="top: 20px; z-index: 1;">
+          <div class="card-body">
+            <h5 class="card-title text-primary"><i class="bi bi-plus-circle"></i> Thêm từ Ngân hàng</h5>
+            <p class="card-text small text-muted">
+              Chọn câu hỏi thủ công từ khóa học <strong><%= @quiz.course.title %></strong>:
+            </p>
+
+            <%= form_with(url: admin_quiz_quiz_questions_path(@quiz), method: :post) do |f| %>
+              <div class="mb-3">
+                <%= f.label :question_id, "Danh sách câu hỏi có sẵn", class: "form-label fw-bold small" %>
+
+                <%# Kiểm tra nếu hết câu hỏi để thêm %>
+                <% if @available_questions.any? %>
+                  <%= f.collection_select :question_id, @available_questions, :id,
+                        ->(q){ "#{truncate(q.question_text, length: 50)} (#{q.difficulty})" },
+                        { prompt: "--- Chọn câu hỏi ---" },
+                        { class: "form-select", required: true } %>
+
+                  <div class="d-grid mt-3">
+                    <%= f.submit "Thêm vào Quiz", class: "btn btn-primary" %>
+                  </div>
+                <% else %>
+                  <div class="alert alert-warning small mb-0">
+                    Đã thêm hết tất cả câu hỏi của khóa học này vào Quiz.
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <hr>
+            <div class="d-grid">
+              <%= link_to new_admin_question_path(course_id: @quiz.course_id),
+                  class: "btn btn-outline-secondary btn-sm", target: "_blank" do %>
+                <i class="bi bi-pencil-square"></i> Tạo câu hỏi mới cho khóa này
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

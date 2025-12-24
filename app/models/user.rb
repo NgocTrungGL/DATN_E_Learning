@@ -1,8 +1,11 @@
 class User < ApplicationRecord
+  belongs_to :organization, optional: true
   enum role: {
     admin: "admin",
     instructor: "instructor",
-    student: "student"
+    student: "student",
+    company_admin: "company_admin",
+    employee: "employee"
   }
   has_one :profile, dependent: :destroy
   has_one :instructor_profile, dependent: :destroy
@@ -31,21 +34,27 @@ class User < ApplicationRecord
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :comments, dependent: :destroy
   has_many :reviews, dependent: :destroy
+  has_many :licenses, dependent: :nullify
   has_one :wallet, dependent: :destroy
   has_many :quiz_attempts, dependent: :destroy
   has_many :progress_trackings, dependent: :destroy
-
+  has_many :payout_requests, dependent: :destroy
   has_many :created_courses, class_name: Course.name, foreign_key: :created_by,
 dependent: :nullify
   has_many :created_quizzes, class_name: Quiz.name, foreign_key: :created_by,
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
 foreign_key: :created_by, dependent: :nullify
+  has_one :cart, dependent: :destroy
   after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}
 
   def enrolled_in? course
     enrollments.exists?(course_id: course.id)
+  end
+
+  def current_cart
+    cart || create_cart
   end
 
   def can_access_course? course
@@ -73,6 +82,10 @@ foreign_key: :created_by, dependent: :nullify
 
   def generate_activation_token
     signed_id(purpose: :account_activation, expires_in: 24.hours)
+  end
+
+  def has_license_for? course
+    licenses.where(course_id: course.id, status: :assigned).exists?
   end
   private
 

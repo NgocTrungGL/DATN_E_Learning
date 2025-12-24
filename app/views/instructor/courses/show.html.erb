@@ -8,27 +8,76 @@
     <%= link_to "Quay lại", instructor_courses_path, class: "btn btn-outline-secondary btn-sm" %>
   </div>
 </div>
+
 <div class="row">
   <div class="col-md-4 mb-4">
     <div class="card shadow-sm mb-3">
       <img src="<%= @course.thumbnail_url.presence || 'https://via.placeholder.com/400x225' %>" class="card-img-top" style="object-fit: cover; height: 200px;">
+
       <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="fw-bold text-muted small text-uppercase">Trạng thái:</span>
+          <% case @course.status %>
+          <% when 'draft' %>
+            <span class="badge bg-secondary">Bản nháp</span>
+          <% when 'pending' %>
+            <span class="badge bg-warning text-dark">⏳ Đang chờ duyệt</span>
+          <% when 'published' %>
+            <span class="badge bg-success">✅ Đang hoạt động</span>
+          <% when 'rejected' %>
+            <span class="badge bg-danger">❌ Bị từ chối</span>
+          <% end %>
+        </div>
+
         <p class="card-text text-muted"><%= truncate(@course.description, length: 150) %></p>
+
+        <div class="d-grid gap-2 mb-3">
+          <% if @course.draft? || @course.rejected? %>
+            <%= button_to submit_for_review_instructor_course_path(@course),
+                method: :patch,
+                class: "btn btn-primary fw-bold shadow-sm",
+                data: { turbo_confirm: "Bạn đã kiểm tra kỹ nội dung chưa? Sau khi gửi, bạn sẽ không thể chỉnh sửa cho đến khi Admin duyệt xong." } do %>
+              <i class="bi bi-send-fill me-2"></i> Gửi duyệt ngay
+            <% end %>
+
+          <% elsif @course.pending? %>
+            <button class="btn btn-secondary disabled" type="button">
+              <i class="bi bi-hourglass-split me-2"></i> Đang chờ Admin xử lý
+            </button>
+
+          <% elsif @course.published? %>
+            <button class="btn btn-success disabled" type="button">
+              <i class="bi bi-check-circle-fill me-2"></i> Đã xuất bản
+            </button>
+          <% end %>
+        </div>
+
         <hr>
+
         <div class="d-grid gap-2">
-          <%= link_to "Sửa thông tin chung", edit_instructor_course_path(@course), class: "btn btn-warning" %>
-          <%= link_to "Danh sách học viên", students_instructor_course_path(@course), class: "btn btn-info text-white" %>
+          <%= link_to edit_instructor_course_path(@course), class: "btn btn-outline-warning text-dark" do %>
+            <i class="bi bi-pencil-square"></i> Sửa thông tin chung
+          <% end %>
+
+          <%= link_to students_instructor_course_path(@course), class: "btn btn-outline-info text-dark" do %>
+            <i class="bi bi-people-fill"></i> Danh sách học viên
+          <% end %>
         </div>
       </div>
     </div>
   </div>
+
   <div class="col-md-8">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="mb-0">Nội dung khóa học</h4>
-      <%= link_to new_instructor_course_course_module_path(@course), class: "btn btn-success btn-sm" do %>
-        <i class="bi bi-plus-lg"></i> Thêm Chương mới
+
+      <% unless @course.pending? %>
+        <%= link_to new_instructor_course_course_module_path(@course), class: "btn btn-success btn-sm" do %>
+          <i class="bi bi-plus-lg"></i> Thêm Chương mới
+        <% end %>
       <% end %>
     </div>
+
     <div class="accordion" id="accordionModules">
       <% if @course_modules.any? %>
         <% @course_modules.each do |mod| %>
@@ -36,23 +85,31 @@
             <h2 class="accordion-header" id="heading<%= mod.id %>">
               <div class="accordion-button collapsed d-flex justify-content-between align-items-center p-3 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= mod.id %>">
                 <span class="fw-bold me-auto"><%= mod.title %></span>
-                <div class="z-index-high ms-3 d-flex gap-2" onclick="event.stopPropagation();">
-                  <%= link_to edit_instructor_course_module_path(mod), class: "btn btn-sm btn-outline-secondary", title: "Sửa chương" do %>
-                    <i class="bi bi-pencil"></i>
-                  <% end %>
-                  <%= button_to instructor_course_module_path(mod), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Xóa chương", data: { confirm: "Xóa chương này sẽ xóa hết bài học bên trong. Bạn chắc chứ?" } do %>
-                    <i class="bi bi-trash"></i>
-                  <% end %>
-                </div>
+
+                <% unless @course.pending? %>
+                  <div class="z-index-high ms-3 d-flex gap-2" onclick="event.stopPropagation();">
+                    <%= link_to edit_instructor_course_module_path(mod), class: "btn btn-sm btn-outline-secondary", title: "Sửa chương" do %>
+                      <i class="bi bi-pencil"></i>
+                    <% end %>
+                    <%= button_to instructor_course_module_path(mod), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Xóa chương", data: { confirm: "Xóa chương này sẽ xóa hết bài học bên trong. Bạn chắc chứ?" } do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  </div>
+                <% end %>
+
               </div>
             </h2>
             <div id="collapse<%= mod.id %>" class="accordion-collapse collapse" data-bs-parent="#accordionModules">
               <div class="accordion-body p-0">
-                <div class="p-2 bg-light border-bottom text-end">
-                  <%= link_to new_instructor_course_module_lesson_path(mod), class: "btn btn-sm btn-primary" do %>
-                    <i class="bi bi-plus-circle"></i> Thêm bài học
-                  <% end %>
-                </div>
+
+                <% unless @course.pending? %>
+                  <div class="p-2 bg-light border-bottom text-end">
+                    <%= link_to new_instructor_course_module_lesson_path(mod), class: "btn btn-sm btn-primary" do %>
+                      <i class="bi bi-plus-circle"></i> Thêm bài học
+                    <% end %>
+                  </div>
+                <% end %>
+
                 <ul class="list-group list-group-flush">
                   <% mod.lessons.order(:order_index).each do |lesson| %>
                     <li class="list-group-item d-flex justify-content-between align-items-center ps-4">
@@ -60,14 +117,18 @@
                         <i class="bi <%= lesson.video_url.present? ? 'bi-play-circle-fill text-danger' : 'bi-file-text-fill text-primary' %> me-2"></i>
                         <%= lesson.title %>
                       </div>
-                      <div class="btn-group">
-                        <%= link_to edit_instructor_lesson_path(lesson), class: "btn btn-sm btn-light text-primary", title: "Sửa bài" do %>
-                          <i class="bi bi-pencil"></i>
-                        <% end %>
-                        <%= button_to instructor_lesson_path(lesson), method: :delete, class: "btn btn-sm btn-light text-danger", title: "Xóa bài", data: { confirm: "Xóa bài học này?" } do %>
-                          <i class="bi bi-trash"></i>
-                        <% end %>
-                      </div>
+
+                      <% unless @course.pending? %>
+                        <div class="btn-group">
+                          <%= link_to edit_instructor_lesson_path(lesson), class: "btn btn-sm btn-light text-primary", title: "Sửa bài" do %>
+                            <i class="bi bi-pencil"></i>
+                          <% end %>
+                          <%= button_to instructor_lesson_path(lesson), method: :delete, class: "btn btn-sm btn-light text-danger", title: "Xóa bài", data: { confirm: "Xóa bài học này?" } do %>
+                            <i class="bi bi-trash"></i>
+                          <% end %>
+                        </div>
+                      <% end %>
+
                     </li>
                   <% end %>
                   <% if mod.lessons.empty? %>
@@ -84,6 +145,7 @@
         </div>
       <% end %>
     </div>
+
     <% if @big_quizzes.any? %>
       <h5 class="mt-4 mb-3 text-warning"><i class="bi bi-trophy"></i> Bài kiểm tra cuối khóa</h5>
       <div class="list-group shadow-sm">
@@ -99,4 +161,4 @@
       </div>
     <% end %>
   </div>
-</div>
+</div>s

@@ -1,17 +1,16 @@
 class QuizAnswersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_quiz_attempt
+  before_action :set_quiz
 
   def create
-    return if handle_expired_attempt
+    return if redirect_if_random_quiz
+    return if render_forbidden_if_finished
 
-    @answer = build_quiz_answer
+    @answer = find_answer
+    update_answer_selection if @answer
 
-    if @answer.save
-      handle_successful_save
-    else
-      handle_failed_save
-    end
+    redirect_after_save
   end
 
   private
@@ -20,41 +19,60 @@ class QuizAnswersController < ApplicationController
     @quiz_attempt = QuizAttempt.find(params[:quiz_attempt_id])
     return if @quiz_attempt.user == current_user
 
-    redirect_to root_path,
-                alert: t("admin.authorization.denied")
+    redirect_to root_path, alert: "Access Denied"
   end
 
-  def handle_expired_attempt
-    return false unless @quiz_attempt.completed? || @quiz_attempt.expired?
+  def set_quiz
+    @quiz = @quiz_attempt.quiz
+  end
 
-    flash[:alert] = "Đã hết thời gian làm bài!"
-    redirect_to quiz_attempt_path(@quiz_attempt)
+  # ===== Guard clauses =====
+
+  def redirect_if_random_quiz
+    return false unless @quiz.random_selection?
+
+    redirect_to(
+      admin_quiz_path(@quiz),
+      alert: "Không thể thêm câu hỏi thủ công vào bài thi Random."
+    )
     true
   end
 
-  def build_quiz_answer
-    quiz_params = params[:quiz_answer]
-    @quiz_attempt.quiz_answers.new(
-      question_id: quiz_params[:question_id],
-      question_option_id: quiz_params[:question_option_id]
+  def render_forbidden_if_finished
+    return false unless @quiz_attempt.completed? || @quiz_attempt.expired?
+
+    render json: {error: "Bài thi đã kết thúc"}, status: :forbidden
+    true
+  end
+
+  # ===== Business logic =====
+
+  def find_answer
+    @quiz_attempt.quiz_answers.find_by(
+      question_id: params.dig(:quiz_answer, :question_id)
     )
   end
 
-  def handle_successful_save
-    next_id = params[:next_question_id]
-
-    if next_id.present?
-      redirect_to quiz_attempt_path(@quiz_attempt, question_id: next_id)
-    else
-      current_q_id = params[:quiz_answer][:question_id]
-      redirect_to quiz_attempt_path(@quiz_attempt, question_id: current_q_id),
-                  notice: "Đã lưu câu trả lời cuối cùng."
-    end
+  def update_answer_selection
+    @answer.update(
+      selected_option_ids: normalized_selected_option_ids
+    )
   end
 
-  def handle_failed_save
-    flash[:alert] = "Không thể nộp câu trả lời."
-    current_q_id = params[:quiz_answer][:question_id]
-    redirect_to quiz_attempt_path(@quiz_attempt, question_id: current_q_id)
+  def normalized_selected_option_ids
+    Array(params.dig(:quiz_answer, :selected_option_ids))
+      .reject(&:blank?)
+  end
+
+  # ===== Redirect =====
+
+  def redirect_after_save
+    target_question_id =
+      params[:next_question_id] || @answer.question_id
+
+    redirect_to(
+      quiz_attempt_path(@quiz_attempt, question_id: target_question_id),
+      notice: "Đã lưu."
+    )
   end
 end

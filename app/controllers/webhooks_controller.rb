@@ -1,41 +1,48 @@
 class WebhooksController < ApplicationController
-  skip_before_action :verify_authenticity_token
+  skip_before_action :verify_authenticity_token, raise: false
 
   def create
-    event = build_stripe_event
-    return head :bad_request unless event
+    payload = request.body.read
+    sig_header = request.env["HTTP_STRIPE_SIGNATURE"]
+    endpoint_secret = ENV["STRIPE_SIGNING_SECRET"]
+    event = nil
 
-    handle_event(event)
+    begin
+      event = Stripe::Webhook.construct_event(
+        payload, sig_header, endpoint_secret
+      )
+    rescue JSON::ParserError, Stripe::SignatureVerificationError
+      head :bad_request
+      return
+    end
 
-    head :ok
+    case event.type
+    when "checkout.session.completed"
+      session = event.data.object
+      handle_checkout_session(session)
+    end
+
+    render json: {message: "success"}
   end
 
   private
 
-  def build_stripe_event
-    Stripe::Webhook.construct_event(
-      request.body.read,
-      request.env["HTTP_STRIPE_SIGNATURE"],
-      ENV["STRIPE_SIGNING_SECRET"]
+  def handle_checkout_session session
+    user_id = session.metadata["user_id"]
+    course_id = session.metadata["course_id"]
+
+    return if user_id.blank? || course_id.blank?
+
+    user = User.find_by(id: user_id)
+    course = Course.find_by(id: course_id)
+
+    return unless user && course
+
+    enrollment = Enrollment.find_or_initialize_by(user:, course:)
+
+    enrollment.update(
+      price: session.amount_total,
+      status: :active
     )
-  rescue JSON::ParserError, Stripe::SignatureVerificationError
-    nil
-  end
-
-  def handle_event event
-    return unless event["type"] == "checkout.session.completed"
-
-    session = event["data"]["object"]
-    activate_enrollment(session["metadata"]["enrollment_id"])
-  end
-
-  def activate_enrollment enrollment_id
-    enrollment = Enrollment.find_by(id: enrollment_id)
-    return unless enrollment && !enrollment.active?
-
-    ActiveRecord::Base.transaction do
-      enrollment.update!(status: :active)
-      DistributeRevenueService.new(enrollment).perform
-    end
   end
 end

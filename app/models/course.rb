@@ -10,6 +10,18 @@ optional: true
   has_many :quizzes, dependent: :destroy
   has_many :questions, dependent: :nullify
   has_many :progress_trackings, dependent: :destroy
+  has_many :licenses, dependent: :destroy
+  has_one_attached :image
+  enum status: {
+    draft: 0,
+    pending: 1,
+    published: 2,
+    rejected: 3
+  }
+  def total_students
+    enrollments.active.count
+  end
+  scope :available, ->{where(status: :published)}
   # Validation
   validates :title, presence: true
   validates :price, numericality: {greater_than_or_equal_to: 0}

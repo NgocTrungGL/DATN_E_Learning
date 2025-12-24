@@ -17,10 +17,12 @@
             </div>
           </div>
           <div class="mt-3">
-             <button class="btn btn-light text-success fw-bold btn-sm shadow-sm">
+             <button type="button" class="btn btn-light text-success fw-bold btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#payoutModal">
                <i class="bi bi-bank me-1"></i> Yêu cầu rút tiền
              </button>
-             <small class="d-block mt-2 opacity-75 fst-italic">* Chức năng rút tiền đang phát triển</small>
+             <small class="d-block mt-2 opacity-75 fst-italic">
+               * Số dư tối thiểu: 100.000₫. Xử lý trong 24h.
+             </small>
           </div>
         </div>
       </div>
@@ -39,7 +41,14 @@
       </div>
     </div>
   </div>
-
+  <div class="card shadow border-0 mb-4">
+    <div class="card-header py-3 bg-white">
+      <h6 class="m-0 fw-bold text-success">Biểu đồ thu nhập (30 ngày qua)</h6>
+    </div>
+    <div class="card-body">
+      <%= column_chart @income_chart_data, prefix: "₫", thousands: ",", colors: ["#1cc88a"], height: "300px", empty: "Bạn chưa có doanh thu trong 30 ngày qua" %>
+    </div>
+  </div>
   <div class="card shadow border-0">
     <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
       <h6 class="m-0 fw-bold text-primary">Lịch sử biến động số dư</h6>
@@ -114,4 +123,55 @@
       <%== pagy_bootstrap_nav(@pagy) %>
     </div>
   <% end %>
+</div>
+<div class="modal fade" id="payoutModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_with model: PayoutRequest.new, url: instructor_payouts_path, local: true do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Yêu cầu rút tiền về ngân hàng</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="alert alert-info d-flex align-items-center mb-4">
+            <i class="bi bi-wallet2 fs-4 me-3"></i>
+            <div>
+              <small>Số dư khả dụng:</small><br>
+              <strong class="fs-5"><%= number_to_currency(@wallet.balance, unit: "₫", precision: 0) %></strong>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :amount, "Số tiền muốn rút (VNĐ)", class: "form-label fw-bold" %>
+            <%= f.number_field :amount, class: "form-control form-control-lg fw-bold text-success",
+                min: 100000, step: 10000, required: true, placeholder: "Tối thiểu 100.000" %>
+          </div>
+
+          <hr class="my-4">
+          <h6 class="fw-bold mb-3 text-secondary text-uppercase small">Thông tin nhận tiền</h6>
+
+          <div class="mb-3">
+            <%= f.label :bank_name, "Tên Ngân hàng", class: "form-label" %>
+            <%= f.text_field :bank_name, class: "form-control", required: true, placeholder: "VD: MB Bank, Vietcombank..." %>
+          </div>
+
+          <div class="mb-3">
+             <%= f.label :bank_account_num, "Số tài khoản", class: "form-label" %>
+             <%= f.text_field :bank_account_num, class: "form-control font-monospace", required: true, placeholder: "VD: 99998888..." %>
+          </div>
+
+          <div class="mb-3">
+             <%= f.label :bank_account_name, "Tên chủ tài khoản (Không dấu)", class: "form-label" %>
+             <%= f.text_field :bank_account_name, class: "form-control text-uppercase", required: true, placeholder: "VD: NGUYEN VAN A" %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy bỏ</button>
+          <%= f.submit "Gửi yêu cầu", class: "btn btn-success fw-bold px-4" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>

@@ -11,15 +11,33 @@
             <%= f.label :title, "Tên bài học", class: "form-label fw-bold" %>
             <%= f.text_field :title, class: "form-control", autofocus: true %>
           </div>
+
           <div class="mb-3">
             <%= f.label :description, "Nội dung", class: "form-label" %>
             <%= f.text_area :description, rows: 3, class: "form-control" %>
           </div>
+
           <div class="mb-3">
             <%= f.label :video_url, "Link Video (YouTube)", class: "form-label fw-bold" %>
-            <%= f.text_field :video_url, class: "form-control" %>
+            <%= f.text_field :video_url, class: "form-control", placeholder: "https://www.youtube.com/watch?v=..." %>
           </div>
+
+          <%# --- PHẦN THÊM MỚI: CHECKBOX HỌC THỬ --- %>
+          <div class="mb-3 bg-light p-3 rounded border">
+            <div class="form-check">
+              <%= f.check_box :free_preview, class: "form-check-input", id: "freePreviewCheck" %>
+              <label class="form-check-label fw-bold text-dark" for="freePreviewCheck">
+                Cho phép học thử (Free Preview)
+              </label>
+            </div>
+            <div class="form-text text-muted small ms-4 mt-1">
+              <i class="bi bi-info-circle-fill"></i> Nếu chọn, người dùng chưa mua khóa học vẫn có thể xem bài học này để tham khảo chất lượng.
+            </div>
+          </div>
+          <%# --------------------------------------- %>
+
           <%= f.hidden_field :order_index %>
+
           <div class="d-grid gap-2 mt-4">
             <%= f.submit "Lưu & Thêm tiếp", class: "btn btn-primary fw-bold" %>
             <%= link_to "Quay lại Khóa học", instructor_course_path(@course_module.course), class: "btn btn-outline-secondary" %>
@@ -28,21 +46,50 @@
       </div>
     </div>
   </div>
+
   <div class="col-md-6 mt-4 mt-md-0">
     <h5 class="mb-3 text-secondary">Danh sách bài học (Kéo thả)</h5>
     <div class="list-group shadow-sm"
          data-controller="sortable"
-         data-sortable-url-value="<%= sort_instructor_lessons_path %>"> <% @lessons.each do |l| %>
+         data-sortable-url-value="<%= sort_instructor_lessons_path %>">
+
+      <% @lessons.each do |l| %>
         <div class="list-group-item d-flex align-items-center p-3" data-id="<%= l.id %>">
-          <div class="drag-handle me-3 text-muted" style="cursor: grab;"><i class="bi bi-grip-vertical fs-4"></i></div>
+          <div class="drag-handle me-3 text-muted" style="cursor: grab;">
+            <i class="bi bi-grip-vertical fs-4"></i>
+          </div>
+
           <div class="me-3 text-center" style="width: 30px;">
             <i class="bi <%= l.video_url.present? ? 'bi-play-circle-fill text-danger' : 'bi-file-text-fill text-primary' %> fs-4"></i>
           </div>
-          <div class="flex-grow-1 text-truncate"><%= l.title %></div>
-          <div class="btn-group">
-            <%= link_to edit_instructor_lesson_path(l), class: "btn btn-sm btn-light text-primary" do %><i class="bi bi-pencil"></i><% end %>
-            <%= button_to instructor_lesson_path(l), method: :delete, class: "btn btn-sm btn-light text-danger", data: { confirm: "Xóa?" } do %><i class="bi bi-trash"></i><% end %>
+
+          <div class="flex-grow-1 text-truncate">
+            <span class="fw-medium"><%= l.title %></span>
+
+            <%# --- HIỂN THỊ BADGE NẾU LÀ HỌC THỬ --- %>
+            <% if l.free_preview? %>
+              <span class="badge bg-success-subtle text-success border border-success ms-2" style="font-size: 0.75rem;">
+                <i class="bi bi-eye-fill"></i> Học thử
+              </span>
+            <% end %>
+            <%# ------------------------------------- %>
           </div>
+
+          <div class="btn-group">
+            <%= link_to edit_instructor_lesson_path(l), class: "btn btn-sm btn-light text-primary", title: "Sửa bài học" do %>
+              <i class="bi bi-pencil"></i>
+            <% end %>
+
+            <%= button_to instructor_lesson_path(l), method: :delete, class: "btn btn-sm btn-light text-danger", title: "Xóa bài học", data: { confirm: "Bạn có chắc muốn xóa bài học này không?" } do %>
+              <i class="bi bi-trash"></i>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @lessons.empty? %>
+        <div class="list-group-item text-center text-muted py-4 fst-italic">
+          Chưa có bài học nào trong chương này.
         </div>
       <% end %>
     </div>

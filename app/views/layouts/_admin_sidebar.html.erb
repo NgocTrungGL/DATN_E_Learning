@@ -16,8 +16,17 @@
     <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Nội dung đào tạo</li>
 
     <li>
-      <%= link_to admin_courses_path, class: "#{'active' if controller_name == 'courses'}" do %>
-        <i class="bi bi-collection-play"></i> Khóa học
+      <%= link_to admin_course_reviews_path, class: "d-flex justify-content-between align-items-center #{'active' if controller_name == 'course_reviews'}" do %>
+        <span><i class="bi bi-check-circle-fill text-warning"></i> Duyệt Khóa học</span>
+        <% pending_count = Course.pending.count %>
+        <% if pending_count > 0 %>
+          <span class="badge bg-danger rounded-pill animate__animated animate__pulse animate__infinite"><%= pending_count %></span>
+        <% end %>
+      <% end %>
+    </li>
+    <li>
+      <%= link_to admin_courses_path, class: "#{'active' if controller_name == 'courses' && params[:status].blank?}" do %>
+        <i class="bi bi-collection-play"></i> Tất cả Khóa học
       <% end %>
     </li>
 
@@ -58,20 +67,36 @@
     <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Người dùng & Tài chính</li>
 
     <li>
-      <%= link_to admin_enrollments_path, class: "#{'active' if controller_name == 'enrollments'}" do %>
-        <i class="bi bi-cash-coin"></i> Duyệt Ghi danh
+      <%= link_to admin_users_path, class: "#{'active' if controller_name == 'users'}" do %>
+        <i class="bi bi-people-fill"></i> Người dùng hệ thống
       <% end %>
     </li>
 
     <li>
-      <%= link_to admin_instructors_path, class: "#{'active' if controller_name == 'instructors'}" do %>
+      <%= link_to admin_instructor_profiles_path, class: "#{'active' if controller_name == 'instructors'}" do %>
         <i class="bi bi-person-lines-fill"></i> Duyệt Giảng viên
       <% end %>
     </li>
 
+    <li class="header-text px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">QUẢN LÝ TÀI CHÍNH</li>
+
     <li>
-      <%= link_to admin_users_path, class: "#{'active' if controller_name == 'users'}" do %>
-        <i class="bi bi-people-fill"></i> Người dùng hệ thống
+      <%= link_to admin_revenues_path, class: "#{'active' if controller_name == 'revenues'}" do %>
+        <i class="bi bi-cash-coin text-success"></i>
+        <span>Doanh thu hệ thống</span>
+      <% end %>
+    </li>
+
+    <li>
+      <%= link_to admin_enrollments_path, class: "#{'active' if controller_name == 'enrollments'}" do %>
+        <i class="bi bi-receipt-cutoff"></i>
+        <span>Duyệt Ghi danh</span>
+      <% end %>
+    </li>
+     <li>
+      <%= link_to admin_payouts_path, class: "#{'active' if controller_name == 'payouts'}" do %>
+        <i class="bi bi-bank2 text-danger"></i>
+        <span>Yêu cầu rút tiền</span>
       <% end %>
     </li>
   </ul>

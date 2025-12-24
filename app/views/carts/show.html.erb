@@ -1,0 +1,77 @@
+<div class="container py-5">
+  <h3 class="mb-4 fw-bold"><i class="bi bi-cart3"></i> Giỏ hàng của bạn</h3>
+
+  <% if @items.any? %>
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+          <ul class="list-group list-group-flush">
+            <% @items.each do |item| %>
+              <li class="list-group-item p-4 d-flex align-items-center">
+
+                <div class="me-3 flex-shrink-0" style="width: 120px; height: 70px; background: #eee; border-radius: 8px; overflow: hidden;">
+                   <% if item.course.thumbnail_url.present? %>
+                     <img src="<%= item.course.thumbnail_url %>" style="width: 100%; height: 100%; object-fit: cover;" alt="<%= item.course.title %>">
+                   <% else %>
+                     <div class="w-100 h-100 bg-secondary-subtle d-flex align-items-center justify-content-center text-muted">
+                       <i class="bi bi-image fs-4"></i>
+                     </div>
+                   <% end %>
+                </div>
+
+                <div class="flex-grow-1">
+                  <h5 class="mb-1 fw-bold">
+                    <%= link_to item.course.title, course_path(item.course), class: "text-decoration-none text-dark" %>
+                  </h5>
+                  <p class="mb-0 text-muted small">Giảng viên: <%= item.course.creator&.name || "Admin" %></p>
+                </div>
+
+                <div class="text-end ms-4">
+                  <div class="fw-bold fs-5 text-primary mb-2">
+                    <%= number_to_currency(item.course.price, unit: "₫", precision: 0, format: "%n %u") %>
+                  </div>
+                  <%= button_to cart_item_path(item), method: :delete, class: "btn btn-sm btn-outline-danger border-0 p-2", title: "Xóa khóa học này" do %>
+                    <i class="bi bi-trash"></i> Xóa
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card shadow-sm border-0 bg-light">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Tổng cộng</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <span class="text-muted">Tạm tính:</span>
+              <span class="fw-bold fs-4 text-primary">
+                <%= number_to_currency(@cart.total_price, unit: "₫", precision: 0, format: "%n %u") %>
+              </span>
+            </div>
+
+            <div class="d-grid">
+              <%= button_to checkout_cart_path, method: :post, data: { turbo: false }, class: "btn btn-primary btn-lg fw-bold py-3" do %>
+                Thanh toán ngay
+              <% end %>
+            </div>
+
+            <p class="text-center mt-3 small text-muted">
+              <i class="bi bi-shield-lock"></i> Thanh toán bảo mật qua Stripe
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <i class="bi bi-cart-x display-1 text-muted opacity-25"></i>
+      </div>
+      <h4 class="text-muted">Giỏ hàng của bạn đang trống</h4>
+      <p class="mb-4">Hãy tìm khóa học phù hợp để nâng cao kiến thức ngay hôm nay!</p>
+      <%= link_to "Khám phá khóa học", courses_path, class: "btn btn-primary px-4 py-2" %>
+    </div>
+  <% end %>
+</div>

@@ -82,7 +82,19 @@
               <div class="list-group-item px-3 py-3">
                 <div class="d-flex w-100 justify-content-between">
                   <div class="d-flex align-items-center">
-                    <img src="https://ui-avatars.com/api/?name=<%= review.user.name %>&background=random" class="rounded-circle me-2" width="30">
+                    <div class="avatar-wrapper avatar-xs me-2">
+                      <% if review.user.avatar_url.present? %>
+                        <img
+                          src="<%= review.user.avatar_url %>"
+                          alt="<%= review.user.name %>"
+                          class="avatar-img">
+                      <% else %>
+                        <div class="avatar-text avatar-xs-text">
+                          <%= review.user.name.first.upcase %>
+                        </div>
+                      <% end %>
+                    </div>
+
                     <span class="fw-bold small"><%= review.user.name %></span>
                   </div>
                   <small class="text-warning">
@@ -122,7 +134,19 @@
                   <tr>
                     <td class="ps-3">
                       <div class="d-flex align-items-center">
-                        <img src="https://ui-avatars.com/api/?name=<%= user.name %>" class="rounded-circle me-2" width="30">
+                        <div class="avatar-wrapper avatar-xs me-2">
+                            <% if user.avatar_url.present? %>
+                              <img
+                                src="<%= user.avatar_url %>"
+                                alt="<%= user.name %>"
+                                class="avatar-img">
+                            <% else %>
+                              <div class="avatar-text avatar-xs-text">
+                                <%= user.name.first.upcase %>
+                              </div>
+                            <% end %>
+                          </div>
+
                         <span class="small fw-bold"><%= user.name %></span>
                       </div>
                     </td>

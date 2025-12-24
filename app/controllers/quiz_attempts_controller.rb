@@ -1,11 +1,12 @@
 class QuizAttemptsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_quiz_attempt, only: [:show]
+  before_action :set_quiz_attempt, only: [:show, :finish]
+  layout "learning", only: [:show]
 
   # POST /quizzes/:quiz_id/quiz_attempts
-  layout "learning", only: [:show]
   def create
     @quiz = Quiz.find(params[:quiz_id])
+
     @quiz_attempt = @quiz.quiz_attempts.new(
       user: current_user,
       started_at: Time.current,
@@ -13,56 +14,62 @@ class QuizAttemptsController < ApplicationController
     )
 
     if @quiz_attempt.save
+      QuizGeneratorService.new(@quiz_attempt).call
+
       redirect_to quiz_attempt_path(@quiz_attempt)
     else
-      redirect_to lesson_path(@quiz.lesson),
-                  alert: t("quiz_attempts.create.fail")
+      redirect_to lesson_path(@quiz.lesson || @quiz.course),
+                  alert: "Không thể bắt đầu bài thi."
     end
   end
 
+  # GET /quiz_attempts/:id
   def show
-    @quiz_attempt = QuizAttempt.find(params[:id])
-    @quiz = @quiz_attempt.quiz
-
-    check_expiration
-
     if @quiz_attempt.completed?
-      @quiz_is_finished = true
-      render :show
+      render :result
       return
     end
 
-    load_quiz_data
+    if @quiz_attempt.expired?
+      finalize_attempt!
+      redirect_to quiz_attempt_path(@quiz_attempt),
+                  alert: "Đã hết thời gian làm bài!"
+      return
+    end
 
-    set_current_question
-    prepare_answer_form if @current_question
+    @quiz_answers = @quiz_attempt.quiz_answers
+                                 .includes(question: :question_options)
+                                 .order(:id)
+
+    @current_answer = if params[:question_id]
+                        @quiz_answers.find_by(question_id: params[:question_id])
+                      else
+                        @quiz_answers.first
+                      end
   end
 
   # PATCH /quiz_attempts/:id/finish
   def finish
-    @quiz_attempt = QuizAttempt.find(params[:id])
+    return if @quiz_attempt.completed?
 
-    if @quiz_attempt.user == current_user && !@quiz_attempt.completed?
-      finalize_attempt!
-      flash[:notice] = "Đã nộp bài thành công!"
-    end
-
-    redirect_to quiz_attempt_path(@quiz_attempt)
+    finalize_attempt!
+    redirect_to quiz_attempt_path(@quiz_attempt),
+                notice: "Đã nộp bài thành công!"
   end
+
   private
 
   def set_quiz_attempt
     @quiz_attempt = QuizAttempt.find(params[:id])
+    return unless @quiz_attempt.user != current_user
 
-    return if @quiz_attempt.user == current_user
-
-    redirect_to root_path,
-                alert: t("admin.authorization.denied")
+    redirect_to root_path, alert: "Bạn không có quyền truy cập."
   end
 
   def finalize_attempt!
-    score = calculate_score
-    is_passed = score >= @quiz_attempt.quiz.pass_score
+    score = QuizScoringService.new(@quiz_attempt).calculate!
+
+    is_passed = score >= (@quiz_attempt.quiz.pass_score || 0)
 
     @quiz_attempt.update!(
       status: :completed,
@@ -71,19 +78,10 @@ class QuizAttemptsController < ApplicationController
       is_passed:
     )
 
-    update_progress_tracking if is_passed
+    update_progress if is_passed
   end
 
-  def calculate_score
-    correct_count = @quiz_attempt.quiz_answers.where(is_correct: true).count
-    total_questions = @quiz_attempt.quiz.questions.count
-
-    return 0 unless total_questions.positive?
-
-    (correct_count.to_f / total_questions) * 100
-  end
-
-  def update_progress_tracking
+  def update_progress
     ProgressTracking.find_or_create_by!(
       user: current_user,
       quiz: @quiz_attempt.quiz,
@@ -92,42 +90,5 @@ class QuizAttemptsController < ApplicationController
       progress.status = :completed
       progress.progress_value = 100
     end
-  end
-
-  def check_expiration
-    finalize_attempt! if @quiz_attempt.in_progress? && @quiz_attempt.expired?
-  end
-
-  def load_quiz_data
-    @all_questions = @quiz.questions.order(:id)
-
-    @answered_ids = @quiz_attempt.quiz_answers.pluck(:question_id).index_with do
-      true
-    end
-
-    @unanswered_count = @all_questions.count - @answered_ids.count
-  end
-
-  def set_current_question
-    if params[:question_id].present?
-      @current_question = @all_questions.find do |q|
-        q.id == params[:question_id].to_i
-      end
-    end
-
-    return unless @current_question.nil?
-
-    @current_question = @all_questions.first
-  end
-
-  def prepare_answer_form
-    @quiz_answer = @quiz_attempt.quiz_answers.new(question: @current_question)
-
-    existing_answer = @quiz_attempt
-                      .quiz_answers.find_by(question_id: @current_question.id)
-
-    return unless existing_answer
-
-    @quiz_answer.question_option_id = existing_answer.question_option_id
   end
 end

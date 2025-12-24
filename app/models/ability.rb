@@ -8,6 +8,10 @@ class Ability
       admin_rules
     elsif @user.instructor?
       instructor_rules
+    elsif @user.company_admin?
+      company_admin_rules
+    elsif @user.employee?
+      employee_rules
     elsif @user.student?
       student_rules
     else
@@ -18,7 +22,39 @@ class Ability
   private
 
   #############################################################
-  # Admin
+  # HELPER
+  #############################################################
+  def can_access_course_content
+    can :access_content, Course do |course|
+      # Check enrollment (Student)
+      has_enrollment = @user.enrollments.active.exists?(course_id: course.id)
+
+      # Check license (Employee/Company Admin)
+      has_license = @user.licenses.exists?(course_id: course.id,
+                                           status: :assigned)
+
+      # Check creator (Instructor)
+      is_creator = (course.created_by == @user.id)
+
+      has_enrollment || has_license || is_creator
+    end
+  end
+
+  def can_read_lesson_rule
+    can :read, Lesson do |lesson|
+      lesson.free_preview? || can?(:access_content, lesson.course)
+    end
+  end
+
+  def common_interaction_rules
+    can :read, [Category, Course, Review, Comment]
+    can :create, [Review, Comment]
+    can :destroy, Review, user_id: @user.id
+    can :destroy, Comment, user_id: @user.id
+  end
+
+  #############################################################
+  # 1. Admin
   #############################################################
   def admin_rules
     can :manage, :all
@@ -26,7 +62,7 @@ class Ability
   end
 
   #############################################################
-  # Instructor
+  # 2. Instructor
   #############################################################
   def instructor_rules
     instructor_basic_access
@@ -36,9 +72,11 @@ class Ability
     instructor_quiz_rules
     instructor_enrollment_rules
 
-    can :read, Review
-    can :create, Comment
-    can :destroy, Comment, user_id: @user.id
+    can_access_course_content
+
+    can_read_lesson_rule
+
+    common_interaction_rules
   end
 
   def instructor_basic_access
@@ -53,7 +91,7 @@ class Ability
 
   def instructor_course_rules
     can :create, Course
-    can [:update, :destroy], Course, created_by: @user.id
+    can [:update, :destroy, :submit_for_review], Course, created_by: @user.id
   end
 
   def instructor_module_lesson_rules
@@ -74,29 +112,60 @@ class Ability
   end
 
   #############################################################
-  # Student
+  # 3. Company Admin
+  #############################################################
+  def company_admin_rules
+    common_interaction_rules
+
+    can :access, :business_dashboard
+
+    can :manage, Organization, user_id: @user.id
+
+    if @user.organization
+      can :read, License, organization_id: @user.organization.id
+      can :update, License, organization_id: @user.organization.id
+    end
+
+    can_access_course_content
+
+    can_read_lesson_rule
+  end
+
+  #############################################################
+  # 4. Employee (Thay cho B2B)
+  #############################################################
+  def employee_rules
+    common_interaction_rules
+    can_access_course_content
+
+    can_read_lesson_rule
+
+    cannot :access,
+           [:admin_dashboard, :instructor_dashboard, :business_dashboard]
+  end
+
+  #############################################################
+  # 5. Student
   #############################################################
   def student_rules
-    can :read, [Course, Category]
-    can :create, [Review, Comment]
-    can :destroy, Review, user_id: @user.id
-    can :destroy, Comment, user_id: @user.id
-
-    can :read, Lesson do |lesson|
-      @user.can_access_course?(lesson.course)
-    end
+    common_interaction_rules
+    can_access_course_content
 
     can :create, InstructorProfile do
       !@user.instructor_profile&.persisted?
     end
 
     can :read, InstructorProfile, user_id: @user.id
+
+    can_read_lesson_rule
   end
 
   #############################################################
-  # Guest
+  # 6. Guest
   #############################################################
   def guest_rules
-    can :read, [Course, Category]
+    can :read, [Course, Category, Review, Comment]
+
+    can :read, Lesson, free_preview: true
   end
 end

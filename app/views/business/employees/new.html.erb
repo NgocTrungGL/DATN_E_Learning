@@ -1,0 +1,46 @@
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">Thêm nhân viên mới</h5>
+      </div>
+      <div class="card-body p-4">
+        <%= form_with model: @employee, url: business_employees_path, local: true do |f| %>
+
+          <%= render "shared/error_messages", object: f.object rescue nil %>
+
+          <div class="mb-3">
+            <%= f.label :name, "Họ và tên nhân viên", class: "form-label" %>
+            <%= f.text_field :name, class: "form-control", required: true, placeholder: "Nguyễn Văn A" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :email, "Email công việc", class: "form-label" %>
+            <%= f.email_field :email, class: "form-control", required: true, placeholder: "nhanvien@congty.com" %>
+          </div>
+
+          <div class="alert alert-info small">
+            <i class="bi bi-info-circle me-1"></i>
+            Vì hệ thống chưa có tính năng gửi mail mời, bạn hãy đặt mật khẩu mặc định cho nhân viên, sau đó gửi thông tin đăng nhập cho họ.
+          </div>
+
+          <div class="row g-2 mb-4">
+            <div class="col-md-6">
+              <%= f.label :password, "Mật khẩu khởi tạo", class: "form-label" %>
+              <%= f.password_field :password, class: "form-control", required: true %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :password_confirmation, "Nhập lại mật khẩu", class: "form-label" %>
+              <%= f.password_field :password_confirmation, class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <%= link_to "Hủy", business_employees_path, class: "btn btn-light" %>
+            <%= f.submit "Tạo tài khoản", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

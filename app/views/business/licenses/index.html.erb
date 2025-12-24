@@ -1,0 +1,87 @@
+<h2 class="fw-bold text-primary mb-4"><i class="bi bi-ticket-perforated me-2"></i>Kho License Khóa học</h2>
+
+<% if @licenses_by_course.any? %>
+  <div class="row">
+    <% @licenses_by_course.each do |course, licenses| %>
+      <%
+         total_count = licenses.count
+         available_count = licenses.select(&:available?).count
+         assigned_count = total_count - available_count
+         progress_percent = (assigned_count.to_f / total_count * 100).round
+      %>
+
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between mb-3">
+              <div>
+                <h5 class="fw-bold mb-1"><%= course.title %></h5>
+                <span class="badge bg-light text-dark border">Giá trị: <%= number_to_currency(licenses.first.price) %>/vé</span>
+              </div>
+              <% if available_count > 0 %>
+                <span class="badge bg-success">Còn <%= available_count %> vé</span>
+              <% else %>
+                <span class="badge bg-secondary">Hết vé</span>
+              <% end %>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between small text-muted mb-1">
+                <span>Đã dùng: <%= assigned_count %></span>
+                <span>Tổng: <%= total_count %></span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar" style="width: <%= progress_percent %>%"></div>
+              </div>
+            </div>
+
+            <hr>
+
+            <% if available_count > 0 %>
+              <div class="mt-3">
+                <label class="small fw-bold text-muted mb-2">Cấp quyền cho nhân viên:</label>
+
+                <%= form_with url: assign_business_licenses_path, method: :post, class: "d-flex gap-2" do |f| %>
+                  <%= f.hidden_field :course_id, value: course.id %>
+
+                  <%= f.collection_select :user_id, current_user.organization.users.where(role: :employee), :id, :name, { prompt: "Chọn nhân viên..." }, { class: "form-select form-select-sm", required: true } %>
+
+                  <%= f.button type: "submit", class: "btn btn-sm btn-primary text-nowrap" do %>
+                    <i class="bi bi-check-lg"></i> Cấp ngay
+                  <% end %>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="alert alert-warning small mb-0">
+                <i class="bi bi-exclamation-circle me-1"></i> Bạn đã dùng hết License của khóa này. Vui lòng mua thêm.
+              </div>
+            <% end %>
+
+            <div class="mt-3">
+                <a class="btn btn-link btn-sm text-decoration-none p-0" data-bs-toggle="collapse" href="#list-<%= course.id %>">
+                  Xem danh sách đã cấp <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse mt-2" id="list-<%= course.id %>">
+                  <ul class="list-group list-group-flush small">
+                    <% licenses.select(&:assigned?).each do |lic| %>
+                      <li class="list-group-item px-0 d-flex justify-content-between bg-transparent">
+                        <span><i class="bi bi-person me-2"></i><%= lic.user&.name %></span>
+                        <span class="text-muted"><%= lic.updated_at.strftime("%d/%m") %></span>
+                      </li>
+                    <% end %>
+                  </ul>
+                </div>
+             </div>
+
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-5">
+    <div class="display-1 text-muted mb-3"><i class="bi bi-cart-x"></i></div>
+    <h4>Bạn chưa mua License nào cả.</h4>
+    <p class="text-muted">Hãy liên hệ Admin hệ thống để mua gói đào tạo.</p>
+  </div>
+<% end %>

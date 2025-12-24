@@ -5,6 +5,7 @@
       E-Learning
     <% end %>
 
+    <%# --- DROPDOWN DANH MỤC (GIỮ NGUYÊN) --- %>
     <div class="dropdown me-4 d-none d-lg-block">
       <a class="text-decoration-none text-dark fw-medium" href="#" role="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         Danh mục
@@ -35,19 +36,14 @@
       </ul>
     </div>
 
+    <%# --- SEARCH BOX (GIỮ NGUYÊN) --- %>
     <div class="flex-grow-1 d-flex justify-content-center mx-3">
       <form action="<%= courses_path %>" method="get"
             class="search-box d-flex align-items-center w-100" style="max-width: 500px;">
-
         <button class="btn text-muted border-0 ps-3 pe-2" type="submit">
           <i class="bi bi-search"></i>
         </button>
-
-        <input type="search"
-              name="query"
-              class="form-control border-0 bg-transparent shadow-none"
-              placeholder="Tìm khóa học..."
-              aria-label="Search">
+        <input type="search" name="query" class="form-control border-0 bg-transparent shadow-none" placeholder="Tìm khóa học..." aria-label="Search">
       </form>
     </div>
 
@@ -58,8 +54,16 @@
     <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
       <ul class="navbar-nav align-items-center ms-auto">
 
+        <%# --- [CẬP NHẬT 1] LINK BUSINESS --- %>
         <li class="nav-item d-none d-lg-block">
-          <a href="#" class="nav-link text-dark small">E-Learning Business</a>
+          <%# Kiểm tra: Nếu user đã đăng nhập và là Business %>
+          <% if current_user&.company_admin? %>
+            <%# Link đến Dashboard của Business %>
+            <%= link_to "E-Learning Business", company_admin_root_path, class: "nav-link text-primary fw-bold small" %>
+          <% else %>
+            <%# Link đến trang giới thiệu/Marketing cho Business (Thay business_intro_path bằng route của bạn) %>
+            <%= link_to "E-Learning Business", "#", class: "nav-link text-dark small" %>
+          <% end %>
         </li>
 
         <li class="nav-item d-none d-lg-block">
@@ -75,12 +79,20 @@
             <%= link_to "Học tập", my_courses_path, class: "nav-link text-dark fw-medium" %>
           </li>
 
+          <%# --- [CẬP NHẬT 2] LINK GIỎ HÀNG (SHOW CART) --- %>
           <li class="nav-item me-3">
-            <a href="#" class="nav-link text-dark position-relative">
-              <i class="bi bi-cart"></i>
-            </a>
+            <%= link_to cart_path, class: "nav-link text-dark position-relative" do %>
+              <i class="bi bi-cart fs-5"></i>
+              <%# Hiển thị số lượng item nếu > 0 (Dùng helper current_cart) %>
+              <% if current_cart.cart_items.any? %>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                  <%= current_cart.cart_items.count %>
+                </span>
+              <% end %>
+            <% end %>
           </li>
 
+          <%# --- USER DROPDOWN (GIỮ NGUYÊN) --- %>
           <li class="nav-item dropdown">
             <a class="nav-link p-0" href="#" role="button" data-bs-toggle="dropdown">
               <% if current_user.avatar_url.present? %>
@@ -120,6 +132,11 @@
               <% if current_user.instructor? %>
                 <li><hr class="dropdown-divider"></li>
                 <li><%= link_to "Bảng giảng dạy", instructor_root_path, class: "dropdown-item text-primary fw-bold" %></li>
+              <% end %>
+
+              <% if current_user.company_admin? %>
+                <li><hr class="dropdown-divider"></li>
+                <li><%= link_to "Quản lý doanh nghiệp", company_admin_root_path, class: "dropdown-item text-success fw-bold" %></li>
               <% end %>
 
               <li><hr class="dropdown-divider"></li>
