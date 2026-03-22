@@ -29,9 +29,9 @@ gem "jbuilder"
 
 gem "sassc-rails"
 
-gem "bootstrap", "~> 5.3.0"
-
 gem "bcrypt", "~> 3.1.18"
+gem "bootstrap", "~> 5.3.0"
+gem "slim-rails"
 
 gem "figaro"
 # Use Redis adapter to run Action Cable in production

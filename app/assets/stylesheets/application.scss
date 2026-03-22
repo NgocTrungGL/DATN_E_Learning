@@ -1,5 +1,7 @@
-
 @import "bootstrap";
+@import "abstracts/variables";
+@import "pages/login";
+@import "pages/auth";
 
 // Custom styles
 body {
@@ -31,21 +33,24 @@ body {
   margin-right: 0.25rem;
 }
 
-h2, h3 {
+h2,
+h3 {
   color: #343a40;
   margin-bottom: 1rem;
 }
+
 form {
   background-color: #fff;
   padding: 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 
   .form-label {
     font-weight: 600;
   }
 
-  .form-control, .form-select {
+  .form-control,
+  .form-select {
     margin-bottom: 1rem;
   }
 
@@ -53,8 +58,11 @@ form {
     min-width: 100px;
   }
 }
+
 .table {
-  th, td {
+
+  th,
+  td {
     text-align: center;
   }
 
@@ -62,6 +70,7 @@ form {
     background-color: #e9ecef;
   }
 }
+
 .card {
   border-radius: 10px;
   overflow: hidden;
@@ -123,14 +132,15 @@ form {
     left: auto;
   }
 
-  .dropdown-menu > li:hover {
+  .dropdown-menu>li:hover {
     background-color: #f1f1f1;
   }
 
-  .dropdown-menu > li:hover > .submenu {
+  .dropdown-menu>li:hover>.submenu {
     display: block;
   }
 }
+
 /* Search Box Gọn & Hiện Đại */
 .search-box {
   max-width: 350px;
@@ -163,18 +173,24 @@ form {
   outline: none;
   box-shadow: none;
 }
+
 /* Style cho Search Box trong Navbar */
 .search-box {
-  background-color: #f7f9fa; /* Màu xám nhạt */
-  border: 1px solid #2d2f31; /* Viền tối màu (hoặc nhạt hơn nếu thích) */
-  border-radius: 999px; /* Bo tròn con nhộng */
+  background-color: #f7f9fa;
+  /* Màu xám nhạt */
+  border: 1px solid #2d2f31;
+  /* Viền tối màu (hoặc nhạt hơn nếu thích) */
+  border-radius: 999px;
+  /* Bo tròn con nhộng */
   padding: 0 10px;
 }
 
 .search-box input:focus {
-  box-shadow: none !important; /* Tắt viền xanh mặc định của Bootstrap */
+  box-shadow: none !important;
+  /* Tắt viền xanh mặc định của Bootstrap */
   background-color: transparent;
 }
+
 .avatar-wrapper {
   width: 48px;
   height: 48px;
@@ -187,9 +203,11 @@ form {
 .avatar-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;   /* QUAN TRỌNG */
+  object-fit: cover;
+  /* QUAN TRỌNG */
   display: block;
 }
+
 .avatar-wrapper {
   width: 48px;
   height: 48px;
@@ -222,6 +240,7 @@ form {
   justify-content: center;
   text-transform: uppercase;
 }
+
 .admin-container {
   max-width: 1100px;
   margin: 0 auto;

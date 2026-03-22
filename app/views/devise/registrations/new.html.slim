@@ -1,0 +1,45 @@
+.auth-wrapper
+  .auth-split-layout
+    / --- Cột trái: Ảnh ---
+    .auth-image-panel
+      .image-overlay
+        h2 Join Awesome Academy
+        p Start your learning journey today
+
+    / --- Cột phải: Form Đăng ký ---
+    .auth-form-panel
+      .auth-form-inner
+        h1.auth-title Create your account
+
+        .auth-tabs
+          = link_to "Login", new_user_session_path, class: "tab-btn"
+          = link_to "Register", new_user_registration_path, class: "tab-btn active"
+
+        p.auth-subtitle Tạo tài khoản mới để bắt đầu hành trình học tập.
+
+        = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'auth-form' }) do |f|
+          .field-group
+            label.field-label Full Name
+            .input-wrap
+              = f.text_field :name, placeholder: "Enter your Full Name", required: true
+
+          .field-group
+            label.field-label Email
+            .input-wrap
+              = f.email_field :email, placeholder: "Enter your Email", required: true
+
+          .field-group
+            label.field-label Password
+            .input-wrap.password-wrap
+              = f.password_field :password, placeholder: "Enter your Password (min 6 chars)", required: true, id: "register-password"
+              button.toggle-pw type="button" data-target="register-password"
+                i.bi.bi-eye-slash
+
+          .field-group
+            label.field-label Confirm Password
+            .input-wrap.password-wrap
+              = f.password_field :password_confirmation, placeholder: "Confirm your Password", required: true, id: "register-password-confirm"
+              button.toggle-pw type="button" data-target="register-password-confirm"
+                i.bi.bi-eye-slash
+
+          button.btn-login type="submit" Register

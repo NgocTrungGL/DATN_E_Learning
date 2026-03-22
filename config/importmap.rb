@@ -12,7 +12,8 @@ pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.3.2/dist/js/bootstrap.e
 pin "chartkick", to: "https://ga.jspm.io/npm:chartkick@5.0.1/dist/chartkick.esm.js"
 pin "Chart.bundle", to: "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js"
 pin "@kurkle/color", to: "https://ga.jspm.io/npm:@kurkle/color@0.3.2/dist/color.esm.js"
-
+pin "animejs" # hoặc pin "animejs", to: "..."
+pin_all_from "app/javascript/custom", under: "custom"
 # 2. Thư viện xử lý toán học ngày tháng (Date-fns)
 pin "date-fns", to: "https://ga.jspm.io/npm:date-fns@2.30.0/index.js"
 

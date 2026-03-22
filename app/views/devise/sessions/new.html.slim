@@ -1,0 +1,39 @@
+.auth-wrapper
+  .auth-split-layout
+    / --- Cột trái: Ảnh ---
+    .auth-image-panel
+      .image-overlay
+        h2 Awesome Academy
+        p Quality Education for Everyone
+
+    / --- Cột phải: Form Đăng nhập ---
+    .auth-form-panel
+      .auth-form-inner
+        h1.auth-title Welcome to Awesome Academy!
+
+        .auth-tabs
+          = link_to "Login", new_user_session_path, class: "tab-btn active"
+          = link_to "Register", new_user_registration_path, class: "tab-btn"
+
+        p.auth-subtitle Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+
+        = form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'auth-form' }) do |f|
+          .field-group
+            label.field-label User name
+            .input-wrap
+              = f.email_field :email, placeholder: "Enter your User name", autofocus: true, required: true
+
+          .field-group
+            label.field-label Password
+            .input-wrap.password-wrap
+              = f.password_field :password, placeholder: "Enter your Password", required: true, id: "login-password"
+              button.toggle-pw type="button" data-target="login-password"
+                i.bi.bi-eye-slash
+
+          .field-row
+            label.remember-label
+              = check_box_tag :remember_me
+              span Rememebr me
+            = link_to "Forgot Password ?", new_password_path(resource_name), class: 'forgot-link'
+
+          button.btn-login type="submit" Login

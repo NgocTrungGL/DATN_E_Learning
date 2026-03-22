@@ -1,0 +1,308 @@
+// ================================================
+// Auth Split Layout — matching design mockup
+// ================================================
+
+// --- Variables ---
+$teal: #4ECDC4;
+$teal-light: #6EDDD6;
+$teal-dark: #38B2AC;
+$text-dark: #1a1a2e;
+$text-mid: #4a4a6a;
+$text-light: #8888aa;
+$border: #d0f0ee;
+$bg: #ffffff;
+$input-bg: #f5fdfd;
+
+// --- Layout ---
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f4f8;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  padding: 24px;
+}
+
+.auth-split-layout {
+  display: flex;
+  width: 100%;
+  max-width: 960px;
+  min-height: 560px;
+  background: $bg;
+  border-radius: 24px;
+  box-shadow: 0 8px 48px rgba(78, 205, 196, 0.13), 0 2px 16px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+// --- Left Panel: Image ---
+.auth-image-panel {
+  flex: 0 0 52%;
+  position: relative;
+  background-image: asset-url('auth.jpg'); // Use the provided auth.jpg
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  margin: 12px;
+  overflow: hidden;
+  min-height: 480px;
+
+  // Fallback gradient if no image
+  background-color: #3a6186;
+  background-image:
+    linear-gradient(160deg, rgba(58, 97, 134, 0.7) 0%, rgba(89, 193, 184, 0.5) 100%),
+    asset-url('auth.jpg');
+
+  .image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 28px 32px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, transparent 100%);
+
+    h2 {
+      color: #fff;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: 0 0 4px;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+  }
+}
+
+// --- Right Panel: Form ---
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+}
+
+.auth-form-inner {
+  width: 100%;
+  max-width: 360px;
+}
+
+.auth-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $text-dark;
+  text-align: center;
+  margin: 0 0 24px;
+}
+
+// --- Tab Switcher ---
+.auth-tabs {
+  display: flex;
+  background: #e8f8f7;
+  border-radius: 50px;
+  padding: 4px;
+  margin-bottom: 28px;
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: transparent;
+    color: $text-mid;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+
+    &.active {
+      background: $teal;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(78, 205, 196, 0.35);
+    }
+
+    &:hover:not(.active) {
+      background: rgba(78, 205, 196, 0.15);
+      color: $text-mid;
+      text-decoration: none;
+    }
+  }
+}
+
+// --- Tab Content ---
+.tab-content {
+  &.hidden {
+    display: none;
+  }
+}
+
+.auth-subtitle {
+  font-size: 0.875rem;
+  color: $text-mid;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+// --- Field Groups ---
+.field-group {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: 6px;
+}
+
+.input-wrap {
+  position: relative;
+
+  input {
+    width: 100%;
+    padding: 13px 18px;
+    border: 1.5px solid $border;
+    border-radius: 50px;
+    background: $input-bg;
+    font-size: 0.9rem;
+    color: $text-dark;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: #b0c8c6;
+    }
+
+    &:focus {
+      border-color: $teal;
+      box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.15);
+      background: #fff;
+    }
+  }
+
+  &.password-wrap input {
+    padding-right: 48px;
+  }
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $text-light;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: $teal-dark;
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+// --- Remember / Forgot row ---
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.remember-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  color: $text-mid;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: $teal;
+    cursor: pointer;
+  }
+}
+
+.forgot-link {
+  font-size: 0.85rem;
+  color: $text-mid;
+  text-decoration: none;
+
+  &:hover {
+    color: $teal-dark;
+    text-decoration: underline;
+  }
+}
+
+// --- Login Button ---
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: $teal;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 4px 16px rgba(78, 205, 196, 0.35);
+
+  &:hover {
+    background: $teal-dark;
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// --- Responsive ---
+@media (max-width: 700px) {
+  .auth-split-layout {
+    flex-direction: column;
+    max-width: 420px;
+  }
+
+  .auth-image-panel {
+    flex: none;
+    height: 200px;
+    margin: 10px 10px 0;
+    min-height: unset;
+  }
+
+  .auth-form-panel {
+    padding: 32px 24px;
+  }
+}
+
+// --- JavaScript for tab switching ---
+// Add to application.js or inline:
+// document.querySelectorAll('.tab-btn').forEach(btn => {
+//   btn.addEventListener('click', () => {
+//     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+//     btn.classList.add('active');
+//     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+//     document.getElementById('tab-content-' + btn.dataset.tab).classList.remove('hidden');
+//   });
+// });
