@@ -2,7 +2,7 @@
   / Login Form
   .auth-form-wrap class=(active_tab == 'login' ? 'active' : 'hidden')
     p.auth-subtitle Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-    = form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'auth-form animated-form' }) do |f|
+    = form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'auth-form animated-form', data: { turbo: false } }) do |f|
       = render 'devise/shared/auth_field', f: f, field: :email, type: :email_field, label: "User name", placeholder: "Enter your User name", required: (active_tab == 'login'), autofocus: (active_tab == 'login'), id: "login-email"
       = render 'devise/shared/auth_field', f: f, field: :password, type: :password_field, label: "Password", placeholder: "Enter your Password", required: (active_tab == 'login'), id: "login-password"
 
@@ -17,7 +17,7 @@
   / Register Form
   .auth-form-wrap class=(active_tab == 'register' ? 'active' : 'hidden')
     p.auth-subtitle Tạo tài khoản mới để bắt đầu hành trình học tập.
-    = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'auth-form animated-form' }) do |f|
+    = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'auth-form animated-form', data: { turbo: false } }) do |f|
       = render 'devise/shared/auth_field', f: f, field: :name, type: :text_field, label: "Full Name", placeholder: "Enter your Full Name", required: (active_tab == 'register')
       = render 'devise/shared/auth_field', f: f, field: :email, type: :email_field, label: "Email", placeholder: "Enter your Email", required: (active_tab == 'register')
       = render 'devise/shared/auth_field', f: f, field: :password, type: :password_field, label: "Password", placeholder: "Enter your Password (min 6 chars)", required: (active_tab == 'register'), id: "register-password"

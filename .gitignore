@@ -36,3 +36,4 @@ node_modules/
 # Ignore application configuration
 /config/application.yml
 .vscode/settings.json
+/bin
