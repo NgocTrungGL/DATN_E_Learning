@@ -1,0 +1,17 @@
+.auth-wrapper
+  .auth-split-layout
+    .auth-image-panel
+      .image-overlay
+        h2 = title
+        p = subtitle
+
+    .auth-form-panel data-controller="auth-tabs"
+      .auth-form-inner
+        h1.auth-title = main_title
+
+        .auth-tabs class=(active_tab == 'register' ? 'is-register' : 'is-login') data-auth-tabs-target="tabs"
+          = link_to "Login", new_user_session_path, class: "tab-btn #{'active' if active_tab == 'login'}", data: { action: "click->auth-tabs#switch", tab: "login" }
+          = link_to "Register", new_user_registration_path, class: "tab-btn #{'active' if active_tab == 'register'}", data: { action: "click->auth-tabs#switch", tab: "register" }
+
+        = turbo_frame_tag "auth_content" do
+          = render 'devise/shared/auth_forms', active_tab: active_tab

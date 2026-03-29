@@ -1,0 +1,8 @@
+- id ||= "#{f.object_name}_#{field}"
+.field-group
+  label.field-label = label
+  .input-wrap class=(type.to_s.include?('password') ? 'password-wrap' : '')
+    = f.public_send(type, field, placeholder: placeholder, required: required, autofocus: local_assigns[:autofocus] || false, id: id, **(local_assigns[:options] || {}))
+    - if type.to_s.include?('password')
+      button.toggle-pw type="button" data-target=id
+        i.bi.bi-eye-slash

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  layout :layout_by_resource
   before_action :configure_permitted_parameters, if: :devise_controller?
   include Pagy::Backend
   def after_sign_in_path_for resource
@@ -46,5 +47,9 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     @current_cart ||= current_user.current_cart
+  end
+
+  def layout_by_resource
+    devise_controller? ? "auth" : "application"
   end
 end
