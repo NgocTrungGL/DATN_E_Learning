@@ -1,143 +1,145 @@
-<% unless current_user %>
-  <div class="bg-light py-5 mb-5">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <h1 class="display-5 fw-bold mb-3">Học không giới hạn</h1>
-          <p class="lead mb-4">Nâng cao kỹ năng với các khóa học online chất lượng cao.</p>
-        </div>
-        <div class="col-md-6 text-end d-none d-md-block">
-          <img src="https://img.freepik.com/free-vector/online-learning-isometric-concept_1284-17947.jpg" class="img-fluid" style="max-height: 300px;">
+<%# ============================================================ %>
+<%# COURSES INDEX PAGE                                          %>
+<%# Full-width layout (no container from application.html.erb)  %>
+<%# ============================================================ %>
+<% content_for :full_width, true %>
+
+<%# ============================================================ %>
+<%# SECTION 1: PAGE HEADER                                      %>
+<%# ============================================================ %>
+<div class="courses-page-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="page-header-badge">📚 Course Catalog</div>
+        <h1>Explore Our Courses</h1>
+        <p>Browse <%= @courses.size %> expert-crafted courses and start building in-demand skills today.</p>
+        <div class="header-stats">
+          <div class="header-stat">
+            <i class="bi bi-play-btn-fill"></i>
+            <strong><%= @courses.size %>+</strong> Courses Available
+          </div>
+          <div class="header-stat">
+            <i class="bi bi-people-fill"></i>
+            <strong>10,000+</strong> Active Students
+          </div>
+          <div class="header-stat">
+            <i class="bi bi-award-fill"></i>
+            <strong>Certificate</strong> on Completion
+          </div>
         </div>
       </div>
     </div>
   </div>
-<% else %>
-  <div class="mt-4"></div>
-<% end %>
+</div>
 
-<div class="container mb-5">
-  <h3 class="fw-bold mb-4">Hãy bắt đầu học nào</h3>
+<%# ============================================================ %>
+<%# SECTION 2: FILTER & SEARCH BAR (Frontend UI — connect to    %>
+<%# backend later by adding params to the courses controller)   %>
+<%# ============================================================ %>
+<div class="courses-filter-bar">
+  <div class="container">
+    <%# Wrap in a form so filters can be wired to the backend later %>
+    <%# FUTURE: Add params[:query], params[:category_id], params[:price_filter], params[:min_rating] to controller %>
+    <%= form_with url: courses_path, method: :get, local: true, class: "d-flex align-items-center gap-3 flex-wrap" do |f| %>
 
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-    <% @courses.each do |course| %>
-      <div class="col">
-        <div class="card h-100 border-0 shadow-hover course-card position-relative">
-
-          <%# 1. LINK HÌNH ẢNH %>
-          <%= link_to course_path(course), class: "text-decoration-none" do %>
-            <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/400x225' %>"
-                 class="card-img-top border-bottom" style="height: 160px; object-fit: cover;">
-          <% end %>
-
-          <div class="card-body p-2 d-flex flex-column">
-
-            <%# 2. LINK TIÊU ĐỀ %>
-            <%= link_to course_path(course), class: "text-decoration-none text-dark" do %>
-              <h6 class="card-title fw-bold mb-1 text-truncate-2-lines" style="height: 2.5em; overflow: hidden;">
-                <%= course.title %>
-              </h6>
-            <% end %>
-
-            <small class="text-muted d-block mb-2"><%= course.creator&.name || "Admin" %></small>
-
-            <%# --- RATING & STUDENTS --- %>
-            <div class="mb-2 d-flex align-items-center flex-wrap small">
-              <% if course.reviews.present? && course.reviews.any? %>
-                <% avg_rating = course.reviews.average(:rating).to_f; review_count = course.reviews.count %>
-                <span class="text-warning fw-bold me-1"><%= avg_rating.round(1) %></span>
-                <span class="d-flex me-1">
-                  <% 5.times do |i| %>
-                    <% if i < avg_rating.floor %>
-                      <i class="bi bi-star-fill text-warning" style="font-size: 0.7rem;"></i>
-                    <% elsif (i == avg_rating.floor) && (avg_rating % 1 >= 0.5) %>
-                      <i class="bi bi-star-half text-warning" style="font-size: 0.7rem;"></i>
-                    <% else %>
-                      <i class="bi bi-star text-warning" style="font-size: 0.7rem;"></i>
-                    <% end %>
-                  <% end %>
-                </span>
-                <span class="text-muted me-2">(<%= review_count %>)</span>
-              <% else %>
-                <span class="text-muted fst-italic me-2" style="font-size: 0.8rem;">Chưa có đánh giá</span>
-              <% end %>
-
-              <% if course.total_students > 0 %>
-                <span class="text-muted me-2">•</span>
-                <span class="text-muted" title="<%= course.total_students %> học viên">
-                  <i class="bi bi-people-fill text-secondary" style="font-size: 0.8rem;"></i>
-                  <%= number_to_human(course.total_students, format: "%n%u", units: { thousand: "k", million: "M" }) %>
-                </span>
-              <% end %>
-            </div>
-
-            <%# --- PHẦN GIÁ & NÚT CART (Đẩy xuống đáy bằng mt-auto) --- %>
-            <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
-
-              <%# GIÁ TIỀN %>
-              <div class="fw-bold fs-5">
-                <% if course.free? %>
-                  <span class="text-success">Miễn phí</span>
-                <% else %>
-                  <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0) %>
-                <% end %>
-              </div>
-
-              <%# NÚT ADD TO CART %>
-              <%# Chỉ hiện nút Cart nếu User đã đăng nhập VÀ khóa học không miễn phí %>
-              <% if current_user && !course.free? %>
-
-                <%# Kiểm tra xem đã có trong giỏ chưa %>
-                <% if current_user.cart&.courses&.include?(course) %>
-
-                  <%= link_to cart_path, class: "btn btn-outline-success btn-sm rounded-circle shadow-sm", title: "Đã trong giỏ hàng" do %>
-                    <i class="bi bi-check-lg"></i>
-                  <% end %>
-
-                <% else %>
-
-                  <%# Nút thêm vào giỏ (Dùng link_to turbo để tránh lỗi style form trắng) %>
-                  <%= link_to cart_items_path(course_id: course.id),
-                        data: { turbo_method: :post },
-                        class: "btn btn-outline-primary btn-sm rounded-circle shadow-sm",
-                        title: "Thêm vào giỏ" do %>
-                    <i class="bi bi-cart-plus"></i>
-                  <% end %>
-
-                <% end %>
-
-              <% end %>
-            </div>
-
-          </div>
-        </div>
+      <%# Search input — FUTURE: wire to Course.where("title ILIKE ?", "%#{params[:query]}%") %>
+      <div class="filter-search">
+        <i class="bi bi-search"></i>
+        <%= f.search_field :query,
+              value: params[:query],
+              placeholder: "Search courses...",
+              class: "" %>
       </div>
+
+      <%# Category filter — FUTURE: replace hardcoded options with Category.all %>
+      <%= f.select :category_id,
+            options_for_select(
+              [["All Categories", ""]] +
+              # FUTURE: replace below with Category.all.map { |c| [c.name, c.id] }
+              [
+                ["Web Development", "web"],
+                ["Data Science", "data"],
+                ["Design & UI/UX", "design"],
+                ["DevOps & Cloud", "devops"],
+                ["Mobile Development", "mobile"]
+              ],
+              params[:category_id]
+            ),
+            {},
+            class: "filter-select" %>
+
+      <%# Price filter — FUTURE: add to controller: @courses = @courses.free if params[:price] == "free" %>
+      <%= f.select :price_filter,
+            options_for_select(
+              [["Any Price", ""], ["Free", "free"], ["Paid", "paid"]],
+              params[:price_filter]
+            ),
+            {},
+            class: "filter-select" %>
+
+      <%# Rating filter — FUTURE: add to controller: @courses = @courses.where("avg_rating >= ?", ...) %>
+      <%= f.select :min_rating,
+            options_for_select(
+              [["Any Rating", ""], ["4.5+", "4.5"], ["4.0+", "4.0"], ["3.5+", "3.5"]],
+              params[:min_rating]
+            ),
+            {},
+            class: "filter-select d-none d-md-block" %>
+
+      <button type="submit" class="filter-btn-active">
+        <i class="bi bi-funnel-fill"></i> Apply
+      </button>
+
+      <% if params[:query].present? || params[:category_id].present? || params[:price_filter].present? %>
+        <%= link_to courses_path, class: "btn btn-link text-muted text-decoration-none small fw-semibold p-0" do %>
+          <i class="bi bi-x-circle"></i> Clear
+        <% end %>
+      <% end %>
+
+      <span class="results-count ms-auto d-none d-md-block">
+        Showing <strong><%= @courses.size %></strong> courses
+      </span>
     <% end %>
   </div>
 </div>
 
-<style>
-  .shadow-hover { transition: box-shadow 0.2s, transform 0.2s; }
-  .shadow-hover:hover {
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-    transform: translateY(-2px);
-  }
-  .text-truncate-2-lines {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .bi-star-fill, .bi-star-half, .bi-star { line-height: 1; }
+<%# ============================================================ %>
+<%# SECTION 3: COURSES GRID                                     %>
+<%# ============================================================ %>
+<section class="courses-grid-section">
+  <div class="container">
 
-  /* Style cho nút tròn */
-  .btn-outline-primary.rounded-circle,
-  .btn-outline-success.rounded-circle {
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-  }
-</style>
+    <% if @courses.any? %>
+      <%# Responsive grid: 1 col mobile, 2 col tablet, 3 col lg, 4 col xl %>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        <% @courses.each do |course| %>
+          <div class="col">
+            <%= render 'courses/course_card', course: course %>
+          </div>
+        <% end %>
+      </div>
+
+    <% else %>
+      <%# --- Empty State --- %>
+      <div class="courses-empty-state">
+        <div class="empty-icon"><i class="bi bi-search"></i></div>
+        <h3>No courses found</h3>
+        <p>Try adjusting your search or filters to find what you're looking for.</p>
+        <%= link_to "Clear Filters", courses_path, class: "btn btn-primary px-5" %>
+      </div>
+    <% end %>
+
+    <%# ============================================================ %>
+    <%# PAGINATION                                                  %>
+    <%# FUTURE: Install kaminari or pagy gem and replace @courses   %>
+    <%# with @courses.page(params[:page]).per(12) in the controller %>
+    <%# Then render pagination here                                 %>
+    <%# ============================================================ %>
+    <%# Example with kaminari: %>
+    <%# <div class="courses-pagination"> %>
+    <%#   <%= paginate @courses %> %>
+    <%# </div> %>
+
+  </div>
+</section>

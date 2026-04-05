@@ -1,0 +1,129 @@
+<%# ============================================================ %>
+<%# COURSE CARD PARTIAL                                         %>
+<%# Usage: render 'courses/course_card', course: course         %>
+<%# ============================================================ %>
+
+<%
+  # Helper values computed once per card
+  has_reviews = course.reviews.present? && course.reviews.any?
+  avg_rating  = has_reviews ? course.reviews.average(:rating).to_f : nil
+  review_count = has_reviews ? course.reviews.count : 0
+
+  # Badge logic (easily swappable with DB flags later)
+  # FUTURE: replace with course.best_seller? / course.is_new? / course.popular?
+  badge_label = if course.free?
+    nil  # Free badge shown via price overlay instead
+  elsif course.total_students.to_i > 500
+    :bestseller
+  elsif course.created_at > 30.days.ago
+    :new
+  elsif course.total_students.to_i > 100
+    :popular
+  end
+%>
+
+<div class="course-card-new">
+  <%# ---- THUMBNAIL ---- %>
+  <div class="course-thumb">
+    <%= link_to course_path(course) do %>
+      <img src="<%= course.thumbnail_url.presence || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=220&fit=crop' %>"
+           alt="<%= course.title %>">
+    <% end %>
+
+    <%# Badge overlay (bestseller / new / popular) %>
+    <% if badge_label %>
+      <span class="course-badge badge-<%= badge_label %>">
+        <%= { bestseller: "⭐ Best Seller", new: "✨ New", popular: "🔥 Popular" }[badge_label] %>
+      </span>
+    <% end %>
+
+    <%# Price overlay — always visible on thumbnail %>
+    <span class="course-price-overlay <%= 'price-free' if course.free? %>">
+      <% if course.free? %>
+        Free
+      <% else %>
+        <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+      <% end %>
+    </span>
+  </div>
+
+  <%# ---- BODY ---- %>
+  <div class="course-body">
+    <%# Category tag — FUTURE: replace with course.category.name when available %>
+    <% if course.category %>
+      <div class="course-category-tag"><%= course.category.name %></div>
+    <% end %>
+
+    <%# Title (2-line clamp) %>
+    <%= link_to course.title, course_path(course), class: "course-title" %>
+
+    <%# Instructor name %>
+    <div class="course-instructor">
+      <i class="bi bi-person-fill"></i>
+      <%= course.creator&.name || "E-Learning Team" %>
+    </div>
+
+    <%# Rating row %>
+    <div class="course-rating-row">
+      <% if has_reviews %>
+        <span class="rating-val"><%= avg_rating.round(1) %></span>
+        <span class="rating-stars">
+          <% 5.times do |i| %>
+            <% if i < avg_rating.floor %>
+              <i class="bi bi-star-fill"></i>
+            <% elsif i == avg_rating.floor && (avg_rating % 1 >= 0.5) %>
+              <i class="bi bi-star-half"></i>
+            <% else %>
+              <i class="bi bi-star text-muted" style="opacity:0.35;"></i>
+            <% end %>
+          <% end %>
+        </span>
+        <span class="rating-count">(<%= review_count %>)</span>
+      <% else %>
+        <span style="font-size: 0.75rem; color: #94a3b8; font-style: italic;">No reviews yet</span>
+      <% end %>
+
+      <% if course.total_students.to_i > 0 %>
+        <div class="student-count">
+          <i class="bi bi-people-fill"></i>
+          <%= number_to_human(course.total_students, format: "%n%u", units: { thousand: "k", million: "M" }) %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Footer: Price + Actions %>
+    <div class="course-footer">
+      <div class="course-price <%= 'price-free' if course.free? %>">
+        <% if course.free? %>
+          <i class="bi bi-award-fill"></i> Free
+        <% else %>
+          <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+        <% end %>
+      </div>
+
+      <div class="course-actions">
+        <%# View Course CTA %>
+        <%= link_to "View Course", course_path(course), class: "btn-view-course" %>
+
+        <%# Cart button (only for logged-in users on paid courses) %>
+        <%# FUTURE: also check if course is already enrolled %>
+        <% if current_user && !course.free? %>
+          <% if current_user.cart&.courses&.include?(course) %>
+            <%= link_to cart_path,
+                  class: "btn-cart btn-cart-done",
+                  title: "Already in cart" do %>
+              <i class="bi bi-check-lg"></i>
+            <% end %>
+          <% else %>
+            <%= link_to cart_items_path(course_id: course.id),
+                  data: { turbo_method: :post },
+                  class: "btn-cart btn-cart-add",
+                  title: "Add to cart" do %>
+              <i class="bi bi-cart-plus"></i>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

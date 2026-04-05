@@ -1,0 +1,970 @@
+<%# ============================================================ %>
+<%# LANDING PAGE - E-Learning Platform                          %>
+<%# Full-width layout: no container wrapper from application layout %>
+<%# ============================================================ %>
+<% content_for :full_width, true %>
+<% content_for :body_class, "landing-page" %>
+
+<%# ============================================================ %>
+<%# DATA STRUCTURES - Easily replaceable with API responses     %>
+<%# ============================================================ %>
+
+<%
+  # Learning Paths Data - Replace with API later
+  learning_paths = [
+    {
+      id: "path-frontend",
+      css_class: "path-frontend",
+      icon: "💻",
+      icon_bg: "icon-blue",
+      title: "Frontend Developer",
+      description: "Master HTML, CSS, JavaScript, React, and modern frontend tools to build stunning web interfaces.",
+      tags: ["HTML/CSS", "JavaScript", "React", "TypeScript"],
+      courses_count: 12,
+      hours: "85",
+      level: "Beginner → Advanced"
+    },
+    {
+      id: "path-backend",
+      css_class: "path-backend",
+      icon: "⚙️",
+      icon_bg: "icon-purple",
+      title: "Backend Developer",
+      description: "Build robust server-side applications with Node.js, Ruby on Rails, databases, and APIs.",
+      tags: ["Node.js", "Ruby on Rails", "PostgreSQL", "REST API"],
+      courses_count: 10,
+      hours: "90",
+      level: "Intermediate"
+    },
+    {
+      id: "path-fullstack",
+      css_class: "path-fullstack",
+      icon: "🚀",
+      icon_bg: "icon-orange",
+      title: "Fullstack Developer",
+      description: "Become a complete developer — from UI design to server infrastructure and DevOps.",
+      tags: ["React", "Rails", "PostgreSQL", "Docker"],
+      courses_count: 20,
+      hours: "160",
+      level: "All Levels"
+    },
+    {
+      id: "path-data",
+      css_class: "path-data",
+      icon: "📊",
+      icon_bg: "icon-green",
+      title: "Data Science",
+      description: "Analyze data, build ML models, and extract insights using Python, Pandas, and scikit-learn.",
+      tags: ["Python", "Pandas", "ML", "Visualization"],
+      courses_count: 8,
+      hours: "70",
+      level: "Beginner → Advanced"
+    }
+  ]
+
+  # Platform Features Data
+  features = [
+    { icon: "bi-map", title: "Structured Learning Paths", text: "Follow curated roadmaps designed by industry experts to build skills systematically.", color: "#60a5fa" },
+    { icon: "bi-laptop", title: "Real-World Projects", text: "Apply your knowledge through hands-on projects that mirror actual industry scenarios.", color: "#34d399" },
+    { icon: "bi-person-badge", title: "Expert Instructors", text: "Learn from seasoned professionals with years of real-world experience in top companies.", color: "#a78bfa" },
+    { icon: "bi-award", title: "Industry Certificates", text: "Earn recognized certificates upon completion to showcase your skills to employers.", color: "#fbbf24" },
+    { icon: "bi-people", title: "Community Support", text: "Join a vibrant community of learners. Ask questions, share ideas, and grow together.", color: "#f472b6" },
+    { icon: "bi-infinity", title: "Lifetime Access", text: "Purchase once and access the course forever, including all future updates and improvements.", color: "#67e8f9" }
+  ]
+
+  # Instructors Data - Replace with API later
+  instructors = [
+    {
+      initials: "AN",
+      name: "Alex Nguyen",
+      role: "Frontend & React Expert",
+      bio: "10+ years building web apps at Google & Shopify. Passionate about teaching modern JavaScript.",
+      students: "12,400",
+      courses: 8,
+      rating: "4.9"
+    },
+    {
+      initials: "ST",
+      name: "Sarah Tran",
+      role: "Backend & DevOps Engineer",
+      bio: "Senior engineer with expertise in Rails, Node.js & cloud infrastructure. AWS certified.",
+      students: "8,200",
+      courses: 6,
+      rating: "4.8"
+    },
+    {
+      initials: "ML",
+      name: "Minh Le",
+      role: "Data Science & ML",
+      bio: "PhD in Computer Science. Former data scientist at VinAI & Grab. Published AI researcher.",
+      students: "9,700",
+      courses: 5,
+      rating: "4.9"
+    },
+    {
+      initials: "HP",
+      name: "Hana Pham",
+      role: "UI/UX & Product Design",
+      bio: "Product designer with 8 years at startups & enterprise. Figma expert and design system creator.",
+      students: "6,800",
+      courses: 7,
+      rating: "4.7"
+    }
+  ]
+
+  # Testimonials Data - Replace with API later
+  testimonials = [
+    {
+      text: "This platform completely transformed my career. Within 3 months of completing the Fullstack path, I landed a job at a top tech company with a 60% salary increase!",
+      name: "Nguyen Van Minh",
+      title: "Junior → Mid Software Engineer",
+      rating: 5,
+      bg: "linear-gradient(135deg, #2563eb, #4f46e5)"
+    },
+    {
+      text: "The structured learning paths are incredible. I went from zero coding knowledge to building my own web app in just 4 months. The instructors are world-class.",
+      name: "Tran Thi Lan",
+      title: "Freelance Developer",
+      rating: 5,
+      bg: "linear-gradient(135deg, #0d9488, #2563eb)"
+    },
+    {
+      text: "Best investment I've ever made. The real-world projects are exactly what employers are looking for. I got 3 job offers after completing the Backend path.",
+      name: "Le Hoang Nam",
+      title: "Backend Developer at Startup",
+      rating: 5,
+      bg: "linear-gradient(135deg, #7c3aed, #2563eb)"
+    },
+    {
+      text: "As a designer transitioning to development, this platform gave me everything I needed. The community support is amazing — always someone to help!",
+      name: "Pham Bich Ngoc",
+      title: "Full-Stack Designer",
+      rating: 5,
+      bg: "linear-gradient(135deg, #db2777, #9333ea)"
+    }
+  ]
+
+  # Pricing Plans Data - Replace with API later
+  pricing_plans = [
+    {
+      name: "Free",
+      price: "0",
+      description: "Start your journey with free access to selected courses.",
+      recommended: false,
+      features: [
+        { text: "Access to 20+ free courses", available: true },
+        { text: "Community forum access", available: true },
+        { text: "Course completion certificate", available: false },
+        { text: "Mentor support", available: false },
+        { text: "Downloadable resources", available: false },
+        { text: "Offline access", available: false }
+      ],
+      cta_text: "Get Started Free",
+      cta_class: "btn-pricing-outline"
+    },
+    {
+      name: "Pro",
+      price: "499",
+      description: "Everything you need to accelerate your learning journey.",
+      recommended: true,
+      features: [
+        { text: "Access to all 250+ courses", available: true },
+        { text: "Community forum access", available: true },
+        { text: "Official certificates", available: true },
+        { text: "Mentor support (8 hrs/mo)", available: true },
+        { text: "Downloadable resources", available: true },
+        { text: "Offline access", available: false }
+      ],
+      cta_text: "Start Pro Plan",
+      cta_class: "btn-pricing-solid"
+    },
+    {
+      name: "Premium",
+      price: "999",
+      description: "Full access with personalized mentoring and all features.",
+      recommended: false,
+      features: [
+        { text: "Access to all 250+ courses", available: true },
+        { text: "Priority community access", available: true },
+        { text: "Official certificates", available: true },
+        { text: "Mentor support (unlimited)", available: true },
+        { text: "Downloadable resources", available: true },
+        { text: "Offline access", available: true }
+      ],
+      cta_text: "Go Premium",
+      cta_class: "btn-pricing-outline"
+    }
+  ]
+
+  # FAQ Data
+  faqs = [
+    {
+      q: "Do I get a certificate after completing a course?",
+      a: "Yes! Upon completing any paid course on our platform, you receive an official digital certificate. Certificates are shareable on LinkedIn and resume, and they are verified by our platform."
+    },
+    {
+      q: "Are courses available with lifetime access?",
+      a: "Absolutely. Once you purchase or enroll in a course, you have lifetime access to its content, including all future updates. Learn at your own pace, anytime, anywhere."
+    },
+    {
+      q: "Can complete beginners start without any prior experience?",
+      a: "Yes! Many of our courses are designed for absolute beginners. Our Learning Paths guide you from foundational concepts all the way to advanced topics in a structured, beginner-friendly manner."
+    },
+    {
+      q: "How is this different from YouTube tutorials?",
+      a: "Unlike scattered YouTube tutorials, our courses offer a structured curriculum designed by industry experts, hands-on projects, quizzes to test your understanding, direct mentor support, and official certificates."
+    },
+    {
+      q: "Can I switch between plans?",
+      a: "Yes, you can upgrade or downgrade your plan at any time. Upgrades take effect immediately, and downgrades take effect at the start of your next billing cycle."
+    },
+    {
+      q: "Is there a refund policy?",
+      a: "We offer a 30-day money-back guarantee on all paid plans. If you are not satisfied for any reason, contact our support team within 30 days of purchase for a full refund - no questions asked."
+    }
+  ]
+%>
+
+<%# ============================================================ %>
+<%# SECTION 1: HERO                                             %>
+<%# ============================================================ %>
+<section class="hero-section" id="home">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <%# --- Hero Content (Left) --- %>
+      <div class="col-lg-6 hero-content" data-reveal>
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Nền tảng học trực tuyến hàng đầu Việt Nam
+        </div>
+
+        <h1 class="hero-title">
+          Unlock Your<br>
+          <span class="hero-title-highlight">Full Potential</span><br>
+          with Expert-Led Courses
+        </h1>
+
+        <p class="hero-description">
+          Join over 10,000 learners building in-demand skills through structured learning paths,
+          real-world projects, and personalized mentoring from top industry professionals.
+        </p>
+
+        <div class="hero-cta-group">
+          <%= link_to new_user_registration_path, class: "btn-hero-primary" do %>
+            <i class="bi bi-play-circle-fill"></i>
+            Start Learning Free
+          <% end %>
+          <%= link_to courses_path, class: "btn-hero-secondary" do %>
+            <i class="bi bi-grid"></i>
+            Browse Courses
+          <% end %>
+        </div>
+
+        <div class="hero-social-proof">
+          <div class="hero-avatars">
+            <div class="hero-avatar">AN</div>
+            <div class="hero-avatar">TL</div>
+            <div class="hero-avatar">MK</div>
+            <div class="hero-avatar">HP</div>
+          </div>
+          <div class="hero-social-text">
+            <strong>10,000+ students</strong>
+            already learning on our platform
+          </div>
+        </div>
+      </div>
+
+      <%# --- Hero Illustration (Right): Simulated Dashboard --- %>
+      <div class="col-lg-6 d-none d-lg-block" data-reveal data-reveal-delay="200">
+        <div class="hero-illustration position-relative">
+
+          <%# Floating cards %>
+          <div class="hero-floating-card card-students">
+            <div class="fc-icon icon-blue"><i class="bi bi-people-fill"></i></div>
+            <div class="fc-text">
+              <div class="fc-number">10,248</div>
+              <div class="fc-label">Active Students</div>
+            </div>
+          </div>
+
+          <div class="hero-floating-card card-rating">
+            <div class="fc-icon icon-yellow"><i class="bi bi-star-fill"></i></div>
+            <div class="fc-text">
+              <div class="fc-number">4.9 / 5</div>
+              <div class="fc-label">Average Rating</div>
+            </div>
+          </div>
+
+          <%# Dashboard card mock %>
+          <div class="hero-dashboard-card">
+            <div class="hero-dashboard-header">
+              <div class="hero-dashboard-avatar">📚</div>
+              <div class="hero-dashboard-info">
+                <div class="name">My Learning Dashboard</div>
+                <div class="role">Fullstack Developer Path</div>
+              </div>
+              <span style="color: #10b981; font-size: 0.75rem; font-weight: 700;">● Active</span>
+            </div>
+
+            <div class="hero-lesson-item">
+              <div class="lesson-icon done"><i class="bi bi-check-lg" style="color: #10b981;"></i></div>
+              <div class="lesson-text">
+                <div class="title">HTML & CSS Foundations</div>
+                <div class="duration">✓ Completed · 45 min</div>
+              </div>
+            </div>
+            <div class="hero-lesson-item" style="background: rgba(37,99,235,0.1); border-radius: 8px;">
+              <div class="lesson-icon active"><i class="bi bi-play-fill" style="color: #3b82f6;"></i></div>
+              <div class="lesson-text">
+                <div class="title" style="color: #93c5fd;">JavaScript Fundamentals</div>
+                <div class="duration" style="color: #3b82f6;">● Now playing · 32 min</div>
+              </div>
+            </div>
+            <div class="hero-lesson-item">
+              <div class="lesson-icon pending"></div>
+              <div class="lesson-text">
+                <div class="title">React & State Management</div>
+                <div class="duration">Up next · 58 min</div>
+              </div>
+            </div>
+            <div class="hero-lesson-item">
+              <div class="lesson-icon pending"></div>
+              <div class="lesson-text">
+                <div class="title">Node.js & REST APIs</div>
+                <div class="duration">Locked · 72 min</div>
+              </div>
+            </div>
+
+            <div class="hero-progress-bar-container">
+              <div class="progress-label">
+                <span>Course Progress</span>
+                <span>42% Complete</span>
+              </div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: 42%;"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 2: SOCIAL PROOF STATS                              %>
+<%# ============================================================ %>
+<section class="stats-section" id="stats">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-6 col-md-3" data-reveal>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-mortarboard-fill"></i></div>
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Active Students</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" data-reveal data-reveal-delay="100">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-play-btn-fill"></i></div>
+          <div class="stat-number">250+</div>
+          <div class="stat-label">Expert Courses</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" data-reveal data-reveal-delay="200">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-person-badge-fill"></i></div>
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Top Instructors</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" data-reveal data-reveal-delay="300">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-award-fill"></i></div>
+          <div class="stat-number">8,000+</div>
+          <div class="stat-label">Certificates Issued</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 3: FEATURED COURSES                                %>
+<%# ============================================================ %>
+<section class="courses-section" id="courses">
+  <div class="container">
+    <div class="text-center mb-5" data-reveal>
+      <span class="lp-section-badge">📚 Featured Courses</span>
+      <h2 class="lp-section-title">Start Learning Today</h2>
+      <p class="lp-section-subtitle">
+        Browse our most popular courses, hand-picked by our expert team to help you build skills that matter.
+      </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+      <% @featured_courses.each_with_index do |course, i| %>
+        <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 400].min %>">
+          <div class="lp-course-card">
+            <div class="course-thumbnail-wrapper">
+              <%= link_to course_path(course) do %>
+                <img src="<%= course.thumbnail_url.presence || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=220&fit=crop' %>"
+                     alt="<%= course.title %>">
+              <% end %>
+              <% if course.category %>
+                <span class="course-category-badge"><%= course.category.name %></span>
+              <% end %>
+              <span class="course-price-badge <%= 'free' if course.free? %>">
+                <% if course.free? %>
+                  Free
+                <% else %>
+                  <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0) %>
+                <% end %>
+              </span>
+            </div>
+            <div class="course-body">
+              <%= link_to course.title, course_path(course), class: "course-title" %>
+              <p class="course-instructor">
+                <i class="bi bi-person-fill"></i>
+                <%= course.creator&.name || "E-Learning Team" %>
+              </p>
+              <div class="course-meta">
+                <div class="course-rating">
+                  <% if course.reviews.any? %>
+                    <% avg = course.reviews.average(:rating).to_f.round(1) %>
+                    <span class="rating-value"><%= avg %></span>
+                    <span class="star"><i class="bi bi-star-fill"></i></span>
+                    <span class="rating-count">(<%= course.reviews.count %>)</span>
+                  <% else %>
+                    <span style="color: var(--lp-text-muted); font-size: 0.75rem;">No reviews yet</span>
+                  <% end %>
+                </div>
+                <div class="course-students">
+                  <% if course.total_students > 0 %>
+                    <i class="bi bi-people-fill"></i>
+                    <%= number_to_human(course.total_students, format: "%n%u", units: { thousand: "k" }) %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%# If no courses, show placeholder cards %>
+      <% if @featured_courses.empty? %>
+        <% 4.times do |i| %>
+          <div class="col" data-reveal data-reveal-delay="<%= i * 100 %>">
+            <div class="lp-course-card">
+              <div class="course-thumbnail-wrapper" style="background: linear-gradient(135deg, #2563eb20, #0d948820);"></div>
+              <div class="course-body">
+                <div style="height: 40px; background: #f1f5f9; border-radius: 8px; margin-bottom: 0.5rem;"></div>
+                <div style="height: 20px; background: #f8fafc; border-radius: 6px; width: 70%; margin-bottom: 0.75rem;"></div>
+                <div class="course-meta" style="border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
+                  <span style="font-size: 0.8rem; color: #94a3b8;">Courses loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="text-center mt-5" data-reveal>
+      <%= link_to "View All Courses →", courses_path, class: "btn btn-outline-primary btn-lg px-5 fw-bold" %>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 4: LEARNING PATHS                                  %>
+<%# ============================================================ %>
+<section class="paths-section" id="learning-paths">
+  <div class="container">
+    <div class="text-center mb-5" data-reveal>
+      <span class="lp-section-badge">🗺️ Learning Paths</span>
+      <h2 class="lp-section-title">Structured Roadmaps to Success</h2>
+      <p class="lp-section-subtitle">
+        Don't get lost. Follow our expert-crafted learning paths that take you from beginner to job-ready.
+      </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+      <% learning_paths.each_with_index do |path, i| %>
+        <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 300].min %>">
+          <div class="path-card <%= path[:css_class] %>">
+            <div class="path-icon <%= path[:icon_bg] %>">
+              <%= path[:icon] %>
+            </div>
+            <h3 class="path-title"><%= path[:title] %></h3>
+            <p class="path-description"><%= path[:description] %></p>
+            <div class="path-tags">
+              <% path[:tags].each do |tag| %>
+                <span class="path-tag"><%= tag %></span>
+              <% end %>
+            </div>
+            <div class="path-meta">
+              <span><i class="bi bi-book"></i> <%= path[:courses_count] %> courses</span>
+              <span><i class="bi bi-clock"></i> <%= path[:hours] %>+ hrs</span>
+            </div>
+            <div class="path-cta">
+              <span class="path-level"><i class="bi bi-bar-chart-fill"></i> <%= path[:level] %></span>
+              <%= link_to courses_path do %>
+                Explore Path <i class="bi bi-arrow-right"></i>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 5: WHY CHOOSE US                                   %>
+<%# ============================================================ %>
+<section class="why-section" id="why-us">
+  <div class="container">
+    <div class="text-center mb-5" data-reveal>
+      <span class="lp-section-badge">⭐ Why Choose Us</span>
+      <h2 class="lp-section-title">Everything You Need to Succeed</h2>
+      <p class="lp-section-subtitle">
+        We've built our platform around what actually helps people land jobs and grow careers — not just watch videos.
+      </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <% features.each_with_index do |feature, i| %>
+        <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 400].min %>">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi <%= feature[:icon] %>"></i>
+            </div>
+            <h3 class="feature-title"><%= feature[:title] %></h3>
+            <p class="feature-text"><%= feature[:text] %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 6: INSTRUCTORS                                     %>
+<%# ============================================================ %>
+<section class="instructors-section" id="instructors">
+  <div class="container">
+    <div class="text-center mb-5" data-reveal>
+      <span class="lp-section-badge">👨‍🏫 Our Instructors</span>
+      <h2 class="lp-section-title">Learn from the Best</h2>
+      <p class="lp-section-subtitle">
+        Our instructors are industry practitioners — not just teachers. They bring real-world experience directly to your screen.
+      </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+      <% instructors.each_with_index do |instructor, i| %>
+        <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 300].min %>">
+          <div class="instructor-card">
+            <div class="instructor-avatar">
+              <span><%= instructor[:initials] %></span>
+              <div class="instructor-badge"><i class="bi bi-check-lg"></i></div>
+            </div>
+            <div class="instructor-name"><%= instructor[:name] %></div>
+            <div class="instructor-role"><%= instructor[:role] %></div>
+            <p class="instructor-bio"><%= instructor[:bio] %></p>
+            <div class="instructor-stats">
+              <div class="inst-stat">
+                <strong><%= instructor[:students] %></strong>
+                Students
+              </div>
+              <div class="inst-stat">
+                <strong><%= instructor[:courses] %></strong>
+                Courses
+              </div>
+              <div class="inst-stat">
+                <strong>⭐ <%= instructor[:rating] %></strong>
+                Rating
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 7: PLATFORM PREVIEW                               %>
+<%# ============================================================ %>
+<section class="preview-section" id="preview">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5" data-reveal>
+        <span class="lp-section-badge">🖥️ Platform Preview</span>
+        <h2 class="lp-section-title">A Learning Experience Like No Other</h2>
+        <p style="color: var(--lp-text-muted); margin-bottom: 2rem;">
+          Our platform is designed for focus and efficiency. Everything you need — video player, lesson list, progress tracking, quizzes — in one elegant interface.
+        </p>
+
+        <ul class="preview-features">
+          <li>
+            <div class="pf-icon"><i class="bi bi-play-btn-fill"></i></div>
+            <div class="pf-text">
+              <strong>HD Video Player</strong>
+              <span>Adaptive streaming, playback speed control, and auto-subtitles</span>
+            </div>
+          </li>
+          <li>
+            <div class="pf-icon"><i class="bi bi-list-check"></i></div>
+            <div class="pf-text">
+              <strong>Structured Lesson List</strong>
+              <span>Clear module breakdown with progress indicators for every lesson</span>
+            </div>
+          </li>
+          <li>
+            <div class="pf-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <div class="pf-text">
+              <strong>Progress Tracking</strong>
+              <span>Visual dashboards showing your completion rate, streaks, and achievements</span>
+            </div>
+          </li>
+          <li>
+            <div class="pf-icon"><i class="bi bi-patch-question-fill"></i></div>
+            <div class="pf-text">
+              <strong>Quizzes & Assessments</strong>
+              <span>Knowledge checks after each module to reinforce your learning</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-lg-7" data-reveal data-reveal-delay="200">
+        <div class="preview-mockup">
+          <div class="mockup-browser-bar">
+            <div class="browser-dots">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
+            </div>
+            <div class="browser-url">elearning.io/lessons/javascript-fundamentals</div>
+          </div>
+          <div class="mockup-body">
+            <div class="mockup-player">
+              <div class="play-btn"><i class="bi bi-play-fill"></i></div>
+            </div>
+            <p class="fw-bold mb-1" style="font-size: 0.9rem; color: #0f172a;">JavaScript Fundamentals — Module 2</p>
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">Lesson 4 of 12 · 32 minutes</p>
+            <div class="mockup-lesson-list">
+              <div class="lesson-row">
+                <div class="lesson-check done"><i class="bi bi-check-lg"></i></div>
+                <span class="lesson-name">Variables & Data Types</span>
+                <span class="lesson-dur">18 min</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-check done"><i class="bi bi-check-lg"></i></div>
+                <span class="lesson-name">Functions & Scope</span>
+                <span class="lesson-dur">24 min</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-check done"><i class="bi bi-check-lg"></i></div>
+                <span class="lesson-name">Arrays & Objects</span>
+                <span class="lesson-dur">28 min</span>
+              </div>
+              <div class="lesson-row" style="background: #eff6ff; border-radius: 6px; padding: 0.6rem 0.5rem;">
+                <div class="lesson-check active"><i class="bi bi-play-fill" style="font-size: 0.6rem;"></i></div>
+                <span class="lesson-name" style="color: #2563eb; font-weight: 600;">ES6+ Fundamentals</span>
+                <span class="lesson-dur" style="color: #2563eb;">32 min</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-check pending"></div>
+                <span class="lesson-name" style="color: #94a3b8;">Promises & Async/Await</span>
+                <span class="lesson-dur" style="color: #94a3b8;">41 min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 8: TESTIMONIALS                                    %>
+<%# ============================================================ %>
+<section class="testimonials-section" id="testimonials">
+  <div class="container">
+    <div class="text-center mb-5" data-reveal>
+      <span class="lp-section-badge">💬 Student Stories</span>
+      <h2 class="lp-section-title">Real Results, Real People</h2>
+      <p class="lp-section-subtitle">
+        Don't take our word for it. Here's what our students have to say about their learning journey.
+      </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      <% testimonials.each_with_index do |t, i| %>
+        <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 300].min %>">
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <% t[:rating].times do %>
+                <i class="bi bi-star-fill"></i>
+              <% end %>
+            </div>
+            <p class="testimonial-text">"<%= t[:text] %>"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar" style="background: <%= t[:bg] %>;">
+                <%= t[:name][0] %>
+              </div>
+              <div class="author-info">
+                <div class="author-name"><%= t[:name] %></div>
+                <div class="author-title"><%= t[:title] %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 9: PRICING                                         %>
+<%# ============================================================ %>
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div class="text-center mb-5" data-reveal>
+      <span class="lp-section-badge">💳 Pricing Plans</span>
+      <h2 class="lp-section-title">Invest in Your Future</h2>
+      <p class="lp-section-subtitle">
+        Flexible plans for every stage of your journey. Start free, scale when you're ready.
+      </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+      <% pricing_plans.each_with_index do |plan, i| %>
+        <div class="col" data-reveal data-reveal-delay="<%= i * 150 %>">
+          <div class="pricing-card <%= 'recommended' if plan[:recommended] %>">
+            <% if plan[:recommended] %>
+              <div class="recommended-badge">⭐ Most Popular</div>
+            <% end %>
+            <div class="pricing-plan-name"><%= plan[:name] %></div>
+            <div class="pricing-price">
+              <% if plan[:price] == "0" %>
+                Free
+              <% else %>
+                <sup>₫</sup><%= plan[:price] %>K<sub>/month</sub>
+              <% end %>
+            </div>
+            <p class="pricing-description"><%= plan[:description] %></p>
+            <ul class="pricing-features">
+              <% plan[:features].each do |feature| %>
+                <li class="<%= 'disabled' unless feature[:available] %>">
+                  <% if feature[:available] %>
+                    <i class="bi bi-check-circle-fill"></i>
+                  <% else %>
+                    <i class="bi bi-x-circle"></i>
+                  <% end %>
+                  <%= feature[:text] %>
+                </li>
+              <% end %>
+            </ul>
+            <%= link_to plan[:name] == "Free" ? new_user_registration_path : new_user_registration_path,
+                        class: "btn-pricing #{plan[:cta_class]}" do %>
+              <%= plan[:cta_text] %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 10: FAQ                                            %>
+<%# ============================================================ %>
+<section class="faq-section" id="faq">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="text-center mb-5" data-reveal>
+          <span class="lp-section-badge">❓ FAQ</span>
+          <h2 class="lp-section-title">Common Questions</h2>
+          <p class="lp-section-subtitle">
+            Everything you need to know before getting started.
+          </p>
+        </div>
+
+        <div class="accordion faq-accordion" id="faqAccordion" data-reveal>
+          <% faqs.each_with_index do |faq, i| %>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="faq-heading-<%= i %>">
+                <button class="accordion-button <%= 'collapsed' unless i == 0 %>"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#faq-collapse-<%= i %>"
+                        aria-expanded="<%= i == 0 ? 'true' : 'false' %>"
+                        aria-controls="faq-collapse-<%= i %>">
+                  <%= faq[:q] %>
+                </button>
+              </h2>
+              <div id="faq-collapse-<%= i %>"
+                   class="accordion-collapse collapse <%= 'show' if i == 0 %>"
+                   aria-labelledby="faq-heading-<%= i %>"
+                   data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  <%= faq[:a] %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 11: FINAL CTA                                     %>
+<%# ============================================================ %>
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div data-reveal>
+      <h2 class="cta-title">Ready to Transform<br>Your Career?</h2>
+      <p class="cta-subtitle">
+        Join 10,000+ learners who are already building their future. Start with a free account today — no credit card required.
+      </p>
+      <div class="cta-buttons">
+        <%= link_to new_user_registration_path, class: "btn-cta-white" do %>
+          <i class="bi bi-rocket-takeoff-fill"></i>
+          Sign Up for Free
+        <% end %>
+        <%= link_to courses_path, class: "btn-cta-outline" do %>
+          <i class="bi bi-compass"></i>
+          Explore Courses
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ============================================================ %>
+<%# SECTION 12: FOOTER                                        %>
+<%# ============================================================ %>
+<footer class="lp-footer">
+  <div class="container">
+    <div class="row g-5">
+
+      <%# Brand Column %>
+      <div class="col-lg-4">
+        <div class="footer-brand">
+          <%= link_to root_path, class: "footer-logo" do %>
+            <i class="bi bi-mortarboard-fill" style="color: #3b82f6;"></i>
+            E-Learning
+          <% end %>
+          <p class="footer-tagline">
+            Empowering learners worldwide with expert-led courses, structured paths, and a supportive community.
+          </p>
+          <div class="footer-social">
+            <a href="#" title="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" title="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="#" title="GitHub"><i class="bi bi-github"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <%# Platform Links %>
+      <div class="col-6 col-lg-2">
+        <h4 class="footer-heading">Platform</h4>
+        <ul class="footer-links">
+          <li><%= link_to "Browse Courses", courses_path %></li>
+          <li><a href="#learning-paths">Learning Paths</a></li>
+          <li><a href="#instructors">Instructors</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><%= link_to "Sign Up", new_user_registration_path %></li>
+        </ul>
+      </div>
+
+      <%# Categories Links %>
+      <div class="col-6 col-lg-2">
+        <h4 class="footer-heading">Categories</h4>
+        <ul class="footer-links">
+          <li><a href="#">Web Development</a></li>
+          <li><a href="#">Data Science</a></li>
+          <li><a href="#">UI/UX Design</a></li>
+          <li><a href="#">DevOps</a></li>
+          <li><%= link_to "All Categories", categories_path %></li>
+        </ul>
+      </div>
+
+      <%# Company Links %>
+      <div class="col-6 col-lg-2">
+        <h4 class="footer-heading">Company</h4>
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><%= link_to "Teach on E-Learning", new_instructor_registration_path %></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <%# Support Links %>
+      <div class="col-6 col-lg-2">
+        <h4 class="footer-heading">Support</h4>
+        <ul class="footer-links">
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Community</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copyright">
+        © <%= Date.current.year %> E-Learning Platform. All rights reserved.
+      </div>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<%# ============================================================ %>
+<%# SCROLL REVEAL JS - Intersection Observer                   %>
+<%# ============================================================ %>
+<script>
+  // Scroll Reveal Animation using IntersectionObserver
+  document.addEventListener('DOMContentLoaded', function() {
+    const revealElements = document.querySelectorAll('[data-reveal]');
+
+    if (!revealElements.length) return;
+
+    const observer = new IntersectionObserver(
+      function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target); // Animate once
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    revealElements.forEach(function(el) {
+      observer.observe(el);
+    });
+  });
+</script>
