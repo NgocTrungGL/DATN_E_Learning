@@ -1,43 +1,99 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<%# ============================================================ %>
+<%# PROFILE SETTINGS — Standardized UI (No Bootstrap)           %>
+<%# ============================================================ %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<div class="profile-settings">
+  
+  <%# ── Header ─────────────────────────────────────────────── %>
+  <header class="profile-settings__header">
+    <div class="profile-settings__inner">
+      <h1 class="profile-settings__title">Thiết lập tài khoản</h1>
+      <p class="profile-settings__subtitle">Quản lý thông tin cá nhân và bảo mật của bạn.</p>
+    </div>
+  </header>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  <div class="profile-settings__inner">
+    <div class="profile-settings__card">
+      
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "profile-settings__form" }) do |f| %>
+        
+        <%# ── Errors ─────────────────────────────────────────── %>
+        <% if resource.errors.any? %>
+          <div class="form-errors mb-4">
+            <%= render "devise/shared/error_messages", resource: resource %>
+          </div>
+        <% end %>
+
+        <%# ── Basic Info ─────────────────────────────────────── %>
+        <section class="profile-settings__section">
+          <h2 class="profile-settings__section-title">
+            <i class="bi bi-person-circle"></i> Thông tin cơ bản
+          </h2>
+          
+          <div class="profile-settings__field">
+            <%= f.label :email, class: "profile-settings__label" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "profile-settings__input", placeholder: "your@email.com" %>
+            
+            <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+              <p class="profile-settings__hint">Đang chờ xác nhận: <%= resource.unconfirmed_email %></p>
+            <% end %>
+          </div>
+        </section>
+
+        <%# ── Password Settings ───────────────────────────────── %>
+        <section class="profile-settings__section">
+          <h2 class="profile-settings__section-title">
+            <i class="bi bi-shield-lock"></i> Đổi mật khẩu
+          </h2>
+          
+          <div class="profile-settings__field">
+            <label class="profile-settings__label">
+              Mật khẩu mới <i>(để trống nếu không muốn đổi)</i>
+            </label>
+            <%= f.password_field :password, autocomplete: "new-password", class: "profile-settings__input", placeholder: "••••••••" %>
+            <% if @minimum_password_length %>
+              <span class="profile-settings__hint">Tối thiểu <%= @minimum_password_length %> ký tự</span>
+            <% end %>
+          </div>
+
+          <div class="profile-settings__field">
+            <%= f.label :password_confirmation, "Xác nhận mật khẩu mới", class: "profile-settings__label" %>
+            <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "profile-settings__input", placeholder: "••••••••" %>
+          </div>
+        </section>
+
+        <%# ── Confirmation ────────────────────────────────────── %>
+        <section class="profile-settings__section">
+          <h2 class="profile-settings__section-title">
+            <i class="bi bi-check2-circle"></i> Xác thực thay đổi
+          </h2>
+          
+          <div class="profile-settings__field">
+            <label class="profile-settings__label">
+              Mật khẩu hiện tại <i>(cần thiết để lưu thay đổi)</i>
+            </label>
+            <%= f.password_field :current_password, autocomplete: "current-password", class: "profile-settings__input", placeholder: "Nhập mật khẩu hiện tại" %>
+          </div>
+        </section>
+
+        <%# ── Actions ─────────────────────────────────────────── %>
+        <div class="profile-settings__actions">
+          <%= f.submit "Cập nhật tài khoản", class: "btn-update" %>
+          <%= link_to "Quay lại", :back, class: "btn-back" %>
+        </div>
+
+      <% end %>
+
+      <%# ── Dangerous Zone ─────────────────────────────────────── %>
+      <div class="profile-settings__danger">
+        <h3>Xóa tài khoản</h3>
+        <p>Hành động này không thể hoàn tác. Toàn bộ tiến trình học tập của bạn sẽ bị xóa vĩnh viễn.</p>
+        <%= button_to "Xóa tài khoản của tôi", registration_path(resource_name), 
+              data: { confirm: "Bạn có chắc chắn muốn xóa tài khoản?", turbo_confirm: "Bạn có chắc chắn không?" }, 
+              method: :delete, 
+              class: "btn-cancel" %>
+      </div>
+
+    </div>
   </div>
-
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
-    <% end %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
-
-<h3>Cancel my account</h3>
-
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
-
-<%= link_to "Back", :back %>
+</div>

@@ -1,0 +1,100 @@
+<section class="lesson-tabs" data-tabs-root>
+  <div class="lesson-tabs__shell">
+    <nav class="lesson-tabs__nav" aria-label="Interactive learning tabs" role="tablist">
+      <button
+        class="lesson-tabs__nav-item lesson-tabs__nav-item--active"
+        id="lesson-tab-overview"
+        type="button"
+        role="tab"
+        aria-selected="true"
+        aria-controls="lesson-panel-overview"
+        data-target="overview"
+        data-tab-trigger
+      >
+        <span class="lesson-tabs__nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="4" width="14" height="16" rx="2.5" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M8.5 9H15.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M8.5 13H15.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="lesson-tabs__nav-label">Tổng quan</span>
+      </button>
+
+      <button
+        class="lesson-tabs__nav-item"
+        id="lesson-tab-qa"
+        type="button"
+        role="tab"
+        aria-selected="false"
+        aria-controls="lesson-panel-qa"
+        data-target="qa"
+        data-tab-trigger
+      >
+        <span class="lesson-tabs__nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.5 6H17.5C18.88 6 20 7.12 20 8.5V13.2C20 14.58 18.88 15.7 17.5 15.7H12.3L8.2 18.8V15.7H6.5C5.12 15.7 4 14.58 4 13.2V8.5C4 7.12 5.12 6 6.5 6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="lesson-tabs__nav-label">Hỏi đáp</span>
+        <span class="lesson-tabs__nav-badge"><%= local_assigns[:qa_badge_count] || 1 %></span>
+      </button>
+
+      <button
+        class="lesson-tabs__nav-item"
+        id="lesson-tab-notes"
+        type="button"
+        role="tab"
+        aria-selected="false"
+        aria-controls="lesson-panel-notes"
+        data-target="notes"
+        data-tab-trigger
+      >
+        <span class="lesson-tabs__nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 3.8H15.2L19.2 7.8V18.2C19.2 19.3 18.3 20.2 17.2 20.2H7C5.9 20.2 5 19.3 5 18.2V5.8C5 4.7 5.9 3.8 7 3.8Z" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M15.2 3.8V7.8H19.2" stroke="currentColor" stroke-width="1.7"/>
+          </svg>
+        </span>
+        <span class="lesson-tabs__nav-label">Ghi chú</span>
+      </button>
+    </nav>
+
+    <div class="lesson-tabs__content" data-tabs-content>
+      <section
+        class="lesson-tabs__panel lesson-tabs__panel--active"
+        id="lesson-panel-overview"
+        role="tabpanel"
+        aria-labelledby="lesson-tab-overview"
+        data-panel="overview"
+        data-tab-panel
+      >
+        <%= render "lessons/tabs/overview" %>
+      </section>
+
+      <section
+        class="lesson-tabs__panel"
+        id="lesson-panel-qa"
+        role="tabpanel"
+        aria-labelledby="lesson-tab-qa"
+        data-panel="qa"
+        data-tab-panel
+        hidden
+      >
+        <%= render "lessons/tabs/qa" %>
+      </section>
+
+      <section
+        class="lesson-tabs__panel"
+        id="lesson-panel-notes"
+        role="tabpanel"
+        aria-labelledby="lesson-tab-notes"
+        data-panel="notes"
+        data-tab-panel
+        hidden
+      >
+        <%= render "lessons/tabs/notes" %>
+      </section>
+    </div>
+  </div>
+</section>

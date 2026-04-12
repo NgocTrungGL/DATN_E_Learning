@@ -1,145 +1,244 @@
 <%# ============================================================ %>
-<%# COURSES INDEX PAGE                                          %>
-<%# Full-width layout (no container from application.html.erb)  %>
+<%# COURSES INDEX PAGE — No Bootstrap                           %>
 <%# ============================================================ %>
 <% content_for :full_width, true %>
 
-<%# ============================================================ %>
-<%# SECTION 1: PAGE HEADER                                      %>
-<%# ============================================================ %>
+<%# ── Page Header ─────────────────────────────────────────── %>
 <div class="courses-page-header">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-7">
-        <div class="page-header-badge">📚 Course Catalog</div>
-        <h1>Explore Our Courses</h1>
-        <p>Browse <%= @courses.size %> expert-crafted courses and start building in-demand skills today.</p>
-        <div class="header-stats">
-          <div class="header-stat">
-            <i class="bi bi-play-btn-fill"></i>
-            <strong><%= @courses.size %>+</strong> Courses Available
-          </div>
-          <div class="header-stat">
-            <i class="bi bi-people-fill"></i>
-            <strong>10,000+</strong> Active Students
-          </div>
-          <div class="header-stat">
-            <i class="bi bi-award-fill"></i>
-            <strong>Certificate</strong> on Completion
-          </div>
-        </div>
+  <div class="courses-inner">
+    <div class="page-header-badge">📚 Course Catalog</div>
+    <h1>Explore Our Courses</h1>
+    <p class="header-subtitle">
+      Browse <%= @courses.size %> expert-crafted courses and start building in-demand skills today.
+    </p>
+    <div class="header-stats">
+      <div class="stat-item">
+        <i class="bi bi-play-btn-fill stat-icon"></i>
+        <strong><%= @courses.size %>+</strong> Courses Available
+      </div>
+      <div class="stat-item">
+        <i class="bi bi-people-fill stat-icon"></i>
+        <strong>10,000+</strong> Active Students
+      </div>
+      <div class="stat-item">
+        <i class="bi bi-award-fill stat-icon"></i>
+        <strong>Certificate</strong> on Completion
       </div>
     </div>
   </div>
 </div>
 
-<%# ============================================================ %>
-<%# SECTION 2: FILTER & SEARCH BAR (Frontend UI — connect to    %>
-<%# backend later by adding params to the courses controller)   %>
-<%# ============================================================ %>
+<%# ── Filter Bar ──────────────────────────────────────────── %>
+<%#
+  FUTURE BACKEND WIRING:
+  - params[:query]       → Course.where("title ILIKE ?", "%#{params[:query]}%")
+  - params[:category_id] → Course.where(category_id: params[:category_id])
+  - params[:price_filter] → "free" → Course.where(price: 0); "paid" → where("price > 0")
+  - params[:min_rating]  → join reviews + having avg >= min_rating
+%>
 <div class="courses-filter-bar">
-  <div class="container">
-    <%# Wrap in a form so filters can be wired to the backend later %>
-    <%# FUTURE: Add params[:query], params[:category_id], params[:price_filter], params[:min_rating] to controller %>
-    <%= form_with url: courses_path, method: :get, local: true, class: "d-flex align-items-center gap-3 flex-wrap" do |f| %>
+  <div class="courses-inner">
+    <%= form_with url: courses_path, method: :get, local: true do |f| %>
+      <div class="filter-form">
 
-      <%# Search input — FUTURE: wire to Course.where("title ILIKE ?", "%#{params[:query]}%") %>
-      <div class="filter-search">
-        <i class="bi bi-search"></i>
-        <%= f.search_field :query,
-              value: params[:query],
-              placeholder: "Search courses...",
-              class: "" %>
-      </div>
+        <%# Search %>
+        <div class="filter-search">
+          <i class="bi bi-search search-icon"></i>
+          <%= f.search_field :query,
+                value: params[:query],
+                placeholder: "Search courses...",
+                autocomplete: "off" %>
+        </div>
 
-      <%# Category filter — FUTURE: replace hardcoded options with Category.all %>
-      <%= f.select :category_id,
-            options_for_select(
-              [["All Categories", ""]] +
-              # FUTURE: replace below with Category.all.map { |c| [c.name, c.id] }
-              [
-                ["Web Development", "web"],
-                ["Data Science", "data"],
-                ["Design & UI/UX", "design"],
-                ["DevOps & Cloud", "devops"],
-                ["Mobile Development", "mobile"]
-              ],
-              params[:category_id]
-            ),
-            {},
-            class: "filter-select" %>
+        <%# Category — FUTURE: options_from_collection_for_select(Category.all, :id, :name) %>
+        <%= f.select :category_id,
+              options_for_select(
+                [["All Categories", ""]] +
+                Category.all.map { |c| [c.name, c.id] },
+                params[:category_id]
+              ),
+              {},
+              class: "filter-select" %>
 
-      <%# Price filter — FUTURE: add to controller: @courses = @courses.free if params[:price] == "free" %>
-      <%= f.select :price_filter,
-            options_for_select(
-              [["Any Price", ""], ["Free", "free"], ["Paid", "paid"]],
-              params[:price_filter]
-            ),
-            {},
-            class: "filter-select" %>
+        <%# Price filter %>
+        <%= f.select :price_filter,
+              options_for_select(
+                [["Any Price", ""], ["Free", "free"], ["Paid", "paid"]],
+                params[:price_filter]
+              ),
+              {},
+              class: "filter-select" %>
 
-      <%# Rating filter — FUTURE: add to controller: @courses = @courses.where("avg_rating >= ?", ...) %>
-      <%= f.select :min_rating,
-            options_for_select(
-              [["Any Rating", ""], ["4.5+", "4.5"], ["4.0+", "4.0"], ["3.5+", "3.5"]],
-              params[:min_rating]
-            ),
-            {},
-            class: "filter-select d-none d-md-block" %>
+        <%# Rating filter %>
+        <%= f.select :min_rating,
+              options_for_select(
+                [["Any Rating", ""], ["4.5+", "4.5"], ["4.0+", "4.0"], ["3.5+", "3.5"]],
+                params[:min_rating]
+              ),
+              {},
+              class: "filter-select" %>
 
-      <button type="submit" class="filter-btn-active">
-        <i class="bi bi-funnel-fill"></i> Apply
-      </button>
+        <button type="submit" class="filter-apply-btn">
+          <i class="bi bi-funnel-fill"></i> Apply
+        </button>
 
-      <% if params[:query].present? || params[:category_id].present? || params[:price_filter].present? %>
-        <%= link_to courses_path, class: "btn btn-link text-muted text-decoration-none small fw-semibold p-0" do %>
-          <i class="bi bi-x-circle"></i> Clear
+        <% if params[:query].present? || params[:category_id].present? || params[:price_filter].present? %>
+          <%= link_to courses_path, class: "filter-clear-link" do %>
+            <i class="bi bi-x-circle"></i> Clear
+          <% end %>
         <% end %>
-      <% end %>
 
-      <span class="results-count ms-auto d-none d-md-block">
-        Showing <strong><%= @courses.size %></strong> courses
-      </span>
+        <span class="results-count">
+          Showing <strong><%= @courses.size %></strong> courses
+        </span>
+
+      </div>
     <% end %>
   </div>
 </div>
 
-<%# ============================================================ %>
-<%# SECTION 3: COURSES GRID                                     %>
-<%# ============================================================ %>
+<%# ── Courses Grid ─────────────────────────────────────────── %>
 <section class="courses-grid-section">
-  <div class="container">
+  <div class="courses-inner">
 
     <% if @courses.any? %>
-      <%# Responsive grid: 1 col mobile, 2 col tablet, 3 col lg, 4 col xl %>
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+      <div class="courses-grid" id="courses-grid">
         <% @courses.each do |course| %>
-          <div class="col">
-            <%= render 'courses/course_card', course: course %>
-          </div>
+          <%= render 'courses/course_card', course: course %>
         <% end %>
       </div>
 
+      <turbo-frame id="courses-pagination">
+        <div class="courses-pagination-wrapper">
+          <% if @has_more %>
+            <%= link_to courses_path(@current_filters.merge(page: @page + 1, format: :turbo_stream)), 
+                  data: { turbo_frame: "courses-pagination" }, 
+                  id: "see-more-button", 
+                  class: "btn-see-more" do %>
+              See More <i class="bi bi-chevron-down"></i>
+            <% end %>
+          <% end %>
+        </div>
+      </turbo-frame>
+
     <% else %>
-      <%# --- Empty State --- %>
-      <div class="courses-empty-state">
-        <div class="empty-icon"><i class="bi bi-search"></i></div>
+      <div class="courses-empty">
+        <div class="empty-icon">
+          <i class="bi bi-search"></i>
+        </div>
         <h3>No courses found</h3>
         <p>Try adjusting your search or filters to find what you're looking for.</p>
-        <%= link_to "Clear Filters", courses_path, class: "btn btn-primary px-5" %>
+        <%= link_to "Clear Filters", courses_path, class: "btn-clear-filters" %>
       </div>
     <% end %>
 
-    <%# ============================================================ %>
-    <%# PAGINATION                                                  %>
-    <%# FUTURE: Install kaminari or pagy gem and replace @courses   %>
-    <%# with @courses.page(params[:page]).per(12) in the controller %>
-    <%# Then render pagination here                                 %>
-    <%# ============================================================ %>
-    <%# Example with kaminari: %>
-    <%# <div class="courses-pagination"> %>
-    <%#   <%= paginate @courses %> %>
-    <%# </div> %>
+    <%#
+      PAGINATION — Uncomment ONE block below when ready:
+      In controller: @courses = Course.page(params[:page]).per(12)  [kaminari]
+                  OR @pagy, @courses = pagy(Course.all)              [pagy]
+    %>
+    <%# With kaminari: <div class="courses-pagination"><%= paginate @courses %></div>
+    <%# With pagy:     <div class="courses-pagination"><%== pagy_nav(@pagy) %></div>
 
   </div>
 </section>
+
+<%# ── Flash Sales ──────────────────────────────────────────── %>
+<%= render 'courses/flash_sales' %>
+
+<%# ── Trending Bestsellers ─────────────────────────────────── %>
+<%= render 'courses/trending_bestsellers' %>
+
+<%# ── Skill Carousels ──────────────────────────────────────── %>
+<%= render 'courses/skill_carousels' %>
+
+<%# ── Learning Paths ───────────────────────────────────────── %>
+<%= render 'courses/learning_paths' %>
+
+<%# ── Global Footer ────────────────────────────────────────── %>
+<%= render 'shared/landing_footer' %>
+
+<%# ── Page-scoped JS (inline, Turbo-compatible) ─────────────── %>
+<% content_for :page_js do %>
+<script>
+  <%# Dynamically load courses_market.js safely using module-like approach %>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ── CountdownTimer
+    (function() {
+      var root  = document.getElementById('flash-countdown');
+      var hours = document.getElementById('cd-hours');
+      var mins  = document.getElementById('cd-mins');
+      var secs  = document.getElementById('cd-secs');
+      if (!root) return;
+
+      var endsAt = new Date(root.dataset.endsAt).getTime();
+      var pad    = function(n){ return String(n).padStart(2, '0'); };
+
+      function tick() {
+        var diff = endsAt - Date.now();
+        if (diff <= 0) { hours.textContent = '00'; mins.textContent = '00'; secs.textContent = '00'; return; }
+        var h = Math.floor(diff / 3600000);
+        var m = Math.floor((diff % 3600000) / 60000);
+        var s = Math.floor((diff % 60000) / 1000);
+        if (hours) hours.textContent = pad(h);
+        if (mins)  mins.textContent  = pad(m);
+        if (secs)  secs.textContent  = pad(s);
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    // ── TabController
+    (function() {
+      var tabsEl = document.getElementById('skill-tabs');
+      if (!tabsEl) return;
+
+      tabsEl.addEventListener('click', function(e) {
+        var btn = e.target.closest('[data-target]');
+        if (!btn) return;
+
+        tabsEl.querySelectorAll('.skill-carousels__tab').forEach(function(t) {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.skill-carousels__panel').forEach(function(p) {
+          p.classList.remove('is-active');
+        });
+
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-selected', 'true');
+        var panel = document.getElementById(btn.dataset.target);
+        if (panel) panel.classList.add('is-active');
+      });
+    })();
+
+    // ── CarouselScroller
+    (function() {
+      document.querySelectorAll('.skill-carousels__arrow').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var trackId = btn.dataset.track;
+          var track   = document.getElementById(trackId);
+          if (!track) return;
+          var card    = track.querySelector('.sc-card');
+          var amt     = ((card ? card.offsetWidth : 260) + 20) * 2;
+          var isPrev  = btn.classList.contains('skill-carousels__arrow--prev');
+          track.scrollBy({ left: isPrev ? -amt : amt, behavior: 'smooth' });
+        });
+      });
+    })();
+
+    // ── CardClickRouter
+    (function() {
+      document.querySelectorAll('[data-href]').forEach(function(card) {
+        card.setAttribute('role', 'link');
+        card.setAttribute('tabindex', '0');
+        card.addEventListener('click', function(e) {
+          if (e.target.closest('a, button')) return;
+          window.location.href = card.dataset.href;
+        });
+      });
+    })();
+  });
+</script>
+<% end %>

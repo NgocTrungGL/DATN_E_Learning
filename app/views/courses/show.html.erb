@@ -1,464 +1,766 @@
-<%# --- PHẦN 1: HEADER KHÓA HỌC (HERO SECTION) --- %>
-<div class="bg-dark text-white py-5 mb-5">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-8">
-        <span class="badge bg-warning text-dark mb-2">
-          <%= @course.category&.name || "General" %>
+<%# ==============================================================
+    COURSE DETAIL PAGE — Pure SCSS, No Bootstrap
+    Variables (controller): @course, @big_quizzes
+    Helpers used: can?, current_user, number_to_currency
+    ============================================================== %>
+
+<%# ── Page-level settings ──────────────────────────────────── %>
+<% content_for :title, @course.title %>
+<% content_for :full_width, true %>
+
+<%# ── Local helpers ────────────────────────────────────────── %>
+<% total_lessons  = @course.course_modules.sum { |m| m.lessons.size } %>
+<% total_modules  = @course.course_modules.count %>
+<% avg_rating     = @course.reviews.average(:rating).to_f.round(1) %>
+<% review_count   = @course.reviews.count %>
+<% instructor     = @course.creator %>
+<% ip             = instructor&.instructor_profile %>
+<% enrollment     = current_user&.enrollments&.find_by(course: @course) %>
+<% has_access     = current_user && can?(:access_content, @course) %>
+<% first_lesson   = @course.course_modules.first&.lessons&.first %>
+<% in_cart        = current_user&.cart&.courses&.include?(@course) %>
+<% has_reviewed   = @course.reviews.exists?(user: current_user) if current_user %>
+<% is_creator     = (current_user == instructor) if current_user %>
+
+<%# ─────────────────────────────────────────────────────────── %>
+<%# SECTION 1 — HERO                                            %>
+<%# ─────────────────────────────────────────────────────────── %>
+<section class="cd-hero">
+  <div class="cd-hero__inner">
+
+    <%# Left column: text content %>
+    <div class="cd-hero__content">
+
+      <%# Category badge %>
+      <span class="cd-hero__badge">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+        <%= @course.category&.name || "General" %>
+      </span>
+
+      <%# Title %>
+      <h1 class="cd-hero__title"><%= @course.title %></h1>
+
+      <%# Short description %>
+      <p class="cd-hero__subtitle"><%= @course.description %></p>
+
+      <%# Meta row: rating + students %>
+      <div class="cd-hero__meta">
+        <div class="cd-hero__rating">
+          <span class="cd-hero__rating-score"><%= avg_rating > 0 ? avg_rating : "New" %></span>
+          <div class="cd-hero__stars">
+            <% 5.times do |i| %>
+              <% if i < avg_rating.floor %>
+                <i class="bi bi-star-fill"></i>
+              <% elsif i < avg_rating %>
+                <i class="bi bi-star-half"></i>
+              <% else %>
+                <i class="bi bi-star"></i>
+              <% end %>
+            <% end %>
+          </div>
+          <a href="#cd-reviews" class="cd-hero__review-link">(<%= review_count %> reviews)</a>
+        </div>
+
+        <span class="cd-hero__separator">·</span>
+
+        <div class="cd-hero__students">
+          <i class="bi bi-people-fill"></i>
+          <%= @course.total_students %> students
+        </div>
+
+        <span class="cd-hero__separator">·</span>
+
+        <div class="cd-hero__instructor-line">
+          Created by <a href="#cd-instructor"><%= instructor&.name || "Instructor" %></a>
+        </div>
+      </div>
+
+      <%# Enrolled badge %>
+      <% if has_access && enrollment&.active? %>
+        <span class="cd-hero__enrolled-badge">
+          <i class="bi bi-patch-check-fill"></i> Enrolled
+          <% if enrollment.respond_to?(:current_progress_percentage) %>
+            — <%= enrollment.current_progress_percentage %>% complete
+          <% end %>
         </span>
+      <% end %>
 
-        <h1 class="display-4 fw-bold"><%= @course.title %></h1>
-        <p class="lead"><%= @course.description %></p>
-
-        <div class="mb-3 text-warning">
-          <span class="fw-bold fs-5"><%= @course.reviews.average(:rating).to_f.round(1) %>/5</span>
-          <i class="bi bi-star-fill"></i>
-          <a href="#course-reviews" class="text-white-50 text-decoration-none ms-2 small">
-            (<%= @course.reviews.count %> đánh giá)
-          </a>
-          <span class="text-white-50 mx-2">|</span>
-          <span class="text-white fw-bold">
-            <i class="bi bi-people-fill ms-1"></i>
-            <%= @course.total_students %> học viên
-          </span>
-        </div>
-
-        <div class="mt-4">
-          <%# --- HIỂN THỊ GIÁ TIỀN --- %>
-          <% unless @course.free? %>
-             <div class="mb-3 d-flex align-items-center">
-               <h2 class="text-warning fw-bold mb-0 me-3">
-                 <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
-               </h2>
-
-               <% if current_user && (current_user.admin? || current_user == @course.creator) %>
-                  <span class="badge bg-light text-secondary border opacity-75">Giá niêm yết</span>
-               <% end %>
-             </div>
-          <% end %>
-
-          <%# --- CÁC NÚT HÀNH ĐỘNG (ACTION BUTTONS) --- %>
-          <% if current_user %>
-
-            <%# A: ĐƯỢC PHÉP VÀO HỌC (Check Enrollment/License/Creator) %>
-            <% if can? :access_content, @course %>
-
-               <% first_lesson = @course.course_modules.first&.lessons&.first %>
-               <% if first_lesson %>
-                 <%= link_to lesson_path(first_lesson), class: "btn btn-success btn-lg px-4 me-2 shadow" do %>
-                   <i class="bi bi-play-circle-fill"></i> Vào học ngay
-
-                   <% if current_user.admin? %>
-                     <span class="fs-6 fw-normal ms-1">(Admin)</span>
-                   <% elsif current_user == @course.creator %>
-                     <span class="fs-6 fw-normal ms-1">(Giảng viên)</span>
-                   <% end %>
-                 <% end %>
-               <% else %>
-                 <button class="btn btn-secondary btn-lg px-4 me-2" disabled>Nội dung đang cập nhật</button>
-               <% end %>
-
-            <% else %>
-
-              <%# B: CHƯA ĐƯỢC HỌC -> MUA HOẶC ĐĂNG KÝ %>
-              <% pending_enrollment = current_user.enrollments.find_by(course: @course, status: :pending) %>
-
-              <% if pending_enrollment %>
-                 <div class="d-flex align-items-center">
-                   <button class="btn btn-warning btn-lg px-4 me-3 disabled text-dark fw-bold">
-                     <i class="bi bi-clock-history"></i> Đang chờ thanh toán
-                   </button>
-
-                   <%= button_to create_checkout_session_path(course_id: @course.id), method: :post, class: "btn btn-outline-light btn-sm", data: { turbo: false } do %>
-                      <i class="bi bi-credit-card"></i> Tiếp tục thanh toán
-                   <% end %>
-                 </div>
-                 <p class="text-white-50 mt-2 small">
-                   <i class="bi bi-info-circle"></i> Vui lòng hoàn tất thanh toán để vào học.
-                 </p>
-
-              <% else %>
-                 <% if @course.free? %>
-                    <%= button_to course_enrollments_path(@course), method: :post, class: "btn btn-primary btn-lg px-4 shadow" do %>
-                      <i class="bi bi-person-plus-fill"></i> Đăng ký học miễn phí
-                    <% end %>
-                 <% else %>
-                    <div class="d-flex gap-3 align-items-center">
-
-                      <%# 1. NÚT MUA NGAY %>
-                      <%= button_to create_checkout_session_path(course_id: @course.id),
-                            method: :post,
-                            class: "btn btn-primary btn-lg px-4 shadow border-0 bg-gradient",
-                            style: "background-color: #635bff;",
-                            data: { turbo: false } do %>
-                        <i class="bi bi-credit-card-2-front-fill me-2"></i> Mua ngay
-                      <% end %>
-
-                      <%# 2. NÚT THÊM VÀO GIỎ HÀNG %>
-                      <% if current_user.cart&.courses&.include?(@course) %>
-
-                        <%= link_to cart_path, class: "btn btn-outline-light btn-lg px-4" do %>
-                          <i class="bi bi-cart-check-fill me-2"></i> Đã trong giỏ
-                        <% end %>
-
-                      <% else %>
-
-                        <%# Dùng link_to với turbo_method: :post để gửi request POST mà không cần thẻ form bao quanh %>
-                        <%= link_to cart_items_path(course_id: @course.id),
-                              data: { turbo_method: :post },
-                              class: "btn btn-outline-light btn-lg px-4" do %>
-                          <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ
-                        <% end %>
-
-                      <% end %>
-
-                    </div>
-                 <% end %>
-              <% end %>
-
-            <% end %>
-
-          <% else %>
-            <%# C: CHƯA ĐĂNG NHẬP %>
-            <div class="d-flex align-items-center">
-              <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg px-4" do %>
-                Đăng nhập để học
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="col-md-4 d-none d-md-block">
-        <img src="<%= @course.thumbnail_url.presence || 'https://via.placeholder.com/400x300' %>"
-             class="img-fluid rounded shadow-lg border border-secondary"
-             style="object-fit: cover; width: 100%; height: auto;">
-      </div>
     </div>
+
+    <%# Right column: thumbnail card with play-preview %>
+    <div class="cd-hero__thumb-card">
+      <% thumb = @course.thumbnail_url.presence || "https://placehold.co/480x270/1e3a8a/93c5fd?text=#{URI.encode_www_form_component(@course.title.truncate(24))}" %>
+      <img class="cd-hero__thumb-img" src="<%= thumb %>" alt="<%= @course.title %>" loading="lazy">
+
+      <%# Show play overlay if there's a free preview %>
+      <% free_lessons = @course.course_modules.flat_map { |m| m.lessons }.select(&:free_preview?) %>
+      <% if free_lessons.any? %>
+        <button class="cd-hero__thumb-play"
+                onclick="pmOpen('<%= free_lessons.first.video_url %>', '<%= j free_lessons.first.title %>')">
+          <div class="play-icon"><i class="bi bi-play-fill"></i></div>
+        </button>
+      <% end %>
+    </div>
+
   </div>
-</div>
+</section>
 
-<%# --- PHẦN 2: NỘI DUNG CHÍNH --- %>
-<div class="container">
-  <div class="row">
+<%# ─────────────────────────────────────────────────────────── %>
+<%# SECTION 2 — MAIN LAYOUT (content + sticky sidebar)         %>
+<%# ─────────────────────────────────────────────────────────── %>
+<div class="cd-layout">
 
-    <%# CỘT TRÁI: DANH SÁCH BÀI HỌC %>
-    <div class="col-lg-8">
+  <%# ═══════════════════════════════════════════════════════════
+      LEFT COLUMN — Main Content
+      ═══════════════════════════════════════════════════════════ %>
+  <div class="cd-main">
 
-      <h3 class="mb-4 border-bottom pb-2">Nội dung khóa học</h3>
+    <%# ── Progress bar (enrolled users) ────────────────────── %>
+    <% if has_access && enrollment&.active? && enrollment.respond_to?(:current_progress_percentage) %>
+      <div class="cd-card" style="margin-bottom: 1.2rem;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;">
+          <span style="font-size:.875rem;font-weight:700;color:#0f172a;">Your Progress</span>
+          <span style="font-size:.875rem;color:#2563eb;font-weight:700;"><%= enrollment.current_progress_percentage %>%</span>
+        </div>
+        <div class="cd-progress-bar">
+          <div class="cd-progress-bar__fill" style="width: <%= enrollment.current_progress_percentage %>%;"></div>
+        </div>
+        <div class="cd-progress-label">
+          <span>Keep going!</span>
+          <span><%= enrollment.current_progress_percentage %>% of <%= total_lessons %> lessons</span>
+        </div>
+      </div>
+    <% end %>
 
-      <div class="accordion mb-5" id="accordionCourse">
-        <% @course.course_modules.order(:order_index).each_with_index do |mod, index| %>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="heading<%= mod.id %>">
-              <button class="accordion-button <%= 'collapsed' if index > 0 %> fw-bold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= mod.id %>">
-                <%= mod.title %>
-              </button>
-            </h2>
-            <div id="collapse<%= mod.id %>" class="accordion-collapse collapse <%= 'show' if index == 0 %>" data-bs-parent="#accordionCourse">
-              <div class="accordion-body p-0">
-                <div class="list-group list-group-flush">
-
-                  <%# --- VÒNG LẶP BÀI HỌC (LESSONS) --- %>
-                  <% mod.lessons.order(:order_index).each do |lesson| %>
-
-                    <%# --- LOGIC QUYỀN TRUY CẬP --- %>
-                    <% is_free = lesson.free_preview? %>
-                    <% has_access = current_user && can?(:access_content, @course) %>
-
-                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                      <div class="d-flex align-items-center text-truncate">
-                        <i class="bi <%= lesson.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> me-3 text-muted fs-5"></i>
-
-                        <%# TRƯỜNG HỢP 1: ĐƯỢC HỌC (Mua rồi hoặc Admin/Owner) %>
-                        <% if has_access %>
-                           <%= link_to lesson.title, lesson_path(lesson), class: "text-decoration-none text-dark fw-medium stretched-link" %>
-
-                        <%# TRƯỜNG HỢP 2: HỌC THỬ (Chưa mua nhưng bài là Free) -> KÍCH HOẠT MODAL %>
-                        <% elsif is_free %>
-                           <a href="#" class="text-decoration-none text-dark fw-medium stretched-link"
-                              data-bs-toggle="modal"
-                              data-bs-target="#previewCourseModal"
-                              data-video-url="<%= lesson.video_url %>"
-                              data-lesson-title="<%= lesson.title %>">
-                              <%= lesson.title %>
-                           </a>
-
-                        <%# TRƯỜNG HỢP 3: BỊ KHÓA %>
-                        <% else %>
-                           <span class="text-muted"><%= lesson.title %></span>
-                        <% end %>
-                      </div>
-
-                      <%# BADGE TRẠNG THÁI BÊN PHẢI %>
-                      <div>
-                        <% if has_access %>
-                           <i class="bi bi-chevron-right text-muted small"></i>
-                        <% elsif is_free %>
-                           <span class="badge bg-primary-subtle text-primary border border-primary fw-bold rounded-pill">
-                             <i class="bi bi-eye-fill me-1"></i> Xem trước
-                           </span>
-                        <% else %>
-                           <i class="bi bi-lock-fill text-secondary"></i>
-                        <% end %>
-                      </div>
-                    </div>
-
-                  <% end %>
-                  <%# ------------------------------------ %>
-
-                  <% if mod.lessons.empty? %>
-                     <div class="p-3 text-muted fst-italic small">Nội dung đang được cập nhật.</div>
-                  <% end %>
-                </div>
-              </div>
-            </div>
+    <%# ── What you'll learn ─────────────────────────────────── %>
+    <div class="cd-card">
+      <h2 class="cd-section-heading"><i class="bi bi-lightbulb-fill"></i> What You'll Learn</h2>
+      <div class="cd-learn-grid">
+        <% learn_items = [
+          "Master core concepts with hands-on projects",
+          "Build production-ready applications",
+          "Write clean, maintainable code",
+          "Debug and troubleshoot like a professional",
+          "Follow industry best practices",
+          "Apply knowledge to real-world scenarios",
+          "Earn a verifiable completion certificate",
+          "Join a community of #{@course.total_students}+ learners"
+        ] %>
+        <% learn_items.each do |item| %>
+          <div class="cd-learn-item">
+            <i class="bi bi-check2-circle"></i>
+            <span><%= item %></span>
           </div>
         <% end %>
+      </div>
+    </div>
 
-        <%# --- PHẦN BÀI KIỂM TRA (BIG QUIZ) --- %>
+    <%# ── Curriculum / Accordion ────────────────────────────── %>
+    <div class="cd-card" id="cd-curriculum">
+      <h2 class="cd-section-heading"><i class="bi bi-collection-play-fill"></i> Course Content</h2>
+
+      <div class="cd-curriculum__summary">
+        <span><i class="bi bi-layers"></i> <%= total_modules %> modules</span>
+        <span><i class="bi bi-play-circle"></i> <%= total_lessons %> lessons</span>
         <% if @big_quizzes.any? %>
-          <% @big_quizzes.each do |quiz| %>
-            <% accordion_id = "big_quiz_#{quiz.id}" %>
-            <div class="accordion-item border-warning mt-2">
-               <h2 class="accordion-header" id="heading_<%= accordion_id %>">
-                <button class="accordion-button collapsed bg-warning-subtle text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_<%= accordion_id %>">
-                  <i class="bi bi-trophy-fill me-2 text-warning"></i>
-                  Bài kiểm tra: <%= quiz.title %>
-                </button>
-              </h2>
-              <div id="collapse_<%= accordion_id %>" class="accordion-collapse collapse" data-bs-parent="#accordionCourse">
-                <div class="accordion-body bg-light">
-                  <div class="row align-items-center">
-                    <div class="col-md-8">
-                      <p class="mb-2 small text-muted"><%= quiz.description.presence || "Bài kiểm tra tổng hợp kiến thức." %></p>
-                      <div class="d-flex gap-3 text-muted small">
-                        <span><i class="bi bi-question-circle"></i> <%= quiz.total_questions %> câu</span>
-                        <span><i class="bi bi-clock"></i> <%= quiz.time_limit ? "#{quiz.time_limit} phút" : "Không giới hạn" %></span>
-                        <span><i class="bi bi-bullseye"></i> Đạt: <%= quiz.pass_score %>%</span>
-                      </div>
-                    </div>
-                    <div class="col-md-4 text-end mt-3 mt-md-0">
-                      <% if can? :access_content, @course %>
-                        <% if current_user.quiz_completed?(quiz) %>
-                          <button class="btn btn-success fw-bold disabled w-100 btn-sm">
-                            <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
-                          </button>
-                        <% else %>
-                          <%= button_to quiz_quiz_attempts_path(quiz), method: :post, class: "btn btn-primary fw-bold w-100 btn-sm shadow-sm" do %>
-                            <i class="bi bi-play-circle-fill"></i> Làm bài ngay
-                          <% end %>
-                        <% end %>
-                      <% else %>
-                        <button class="btn btn-secondary w-100 disabled btn-sm" title="Vui lòng đăng ký khóa học">
-                          <i class="bi bi-lock-fill"></i> Bị khóa
-                        </button>
-                      <% end %>
-                    </div>
-                  </div>
+          <span><i class="bi bi-trophy"></i> <%= @big_quizzes.count %> final quiz<%= "zes" if @big_quizzes.count > 1 %></span>
+        <% end %>
+        <% if free_lessons.any? %>
+          <span><i class="bi bi-eye"></i> <%= free_lessons.count %> free previews</span>
+        <% end %>
+      </div>
+
+      <%# Module accordion %>
+      <% @course.course_modules.order(:order_index).each_with_index do |mod, index| %>
+        <div class="cd-module">
+          <div class="cd-module__header <%= 'is-open' if index == 0 %>"
+               role="button"
+               onclick="cdToggleModule(this)"
+               aria-expanded="<%= index == 0 %>">
+
+            <div class="cd-module__title-row">
+              <div class="mod-icon"><i class="bi bi-folder2"></i></div>
+              <div>
+                <div class="mod-title"><%= mod.title %></div>
+                <div class="mod-lesson-count">
+                  <%= mod.lessons.count %> lesson<%= "s" if mod.lessons.count != 1 %>
                 </div>
               </div>
             </div>
+
+            <i class="bi bi-chevron-down cd-module__chevron <%= 'rotated' if index == 0 %>"></i>
+          </div>
+
+          <div class="cd-module__body <%= 'is-open' if index == 0 %>">
+            <% if mod.lessons.empty? %>
+              <div class="cd-lesson" style="color:#94a3b8;font-style:italic;font-size:.85rem;">
+                <i class="bi bi-clock-history" style="color:#94a3b8;"></i>
+                Content coming soon…
+              </div>
+            <% end %>
+
+            <% mod.lessons.order(:order_index).each do |lesson| %>
+              <% is_free    = lesson.free_preview? %>
+              <% l_access   = has_access %>
+
+              <%# Determine icon type %>
+              <% lesson_icon = lesson.video_url.present? ? "video" : "text" %>
+
+              <% if l_access %>
+                <%# ENROLLED: clickable lesson link %>
+                <%= link_to lesson_path(lesson), class: "cd-lesson" do %>
+                  <div class="cd-lesson__icon cd-lesson__icon--<%= lesson_icon %>">
+                    <i class="bi bi-<%= lesson.video_url.present? ? 'play-fill' : 'file-text-fill' %>"></i>
+                  </div>
+                  <div class="cd-lesson__info">
+                    <div class="cd-lesson__title"><%= lesson.title %></div>
+                    <div class="cd-lesson__duration">
+                      <%= lesson.video_url.present? ? "Video" : "Reading" %>
+                    </div>
+                  </div>
+                  <span class="cd-lesson__action"><i class="bi bi-chevron-right"></i></span>
+                <% end %>
+
+              <% elsif is_free %>
+                <%# FREE PREVIEW: opens preview modal %>
+                <div class="cd-lesson"
+                     style="cursor:pointer;"
+                     onclick="pmOpen('<%= lesson.video_url %>', '<%= j lesson.title %>')">
+                  <div class="cd-lesson__icon cd-lesson__icon--video">
+                    <i class="bi bi-play-fill"></i>
+                  </div>
+                  <div class="cd-lesson__info">
+                    <div class="cd-lesson__title"><%= lesson.title %></div>
+                    <div class="cd-lesson__duration">Free Preview</div>
+                  </div>
+                  <span class="cd-lesson__badge cd-lesson__badge--preview">
+                    <i class="bi bi-eye-fill"></i> Preview
+                  </span>
+                </div>
+
+              <% else %>
+                <%# LOCKED %>
+                <div class="cd-lesson">
+                  <div class="cd-lesson__icon cd-lesson__icon--locked">
+                    <i class="bi bi-lock-fill"></i>
+                  </div>
+                  <div class="cd-lesson__info">
+                    <div class="cd-lesson__title is-muted"><%= lesson.title %></div>
+                    <div class="cd-lesson__duration">Locked</div>
+                  </div>
+                  <span class="cd-lesson__action"><i class="bi bi-lock text-muted"></i></span>
+                </div>
+
+              <% end %>
+            <% end %>
+          </div><!-- .cd-module__body -->
+        </div><!-- .cd-module -->
+      <% end %>
+
+      <%# Big quizzes (final assessments) %>
+      <% if @big_quizzes.any? %>
+        <div style="margin-top: 1rem;">
+          <div style="font-size:.78rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">
+            Final Assessments
+          </div>
+
+          <% @big_quizzes.each do |quiz| %>
+            <div class="cd-quiz-item">
+              <div class="cd-quiz-item__left">
+                <div class="cd-quiz-item__icon">
+                  <i class="bi bi-trophy-fill"></i>
+                </div>
+                <div>
+                  <div class="cd-quiz-item__title"><%= quiz.title %></div>
+                  <div class="cd-quiz-item__meta">
+                    <span><i class="bi bi-question-circle"></i><%= quiz.total_questions %> questions</span>
+                    <span><i class="bi bi-clock"></i><%= quiz.time_limit ? "#{quiz.time_limit} min" : "Untimed" %></span>
+                    <span><i class="bi bi-bullseye"></i>Pass: <%= quiz.pass_score %>%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <% if can? :access_content, @course %>
+                  <% if current_user&.quiz_completed?(quiz) %>
+                    <button class="cd-btn cd-btn--success" style="width:auto;padding:.5rem 1rem;font-size:.82rem;" disabled>
+                      <i class="bi bi-check-circle-fill"></i> Completed
+                    </button>
+                  <% else %>
+                    <%= button_to quiz_quiz_attempts_path(quiz), method: :post,
+                          class: "cd-btn cd-btn--primary",
+                          style: "width:auto;padding:.5rem 1rem;font-size:.82rem;" do %>
+                      <i class="bi bi-play-circle-fill"></i> Start Quiz
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <button class="cd-btn cd-btn--ghost" style="width:auto;padding:.5rem 1rem;font-size:.82rem;" disabled>
+                    <i class="bi bi-lock-fill"></i> Locked
+                  </button>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div><!-- #cd-curriculum -->
+
+    <%# ── Instructor ────────────────────────────────────────── %>
+    <div class="cd-card" id="cd-instructor">
+      <h2 class="cd-section-heading"><i class="bi bi-person-badge-fill"></i> Your Instructor</h2>
+
+      <div class="cd-instructor">
+        <div class="cd-instructor__avatar">
+          <% if instructor&.avatar_url.present? %>
+            <img src="<%= instructor.avatar_url %>" alt="<%= instructor.name %>">
+          <% else %>
+            <%= instructor&.name&.first&.upcase || "?" %>
+          <% end %>
+        </div>
+
+        <div class="cd-instructor__info">
+          <div class="cd-instructor__name"><%= instructor&.name || "Instructor" %></div>
+          <div class="cd-instructor__title-line">
+            <%= ip&.status == "approved" ? "Verified Instructor" : "Senior Instructor" %>
+          </div>
+
+          <div class="cd-instructor__badges">
+            <span class="cd-instructor__badge cd-instructor__badge--bestseller">
+              <i class="bi bi-award-fill"></i> Best Seller
+            </span>
+            <% if ip&.status == "approved" %>
+              <span class="cd-instructor__badge cd-instructor__badge--verified">
+                <i class="bi bi-patch-check-fill"></i> Verified
+              </span>
+            <% end %>
+          </div>
+
+          <div class="cd-instructor__stats">
+            <div class="cd-instructor__stat">
+              <div class="value"><%= @course.total_students %></div>
+              <div class="label">Students</div>
+            </div>
+            <div class="cd-instructor__stat">
+              <div class="value"><%= instructor ? Course.where(created_by: instructor.id).published.count : 1 %></div>
+              <div class="label">Courses</div>
+            </div>
+            <div class="cd-instructor__stat">
+              <div class="value"><%= avg_rating > 0 ? avg_rating : "–" %></div>
+              <div class="label">Avg. Rating</div>
+            </div>
+          </div>
+
+          <% bio = ip&.bio_detailed.presence || instructor&.profile&.bio %>
+          <% if bio.present? %>
+            <div class="cd-instructor__bio"><%= bio %></div>
+          <% else %>
+            <div class="cd-instructor__bio" style="color:#94a3b8;font-style:italic;">
+              Passionate educator with years of industry experience. Committed to helping you succeed.
+            </div>
+          <% end %>
+
+          <div class="cd-instructor__links">
+            <% if ip&.linkedin_url.present? %>
+              <%= link_to ip.linkedin_url, target: "_blank", rel: "noopener", class: "cd-instructor__link" do %>
+                <i class="bi bi-linkedin"></i> LinkedIn
+              <% end %>
+            <% end %>
+            <% if ip&.website_url.present? %>
+              <%= link_to ip.website_url, target: "_blank", rel: "noopener", class: "cd-instructor__link" do %>
+                <i class="bi bi-globe2"></i> Website
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# ── Gamification badges (UI-only, hardcoded) ──────────── %>
+    <div class="cd-card">
+      <h2 class="cd-section-heading"><i class="bi bi-stars"></i> Course Achievements</h2>
+      <p style="font-size:.82rem;color:#94a3b8;margin-bottom:1rem;">
+        Complete lessons to unlock these badges. Achievements will sync to your profile.
+      </p>
+      <div class="cd-gamification">
+        <div class="cd-badge-item">
+          <div class="cd-badge-item__icon" style="background:rgba(37,99,235,.1);">🚀</div>
+          <div>
+            <div class="cd-badge-item__label">Quick Starter</div>
+            <div class="cd-badge-item__sub">Finish your first lesson</div>
+          </div>
+        </div>
+        <div class="cd-badge-item <%= has_access && enrollment&.current_progress_percentage.to_f >= 50 ? '' : 'cd-badge-item--locked' %>">
+          <div class="cd-badge-item__icon" style="background:rgba(245,158,11,.1);">⚡</div>
+          <div>
+            <div class="cd-badge-item__label">Halfway Hero</div>
+            <div class="cd-badge-item__sub">Complete 50% of the course</div>
+          </div>
+        </div>
+        <div class="cd-badge-item cd-badge-item--locked">
+          <div class="cd-badge-item__icon" style="background:rgba(16,185,129,.1);">🏆</div>
+          <div>
+            <div class="cd-badge-item__label">Course Champion</div>
+            <div class="cd-badge-item__sub">Pass the final quiz</div>
+          </div>
+        </div>
+        <div class="cd-badge-item cd-badge-item--locked">
+          <div class="cd-badge-item__icon" style="background:rgba(139,92,246,.1);">💎</div>
+          <div>
+            <div class="cd-badge-item__label">Knowledge Master</div>
+            <div class="cd-badge-item__sub">Score 100% on all quizzes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# ── Learning path suggestions (UI-only) ───────────────── %>
+    <div class="cd-card">
+      <h2 class="cd-section-heading"><i class="bi bi-signpost-split-fill"></i> Learning Path</h2>
+      <p style="font-size:.82rem;color:#94a3b8;margin-bottom:1rem;">
+        Recommended progression for this topic area.
+      </p>
+      <div class="cd-learning-path">
+        <div class="cd-path-item">
+          <div class="cd-path-item__step cd-path-item__step--done">✓</div>
+          <span style="font-weight:600;color:#0f172a;">Introduction to <%= @course.category&.name || "the topic" %></span>
+          <span style="margin-left:auto;font-size:.72rem;color:#94a3b8;">Beginner</span>
+        </div>
+        <div class="cd-path-item">
+          <div class="cd-path-item__step cd-path-item__step--current"><%= total_modules %></div>
+          <a href="#cd-curriculum" style="font-weight:700;"><%= @course.title %></a>
+          <span style="margin-left:auto;font-size:.72rem;color:#2563eb;font-weight:700;">You are here</span>
+        </div>
+        <div class="cd-path-item">
+          <div class="cd-path-item__step cd-path-item__step--next">→</div>
+          <span style="color:#94a3b8;">Advanced <%= @course.category&.name || "Topics" %></span>
+          <span style="margin-left:auto;font-size:.72rem;color:#94a3b8;">Coming soon</span>
+        </div>
+      </div>
+    </div>
+
+    <%# ── Reviews ───────────────────────────────────────────── %>
+    <div class="cd-card cd-anchor" id="cd-reviews">
+      <%# Header with write-review button %>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <h2 class="cd-section-heading" style="border:none;padding:0;margin:0;">
+          <i class="bi bi-chat-square-quote-fill"></i> Student Reviews
+        </h2>
+
+        <%# Review button logic %>
+        <% if current_user %>
+          <% if is_creator %>
+            <span style="font-size:.78rem;color:#94a3b8;font-style:italic;border:1px solid #e2e8f0;padding:.3rem .75rem;border-radius:8px;">Instructor</span>
+          <% elsif has_reviewed %>
+            <span style="font-size:.82rem;color:#10b981;font-weight:700;"><i class="bi bi-check-circle-fill"></i> Reviewed</span>
+          <% elsif enrollment&.active? && !has_reviewed %>
+            <% if enrollment.can_review? %>
+              <button class="cd-write-review-btn" onclick="document.getElementById('cd-review-modal').classList.add('is-open')">
+                <i class="bi bi-pencil-square"></i> Write a Review
+              </button>
+              <%# Inline review modal (pure CSS, no Bootstrap) %>
+              <%= render "review_modal", course: @course %>
+            <% else %>
+              <button class="cd-write-review-btn" onclick="document.getElementById('cd-eligibility-modal').classList.add('is-open')">
+                <i class="bi bi-pencil-square"></i> Write a Review
+              </button>
+            <% end %>
+          <% else %>
+            <span style="font-size:.78rem;color:#94a3b8;font-style:italic;">Enroll to review</span>
+          <% end %>
+        <% else %>
+          <%= link_to new_user_session_path, class: "cd-write-review-btn" do %>
+            <i class="bi bi-person-plus"></i> Login to Review
           <% end %>
         <% end %>
       </div>
 
-      <%# --- PHẦN ĐÁNH GIÁ (REVIEWS) --- %>
-      <div id="course-reviews" class="mt-5">
-        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
-          <h3 class="mb-0">Đánh giá từ học viên</h3>
+      <%# Rating overview bar chart %>
+      <% if review_count > 0 %>
+        <div class="cd-rating-overview">
+          <div class="cd-rating-big">
+            <div class="score"><%= avg_rating %></div>
+            <div class="stars">
+              <% 5.times do |i| %>
+                <% if i < avg_rating.floor %>
+                  <i class="bi bi-star-fill"></i>
+                <% elsif i < avg_rating %>
+                  <i class="bi bi-star-half"></i>
+                <% else %>
+                  <i class="bi bi-star"></i>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="label">Course Rating</div>
+          </div>
 
-          <% if user_signed_in? %>
-            <% enrollment = current_user.enrollments.find_by(course: @course) %>
-            <% has_reviewed = @course.reviews.exists?(user: current_user) %>
-            <% is_creator = (current_user == @course.creator) %>
+          <div class="cd-rating-bars">
+            <% [5,4,3,2,1].each do |stars| %>
+              <% star_count  = @course.reviews.where(rating: stars).count %>
+              <% pct = review_count > 0 ? ((star_count.to_f / review_count) * 100).round : 0 %>
+              <div class="cd-bar-row">
+                <div class="bar-track"><div class="bar-fill" style="width:<%= pct %>%;"></div></div>
+                <div class="bar-label"><%= stars %></div>
+                <i class="bi bi-star-fill" style="color:#f59e0b;font-size:.7rem;"></i>
+                <div class="bar-pct"><%= pct %>%</div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
 
-            <% if enrollment&.active? && !has_reviewed && !is_creator %>
-              <% if enrollment.can_review? %>
-                <%# A. ĐỦ ĐIỀU KIỆN %>
-                <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#reviewModal">
-                  <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
-                </button>
-                <%= render "review_modal", course: @course %>
-              <% else %>
-                <%# B. CHƯA ĐỦ ĐIỀU KIỆN %>
-                <button type="button" class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#eligibilityModal">
-                  <i class="bi bi-pencil-square me-1"></i> Viết đánh giá
-                </button>
-
-                <%# Modal cảnh báo chưa đủ tiến độ %>
-                <div class="modal fade" id="eligibilityModal" tabindex="-1" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header border-0 pb-0">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body text-center pb-4">
-                        <div class="mb-3 text-warning"><i class="bi bi-exclamation-circle-fill" style="font-size: 3rem;"></i></div>
-                        <h4 class="fw-bold">Chưa đủ điều kiện đánh giá</h4>
-                        <p class="text-muted mt-3">Để đảm bảo tính khách quan, bạn cần hoàn thành ít nhất <strong>70%</strong> nội dung khóa học.</p>
-                        <div class="bg-light p-3 rounded mt-3 d-inline-block">
-                          Tiến độ hiện tại: <strong class="text-danger fs-5"><%= enrollment.current_progress_percentage %>%</strong> <span class="text-muted">/ 70%</span>
-                        </div>
-                        <div class="mt-4">
-                          <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Tiếp tục học ngay</button>
-                        </div>
-                      </div>
+      <%# Review list %>
+      <div class="cd-review-grid">
+        <% reviews = @course.reviews.recent %>
+        <% if reviews.any? %>
+          <% reviews.each do |review| %>
+            <div class="cd-review">
+              <div class="cd-review__avatar">
+                <% if review.user&.avatar_url.present? %>
+                  <img src="<%= review.user.avatar_url %>" alt="<%= review.user.name %>">
+                <% else %>
+                  <%= review.user&.name&.first&.upcase || "?" %>
+                <% end %>
+              </div>
+              <div class="cd-review__body">
+                <div class="cd-review__header">
+                  <div>
+                    <div class="cd-review__author"><%= review.user&.name || "Student" %></div>
+                    <div class="cd-review__stars">
+                      <% review.rating.to_i.times { %><i class="bi bi-star-fill"></i><% } %>
+                      <% (5 - review.rating.to_i).times { %><i class="bi bi-star" style="color:#d1d5db;"></i><% } %>
                     </div>
                   </div>
+                  <span class="cd-review__date">
+                    <%= time_ago_in_words(review.created_at) %> ago
+                  </span>
                 </div>
-              <% end %>
-            <% elsif is_creator %>
-               <span class="text-muted small fst-italic border px-2 py-1 rounded bg-light">Giảng viên</span>
-            <% elsif has_reviewed %>
-              <span class="text-success fw-bold small"><i class="bi bi-check-circle-fill"></i> Đã đánh giá</span>
-            <% else %>
-              <span class="text-muted small fst-italic">Đăng ký học để đánh giá</span>
-            <% end %>
+                <p class="cd-review__text"><%= review.content %></p>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div style="text-align:center;padding:2rem;color:#94a3b8;">
+            <div style="font-size:2rem;margin-bottom:.5rem;">💬</div>
+            <div style="font-weight:700;">No reviews yet</div>
+            <div style="font-size:.82rem;margin-top:.25rem;">Be the first to share your experience.</div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+  </div><!-- .cd-main -->
+
+  <%# ═══════════════════════════════════════════════════════════
+      RIGHT COLUMN — Sticky Sidebar
+      ═══════════════════════════════════════════════════════════ %>
+  <div class="cd-sidebar">
+    <div class="cd-sidebar-card">
+
+      <%# Thumbnail in sidebar %>
+      <% if @course.thumbnail_url.present? %>
+        <img class="cd-sidebar-thumb" src="<%= @course.thumbnail_url %>" alt="<%= @course.title %>">
+      <% end %>
+
+      <div class="cd-sidebar-body">
+
+        <%# Price %>
+        <div class="cd-sidebar-price">
+          <% if @course.free? %>
+            <span class="price-free-label">Free</span>
           <% else %>
-            <%= link_to new_user_session_path, class: "btn btn-outline-secondary btn-sm" do %>
-              Đăng nhập để đánh giá
+            <span class="price-current">
+              <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
+            </span>
+            <% if current_user && (current_user.admin? || is_creator) %>
+              <span class="price-badge">Listed price</span>
             <% end %>
           <% end %>
         </div>
-        <%= render "reviews_list", reviews: @course.reviews.recent %>
-      </div>
-    </div>
 
-    <%# CỘT PHẢI: SIDEBAR THÔNG TIN %>
-    <div class="col-lg-4">
-      <div class="card shadow-sm mb-4 border-0">
-        <div class="card-body">
-          <h5 class="card-title fw-bold text-uppercase text-muted small">Giảng viên</h5>
-          <div class="d-flex align-items-center mt-3">
-             <div class="avatar-wrapper avatar-lg me-3">
-                <% if @course.creator&.avatar_url.present? %>
-                  <img src="<%= @course.creator.avatar_url %>" alt="<%= @course.creator.name %>" class="avatar-img">
+        <%# Enrolled progress in sidebar %>
+        <% if has_access && enrollment&.active? && enrollment.respond_to?(:current_progress_percentage) %>
+          <div class="cd-sidebar-progress">
+            <div class="prog-label"><i class="bi bi-graph-up"></i> <%= enrollment.current_progress_percentage %>% complete</div>
+            <div class="cd-progress-bar">
+              <div class="cd-progress-bar__fill" style="width:<%= enrollment.current_progress_percentage %>%;"></div>
+            </div>
+          </div>
+        <% end %>
+
+        <%# ── CTA Button Logic ─────────────────────────────── %>
+        <% if current_user %>
+
+          <% if has_access %>
+            <%# ENROLLED / OWNER / ADMIN: go to course %>
+            <% if first_lesson %>
+              <%= link_to lesson_path(first_lesson), class: "cd-btn cd-btn--success" do %>
+                <i class="bi bi-play-circle-fill"></i>
+                <% if current_user.admin? %>
+                  Start Learning (Admin)
+                <% elsif is_creator %>
+                  Preview Course
                 <% else %>
-                  <div class="avatar-text avatar-lg-text"><%= @course.creator&.name&.first&.upcase || "?" %></div>
+                  Continue Learning
                 <% end %>
+              <% end %>
+            <% else %>
+              <button class="cd-btn cd-btn--ghost" disabled>Content Coming Soon</button>
+            <% end %>
+
+          <% else %>
+            <%# NOT ENROLLED %>
+            <% pending = current_user.enrollments.find_by(course: @course, status: :pending) %>
+
+            <% if pending %>
+              <%# PENDING PAYMENT %>
+              <div class="cd-pending-state">
+                <div class="title"><i class="bi bi-clock-history"></i> Payment Pending</div>
+                <div class="sub">Complete payment to access the course.</div>
               </div>
-             <div>
-               <h6 class="mb-0 fw-bold"><%= @course.creator&.name || "Admin" %></h6>
-               <small class="text-muted">Senior Instructor</small>
-             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card shadow-sm border-0 bg-light">
-        <div class="card-body">
-          <ul class="list-unstyled mb-0">
-            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Truy cập trọn đời</li>
-            <li class="mb-2"><i class="bi bi-phone-fill text-primary me-2"></i> Học trên thiết bị di động</li>
-            <li><i class="bi bi-award-fill text-warning me-2"></i> Cấp chứng chỉ khi hoàn thành</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<%# --- MODAL XEM TRƯỚC (DARK THEME) --- %>
-<div class="modal fade" id="previewCourseModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content bg-dark text-white border-secondary">
-      <%# Header Modal %>
-      <div class="modal-header border-secondary">
-        <h5 class="modal-title">
-          <span class="text-warning me-2">Xem trước:</span>
-          <span id="previewModalTitle" class="fw-bold"></span>
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <%# Body Modal %>
-      <div class="modal-body p-0">
-        <div class="row g-0">
-          <%# Cột Trái: Video Player %>
-          <div class="col-lg-8 bg-black d-flex align-items-center justify-content-center" style="min-height: 400px;">
-            <div class="ratio ratio-16x9">
-              <iframe id="previewVideoFrame" src="" title="YouTube video" allowfullscreen></iframe>
-            </div>
-          </div>
-
-          <%# Cột Phải: Playlist Free %>
-          <div class="col-lg-4 border-start border-secondary d-none d-lg-block">
-            <div class="p-3 border-bottom border-secondary bg-dark">
-              <h6 class="mb-0 fw-bold">Các bài học miễn phí khác:</h6>
-            </div>
-            <div class="list-group list-group-flush overflow-auto custom-scrollbar" style="max-height: 400px;">
-              <% @course.course_modules.flat_map(&:lessons).select(&:free_preview?).each do |free_lesson| %>
-                 <button type="button"
-                         class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center py-3 preview-playlist-item"
-                         onclick="changePreviewVideo('<%= free_lesson.video_url %>', '<%= free_lesson.title %>')">
-                    <i class="bi bi-play-circle text-warning fs-5 me-3"></i>
-                    <div class="small text-truncate"><%= free_lesson.title %></div>
-                 </button>
+              <%= button_to create_checkout_session_path(course_id: @course.id),
+                    method: :post,
+                    class: "cd-btn cd-btn--outline",
+                    data: { turbo: false } do %>
+                <i class="bi bi-credit-card"></i> Continue to Payment
               <% end %>
-            </div>
 
-            <%# Footer Playlist %>
-            <div class="p-3 bg-dark border-top border-secondary text-center mt-auto">
-              <% unless current_user && can?(:access_content, @course) %>
-                <p class="small text-muted mb-2">Bạn thích nội dung này?</p>
-                <% if @course.free? %>
-                   <%= button_to "Đăng ký học ngay", course_enrollments_path(@course), class: "btn btn-primary w-100 btn-sm fw-bold" %>
-                <% else %>
-                   <%= button_to "Mua khóa học ngay", create_checkout_session_path(course_id: @course.id), data: { turbo: false }, class: "btn btn-warning w-100 btn-sm fw-bold text-dark" %>
+            <% elsif @course.free? %>
+              <%# FREE ENROLLMENT %>
+              <%= button_to course_enrollments_path(@course),
+                    method: :post,
+                    class: "cd-btn cd-btn--primary" do %>
+                <i class="bi bi-person-plus-fill"></i> Enroll for Free
+              <% end %>
+
+            <% else %>
+              <%# PAID COURSE %>
+              <%= button_to create_checkout_session_path(course_id: @course.id),
+                    method: :post,
+                    class: "cd-btn cd-btn--stripe",
+                    data: { turbo: false } do %>
+                <i class="bi bi-credit-card-2-front-fill"></i> Buy Now
+              <% end %>
+
+              <% if in_cart %>
+                <%= link_to cart_path, class: "cd-btn cd-btn--outline" do %>
+                  <i class="bi bi-cart-check-fill"></i> In Cart — Go to Cart
+                <% end %>
+              <% else %>
+                <%= link_to cart_items_path(course_id: @course.id),
+                      data: { turbo_method: :post },
+                      class: "cd-btn cd-btn--outline" do %>
+                  <i class="bi bi-cart-plus"></i> Add to Cart
                 <% end %>
               <% end %>
-            </div>
+
+            <% end %>
+          <% end %>
+
+        <% else %>
+          <%# GUEST: prompt to login %>
+          <%= link_to new_user_session_path, class: "cd-btn cd-btn--primary" do %>
+            <i class="bi bi-box-arrow-in-right"></i> Login to Enroll
+          <% end %>
+        <% end %>
+
+        <%# Course highlights %>
+        <div class="cd-highlights">
+          <div style="font-size:.74rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;">
+            This course includes:
           </div>
+          <div class="cd-highlight-item">
+            <i class="bi bi-infinity"></i> Lifetime access
+          </div>
+          <% if total_lessons > 0 %>
+            <div class="cd-highlight-item">
+              <i class="bi bi-play-circle"></i> <%= total_lessons %> on-demand lessons
+            </div>
+          <% end %>
+          <% if @big_quizzes.any? %>
+            <div class="cd-highlight-item">
+              <i class="bi bi-trophy"></i> <%= @big_quizzes.count %> final assessment<%= "s" if @big_quizzes.count > 1 %>
+            </div>
+          <% end %>
+          <div class="cd-highlight-item">
+            <i class="bi bi-phone"></i> Mobile & desktop access
+          </div>
+          <div class="cd-highlight-item">
+            <i class="bi bi-award"></i> Certificate of completion
+          </div>
+          <% if free_lessons.any? %>
+            <div class="cd-highlight-item">
+              <i class="bi bi-eye"></i> <%= free_lessons.count %> free preview lesson<%= "s" if free_lessons.count > 1 %>
+            </div>
+          <% end %>
         </div>
+
+        <%# Share row %>
+        <div class="cd-sidebar-share">
+          <span>Share:</span>
+          <a href="https://twitter.com/share?url=<%= URI.encode_www_form_component(request.url) %>&text=<%= URI.encode_www_form_component(@course.title) %>"
+             target="_blank" rel="noopener" title="Share on Twitter">
+            <i class="bi bi-twitter-x"></i>
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=<%= URI.encode_www_form_component(request.url) %>"
+             target="_blank" rel="noopener" title="Share on Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= URI.encode_www_form_component(request.url) %>"
+             target="_blank" rel="noopener" title="Share on LinkedIn">
+            <i class="bi bi-linkedin"></i>
+          </a>
+        </div>
+
+      </div><!-- .cd-sidebar-body -->
+    </div><!-- .cd-sidebar-card -->
+  </div><!-- .cd-sidebar -->
+
+</div><!-- .cd-layout -->
+
+<%# ─────────────────────────────────────────────────────────── %>
+<%# PREVIEW VIDEO MODAL (partial — cinema mode)                %>
+<%# ─────────────────────────────────────────────────────────── %>
+<%= render "preview_modal", course: @course %>
+
+<%# ─────────────────────────────────────────────────────────── %>
+<%# ELIGIBILITY modal (need 70% progress to review)            %>
+<%# ─────────────────────────────────────────────────────────── %>
+<div class="cd-modal" id="cd-eligibility-modal">
+  <div class="cd-modal__backdrop" onclick="document.getElementById('cd-eligibility-modal').classList.remove('is-open')"></div>
+  <div class="cd-modal__dialog" style="text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:.75rem;">⚠️</div>
+    <div style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:.5rem;">Not Eligible Yet</div>
+    <p style="font-size:.875rem;color:#475569;line-height:1.6;margin-bottom:1rem;">
+      You need to complete at least <strong>70%</strong> of the course before leaving a review.
+    </p>
+    <% if enrollment&.respond_to?(:current_progress_percentage) %>
+      <div style="background:#f8fafc;border-radius:12px;padding:1rem;margin-bottom:1.25rem;">
+        Current progress: <strong style="color:#ef4444;font-size:1.15rem;"><%= enrollment.current_progress_percentage %>%</strong>
+        <span style="color:#94a3b8;"> / 70%</span>
       </div>
-    </div>
+    <% end %>
+    <button class="cd-btn cd-btn--primary"
+            style="width:auto;padding:.6rem 1.5rem;"
+            onclick="document.getElementById('cd-eligibility-modal').classList.remove('is-open')">
+      Keep Learning
+    </button>
   </div>
 </div>
 
-<%# --- JAVASCRIPT XỬ LÝ VIDEO --- %>
+<%# ─────────────────────────────────────────────────────────── %>
+<%# JAVASCRIPT — Module Accordion Only                          %>
+<%# (Preview modal JS is inside _preview_modal.html.erb)        %>
+<%# ─────────────────────────────────────────────────────────── %>
 <script>
-  document.addEventListener("turbo:load", function() {
-    var previewModal = document.getElementById('previewCourseModal');
-    if (!previewModal) return;
+function cdToggleModule(headerEl) {
+  const module  = headerEl.closest('.cd-module');
+  const body    = module.querySelector('.cd-module__body');
+  const chevron = headerEl.querySelector('.cd-module__chevron');
+  const isOpen  = body.classList.contains('is-open');
 
-    // Khi Modal hiện lên -> Lấy link video và phát
-    previewModal.addEventListener('show.bs.modal', function (event) {
-      var button = event.relatedTarget;
-      var videoUrl = button.getAttribute('data-video-url');
-      var lessonTitle = button.getAttribute('data-lesson-title');
-      changePreviewVideo(videoUrl, lessonTitle);
-    });
-
-    // Khi đóng Modal -> Dừng video (xóa src)
-    previewModal.addEventListener('hidden.bs.modal', function () {
-      document.getElementById('previewVideoFrame').src = "";
-    });
-  });
-
-  function changePreviewVideo(url, title) {
-    var embedUrl = getYoutubeEmbedUrl(url);
-    document.getElementById('previewModalTitle').textContent = title || "Bài học mẫu";
-
-    if (embedUrl) {
-      document.getElementById('previewVideoFrame').src = embedUrl + "?autoplay=1&rel=0";
-    } else {
-      document.getElementById('previewVideoFrame').src = "";
-    }
-  }
-
-  function getYoutubeEmbedUrl(url) {
-    if (!url) return null;
-    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = url.match(regExp);
-    return (match && match[2].length == 11) ? "https://www.youtube.com/embed/" + match[2] : null;
-  }
+  body.classList.toggle('is-open', !isOpen);
+  headerEl.classList.toggle('is-open', !isOpen);
+  chevron.classList.toggle('rotated', !isOpen);
+  headerEl.setAttribute('aria-expanded', String(!isOpen));
+}
 </script>
-
-<style>
-  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-  .custom-scrollbar::-webkit-scrollbar-track { background: #212529; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: #495057; border-radius: 3px; }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6c757d; }
-  .preview-playlist-item:hover { background-color: #343a40 !important; cursor: pointer; }
-</style>

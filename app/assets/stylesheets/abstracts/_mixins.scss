@@ -1,0 +1,51 @@
+// ============================================================
+// GLOBAL MIXINS
+// ============================================================
+
+// ── Flexbox Utilities ───────────────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Typography & Text ───────────────────────────────────────
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ── Component Utilities ─────────────────────────────────────
+@mixin section-padding {
+  padding: 5rem 0;
+  @media (max-width: 768px) { padding: 3rem 0; }
+}
+
+@mixin inner-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  @media (max-width: 768px) { padding: 0 1rem; }
+}
+
+@mixin card-hover-lift {
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+}

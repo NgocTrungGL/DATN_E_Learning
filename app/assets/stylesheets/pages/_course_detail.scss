@@ -1,0 +1,1185 @@
+// ============================================================
+// COURSE DETAIL PAGE — Pure SCSS (No Bootstrap)
+// Blue/White professional palette, Inter font
+// ============================================================
+
+// ── Design tokens (now centralized in abstracts/_variables.scss) ──
+
+// ── Mixins (now centralized in abstracts/_mixins.scss) ──────
+
+// ── Anchor offset for sticky nav ────────────────────────────
+.cd-anchor { scroll-margin-top: 80px; }
+
+// ============================================================
+// HERO SECTION
+// ============================================================
+.cd-hero {
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 55%, #0b254a 100%);
+  position: relative;
+  overflow: hidden;
+
+  // Dot-grid overlay
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+  }
+
+  // Right glow orb
+  &::after {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37,99,235,.22) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  &__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 56px 1.5rem 48px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 3rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__content { display: flex; flex-direction: column; gap: 1rem; }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(37,99,235,.2);
+    border: 1px solid rgba(37,99,235,.4);
+    color: #93c5fd;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+    border-radius: 999px;
+    width: fit-content;
+  }
+
+  &__title {
+    font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: #94a3b8;
+    line-height: 1.7;
+    margin: 0;
+    max-width: 600px;
+    @include line-clamp(3);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+  }
+
+  &__rating-score {
+    font-weight: 800;
+    color: $warning;
+    font-size: 1rem;
+  }
+
+  &__stars {
+    display: flex;
+    gap: 1px;
+    i { font-size: 0.68rem; color: $warning; }
+  }
+
+  &__review-link {
+    color: #64748b;
+    font-size: 0.8rem;
+    text-decoration: none;
+    &:hover { color: #93c5fd; }
+  }
+
+  &__students {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: #64748b;
+    i { color: #3b82f6; }
+  }
+
+  &__separator { color: #334155; font-size: 0.9rem; }
+
+  &__instructor-line {
+    font-size: 0.82rem;
+    color: #64748b;
+    a { color: #93c5fd; text-decoration: none; }
+  }
+
+  // Thumbnail card on the right
+  &__thumb-card {
+    background: $surface;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-lg;
+    position: relative;
+  }
+
+  &__thumb-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__thumb-play {
+    position: absolute;
+    inset: 0;
+    @include flex-center;
+    background: rgba(0,0,0,.35);
+    cursor: pointer;
+    transition: $t;
+
+    &:hover { background: rgba(0,0,0,.5); }
+
+    .play-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.95);
+      @include flex-center;
+      font-size: 1.6rem;
+      color: $primary;
+      box-shadow: 0 4px 20px rgba(0,0,0,.3);
+      transition: $t;
+    }
+
+    &:hover .play-icon { transform: scale(1.1); }
+  }
+
+  // Enrollment breadcrumb
+  &__enrolled-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(16,185,129,.15);
+    border: 1px solid rgba(16,185,129,.35);
+    color: #6ee7b7;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.28rem 0.85rem;
+    border-radius: 999px;
+    margin-top: 0.25rem;
+    width: fit-content;
+  }
+
+  @media (max-width: 900px) {
+    &__inner {
+      grid-template-columns: 1fr;
+      padding: 40px 1rem 32px;
+    }
+    &__thumb-card { order: -1; max-width: 480px; margin: 0 auto; }
+  }
+
+  @media (max-width: 480px) {
+    &__inner { padding: 28px 1rem 24px; }
+  }
+}
+
+// ============================================================
+// MAIN LAYOUT: 2-column content + sticky sidebar
+// ============================================================
+.cd-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 1.5rem 80px;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 2.5rem;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    padding: 28px 1rem 64px;
+  }
+}
+
+// ── Shared section heading ───────────────────────────────────
+.cd-section-heading {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: $text-dark;
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid $border;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i { color: $primary; }
+}
+
+// ── Section card ─────────────────────────────────────────────
+.cd-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 1.75rem;
+  margin-bottom: 1.75rem;
+  box-shadow: $shadow-sm;
+}
+
+// ============================================================
+// PROGRESS BAR (enrolled users)
+// ============================================================
+.cd-progress-bar {
+  background: #f1f5f9;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, $primary, $accent);
+    border-radius: 999px;
+    transition: width 0.6s ease;
+  }
+}
+
+.cd-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: $text-muted;
+  margin-top: 0.35rem;
+}
+
+// ============================================================
+// WHAT YOU'LL LEARN
+// ============================================================
+.cd-learn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.cd-learn-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: $text-mid;
+  line-height: 1.5;
+
+  i { color: $success; margin-top: 2px; flex-shrink: 0; }
+}
+
+// ============================================================
+// CURRICULUM / ACCORDION
+// ============================================================
+.cd-curriculum {
+  &__summary {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.82rem;
+    color: $text-muted;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+
+    span { display: flex; align-items: center; gap: 0.35rem; }
+    i { color: $primary; }
+  }
+}
+
+.cd-module {
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.18s;
+
+    &:hover { background: #f1f5f9; }
+
+    &.is-open { background: $primary-light; border-bottom: 1px solid $border; }
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .mod-icon {
+      width: 32px; height: 32px;
+      border-radius: $radius-sm;
+      background: $primary-ring;
+      @include flex-center;
+      font-size: 0.85rem;
+      color: $primary;
+      flex-shrink: 0;
+    }
+
+    .mod-title {
+      font-size: 0.935rem;
+      font-weight: 700;
+      color: $text-dark;
+    }
+
+    .mod-lesson-count {
+      font-size: 0.74rem;
+      color: $text-muted;
+    }
+  }
+
+  &__chevron {
+    font-size: 0.75rem;
+    color: $text-muted;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+
+    &.rotated { transform: rotate(180deg); }
+  }
+
+  &__body {
+    display: none;
+    &.is-open { display: block; }
+  }
+}
+
+// ── Lesson items ─────────────────────────────────────────────
+.cd-lesson {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 0.75rem;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: inherit;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: #f8fafc; }
+
+  &__icon {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    @include flex-center;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+
+    &--video { background: rgba(37,99,235,.09); color: $primary; }
+    &--quiz  { background: rgba(245,158,11,.1); color: $warning; }
+    &--text  { background: rgba(13,148,136,.1); color: $accent; }
+    &--locked { background: #f1f5f9; color: $text-muted; }
+  }
+
+  &__info { flex: 1; min-width: 0; }
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $text-dark;
+    @include line-clamp(1);
+
+    &.is-muted { color: $text-muted; }
+  }
+
+  &__duration {
+    font-size: 0.72rem;
+    color: $text-muted;
+    margin-top: 2px;
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    font-size: 0.67rem;
+    font-weight: 700;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+
+    &--preview {
+      background: $primary-light;
+      color: $primary;
+      border: 1px solid rgba(37,99,235,.3);
+    }
+  }
+
+  &__action { flex-shrink: 0; font-size: 0.8rem; color: $text-muted; }
+}
+
+// ── Big quiz row ─────────────────────────────────────────────
+.cd-quiz-item {
+  border: 2px solid rgba(245,158,11,.3);
+  border-radius: $radius-md;
+  background: rgba(245,158,11,.03);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  &__icon {
+    width: 44px; height: 44px;
+    border-radius: $radius-sm;
+    background: rgba(245,158,11,.12);
+    @include flex-center;
+    font-size: 1.2rem;
+    color: $warning;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: 0.25rem;
+  }
+
+  &__meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.74rem;
+    color: $text-muted;
+    flex-wrap: wrap;
+    i { margin-right: 0.25rem; }
+  }
+}
+
+// ============================================================
+// INSTRUCTOR SECTION
+// ============================================================
+.cd-instructor {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+
+  &__avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, $primary, $accent);
+    @include flex-center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+
+    img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  }
+
+  &__info { flex: 1; }
+
+  &__name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $text-dark;
+    margin-bottom: 0.15rem;
+  }
+
+  &__title-line {
+    font-size: 0.82rem;
+    color: $text-muted;
+    margin-bottom: 0.6rem;
+  }
+
+  &__badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+  }
+
+  &__badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+
+    &--bestseller { background: rgba(245,158,11,.13); color: #b45309; border: 1px solid rgba(245,158,11,.3); }
+    &--verified   { background: $accent-light;          color: $accent;  border: 1px solid rgba(13,148,136,.25); }
+  }
+
+  &__bio {
+    font-size: 0.875rem;
+    color: $text-mid;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  &__links {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $primary;
+    text-decoration: none;
+    border: 1.5px solid rgba(37,99,235,.25);
+    border-radius: $radius-sm;
+    padding: 0.3rem 0.75rem;
+    transition: $t;
+
+    &:hover { background: $primary-light; border-color: $primary; }
+  }
+
+  &__stats {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+
+  &__stat {
+    text-align: center;
+
+    .value { font-size: 1.1rem; font-weight: 800; color: $text-dark; }
+    .label { font-size: 0.72rem; color: $text-muted; }
+  }
+}
+
+// ============================================================
+// REVIEWS
+// ============================================================
+.cd-rating-overview {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid $border;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.cd-rating-big {
+  text-align: center;
+
+  .score { font-size: 3.5rem; font-weight: 900; color: $text-dark; line-height: 1; }
+  .stars { display: flex; justify-content: center; gap: 2px; margin: 0.25rem 0;
+    i { font-size: 0.85rem; color: $warning; } }
+  .label { font-size: 0.78rem; color: $text-muted; }
+}
+
+.cd-rating-bars { display: flex; flex-direction: column; gap: 0.45rem; }
+
+.cd-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: $text-muted;
+
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $warning, #fbbf24);
+    border-radius: 999px;
+  }
+
+  .bar-label { width: 16px; text-align: right; font-weight: 600; color: $text-dark; }
+  .bar-pct   { width: 34px; text-align: right; }
+}
+
+// ── Review cards ─────────────────────────────────────────────
+.cd-review-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cd-review {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid $border;
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+
+  &__avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $primary, $accent);
+    @include flex-center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+  }
+
+  &__body { flex: 1; }
+
+  &__header { @include flex-between; margin-bottom: 0.3rem; flex-wrap: wrap; gap: 0.5rem; }
+
+  &__author { font-size: 0.9rem; font-weight: 700; color: $text-dark; }
+
+  &__stars {
+    display: flex; gap: 1px;
+    i { font-size: 0.65rem; color: $warning; }
+  }
+
+  &__date { font-size: 0.74rem; color: $text-muted; }
+
+  &__text { font-size: 0.875rem; color: $text-mid; line-height: 1.65; }
+}
+
+// Write-review button
+.cd-write-review-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: $primary;
+  border: 1.5px solid $primary;
+  border-radius: $radius-md;
+  padding: 0.5rem 1.15rem;
+  font-size: 0.855rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: $t;
+  font-family: inherit;
+  text-decoration: none;
+
+  &:hover { background: $primary; color: #fff; }
+}
+
+// ============================================================
+// GAMIFICATION / LEARNING PATH (UI-only, hardcoded for now)
+// ============================================================
+.cd-gamification {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cd-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: $radius-md;
+  border: 1px solid $border;
+  background: $surface;
+  transition: $t;
+
+  &:hover { border-color: rgba(37,99,235,.25); background: $primary-light; }
+
+  &__icon {
+    width: 44px; height: 44px;
+    border-radius: $radius-sm;
+    @include flex-center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  &__label { font-size: 0.84rem; font-weight: 700; color: $text-dark; }
+  &__sub   { font-size: 0.73rem; color: $text-muted; }
+
+  &--locked { opacity: 0.5; filter: grayscale(0.6); }
+}
+
+.cd-learning-path {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cd-path-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.84rem;
+  color: $text-mid;
+
+  &__step {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    @include flex-center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    flex-shrink: 0;
+
+    &--done    { background: $success; color: #fff; }
+    &--current { background: $primary; color: #fff; }
+    &--next    { background: #f1f5f9; color: $text-muted; border: 2px dashed $border; }
+  }
+
+  a { color: $primary; text-decoration: none; font-weight: 600; &:hover { text-decoration: underline; } }
+}
+
+// ============================================================
+// STICKY SIDEBAR
+// ============================================================
+.cd-sidebar {
+  position: sticky;
+  top: 84px;
+
+  @media (max-width: 1024px) { position: static; }
+}
+
+.cd-sidebar-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+}
+
+.cd-sidebar-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+}
+
+.cd-sidebar-body { padding: 1.5rem; }
+
+.cd-sidebar-price {
+  margin-bottom: 1.1rem;
+
+  .price-current {
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: $text-dark;
+    line-height: 1;
+    display: block;
+  }
+
+  .price-free-label {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: $success;
+  }
+
+  .price-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: rgba(16,185,129,.12);
+    color: $success;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    margin-top: 0.35rem;
+    border: 1px solid rgba(16,185,129,.3);
+  }
+}
+
+// CTA buttons
+.cd-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: none;
+  border-radius: $radius-md;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: $t;
+  text-decoration: none;
+  text-align: center;
+
+  &--primary {
+    background: $primary;
+    color: #fff;
+    padding: 0.85rem 1rem;
+    font-size: 0.975rem;
+    box-shadow: $shadow-blue;
+    &:hover { background: $primary-dark; color: #fff; transform: translateY(-1px); box-shadow: 0 12px 32px rgba(37,99,235,.3); }
+    &:active { transform: translateY(0); }
+  }
+
+  &--stripe {
+    background: #635bff;
+    color: #fff;
+    padding: 0.85rem 1rem;
+    font-size: 0.975rem;
+    box-shadow: 0 6px 20px rgba(99,91,255,.3);
+    &:hover { background: #4f46e5; color: #fff; transform: translateY(-1px); }
+  }
+
+  &--outline {
+    background: transparent;
+    color: $primary;
+    border: 1.5px solid $primary;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    &:hover { background: $primary-light; }
+  }
+
+  &--success {
+    background: $success;
+    color: #fff;
+    padding: 0.85rem 1rem;
+    font-size: 0.975rem;
+    &:hover { background: #059669; transform: translateY(-1px); }
+  }
+
+  &--ghost {
+    background: $bg;
+    color: $text-mid;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border: 1.5px solid $border;
+    &:hover { border-color: $text-muted; }
+  }
+
+  & + & { margin-top: 0.6rem; }
+}
+
+// Pending state
+.cd-pending-state {
+  background: rgba(245,158,11,.08);
+  border: 1px solid rgba(245,158,11,.3);
+  border-radius: $radius-md;
+  padding: 0.85rem 1rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
+
+  .title { font-size: 0.875rem; font-weight: 700; color: #b45309; }
+  .sub   { font-size: 0.78rem;  color: $text-muted; margin-top: 0.2rem; }
+}
+
+// Enrolled progress in sidebar
+.cd-sidebar-progress {
+  background: $primary-light;
+  border: 1px solid rgba(37,99,235,.2);
+  border-radius: $radius-md;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .prog-label { font-size: 0.82rem; font-weight: 700; color: $primary; margin-bottom: 0.5rem; }
+}
+
+// Highlights list
+.cd-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  border-top: 1px solid $border;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+}
+
+.cd-highlight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.83rem;
+  color: $text-mid;
+
+  i { color: $success; margin-top: 2px; font-size: 0.85rem; flex-shrink: 0; }
+}
+
+// Share row
+.cd-sidebar-share {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border;
+  font-size: 0.8rem;
+  color: $text-muted;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: $text-mid;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: $t;
+    &:hover { background: $primary; color: #fff; }
+  }
+}
+
+// ============================================================
+// PREVIEW VIDEO MODAL
+// ============================================================
+.cd-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+
+  &.is-open {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.75);
+    backdrop-filter: blur(4px);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    max-width: 960px;
+    background: #0f172a;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    box-shadow: 0 25px 80px rgba(0,0,0,.5);
+
+    @media (max-width: 768px) { grid-template-columns: 1fr; }
+  }
+
+  &__video {
+    aspect-ratio: 16/9;
+    background: #000;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  }
+
+  &__sidebar {
+    background: #1e293b;
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: 768px) { display: none; }
+  }
+
+  &__sidebar-header {
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid #334155;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__playlist {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 320px;
+
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-track { background: #1e293b; }
+    &::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  }
+
+  &__playlist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.1rem;
+    border-bottom: 1px solid #1e293b;
+    cursor: pointer;
+    transition: background 0.15s;
+    background: none;
+    border-style: solid;
+    border-color: #334155;
+    border-width: 0 0 1px;
+    width: 100%;
+    text-align: left;
+    color: #cbd5e1;
+
+    &:hover { background: #243347; }
+
+    .play-icon { font-size: 1rem; color: $warning; flex-shrink: 0; }
+    .item-title { font-size: 0.78rem; color: #cbd5e1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  }
+
+  &__sidebar-cta {
+    padding: 1rem;
+    border-top: 1px solid #334155;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  &__close {
+    position: absolute;
+    top: 12px; right: 12px;
+    z-index: 2;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.5);
+    border: none;
+    @include flex-center;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: $t;
+    &:hover { background: rgba(255,255,255,.15); }
+  }
+
+  &__title {
+    padding: 0.6rem 1.1rem;
+    background: rgba(0,0,0,.4);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    border-bottom: 1px solid #334155;
+  }
+}
+
+// ============================================================
+// REVIEW MODAL
+// ============================================================
+.cd-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  @include flex-center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+
+  &.is-open { visibility: visible; opacity: 1; }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(3px);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    background: $surface;
+    border-radius: $radius-xl;
+    padding: 2rem;
+    width: 90%;
+    max-width: 460px;
+    box-shadow: $shadow-lg;
+  }
+
+  &__header { @include flex-between; margin-bottom: 1.5rem; }
+  &__title  { font-size: 1.1rem; font-weight: 800; color: $text-dark; }
+  &__close  {
+    background: none; border: none; cursor: pointer; color: $text-muted; font-size: 1.1rem;
+    &:hover { color: $text-dark; }
+  }
+}
+
+// Star picker
+.cd-star-picker {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.7rem;
+
+  input[type="radio"] { display: none; }
+
+  label {
+    cursor: pointer;
+    color: #d1d5db;
+    transition: color 0.1s;
+  }
+
+  input:checked ~ label,
+  label:hover,
+  label:hover ~ label {
+    color: $warning;
+  }
+}
+
+// Form elements
+.cd-form-group {
+  margin-bottom: 1rem;
+
+  label { display: block; font-size: 0.84rem; font-weight: 700; color: $text-dark; margin-bottom: 0.4rem; }
+
+  textarea {
+    width: 100%;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.875rem;
+    color: $text-dark;
+    font-family: inherit;
+    resize: vertical;
+    transition: $t;
+    &:focus { outline: none; border-color: $primary; box-shadow: 0 0 0 3px $primary-ring; }
+  }
+}
+
+// ============================================================
+// RESPONSIVE: mobile stacking
+// ============================================================
+@media (max-width: 768px) {
+  .cd-card { padding: 1.25rem; }
+  .cd-instructor { flex-direction: column; }
+  .cd-rating-overview { gap: 1.25rem; }
+}

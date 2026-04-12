@@ -1,0 +1,76 @@
+<%# ── Shared Landing Footer ─────────────────────────────────── %>
+<footer class="lf" aria-label="Site Footer">
+  <div class="lf__inner">
+
+    <%# Brand column %>
+    <div class="lf__brand">
+      <a href="<%= root_path %>" class="lf__logo">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>EduLearn</span>
+      </a>
+      <p class="lf__tagline">
+        Empowering learners worldwide with world-class online education.
+      </p>
+      <div class="lf__socials">
+        <a href="#" aria-label="Twitter"  class="lf__social"><i class="bi bi-twitter-x"></i></a>
+        <a href="#" aria-label="LinkedIn" class="lf__social"><i class="bi bi-linkedin"></i></a>
+        <a href="#" aria-label="YouTube"  class="lf__social"><i class="bi bi-youtube"></i></a>
+        <a href="#" aria-label="GitHub"   class="lf__social"><i class="bi bi-github"></i></a>
+      </div>
+    </div>
+
+    <%# Navigation columns %>
+    <nav class="lf__nav" aria-label="Footer navigation">
+      <div class="lf__col">
+        <h4 class="lf__col-title">Learn</h4>
+        <ul class="lf__links">
+          <li><%= link_to "All Courses",    courses_path %></li>
+          <li><a href="#">Learning Paths</a></li>
+          <li><a href="#">Certificates</a></li>
+          <li><a href="#">Free Resources</a></li>
+        </ul>
+      </div>
+
+      <div class="lf__col">
+        <h4 class="lf__col-title">Company</h4>
+        <ul class="lf__links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+
+      <div class="lf__col">
+        <h4 class="lf__col-title">Support</h4>
+        <ul class="lf__links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><%#= link_to "Instructors", new_course_path if current_user&.instructor? %></li>
+          <li><a href="#">Sitemap</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <%# Newsletter (hardcoded, non-functional) %>
+    <div class="lf__newsletter">
+      <h4 class="lf__col-title">Stay Updated</h4>
+      <p class="lf__newsletter-text">Get weekly curated course picks & learning tips.</p>
+      <div class="lf__newsletter-form">
+        <input type="email" placeholder="your@email.com" class="lf__email-input" aria-label="Email address">
+        <button class="lf__subscribe-btn">Subscribe</button>
+      </div>
+      <p class="lf__newsletter-note">No spam, unsubscribe anytime.</p>
+    </div>
+
+  </div>
+
+  <div class="lf__bottom">
+    <p class="lf__copy">© <%= Time.current.year %> EduLearn Platform. All rights reserved.</p>
+    <div class="lf__legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Settings</a>
+    </div>
+  </div>
+</footer>

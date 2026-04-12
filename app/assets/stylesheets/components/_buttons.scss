@@ -1,0 +1,70 @@
+// ============================================================
+// SHARED BUTTONS
+// ============================================================
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: $radius-md;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: $t;
+  cursor: pointer;
+
+  &:hover {
+    background: $primary-dark;
+    box-shadow: 0 4px 12px rgba($primary, 0.3);
+    transform: translateY(-1px);
+    color: #fff;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-accent {
+  @extend .btn-primary;
+  background: $accent;
+  &:hover {
+    background: darken($accent, 8%);
+    box-shadow: 0 4px 12px rgba($accent, 0.2);
+  }
+}
+
+.btn-outline {
+  @extend .btn-primary;
+  background: transparent;
+  border: 1.5px solid $border;
+  color: $text-mid;
+
+  &:hover {
+    background: $bg;
+    color: $primary;
+    border-color: $primary;
+  }
+}
+
+// Icon only button (e.g. cart)
+.btn-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  @include flex-center;
+  transition: $t;
+  border: 1.5px solid $border;
+  background: transparent;
+  color: $text-mid;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: rgba($primary, 0.05);
+  }
+}

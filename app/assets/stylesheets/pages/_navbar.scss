@@ -6,7 +6,7 @@
 .lp-navbar {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid $border;
   padding: 0.75rem 0;
   transition: all 0.3s ease;
   z-index: 1050;
@@ -19,7 +19,7 @@
   .navbar-brand {
     font-size: 1.5rem;
     font-weight: 800;
-    color: #2563eb;
+    color: $primary;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -32,20 +32,20 @@
 
   .nav-link {
     font-weight: 600;
-    color: #475569;
+    color: $text-mid;
     padding: 0.5rem 1rem !important;
     transition: all 0.2s ease;
     border-radius: 0.5rem;
 
     &:hover, &.active {
-      color: #2563eb;
-      background: #eff6ff;
+      color: $primary;
+      background: $primary-light;
     }
   }
 
   // Megamenu / Dropdown styling
   .dropdown-menu {
-    border: 1px solid #e2e8f0;
+    border: 1px solid $border;
     border-radius: 1rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     padding: 1rem;
@@ -57,23 +57,23 @@
       font-weight: 500;
       padding: 0.6rem 1rem;
       border-radius: 0.5rem;
-      color: #475569;
+      color: $text-mid;
       display: flex;
       align-items: center;
       gap: 0.75rem;
 
       i {
         font-size: 1.1rem;
-        color: #94a3b8;
+        color: $text-muted;
         transition: color 0.2s ease;
       }
 
       &:hover {
-        background: #f8fafc;
-        color: #2563eb;
+        background: $bg;
+        color: $primary;
 
         i {
-          color: #2563eb;
+          color: $primary;
         }
       }
     }
@@ -81,34 +81,16 @@
 
   // Action Buttons
   .btn-login {
-    color: #2563eb;
-    font-weight: 700;
-    padding: 0.6rem 1.25rem;
-    border-radius: 0.75rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: #eff6ff;
-    }
+    @extend .btn-outline;
+    padding: 0.6rem 1.25rem !important;
+    border-radius: 0.75rem !important;
+    border: none; // Match original look if it was borderless
   }
 
   .btn-signup {
-    background: #2563eb;
-    color: white;
-    font-weight: 700;
-    padding: 0.6rem 1.5rem;
-    border-radius: 0.75rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-
-    &:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
-      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-      color: white;
-    }
+    @extend .btn-primary;
+    padding: 0.6rem 1.5rem !important;
+    border-radius: 0.75rem !important;
   }
 
   // Mobile Menu Fixes

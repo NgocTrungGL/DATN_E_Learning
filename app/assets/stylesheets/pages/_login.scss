@@ -5,18 +5,18 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: $bg-body;
+  background-color: $bg;
 
   .login-card {
     background: $white;
     width: 100%;
     max-width: 420px;
-    border-radius: $border-radius;
+    border-radius: $radius-md;
     box-shadow: $shadow-soft;
     overflow: hidden;
 
     .login-header {
-      background: $primary-color;
+      background: $primary;
       padding: 30px;
       text-align: center;
       color: $white;
@@ -41,7 +41,7 @@
           display: block;
           margin-bottom: 8px;
           font-weight: 500;
-          color: $secondary-color;
+          color: $text-mid;
         }
 
         input {
@@ -52,8 +52,8 @@
           transition: $transition;
 
           &:focus {
-            border-color: $primary-color;
-            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+            border-color: $primary;
+            box-shadow: 0 0 0 3px rgba($primary, 0.1);
             outline: none;
           }
         }
@@ -63,7 +63,7 @@
     .btn-submit {
       width: 100%;
       padding: 14px;
-      background: $primary-color;
+      background: $primary;
       color: $white;
       border: none;
       border-radius: 8px;
@@ -72,7 +72,7 @@
       transition: $transition;
 
       &:hover {
-        background: darken($primary-color, 10%);
+        background: darken($primary, 10%);
         transform: translateY(-1px);
       }
     }
@@ -84,7 +84,7 @@
       border-top: 1px solid #eee;
 
       a {
-        color: $primary-color;
+        color: $primary;
         text-decoration: none;
         font-weight: 500;
 

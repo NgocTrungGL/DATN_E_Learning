@@ -1,0 +1,202 @@
+// ============================================================
+// PROFILE SETTINGS PAGE — Redesigned UI
+// BEM: .profile-settings
+// ============================================================
+
+.profile-settings {
+  background: $bg;
+  min-height: 100vh;
+  padding-bottom: 5rem;
+
+  &__header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 70%, #0b1e3f 100%);
+    padding: 60px 0;
+    margin-bottom: 3.5rem;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -20%; right: -10%;
+      width: 500px; height: 500px;
+      background: rgba($primary, 0.08);
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+  }
+
+  &__inner {
+    @include inner-container;
+    max-width: 800px; // Centered narrower layout for settings
+    position: relative;
+    z-index: 1;
+  }
+
+  &__title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: $white;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    font-size: 1.05rem;
+    color: rgba($white, 0.65);
+  }
+
+  // ── Card Container ───────────────────────────────────────
+  &__card {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+    padding: 2.5rem;
+
+    @media (max-width: 768px) { padding: 1.5rem; }
+  }
+
+  &__section {
+    margin-bottom: 2.5rem;
+    &:last-child { margin-bottom: 0; }
+  }
+
+  &__section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $text-dark;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid $bg;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    .bi { color: $primary; font-size: 1.25rem; }
+  }
+
+  // ── Form Elements ────────────────────────────────────────
+  &__field {
+    margin-bottom: 1.5rem;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $text-mid;
+    margin-bottom: 0.5rem;
+
+    i {
+      font-weight: 400;
+      color: $text-muted;
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: $bg;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    font-size: 0.95rem;
+    color: $text-dark;
+    transition: $t;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 4px rgba($primary, 0.1);
+    }
+
+    &::placeholder { color: $text-muted; }
+  }
+
+  &__hint {
+    display: block;
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin-top: 0.4rem;
+  }
+
+  // ── Actions ─────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid $border;
+  }
+
+  .btn-update {
+    background: $primary;
+    color: $white;
+    border: none;
+    padding: 0.85rem 2.5rem;
+    border-radius: $radius-md;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: $t;
+
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba($primary, 0.25);
+    }
+  }
+
+  .btn-back {
+    color: $text-muted;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: $t;
+
+    &:hover { color: $text-dark; }
+  }
+
+  // ── Dangerous Zone ───────────────────────────────────────
+  &__danger {
+    margin-top: 4rem;
+    padding: 2rem;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: $radius-lg;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #9f1239;
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #be123c;
+      margin-bottom: 1.5rem;
+    }
+    
+    .btn-cancel {
+      background: transparent;
+      color: #be123c;
+      border: 1.5px solid #be123c;
+      padding: 0.6rem 1.25rem;
+      border-radius: $radius-md;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: $t;
+
+      &:hover {
+        background: #be123c;
+        color: $white;
+      }
+    }
+  }
+}

@@ -1,71 +1,93 @@
-<div class="bg-dark text-white py-5 mb-4">
-  <div class="container">
-    <h1 class="fw-bold">Học tập</h1>
-    <p class="lead">Các khóa học bạn đã đăng ký.</p>
-  </div>
-</div>
+<%# ============================================================ %>
+<%# MY COURSES PAGE — Standardized UI (No Bootstrap)           %>
+<%# ============================================================ %>
 
-<div class="container mb-5">
-  <% if @enrollments.empty? %>
-    <div class="text-center py-5">
-      <i class="bi bi-journal-x display-1 text-muted"></i>
-      <p class="mt-3">Bạn chưa đăng ký khóa học nào.</p>
-      <%= link_to "Khám phá khóa học ngay", root_path, class: "btn btn-primary" %>
+<div class="my-courses">
+  
+  <%# ── Header ─────────────────────────────────────────────── %>
+  <div class="my-courses__header">
+    <div class="my-courses__inner">
+      <div class="my-courses__badge">Khám phá tri thức</div>
+      <h1 class="my-courses__title">Học tập của tôi</h1>
+      <p class="my-courses__subtitle">
+        Chào mừng bạn quay trở lại! Bạn đang tham gia <strong><%= @enrollments.count %></strong> khóa học.
+      </p>
     </div>
-  <% else %>
-    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-      <% @enrollments.each do |enrollment| %>
-        <% course = enrollment.course %>
-        <% progress = current_user.course_progress_percentage(course) %>
+  </div>
 
-        <div class="col">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="position-relative" style="height: 160px;">
-              <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/400x250' %>"
-                   class="card-img-top h-100 w-100" style="object-fit: cover;">
-              <div class="position-absolute top-50 start-50 translate-middle">
-                <%= link_to lesson_path(course.course_modules.first.lessons.first), class: "btn btn-light rounded-circle shadow" do %>
-                  <i class="bi bi-play-fill text-primary fs-4"></i>
-                <% end if course.course_modules.any? && course.course_modules.first.lessons.any? %>
+  <div class="my-courses__inner">
+    <% if @enrollments.empty? %>
+      <div class="my-courses__empty">
+        <i class="bi bi-journal-x empty-icon"></i>
+        <h3>Chưa có khóa học nào</h3>
+        <p>Bắt đầu hành trình học tập của bạn bằng cách khám phá các khóa học mới nhất.</p>
+        <%= link_to "Khám phá ngay", courses_path, class: "btn-primary" %>
+      </div>
+    <% else %>
+      
+      <div class="my-courses__grid">
+        <% @enrollments.each do |enrollment| %>
+          <% course = enrollment.course %>
+          <% progress = current_user.course_progress_percentage(course) %>
+          <% first_lesson = course.course_modules.first&.lessons&.first %>
+
+          <article class="my-course-card <%= 'my-course-card--new' if progress == 0 %>">
+            
+            <%# Thumbnail with Play Hover %>
+            <div class="my-course-card__thumb">
+              <img src="<%= course.thumbnail_url.presence || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=400&fit=crop' %>" 
+                   alt="<%= course.title %>" loading="lazy">
+              
+              <% if first_lesson %>
+                <div class="play-overlay">
+                  <%= link_to lesson_path(first_lesson), class: "btn-play", title: "Vào học ngay" do %>
+                    <i class="bi bi-play-fill"></i>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="my-course-card__body">
+              <%= link_to course.title, course_path(course), class: "my-course-card__title" %>
+              <div class="my-course-card__instructor">
+                 <%= course.creator&.name || "E-Learning Team" %>
+              </div>
+
+              <div class="my-course-card__progress">
+                <div class="my-course-card__progress-info">
+                  <span class="my-course-card__progress-label">
+                    <%= progress == 100 ? "Hoàn thành" : "Tiến độ" %>
+                  </span>
+                  <span class="my-course-card__progress-value"><%= progress %>%</span>
+                </div>
+                <div class="my-course-card__progress-bar">
+                  <div class="fill" style="width: <%= progress %>%"></div>
+                </div>
               </div>
             </div>
 
-            <div class="card-body d-flex flex-column">
-              <h6 class="card-title fw-bold text-truncate" title="<%= course.title %>">
-                <%= course.title %>
-              </h6>
-              <small class="text-muted mb-2"><%= course.creator&.name || "Admin" %></small>
-
-<div class="mt-auto pt-3">
-  <div class="d-flex justify-content-between align-items-center mb-1">
-
-    <% if progress > 0 %>
-      <%# TRƯỜNG HỢP 1: Đã học được một phần %>
-      <span class="text-muted small" style="font-size: 0.8rem;">Đã hoàn thành</span>
-      <span class="fw-bold small text-dark"><%= progress %>%</span>
-
-    <% else %>
-      <%# TRƯỜNG HỢP 2: Mới tinh (0%) -> Hiện lời kêu gọi hành động %>
-      <span class="text-primary fw-bold small">
-        <i class="bi bi-play-fill"></i> Vào học ngay
-      </span>
-      <%# Ẩn số 0% đi cho gọn %>
-    <% end %>
-
-  </div>
-
-  <%# Thanh Progress Bar %>
-  <div class="progress bg-secondary-subtle" style="height: 6px; border-radius: 4px;">
-    <div class="progress-bar bg-success" role="progressbar"
-         style="width: <%= progress %>%; transition: width 0.6s ease;"
-         aria-valuenow="<%= progress %>" aria-valuemin="0" aria-valuemax="100">
-    </div>
-  </div>
-</div>
+            <div class="my-course-card__footer">
+              <% if first_lesson %>
+                <%= link_to lesson_path(first_lesson), class: "btn-resume" do %>
+                  <% if progress == 0 %>
+                    Bắt đầu học
+                  <% elsif progress == 100 %>
+                    Xem lại bài học
+                  <% else %>
+                    Tiếp tục học <i class="bi bi-arrow-right-short"></i>
+                  <% end %>
+                <% end %>
+              <% else %>
+                <button class="btn-resume" disabled style="opacity: 0.5; cursor: not-allowed;">
+                  Chưa có bài học
+                </button>
+              <% end %>
             </div>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
+
+          </article>
+        <% end %>
+      </div>
+
+    <% end %>
+  </div>
 </div>
