@@ -1,188 +1,242 @@
 <%
-  all_lessons = @lesson.course.course_modules.order(:order_index).flat_map { |mod| mod.lessons.order(:order_index) }
+  all_lessons   = @lesson.course.course_modules.order(:order_index).flat_map { |mod| mod.lessons.order(:order_index) }
   current_index = all_lessons.index(@lesson)
-  prev_lesson = current_index > 0 ? all_lessons[current_index - 1] : nil
-  next_lesson = all_lessons[current_index + 1]
+  prev_lesson   = current_index > 0 ? all_lessons[current_index - 1] : nil
+  next_lesson   = all_lessons[current_index + 1]
 
-  course_progress = current_user.course_progress_percentage(@lesson.course)
-  @big_quizzes = @lesson.course.quizzes.where(lesson_id: nil).order(:created_at)
+  course_progress = user_signed_in? ? current_user.course_progress_percentage(@lesson.course) : 0
+  @big_quizzes    = @lesson.course.quizzes.where(lesson_id: nil).order(:created_at)
 
-  # Lấy link embed (chỉ xử lý 1 lần)
   embed_link = @lesson.video_url.present? ? youtube_embed_url(@lesson.video_url) : nil
 %>
 
-<div class="container-fluid px-0 overflow-hidden">
-  <div class="row g-0">
+<div class="lesson-page">
 
-    <div class="col-lg-9 bg-white min-vh-100 d-flex flex-column overflow-auto" style="height: 100vh;">
+  <%# ── TOP BAR ──────────────────────────────────────────────── %>
+  <header class="lesson-topbar" role="banner">
+    <div class="lesson-topbar__left">
+      <%= link_to course_path(@lesson.course), class: "lesson-topbar__back" do %>
+        <i class="bi bi-arrow-left"></i> Thoát
+      <% end %>
+      <span class="lesson-topbar__course-title"><%= @lesson.course.title %></span>
+    </div>
+    <span class="lesson-topbar__lesson-title"><%= @lesson.title %></span>
+  </header>
 
-      <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-black text-white border-bottom border-secondary flex-shrink-0">
-        <div class="d-flex align-items-center">
-          <%= link_to course_path(@lesson.course), class: "text-white text-decoration-none me-3 btn btn-sm btn-outline-light border-0" do %>
-            <i class="bi bi-arrow-left"></i> Thoát
-          <% end %>
-          <span class="fw-bold text-truncate" style="max-width: 300px;"><%= @lesson.course.title %></span>
-        </div>
-        <small class="text-muted d-none d-md-block"><%= @lesson.title %></small>
+  <%# ── MAIN CONTENT COLUMN ──────────────────────────────────── %>
+  <main class="lesson-main" id="lesson-main">
+
+    <%# Video player %>
+    <% if embed_link.present? %>
+      <div class="lesson-video">
+        <iframe src="<%= embed_link %>" allowfullscreen loading="lazy"
+                title="<%= @lesson.title %>"></iframe>
       </div>
+    <% end %>
 
-      <% if embed_link.present? %>
-        <div class="ratio ratio-16x9 bg-black flex-shrink-0 shadow-sm">
-          <iframe src="<%= embed_link %>" allowfullscreen></iframe>
+    <%# Lesson title + description %>
+    <div class="lesson-content">
+      <h1 class="lesson-content__title"><%= @lesson.title %></h1>
+      <% if @lesson.description.present? %>
+        <div class="lesson-content__description">
+          <%= simple_format(@lesson.description) %>
         </div>
       <% end %>
-      <div class="p-4 p-md-5">
-        <div class="container" style="max-width: 900px;">
+    </div>
 
-          <h1 class="fw-bold h2 mb-3"><%= @lesson.title %></h1>
-          <div class="text-secondary lh-lg mb-4 text-break">
-            <%= simple_format(@lesson.description) %>
-          </div>
-
-          <%# Kiểm tra xem có link tài liệu trong cột attachment_url không %>
-          <% if @lesson.attachment_url.present? %>
-            <div class="card mb-5 border-0 bg-light rounded-3">
-              <div class="card-body d-flex align-items-center p-3 position-relative">
-                <div class="me-3 bg-white p-2 rounded-circle shadow-sm text-primary">
-                   <i class="bi bi-paperclip fs-4"></i>
-                </div>
-
-                <div>
-                  <%# Sử dụng stretched-link để click vào bất cứ đâu trong khung cũng mở link %>
-                  <%= link_to @lesson.attachment_url, target: "_blank", class: "fw-bold text-decoration-none text-dark stretched-link fs-5" do %>
-                    Tài liệu tham khảo <i class="bi bi-box-arrow-up-right ms-1 text-muted" style="font-size: 0.7em;"></i>
-                  <% end %>
-
-                  <div class="small text-muted mt-1">
-                    Nhấn để xem hoặc tải xuống tài liệu
-                  </div>
-                </div>
-              </div>
-            </div>
-          <% end %>
-
-          <div class="d-flex align-items-center justify-content-between mb-5 p-3 bg-light rounded border">
-            <div>
-              <span class="fw-bold me-2">Trạng thái:</span>
-              <% if current_user.lesson_completed?(@lesson) %>
-                <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle-fill"></i> Đã hoàn thành</span>
-              <% else %>
-                <span class="badge bg-secondary rounded-pill">Chưa hoàn thành</span>
-              <% end %>
-            </div>
-            <%= button_to lesson_complete_path(@lesson), method: :post,
-                  class: "btn #{current_user.lesson_completed?(@lesson) ? 'btn-outline-secondary' : 'btn-success fw-bold'}" do %>
-              <%= current_user.lesson_completed?(@lesson) ? "Bỏ đánh dấu" : "Đánh dấu hoàn thành" %>
-            <% end %>
-          </div>
-
-          <% if @lesson.quizzes.any? %>
-            <% quiz = @lesson.quizzes.first %>
-            <div class="card border-primary mb-5 shadow-sm">
-              <div class="card-body d-flex justify-content-between align-items-center p-4 bg-primary-subtle text-primary-emphasis rounded">
-                <div>
-                  <h5 class="fw-bold mb-1"><i class="bi bi-lightning-fill"></i> Bài tập thực hành</h5>
-                  <p class="mb-0 small"><%= quiz.title %> (<%= quiz.questions.count %> câu hỏi)</p>
-                </div>
-                <% if current_user.quiz_completed?(quiz) %>
-                   <button class="btn btn-success disabled fw-bold border-0"><i class="bi bi-check-all"></i> Đã đậu</button>
-                <% else %>
-                   <%= button_to "Làm bài ngay", quiz_quiz_attempts_path(quiz), method: :post, class: "btn btn-primary fw-bold" %>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-
-          <hr class="my-5">
-
-          <div class="d-flex justify-content-between pb-5">
-            <% if prev_lesson %>
-              <%= link_to lesson_path(prev_lesson), class: "btn btn-outline-secondary px-4 shadow-sm" do %>
-                <i class="bi bi-chevron-left"></i> Bài trước
-              <% end %>
-            <% else %>
-              <button class="btn btn-outline-secondary px-4 opacity-50" disabled>Bài trước</button>
-            <% end %>
-
-            <% if next_lesson %>
-              <%= link_to lesson_path(next_lesson), class: "btn btn-primary px-4 shadow-sm" do %>
-                Bài tiếp theo <i class="bi bi-chevron-right"></i>
-              <% end %>
-            <% else %>
-              <button class="btn btn-outline-primary px-4 opacity-50" disabled>Hết bài</button>
-            <% end %>
-          </div>
-
-          <%= render "comments_section" %>
-
+    <%# Attachment %>
+    <% if @lesson.attachment_url.present? %>
+      <%= link_to @lesson.attachment_url, target: "_blank", class: "lesson-attach" do %>
+        <div class="lesson-attach__icon">
+          <i class="bi bi-paperclip"></i>
         </div>
+        <div class="lesson-attach__text">
+          <span class="lesson-attach__label">
+            Tài liệu tham khảo
+            <i class="bi bi-box-arrow-up-right" style="font-size:0.7em; opacity:0.6;"></i>
+          </span>
+          <div class="lesson-attach__hint">Nhấn để xem hoặc tải xuống tài liệu</div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%# Completion status + toggle button (only for signed-in users) %>
+    <% if user_signed_in? %>
+    <div class="lesson-status">
+      <div class="lesson-status__label">
+        <strong>Trạng thái: </strong>
+        <% if current_user.lesson_completed?(@lesson) %>
+          <span class="lesson-status__badge lesson-status__badge--done">
+            <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
+          </span>
+        <% else %>
+          <span class="lesson-status__badge lesson-status__badge--pending">
+            Chưa hoàn thành
+          </span>
+        <% end %>
+      </div>
+      <div class="lesson-status__actions">
+        <%= button_to lesson_complete_path(@lesson), method: :post,
+              class: "btn-complete #{current_user.lesson_completed?(@lesson) ? 'btn-complete--done' : 'btn-complete--pending'}" do %>
+          <% if current_user.lesson_completed?(@lesson) %>
+            <i class="bi bi-x-circle"></i> Bỏ đánh dấu
+          <% else %>
+            <i class="bi bi-check2-circle"></i> Đánh dấu hoàn thành
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+    <% end %>
+
+    <%# Lesson quiz CTA (only shown to signed-in users) %>
+    <% if user_signed_in? && @lesson.quizzes.any? %>
+      <% quiz = @lesson.quizzes.first %>
+      <div class="lesson-quiz">
+        <div class="lesson-quiz__info">
+          <h3 class="lesson-quiz__title">
+            <i class="bi bi-lightning-fill"></i> Bài tập thực hành
+          </h3>
+          <p class="lesson-quiz__meta"><%= quiz.title %> (<%= quiz.questions.count %> câu hỏi)</p>
+        </div>
+        <% if current_user.quiz_completed?(quiz) %>
+          <span class="lesson-quiz__btn-done">
+            <i class="bi bi-check-all"></i> Đã đậu
+          </span>
+        <% else %>
+          <div class="lesson-quiz__btn-start">
+            <%= button_to "Làm bài ngay →", quiz_quiz_attempts_path(quiz), method: :post %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Divider %>
+    <hr class="lesson-divider">
+
+    <%# Prev / Next navigation %>
+    <nav class="lesson-nav" aria-label="Lesson navigation">
+      <% if prev_lesson %>
+        <%= link_to lesson_path(prev_lesson), class: "lesson-nav__btn" do %>
+          <i class="bi bi-chevron-left"></i> Bài trước
+        <% end %>
+      <% else %>
+        <span class="lesson-nav__btn lesson-nav__btn--disabled">
+          <i class="bi bi-chevron-left"></i> Bài trước
+        </span>
+      <% end %>
+
+      <% if next_lesson %>
+        <%= link_to lesson_path(next_lesson), class: "lesson-nav__btn lesson-nav__btn--next" do %>
+          Bài tiếp theo <i class="bi bi-chevron-right"></i>
+        <% end %>
+      <% else %>
+        <span class="lesson-nav__btn lesson-nav__btn--next lesson-nav__btn--disabled">
+          Hết bài <i class="bi bi-check2-all"></i>
+        </span>
+      <% end %>
+    </nav>
+
+    <%# Comments / discussion section %>
+    <div class="lesson-comments">
+      <%= render "comments_section" %>
+    </div>
+
+  </main>
+
+  <%# ── SIDEBAR ───────────────────────────────────────────────── %>
+  <aside class="lesson-sidebar" aria-label="Course content">
+
+    <div class="sb-header">
+      <div class="sb-header__top">
+        <span class="sb-header__label">Nội dung khóa học</span>
+        <span class="sb-header__progress-badge"><%= course_progress %>%</span>
+      </div>
+      <div class="sb-header__bar-track">
+        <div class="sb-header__bar-fill" style="width:<%= course_progress %>%;"></div>
       </div>
     </div>
 
-    <div class="col-lg-3 bg-light border-start d-none d-lg-flex flex-column" style="height: 100vh;">
-      <div class="p-3 border-bottom bg-white flex-shrink-0">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="mb-0 fw-bold text-uppercase text-muted small">Nội dung khóa học</h6>
-          <span class="badge bg-success"><%= course_progress %>%</span>
-        </div>
-        <div class="progress" style="height: 6px;">
-          <div class="progress-bar bg-success" style="width: <%= course_progress %>%"></div>
-        </div>
-      </div>
+    <div class="sb-body" id="sidebarAccordion">
 
-      <div class="accordion accordion-flush overflow-auto flex-grow-1" id="sidebarAccordion">
-        <% @lesson.course.course_modules.order(:order_index).each do |mod| %>
-          <div class="accordion-item bg-light">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed bg-light text-dark fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#sb_collapse<%= mod.id %>">
-                <%= mod.title %>
-              </button>
-            </h2>
-            <div id="sb_collapse<%= mod.id %>" class="accordion-collapse collapse <%= 'show' if mod.lessons.include?(@lesson) %>">
-              <div class="list-group list-group-flush">
-                <% mod.lessons.order(:order_index).each do |l| %>
-                  <% is_active = (l == @lesson) %>
-                  <% is_completed = current_user.lesson_completed?(l) %>
-                  <%= link_to lesson_path(l), class: "list-group-item list-group-item-action border-0 py-2 ps-4 #{'active-lesson bg-primary-subtle text-primary fw-bold' if is_active}" do %>
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div class="d-flex align-items-start">
-                        <i class="bi <%= l.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> me-2 mt-1"></i>
-                        <span class="small"><%= l.title %></span>
+      <% @lesson.course.course_modules.order(:order_index).each do |mod| %>
+        <%
+          mod_is_open = mod.lessons.include?(@lesson)
+          collapse_id = "sbmod_#{mod.id}"
+        %>
+        <div class="sb-module accordion-item">
+          <h2 class="accordion-header" id="sbhdr_<%= mod.id %>">
+            <button class="sb-module__toggle accordion-button <%= 'collapsed' unless mod_is_open %>"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#<%= collapse_id %>"
+                    aria-expanded="<%= mod_is_open ? 'true' : 'false' %>"
+                    aria-controls="<%= collapse_id %>">
+              <span class="sb-module__title"><%= mod.title %></span>
+              <i class="bi bi-chevron-down sb-module__chevron"></i>
+            </button>
+          </h2>
+
+          <div id="<%= collapse_id %>"
+               class="sb-module__collapse accordion-collapse collapse <%= 'show' if mod_is_open %>">
+            <ul class="sb-module__lessons">
+              <% mod.lessons.order(:order_index).each do |l| %>
+                <% is_active    = (l == @lesson) %>
+                <% is_completed = user_signed_in? && current_user.lesson_completed?(l) %>
+                <li>
+                  <%= link_to lesson_path(l),
+                        class: "sb-lesson #{is_active ? 'sb-lesson--active' : ''}" do %>
+                    <div class="sb-lesson__inner">
+                      <div class="sb-lesson__left">
+                        <i class="bi <%= l.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> sb-lesson__icon"></i>
+                        <span class="sb-lesson__title"><%= l.title %></span>
                       </div>
-                      <% if is_completed %><i class="bi bi-check-circle-fill text-success ms-2"></i><% end %>
+                      <% if is_completed %>
+                        <i class="bi bi-check-circle-fill sb-lesson__check"></i>
+                      <% end %>
                     </div>
                   <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+
+      <%# Big / course-level quizzes (only if signed in) %>
+      <% if user_signed_in? && @big_quizzes.any? %>
+        <% @big_quizzes.each do |quiz| %>
+          <div class="sb-quiz-item accordion-item">
+            <h2 class="accordion-header">
+              <button class="sb-quiz-item__toggle accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#sb_quiz_<%= quiz.id %>"
+                      aria-expanded="false">
+                <i class="bi bi-trophy-fill sb-quiz-item__icon"></i>
+                <%= quiz.title %>
+              </button>
+            </h2>
+            <div id="sb_quiz_<%= quiz.id %>" class="accordion-collapse collapse">
+              <div class="sb-quiz-item__body">
+                <p class="sb-quiz-item__meta">
+                  <%= quiz.total_questions %> câu hỏi • Đạt: <%= quiz.pass_score %>%
+                </p>
+                <% if current_user.quiz_completed?(quiz) %>
+                  <div class="sb-quiz-item__btn sb-quiz-item__btn--done">
+                    <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
+                  </div>
+                <% else %>
+                  <div class="sb-quiz-item__btn sb-quiz-item__btn--start">
+                    <%= button_to "Làm bài ngay", quiz_quiz_attempts_path(quiz), method: :post %>
+                  </div>
                 <% end %>
               </div>
             </div>
           </div>
         <% end %>
+      <% end %>
 
-        <% if @big_quizzes.any? %>
-          <% @big_quizzes.each do |quiz| %>
-            <div class="accordion-item bg-warning-subtle border-top border-warning">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed bg-warning-subtle text-dark fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#sb_quiz_<%= quiz.id %>">
-                  <i class="bi bi-trophy-fill me-2 text-warning"></i> <%= quiz.title %>
-                </button>
-              </h2>
-              <div id="sb_quiz_<%= quiz.id %>" class="accordion-collapse collapse">
-                <div class="p-3 bg-white small">
-                  <p class="mb-2 text-muted"><%= quiz.total_questions %> câu hỏi • Đạt: <%= quiz.pass_score %>%</p>
-                  <% if current_user.quiz_completed?(quiz) %>
-                    <button class="btn btn-success btn-sm w-100 fw-bold disabled">
-                      <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
-                    </button>
-                  <% else %>
-                    <%= button_to "Làm bài ngay", quiz_quiz_attempts_path(quiz), method: :post, class: "btn btn-primary btn-sm w-100 fw-bold" %>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
-    </div>
+    </div><%# /sb-body %>
+  </aside>
 
-  </div>
-</div>
+</div><%# /lesson-page %>

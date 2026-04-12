@@ -1,161 +1,150 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-3">
-  <div class="container">
+<%# ============================================================ %>
+<%# REDESIGNED NAVBAR                                            %>
+<%# ============================================================ %>
 
-    <%= link_to root_path, class: "navbar-brand fw-bold text-dark fs-4 me-4" do %>
-      E-Learning
+<nav class="navbar navbar-expand-lg lp-navbar sticky-top">
+  <div class="container">
+    <%# --- LOGO --- %>
+    <%= link_to root_path, class: "navbar-brand" do %>
+      <i class="bi bi-mortarboard-fill"></i>
+      <span>E-Learning</span>
     <% end %>
 
-    <%# --- DROPDOWN DANH MỤC (GIỮ NGUYÊN) --- %>
-    <div class="dropdown me-4 d-none d-lg-block">
-      <a class="text-decoration-none text-dark fw-medium" href="#" role="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        Danh mục
-      </a>
-      <ul class="dropdown-menu shadow border-0" aria-labelledby="categoryDropdown">
-        <% Category.where(parent_id: nil).each do |parent_cat| %>
-          <li>
-            <a class="dropdown-item d-flex justify-content-between align-items-center" href="<%= category_path(parent_cat) %>">
-              <%= parent_cat.name %>
-              <% if parent_cat.children.any? %>
-                <i class="bi bi-chevron-right small text-muted"></i>
-              <% end %>
-            </a>
-
-            <% if parent_cat.children.any? %>
-              <ul class="dropdown-menu submenu shadow border-0">
-                <% parent_cat.children.each do |child_cat| %>
-                  <li>
-                    <%= link_to child_cat.name, category_path(child_cat), class: "dropdown-item" %>
-                  </li>
-                <% end %>
-              </ul>
-            <% end %>
-          </li>
-        <% end %>
-        <li><hr class="dropdown-divider"></li>
-        <li><%= link_to "Tất cả danh mục", categories_path, class: "dropdown-item fw-bold" %></li>
-      </ul>
-    </div>
-
-    <%# --- SEARCH BOX (GIỮ NGUYÊN) --- %>
-    <div class="flex-grow-1 d-flex justify-content-center mx-3">
-      <form action="<%= courses_path %>" method="get"
-            class="search-box d-flex align-items-center w-100" style="max-width: 500px;">
-        <button class="btn text-muted border-0 ps-3 pe-2" type="submit">
-          <i class="bi bi-search"></i>
-        </button>
-        <input type="search" name="query" class="form-control border-0 bg-transparent shadow-none" placeholder="Tìm khóa học..." aria-label="Search">
-      </form>
-    </div>
-
-    <button class="navbar-toggler ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <%# --- MOBILE TOGGLER --- %>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
-      <ul class="navbar-nav align-items-center ms-auto">
-
-        <%# --- [CẬP NHẬT 1] LINK BUSINESS --- %>
-        <li class="nav-item d-none d-lg-block">
-          <%# Kiểm tra: Nếu user đã đăng nhập và là Business %>
-          <% if current_user&.company_admin? %>
-            <%# Link đến Dashboard của Business %>
-            <%= link_to "E-Learning Business", company_admin_root_path, class: "nav-link text-primary fw-bold small" %>
-          <% else %>
-            <%# Link đến trang giới thiệu/Marketing cho Business (Thay business_intro_path bằng route của bạn) %>
-            <%= link_to "E-Learning Business", "#", class: "nav-link text-dark small" %>
-          <% end %>
-        </li>
-
-        <li class="nav-item d-none d-lg-block">
-          <% if current_user&.instructor? %>
-            <%= link_to "Giảng dạy", instructor_root_path, class: "nav-link text-dark small" %>
-          <% else %>
-            <%= link_to "Giảng dạy trên E-Learning", new_instructor_registration_path, class: "nav-link text-dark small" %>
-          <% end %>
-        </li>
-
-        <% if current_user %>
-          <li class="nav-item mx-2">
-            <%= link_to "Học tập", my_courses_path, class: "nav-link text-dark fw-medium" %>
-          </li>
-
-          <%# --- [CẬP NHẬT 2] LINK GIỎ HÀNG (SHOW CART) --- %>
-          <li class="nav-item me-3">
-            <%= link_to cart_path, class: "nav-link text-dark position-relative" do %>
-              <i class="bi bi-cart fs-5"></i>
-              <%# Hiển thị số lượng item nếu > 0 (Dùng helper current_cart) %>
-              <% if current_cart.cart_items.any? %>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                  <%= current_cart.cart_items.count %>
-                </span>
+    <%# --- NAV LINKS --- %>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        
+        <%# --- COURSES DROPDOWN --- %>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="coursesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Courses
+          </a>
+          <ul class="dropdown-menu border-0 shadow" aria-labelledby="coursesDropdown">
+            <%# FUTURE: Replace hardcoded categories with Category.where(parent_id: nil) loop %>
+            <li>
+              <%= link_to categories_path, class: "dropdown-item" do %>
+                <i class="bi bi-code-slash"></i> Web Development
               <% end %>
-            <% end %>
-          </li>
+            </li>
+            <li>
+              <%= link_to categories_path, class: "dropdown-item" do %>
+                <i class="bi bi-graph-up"></i> Data Science
+              <% end %>
+            </li>
+            <li>
+              <%= link_to categories_path, class: "dropdown-item" do %>
+                <i class="bi bi-palette"></i> Design & UI/UX
+              <% end %>
+            </li>
+            <li>
+              <%= link_to categories_path, class: "dropdown-item" do %>
+                <i class="bi bi-hdd-network"></i> DevOps & Cloud
+              <% end %>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <%= link_to courses_path, class: "dropdown-item fw-bold text-primary" do %>
+                <i class="bi bi-arrow-right-circle"></i> Browse All Courses
+              <% end %>
+            </li>
+          </ul>
+        </li>
 
-          <%# --- USER DROPDOWN (GIỮ NGUYÊN) --- %>
-          <li class="nav-item dropdown">
-            <a class="nav-link p-0" href="#" role="button" data-bs-toggle="dropdown">
+        <li class="nav-item">
+          <a class="nav-link" href="#learning-paths">Learning Paths</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#pricing">Pricing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#instructors">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#cta">Contact</a>
+        </li>
+      </ul>
+
+      <%# --- AUTH BUTTONS / USER SECTION --- %>
+      <div class="d-flex align-items-center gap-3 btn-group-mobile">
+        <% if current_user %>
+          <%# --- Logged In State --- %>
+          <div class="nav-item dropdown">
+            <a class="nav-link p-0 d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <% if current_user.avatar_url.present? %>
-                <img src="<%= current_user.avatar_url %>" class="rounded-circle border" width="35" height="35" style="object-fit: cover;">
+                <img src="<%= current_user.avatar_url %>" class="rounded-circle border" width="38" height="38" style="object-fit: cover;">
               <% else %>
-                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px;">
-                  <%= current_user.name.to_s[0..1].upcase %>
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px;">
+                  <%= current_user.name.to_s[0].upcase %>
                 </div>
               <% end %>
+              <span class="d-lg-none fw-bold text-dark"><%= current_user.name %></span>
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end shadow pt-0" style="min-width: 250px;">
-              <li class="d-flex align-items-center p-3 border-bottom mb-2">
-                <div class="me-3">
-                   <% if current_user.avatar_url.present? %>
-                    <img src="<%= current_user.avatar_url %>" class="rounded-circle border" width="50" height="50" style="object-fit: cover;">
-                  <% else %>
-                    <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px; font-size: 1.2rem;">
-                      <%= current_user.name.to_s[0..1].upcase %>
-                    </div>
-                  <% end %>
-                </div>
-                <div>
-                  <div class="fw-bold text-truncate" style="max-width: 160px;"><%= current_user.name %></div>
-                  <div class="small text-muted text-truncate" style="max-width: 160px;"><%= current_user.email %></div>
-                </div>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 pt-0" style="min-width: 260px;">
+              <li class="p-4 border-bottom bg-light rounded-top-4">
+                <div class="fw-bold text-dark text-truncate"><%= current_user.name %></div>
+                <div class="small text-muted text-truncate"><%= current_user.email %></div>
               </li>
-
-              <li><%= link_to "Học tập của tôi", my_courses_path, class: "dropdown-item" %></li>
-              <li><%= link_to "Hồ sơ cá nhân", edit_user_registration_path, class: "dropdown-item" %></li>
+              
+              <li><%= link_to "My Courses", my_courses_path, class: "dropdown-item mt-2" %></li>
+              <li><%= link_to "Edit Profile", edit_user_registration_path, class: "dropdown-item" %></li>
 
               <% if current_user.admin? %>
                 <li><hr class="dropdown-divider"></li>
-                <li><%= link_to "Trang quản trị", admin_courses_path, class: "dropdown-item text-danger fw-bold" %></li>
-              <% end %>
-
-              <% if current_user.instructor? %>
-                <li><hr class="dropdown-divider"></li>
-                <li><%= link_to "Bảng giảng dạy", instructor_root_path, class: "dropdown-item text-primary fw-bold" %></li>
-              <% end %>
-
-              <% if current_user.company_admin? %>
-                <li><hr class="dropdown-divider"></li>
-                <li><%= link_to "Quản lý doanh nghiệp", company_admin_root_path, class: "dropdown-item text-success fw-bold" %></li>
+                <li><%= link_to "Admin Dashboard", admin_dashboard_path, class: "dropdown-item text-danger fw-bold" %></li>
               <% end %>
 
               <li><hr class="dropdown-divider"></li>
               <li>
-                <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item w-100 text-start" do %>
-                  Đăng xuất
-                <% end %>
+                <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item text-start w-100" %>
               </li>
             </ul>
-          </li>
+          </div>
         <% else %>
-          <li class="nav-item ms-3">
-            <%= link_to "Đăng nhập", new_user_session_path, class: "btn btn-outline-dark fw-bold px-3" %>
-          </li>
-          <li class="nav-item ms-2">
-            <%= link_to "Đăng ký", new_user_registration_path, class: "btn btn-dark fw-bold px-3" %>
-          </li>
+          <%# --- Logged Out State --- %>
+          <%= link_to "Login", new_user_session_path, class: "btn-login" %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "btn-signup" %>
         <% end %>
-      </ul>
+      </div>
     </div>
   </div>
 </nav>
+
+<div class="navbar-backdrop"></div>
+
+<%# Mobile Menu Enhancement Script %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggler = document.querySelector('.navbar-toggler');
+    const collapse = document.querySelector('.navbar-collapse');
+    const backdrop = document.querySelector('.navbar-backdrop');
+    const navbar = document.querySelector('.lp-navbar');
+
+    if (toggler) {
+      toggler.addEventListener('click', function() {
+        backdrop.classList.toggle('show');
+      });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', function() {
+        collapse.classList.remove('show');
+        backdrop.classList.remove('show');
+      });
+    }
+
+    // Scroll effect
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) {
+        navbar.classList.add('navbar-scrolled');
+      } else {
+        navbar.classList.remove('navbar-scrolled');
+      }
+    });
+  });
+</script>

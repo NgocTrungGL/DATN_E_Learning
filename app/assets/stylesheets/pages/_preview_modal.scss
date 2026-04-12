@@ -1,0 +1,570 @@
+// ============================================================
+// PREVIEW MODAL — Cinema-mode video preview
+// Pure SCSS (No Bootstrap) | BEM naming | Blue/White theme
+// ============================================================
+
+// ── Design tokens (now centralized in abstracts/_variables.scss) ──
+
+// ── Overlay / backdrop ───────────────────────────────────────
+.pm {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &.is-open {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+// ── Dialog container ────────────────────────────────────────
+.pm__dialog {
+  position: relative;
+  z-index: 1;
+  width: 94%;
+  max-width: 1100px;
+  max-height: 92vh;
+  background: $bg-dark;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  display: block; // Let video column dictate height; sidebar is absolute
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: pmSlideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pmSlideUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+// ── Close button ─────────────────────────────────────────────
+.pm__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 50; // Stay over sidebar/video safely
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(30, 41, 59, 0.95); // Dark aesthetic matching sidebar
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg) scale(1.05);
+  }
+  
+  &:active {
+    transform: rotate(90deg) scale(0.95);
+  }
+}
+
+// ── Video column ────────────────────────────────────────────
+.pm__video-col {
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  position: relative;
+  margin-right: 320px; // Space for the absolute sidebar
+}
+
+// Title bar above video
+.pm__title-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: $bg-dark;
+  border-bottom: 1px solid $border-dark;
+
+  .pm__title-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: $primary;
+    flex-shrink: 0;
+  }
+
+  .pm__title-text {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $border;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .pm__title-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.15);
+    color: $primary;
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    flex-shrink: 0;
+  }
+}
+
+// Video wrapper (16:9)
+.pm__video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+
+  iframe, video {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+}
+
+// Watermark overlay
+.pm__watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-25deg);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.06);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
+  z-index: 3;
+}
+
+// ── Custom controls bar ──────────────────────────────────────
+.pm__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(180deg, $bg-dark 0%, lighten($bg-dark, 3%) 100%);
+  border-top: 1px solid $border-dark;
+  flex-wrap: nowrap;
+}
+
+.pm__ctrl-btn {
+  background: none;
+  border: none;
+  color: $border;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0.2rem 0.35rem;
+  border-radius: 6px;
+  transition: $t-cubic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+  &:active { transform: scale(0.92); }
+}
+
+.pm__time {
+  font-size: 0.72rem;
+  color: $text-muted;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  min-width: 70px;
+}
+
+.pm__progress-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.15s;
+
+  &:hover { height: 8px; }
+}
+
+.pm__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $primary, lighten($primary, 12%));
+  border-radius: 999px;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.pm__volume-track {
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.pm__volume-fill {
+  height: 100%;
+  background: $text-muted;
+  border-radius: 999px;
+  width: 80%;
+}
+
+.pm__speed-select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid $border-dark;
+  color: $border;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.35rem;
+  border-radius: 6px;
+  cursor: pointer;
+  appearance: none;
+  font-family: inherit;
+
+  option { background: $bg-dark; color: $border; }
+}
+
+// ── Sidebar (playlist + CTA) ────────────────────────────────
+.pm__sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%; // Matches exactly the video column height
+  display: flex;
+  flex-direction: column;
+  background: $bg-panel;
+  border-left: 1px solid $border-dark;
+}
+
+.pm__sidebar-header {
+  padding: 1.15rem 4.5rem 1.15rem 1.25rem; // Enormous safe zone on right (4.5rem) for absolute close button
+  border-bottom: 1px solid $border-dark;
+  display: flex;
+  flex-direction: column; // Stack vertically to protect text and avoid horizontal crunches
+  align-items: flex-start;
+  gap: 0.35rem;
+
+  .pm__sidebar-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: $border;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .pm__sidebar-count {
+    font-size: 0.72rem;
+    color: $text-muted;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+}
+
+// Playlist
+.pm__playlist {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; // Ensure buttery smooth conditional scrolling on mobile
+  padding: 0.35rem 0;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: $bg-panel; }
+  &::-webkit-scrollbar-thumb { background: $border-dark; border-radius: 3px; }
+  &::-webkit-scrollbar-thumb:hover { background: #475569; }
+}
+
+// Playlist item
+.pm__playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.15rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  color: $border;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:hover { background: rgba(255, 255, 255, 0.05); }
+
+  &.is-active {
+    background: rgba(37, 99, 235, 0.12);
+    border-left: 3px solid $primary;
+  }
+
+  &.is-locked {
+    opacity: 0.45;
+    cursor: not-allowed;
+    &:hover { background: none; }
+  }
+}
+
+.pm__pl-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+
+  &--free {
+    background: rgba(37, 99, 235, 0.12);
+    color: $primary;
+  }
+
+  &--locked {
+    background: rgba(255, 255, 255, 0.05);
+    color: $text-muted;
+  }
+
+  &--playing {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+  }
+}
+
+.pm__pl-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pm__pl-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $border;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.pm__pl-meta {
+  font-size: 0.68rem;
+  color: $text-muted;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pm__pl-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+
+  &--free {
+    background: rgba(37, 99, 235, 0.12);
+    color: $primary;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+  }
+
+  &--locked {
+    background: rgba(255, 255, 255, 0.05);
+    color: $text-muted;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+// ── Integrated Inline CTA (Option A + Redesigned Button) ──
+.pm__sidebar-integrated-cta {
+  padding: 1.25rem 1.15rem;
+  background: $bg-panel; // Match dark UI, completely removing the white block
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  // Reset global form styles (application.scss) on button_to wrappers
+  .button_to {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: auto;
+  }
+}
+
+.pm__inline-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff !important; // Override default button text color
+  background: linear-gradient(135deg, $primary, $accent) !important;
+  border: none !important;
+  cursor: pointer;
+  padding: 0.75rem 1.75rem;
+  transition: $t-cubic;
+  border-radius: 10px; // Medium rounded corners
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba($primary, 0.25) !important;
+
+  i {
+    color: #fff !important;
+    font-size: 1.05rem;
+    transition: $t-cubic;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, lighten($primary, 6%), lighten($accent, 6%)) !important;
+    color: #fff;
+    transform: translateY(-2px); // Subtle lift
+    box-shadow: 0 8px 22px rgba($primary, 0.4) !important;
+
+    i {
+      color: #fff !important;
+      transform: translateX(2px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba($primary, 0.2) !important;
+  }
+}
+
+.pm__inline-enrolled {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #34d399;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+// ============================================================
+// RESPONSIVE — TABLET (≤ 900px)
+// ============================================================
+@media (max-width: 900px) {
+  .pm__dialog {
+    max-height: 95vh;
+    width: 96%;
+    max-width: 640px;
+    overflow-y: auto;
+  }
+
+  .pm__video-col {
+    margin-right: 0; // Remove absolute sidebar space
+  }
+
+  .pm__sidebar {
+    position: static; // Restore normal document flow
+    width: 100%;
+    height: auto; // Sidebar dictates its own height
+    border-left: none;
+    border-top: 1px solid $border-dark;
+  }
+
+  .pm__playlist {
+    max-height: 35vh; // Limit playlist height so modal isn't infinitely tall
+  }
+}
+
+// ============================================================
+// RESPONSIVE — MOBILE (≤ 480px)
+// ============================================================
+@media (max-width: 480px) {
+  .pm__dialog {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    max-width: 100%;
+    border-radius: 0;
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  .pm__close {
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+
+  // Video stays at top (natural document flow = "sticky" feel)
+  .pm__video-col {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .pm__title-bar {
+    padding: 0.6rem 3.5rem 0.6rem 1rem; // Add right padding to protect title text from sticky close button
+    .pm__title-text { font-size: 0.8rem; }
+  }
+
+  .pm__controls {
+    padding: 0.5rem 0.65rem;
+    gap: 0.4rem;
+    .pm__volume-track { display: none; }
+  }
+
+  .pm__sidebar {
+    max-height: none;
+    border-top: 1px solid $border-dark;
+  }
+
+  .pm__playlist-item {
+    padding: 0.85rem 1rem;
+  }
+
+  .pm__sidebar-integrated-cta {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    background: $bg-panel; // ensure it masks content when scrolling in mobile viewport
+  }
+}

@@ -1,0 +1,126 @@
+<%#
+  LEARNING PATHS — High-ticket bundled learning tracks
+  Wide-card layout with "Master Track Certificate" badge
+%>
+
+<%
+  paths_hc = [
+    {
+      title:       "Full-Stack Web Developer Track",
+      description: "Go from zero to job-ready full-stack engineer. Master HTML/CSS, JavaScript, Ruby on Rails, SQL, and deploy production apps on Heroku & AWS.",
+      badge:       "🎓 Master Track Certificate",
+      duration:    "6 months",
+      level:       "Beginner → Advanced",
+      students:    "12,400",
+      thumb:       "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=700&h=394&fit=crop&q=80",
+      course_keys: [0, 1, 2],   # indices into DB courses
+      hc_courses:  [
+        { title: "HTML & CSS Foundations",     icon: "bi-filetype-html" },
+        { title: "JavaScript Essentials",       icon: "bi-filetype-js"  },
+        { title: "Rails API Development",       icon: "bi-server"       },
+      ],
+    },
+    {
+      title:       "Data Science & AI Engineer Track",
+      description: "Learn Python, Statistics, Machine Learning, and Deep Learning. Build and deploy real models with Scikit-learn, TensorFlow, and AWS SageMaker.",
+      badge:       "🎓 Master Track Certificate",
+      duration:    "8 months",
+      level:       "Intermediate → Expert",
+      students:    "8,750",
+      thumb:       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&h=394&fit=crop&q=80",
+      course_keys: [3, 4, 5],
+      hc_courses:  [
+        { title: "Python for Data Science",   icon: "bi-filetype-py"  },
+        { title: "Machine Learning A–Z",      icon: "bi-cpu"          },
+        { title: "Deep Learning with PyTorch",icon: "bi-diagram-3"    },
+      ],
+    },
+    {
+      title:       "Cloud & DevOps Engineer Track",
+      description: "Become a certified cloud professional. Master AWS, Docker, Kubernetes, CI/CD pipelines, and Infrastructure-as-Code with Terraform.",
+      badge:       "🎓 Master Track Certificate",
+      duration:    "5 months",
+      level:       "Intermediate → Advanced",
+      students:    "6,200",
+      thumb:       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=700&h=394&fit=crop&q=80",
+      course_keys: [6, 7, 8],
+      hc_courses:  [
+        { title: "AWS Solutions Architect",   icon: "bi-cloud"        },
+        { title: "Docker & Kubernetes",       icon: "bi-box"          },
+        { title: "Terraform for DevOps",      icon: "bi-gear"         },
+      ],
+    },
+  ]
+
+  # Try to match DB courses by index for each path
+  all_db = Course.order(created_at: :desc).limit(9).to_a
+%>
+
+<section class="learning-paths" aria-label="Learning Paths">
+  <div class="learning-paths__inner">
+
+    <div class="learning-paths__header">
+      <div class="learning-paths__eyebrow">Structured Learning</div>
+      <h2 class="learning-paths__title">Master-Track Learning Paths</h2>
+      <p class="learning-paths__subtitle">
+        Follow a curated sequence of courses, earn a verifiable certificate, and land your dream role.
+      </p>
+    </div>
+
+    <div class="learning-paths__list">
+      <% paths_hc.each_with_index do |path, p_idx| %>
+        <article class="lp-card">
+
+          <div class="lp-card__thumb">
+            <img src="<%= path[:thumb] %>" alt="<%= path[:title] %>" loading="lazy">
+            <span class="lp-card__badge"><%= path[:badge] %></span>
+          </div>
+
+          <div class="lp-card__content">
+            <div class="lp-card__meta">
+              <span class="lp-card__meta-item">
+                <i class="bi bi-clock"></i> <%= path[:duration] %>
+              </span>
+              <span class="lp-card__meta-item">
+                <i class="bi bi-bar-chart-steps"></i> <%= path[:level] %>
+              </span>
+              <span class="lp-card__meta-item">
+                <i class="bi bi-people-fill"></i> <%= path[:students] %> enrolled
+              </span>
+            </div>
+
+            <h3 class="lp-card__title"><%= path[:title] %></h3>
+            <p class="lp-card__desc"><%= path[:description] %></p>
+
+            <%# Included courses list %>
+            <ul class="lp-card__course-list">
+              <% path[:hc_courses].each_with_index do |hc_course, c_idx| %>
+                <% db_course = all_db[path[:course_keys][c_idx]] %>
+                <li class="lp-card__course-item">
+                  <i class="bi <%= hc_course[:icon] %> lp-card__course-icon"></i>
+                  <span class="lp-card__course-name">
+                    <%= db_course&.title&.truncate(55) || hc_course[:title] %>
+                  </span>
+                  <% if db_course %>
+                    <span class="lp-card__course-badge lp-card__course-badge--included">Included</span>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+
+            <div class="lp-card__footer">
+              <%= link_to courses_path, class: "lp-card__cta" do %>
+                Start Learning Path <i class="bi bi-arrow-right"></i>
+              <% end %>
+              <span class="lp-card__guarantee">
+                <i class="bi bi-shield-check"></i> 30-day money-back guarantee
+              </span>
+            </div>
+          </div>
+
+        </article>
+      <% end %>
+    </div>
+
+  </div>
+</section>

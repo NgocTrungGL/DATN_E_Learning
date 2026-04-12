@@ -1,292 +1,33 @@
+// ============================================================
+// MAIN APPLICATION STYLESHEET
+// 7-1 Architecture Pattern
+// ============================================================
+
+// 1. Vendors
 @import "bootstrap";
+
+// 2. Abstracts
 @import "abstracts/variables";
+@import "abstracts/mixins";
+@import "abstracts/typography";
+
+// 3. Base
+@import "base/base";
+
+// 4. Components
+@import "components/buttons";
+@import "components/course_card";
+@import "components/my_course_card";
+@import "pages/navbar"; // Navbar is a global component
+
+// 5. Pages
 @import "pages/login";
 @import "pages/auth";
-
-// Custom styles
-body {
-  background-color: #f8f9fa;
-  font-family: 'Nunito', sans-serif;
-}
-
-.container {
-  margin-top: 2rem;
-}
-
-.table {
-  background-color: #fff;
-  border-radius: 0.5rem;
-  overflow: hidden;
-
-  th {
-    background-color: #007bff;
-    color: #fff;
-    text-align: center;
-  }
-
-  td {
-    vertical-align: middle;
-  }
-}
-
-.btn {
-  margin-right: 0.25rem;
-}
-
-h2,
-h3 {
-  color: #343a40;
-  margin-bottom: 1rem;
-}
-
-form {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-
-  .form-label {
-    font-weight: 600;
-  }
-
-  .form-control,
-  .form-select {
-    margin-bottom: 1rem;
-  }
-
-  .btn {
-    min-width: 100px;
-  }
-}
-
-.table {
-
-  th,
-  td {
-    text-align: center;
-  }
-
-  tr:hover {
-    background-color: #e9ecef;
-  }
-}
-
-.card {
-  border-radius: 10px;
-  overflow: hidden;
-
-  img {
-    height: 200px;
-    object-fit: cover;
-  }
-
-  .card-body {
-    h5 {
-      font-weight: 600;
-    }
-
-    p {
-      color: #555;
-    }
-
-    .btn {
-      margin-top: 5px;
-      margin-right: 5px;
-    }
-  }
-
-}
-
-.course-card .course-img {
-  height: 200px;
-  object-fit: cover;
-  object-position: center;
-}
-
-@media (min-width: 992px) {
-  .dropdown-menu .dropdown-toggle:after {
-    border-top: .3em solid transparent;
-    border-right: 0;
-    border-bottom: .3em solid transparent;
-    border-left: .3em solid;
-  }
-
-  .dropdown-menu .dropdown-menu {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .dropdown-menu li {
-    position: relative;
-  }
-
-  .dropdown-menu .submenu {
-    display: none;
-    position: absolute;
-    left: 100%;
-    top: -7px;
-  }
-
-  .dropdown-menu .submenu-left {
-    right: 100%;
-    left: auto;
-  }
-
-  .dropdown-menu>li:hover {
-    background-color: #f1f1f1;
-  }
-
-  .dropdown-menu>li:hover>.submenu {
-    display: block;
-  }
-}
-
-/* Search Box Gọn & Hiện Đại */
-.search-box {
-  max-width: 350px;
-  background: #f8f9fa;
-  border: 1px solid #e0e0e0;
-  padding: 4px 12px;
-  border-radius: 25px;
-  transition: all 0.25s ease;
-}
-
-.search-box:hover {
-  background: #ffffff;
-  border-color: #cfcfcf;
-}
-
-.search-icon {
-  font-size: 15px;
-  color: #888;
-  margin-right: 8px;
-}
-
-.search-input {
-  border: none;
-  background: transparent;
-  width: 100%;
-  font-size: 15px;
-}
-
-.search-input:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-/* Style cho Search Box trong Navbar */
-.search-box {
-  background-color: #f7f9fa;
-  /* Màu xám nhạt */
-  border: 1px solid #2d2f31;
-  /* Viền tối màu (hoặc nhạt hơn nếu thích) */
-  border-radius: 999px;
-  /* Bo tròn con nhộng */
-  padding: 0 10px;
-}
-
-.search-box input:focus {
-  box-shadow: none !important;
-  /* Tắt viền xanh mặc định của Bootstrap */
-  background-color: transparent;
-}
-
-.avatar-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-  background-color: #f1f3f5;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* QUAN TRỌNG */
-  display: block;
-}
-
-.avatar-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-  background-color: #e9ecef;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.avatar-text {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5, #3b82f6);
-  color: #fff;
-  font-weight: 700;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-transform: uppercase;
-}
-
-.admin-container {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.course-hero {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
-}
-
-.course-thumb {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.course-actions .btn {
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.module-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.lesson-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.lesson-item span {
-  font-weight: 500;
-}
-
-.lesson-actions .btn {
-  margin-left: 6px;
-}
-
-.admin-box {
-  background: #f8f9fa;
-  border: 1px dashed #dee2e6;
-  padding: 12px;
-  border-radius: 8px;
-}
+@import "pages/landing";
+@import "pages/courses";
+@import "pages/courses_market";
+@import "pages/my_courses";
+@import "pages/profile_edit";
+@import "pages/course_detail";
+@import "pages/preview_modal";
+@import "pages/lesson";

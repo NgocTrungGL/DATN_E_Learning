@@ -1,0 +1,24 @@
+// ============================================================
+// GLOBAL BASE STYLES & RESETS
+// ============================================================
+
+body {
+  background-color: $bg;
+  min-height: 100vh;
+}
+
+.container {
+  margin-top: 2rem;
+}
+
+// Helper classes
+.text-primary { color: $primary !important; }
+.text-accent  { color: $accent !important; }
+.text-muted   { color: $text-muted !important; }
+
+.bg-light   { background-color: $bg !important; }
+.bg-surface { background-color: $surface !important; }
+
+// Transitions
+.t-ease { transition: $t; }
+.t-cubic { transition: $t-cubic; }

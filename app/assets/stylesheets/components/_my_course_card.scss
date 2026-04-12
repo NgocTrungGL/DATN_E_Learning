@@ -1,0 +1,179 @@
+// ============================================================
+// MY COURSE CARD COMPONENT
+// Specialized version of course-card for student dashboard
+// ============================================================
+
+.my-course-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-md;
+    border-color: rgba($primary, 0.2);
+  }
+
+  // ── Thumbnail ────────────────────────────────────────────
+  &__thumb {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+    background: $bg;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      @include flex-center;
+      background: rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      z-index: 2;
+
+      .btn-play {
+        width: 48px;
+        height: 48px;
+        background: $white;
+        color: $primary;
+        border-radius: 50%;
+        @include flex-center;
+        font-size: 1.5rem;
+        box-shadow: $shadow-md;
+        transform: scale(0.9);
+        transition: transform 0.25s ease;
+      }
+    }
+  }
+
+  &:hover &__thumb {
+    img { transform: scale(1.05); }
+    .play-overlay { 
+      opacity: 1; 
+      .btn-play { transform: scale(1); }
+    }
+  }
+
+  // ── Body ────────────────────────────────────────────────
+  &__body {
+    padding: 1.1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $text-dark;
+    line-height: 1.4;
+    margin-bottom: 0.35rem;
+    text-decoration: none;
+    @include line-clamp(2);
+    min-height: 2.8rem;
+
+    &:hover { color: $primary; }
+  }
+
+  &__instructor {
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin-bottom: 1.25rem;
+  }
+
+  // ── Progress Tracker ─────────────────────────────────────
+  &__progress {
+    margin-top: auto;
+  }
+
+  &__progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  &__progress-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $text-mid;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__progress-value {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: $primary;
+  }
+
+  &__progress-bar {
+    height: 6px;
+    background: $bg;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+
+    .fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      background: linear-gradient(90deg, $primary, $accent);
+      border-radius: 999px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  &__footer {
+    padding: 1rem 1.1rem 1.2rem;
+    border-top: 1px solid rgba($border, 0.5);
+    background: rgba($bg, 0.3);
+  }
+
+  .btn-resume {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: $primary;
+    color: $white;
+    border: none;
+    border-radius: $radius-md;
+    padding: 0.7rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: $t;
+
+    &:hover {
+      background: $primary-dark;
+      box-shadow: 0 4px 12px rgba($primary, 0.2);
+    }
+  }
+
+  &--new {
+    .btn-resume {
+      background: $white;
+      color: $primary;
+      border: 1.5px solid $primary;
+      
+      &:hover {
+        background: $primary;
+        color: $white;
+      }
+    }
+  }
+}

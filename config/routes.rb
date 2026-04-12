@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root "courses#index"
+  root "home#index"
   devise_for :users
   post 'create-checkout-session', to: 'checkouts#create'
 

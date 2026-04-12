@@ -1,0 +1,810 @@
+// ============================================================
+// LESSON PAGE — Pure SCSS, Strict BEM (no Bootstrap visual)
+// Layout: two-column CSS Grid (main | 340px sidebar)
+// Design tokens match the platform system
+// ============================================================
+
+// ── Tokens ────────────────────────────────────────────────────
+// Variables are now centralized in abstracts/_variables.scss
+
+// sidebar widths
+$sb-width:        340px;
+$sb-width-md:     280px;
+
+// ── Mixins (now centralized in abstracts/_mixins.scss) ──────
+
+// ── Root layout ───────────────────────────────────────────────
+.lesson-page {
+  font-family: 'Inter', 'Nunito', sans-serif;
+  display: grid;
+  grid-template-columns: 1fr $sb-width;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "main   sidebar";
+  height: 100vh;
+  overflow: hidden;
+  background: $bg;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr $sb-width-md;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "topbar"
+      "main"
+      "sidebar";
+    height: auto;
+    overflow: visible;
+  }
+}
+
+// ── Top bar ───────────────────────────────────────────────────
+.lesson-topbar {
+  grid-area: topbar;
+  background: $bg-dark;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 1.25rem;
+  height: 52px;
+  flex-shrink: 0;
+  z-index: 50;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: $radius-sm;
+    border: 1px solid rgba(255,255,255,0.12);
+    white-space: nowrap;
+    transition: $t-cubic;
+    flex-shrink: 0;
+
+    &:hover {
+      color: $white;
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.06);
+    }
+  }
+
+  &__course-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 420px;
+
+    @media (max-width: 768px) { max-width: 180px; }
+  }
+
+  &__lesson-title {
+    font-size: 0.78rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+
+    @media (max-width: 900px) { display: none; }
+  }
+}
+
+// ── Main scrollable column ─────────────────────────────────────
+.lesson-main {
+  grid-area: main;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+
+  // Custom scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  &::-webkit-scrollbar       { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+}
+
+// ── Video player ──────────────────────────────────────────────
+.lesson-video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: $bg-dark;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  iframe,
+  video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+}
+
+// ── Content prose area ────────────────────────────────────────
+.lesson-content {
+  max-width: 860px;
+  padding: 2rem 2.5rem 1.5rem;
+  flex: 1;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem 1rem;
+  }
+
+  &__title {
+    font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+    font-weight: 800;
+    color: $text-dark;
+    line-height: 1.25;
+    margin-bottom: 0.85rem;
+  }
+
+  &__description {
+    font-size: 0.97rem;
+    color: $text-mid;
+    line-height: 1.75;
+    margin-bottom: 0;
+
+    p { margin-bottom: 0.6rem; &:last-child { margin-bottom: 0; } }
+  }
+}
+
+// ── Attachment block ──────────────────────────────────────────
+.lesson-attach {
+  max-width: 860px;
+  margin: 1.25rem 2.5rem;
+  background: #f1f5f9;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: $t-cubic;
+  text-decoration: none;
+
+  &:hover {
+    background: #e8f0fe;
+    border-color: rgba($primary, 0.3);
+    box-shadow: $shadow-blue;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    margin: 1rem;
+  }
+
+  &__icon {
+    width: 44px; height: 44px;
+    background: $white;
+    border-radius: $radius-sm;
+    box-shadow: $shadow-sm;
+    @include flex-center;
+    flex-shrink: 0;
+    color: $primary;
+    font-size: 1.25rem;
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $text-dark;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__hint {
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin-top: 0.2rem;
+  }
+}
+
+// ── Status + complete bar ─────────────────────────────────────
+.lesson-status {
+  max-width: 860px;
+  margin: 0 2.5rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 0.85rem 1.25rem;
+
+  @media (max-width: 768px) {
+    margin: 0 1rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  &__label {
+    font-size: 0.85rem;
+    color: $text-mid;
+
+    strong { color: $text-dark; }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    &--done {
+      background: $success-light;
+      color: $success;
+    }
+
+    &--pending {
+      background: #f1f5f9;
+      color: $text-muted;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.6rem;
+  }
+}
+
+// ── Complete / undo button (overrides Bootstrap btn) ──────────
+.btn-complete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: $radius-sm;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: $t-cubic;
+  text-decoration: none;
+
+  &--done {
+    background: #f1f5f9;
+    color: $text-mid;
+    &:hover { background: #e2e8f0; }
+  }
+
+  &--pending {
+    background: linear-gradient(135deg, $accent, $accent-dark);
+    color: $white;
+    box-shadow: 0 4px 12px rgba($accent, 0.3);
+    &:hover {
+      box-shadow: 0 6px 20px rgba($accent, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// ── Quiz CTA ──────────────────────────────────────────────────
+.lesson-quiz {
+  max-width: 860px;
+  margin: 0 2.5rem 1.25rem;
+  background: linear-gradient(135deg, #eff6ff, #f0fdfa);
+  border: 1.5px solid rgba($primary, 0.2);
+  border-radius: $radius-md;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: $shadow-sm;
+
+  @media (max-width: 768px) {
+    margin: 0 1rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: $primary;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &__meta {
+    font-size: 0.82rem;
+    color: $text-mid;
+  }
+
+  &__btn-done {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: $radius-sm;
+    background: $success-light;
+    color: $success;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: none;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &__btn-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: $radius-sm;
+    background: linear-gradient(135deg, $primary, $accent);
+    color: $white;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: $t-cubic;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba($primary, 0.25);
+
+    &:hover {
+      background: linear-gradient(135deg, $primary-dark, $accent-dark);
+      color: $white;
+      box-shadow: 0 8px 20px rgba($primary, 0.35);
+    }
+
+    // button_to wraps form+button — style the inner button too
+    form & { display: inline; }
+    input[type="submit"],
+    button[type="submit"] {
+      all: unset;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.25rem;
+      border-radius: $radius-sm;
+      background: linear-gradient(135deg, $primary, $accent);
+      color: $white;
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba($primary, 0.25);
+      transition: $t-cubic;
+      &:hover {
+        background: linear-gradient(135deg, $primary-dark, $accent-dark);
+        box-shadow: 0 8px 20px rgba($primary, 0.35);
+      }
+    }
+  }
+}
+
+// ── Divider ───────────────────────────────────────────────────
+.lesson-divider {
+  max-width: 860px;
+  margin: 1.25rem 2.5rem;
+  border: none;
+  border-top: 1px solid $border;
+
+  @media (max-width: 768px) { margin: 1rem; }
+}
+
+// ── Prev / Next navigation ─────────────────────────────────────
+.lesson-nav {
+  max-width: 860px;
+  margin: 0 2.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media (max-width: 768px) { margin: 0 1rem 1.5rem; }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: $radius-sm;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1.5px solid $border;
+    color: $text-mid;
+    background: $white;
+    transition: $t-cubic;
+    box-shadow: $shadow-sm;
+
+    &:hover:not([disabled]) {
+      border-color: $primary;
+      color: $primary;
+      box-shadow: $shadow-blue;
+    }
+
+    &--disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    &--next {
+      background: linear-gradient(135deg, $primary, $accent);
+      color: $white;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba($primary, 0.25);
+
+      &:hover:not([disabled]) {
+        background: linear-gradient(135deg, $primary-dark, $accent-dark);
+        color: $white;
+        box-shadow: 0 8px 20px rgba($primary, 0.35);
+      }
+
+      &.lesson-nav__btn--disabled {
+        background: #e2e8f0;
+        color: $text-muted;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+// ── Comments wrapper ──────────────────────────────────────────
+.lesson-comments {
+  max-width: 860px;
+  margin: 0 2.5rem 3rem;
+
+  @media (max-width: 768px) { margin: 0 1rem 2rem; }
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────────
+.lesson-sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid $border;
+  background: $white;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    border-left: none;
+    border-top: 1px solid $border;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.sb-header {
+  padding: 0.85rem 1rem;
+  background: #f8fafc;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+
+  &__top {
+    @include flex-between;
+    margin-bottom: 0.6rem;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-mid;
+  }
+
+  &__progress-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: $success-light;
+    color: $success;
+  }
+
+  &__bar-track {
+    height: 5px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $accent, $primary);
+    border-radius: 999px;
+    transition: width 0.5s ease;
+  }
+}
+
+// Sidebar scroll body
+.sb-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+  @media (max-width: 768px) {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+
+// Module accordion
+.sb-module {
+  border-bottom: 1px solid $border;
+
+  &__toggle {
+    width: 100%;
+    background: #f8fafc;
+    border: none;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: $t-cubic;
+
+    &:hover { background: #f1f5f9; }
+  }
+
+  &__title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $text-dark;
+    flex: 1;
+    line-height: 1.35;
+  }
+
+  &__chevron {
+    font-size: 0.75rem;
+    color: $text-muted;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  &__collapse {
+    // Bootstrap still controls display via accordion-collapse
+    background: $white;
+  }
+
+  &__lessons {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// Individual lesson row in sidebar
+.sb-lesson {
+  display: block;
+  padding: 0.6rem 1rem 0.6rem 1.4rem;
+  text-decoration: none;
+  border-bottom: 1px solid #f1f5f9;
+  transition: $t-cubic;
+
+  &:hover:not(.sb-lesson--active) {
+    background: #f8fafc;
+    text-decoration: none;
+  }
+
+  &--active {
+    background: #eff6ff;
+    border-left: 3px solid $primary;
+    padding-left: calc(1.4rem - 3px);
+  }
+
+  &__inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  &__left {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__icon {
+    font-size: 0.82rem;
+    color: $text-muted;
+    margin-top: 2px;
+    flex-shrink: 0;
+
+    .sb-lesson--active & { color: $primary; }
+  }
+
+  &__title {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: $text-mid;
+    white-space: normal;
+
+    .sb-lesson--active & {
+      color: $primary;
+      font-weight: 700;
+    }
+  }
+
+  &__check {
+    font-size: 0.8rem;
+    color: $success;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
+// Big quiz rows in sidebar
+.sb-quiz-item {
+  border-top: 1px solid $border;
+  border-left: 3px solid $warning;
+  background: #fffbeb;
+
+  &__toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $text-dark;
+    transition: $t-cubic;
+    &:hover { background: #fef3c7; }
+  }
+
+  &__icon { color: $warning; font-size: 0.9rem; }
+
+  &__body {
+    padding: 0.75rem 1rem;
+    background: $white;
+    border-top: 1px solid #fde68a;
+  }
+
+  &__meta {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin-bottom: 0.65rem;
+  }
+
+  // btn_complete style reused
+  &__btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: $radius-sm;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: $t-cubic;
+    text-decoration: none;
+
+    &--done {
+      background: $success-light;
+      color: $success;
+      pointer-events: none;
+    }
+
+    &--start {
+      background: linear-gradient(135deg, $primary, $accent);
+      color: $white;
+      box-shadow: 0 4px 10px rgba($primary, 0.2);
+      &:hover { box-shadow: 0 6px 16px rgba($primary, 0.3); }
+
+      form { display: block; }
+      input[type="submit"], button[type="submit"] {
+        all: unset;
+        display: block;
+        width: 100%;
+        text-align: center;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $white;
+      }
+    }
+  }
+}
+
+// ── Comments section override (BEM wrapper) ────────────────────
+// Keep existing Bootstrap markup inside but neutralise distracting inline styles
+.lesson-comments {
+  // Badge neutralise
+  .badge.bg-secondary { background: #e2e8f0 !important; color: $text-mid !important; }
+
+  // "Đặt câu hỏi" button
+  .btn.btn-primary {
+    background: linear-gradient(135deg, $primary, $accent) !important;
+    border: none !important;
+    border-radius: $radius-sm !important;
+    font-size: 0.85rem !important;
+    box-shadow: 0 4px 12px rgba($primary, 0.25) !important;
+    transition: $t-cubic !important;
+    &:hover { box-shadow: 0 8px 20px rgba($primary, 0.35) !important; }
+  }
+
+  // Section title
+  h4.fw-bold {
+    font-size: 1.15rem;
+    color: $text-dark;
+  }
+
+  // Comment cards
+  .comments-list .d-flex.mb-4 {
+    background: $white !important;
+    border: 1px solid $border !important;
+    border-radius: $radius-md !important;
+    box-shadow: $shadow-sm !important;
+    padding: 1rem !important;
+    transition: $t-cubic;
+
+    &:hover { box-shadow: $shadow-blue !important; }
+  }
+
+  // Reply form
+  .card.card-body.bg-light {
+    background: $bg !important;
+    border-radius: $radius-md !important;
+  }
+
+  // Empty state
+  .text-center.py-5.bg-light { background: $bg !important; border-radius: $radius-md !important; }
+
+  // Reply button
+  .btn.btn-sm.btn-light.text-primary {
+    background: #eff6ff !important;
+    border: 1px solid rgba($primary, 0.2) !important;
+    border-radius: 999px !important;
+    color: $primary !important;
+    font-size: 0.78rem !important;
+    &:hover { background: #dbeafe !important; }
+  }
+}

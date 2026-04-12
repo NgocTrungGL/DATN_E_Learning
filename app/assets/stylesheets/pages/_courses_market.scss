@@ -1,0 +1,1031 @@
+// ============================================================
+// COURSES MARKET — Pure SCSS, Strict BEM
+// Sections: flash-sales | bestsellers | skill-carousels |
+//           learning-paths | landing-footer
+// Breakpoints: 375 | 768 | 1440
+// ============================================================
+
+// ── Design Tokens (now centralized in abstracts/_variables.scss) ──
+
+@mixin cm-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $primary;
+  margin-bottom: 0.5rem;
+}
+
+@mixin cm-section-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: $text-dark;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+@mixin card-hover-lift {
+  transition: $t-cubic;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+@mixin cm-star-color {
+  .bi-star-fill  { color: $warning; }
+  .bi-star-half  { color: $warning; }
+  .bi-star       { color: $text-muted; }
+}
+
+// ──────────────────────────────────────────────────────────────
+// 1. FLASH SALES
+// ──────────────────────────────────────────────────────────────
+.flash-sales {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0d2b4e 100%);
+  @include section-padding;
+  position: relative;
+  overflow: hidden;
+
+  // Decorative blobs
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+    pointer-events: none;
+  }
+  &::before {
+    width: 600px; height: 600px;
+    background: $primary;
+    top: -200px; left: -200px;
+  }
+  &::after {
+    width: 400px; height: 400px;
+    background: $accent;
+    bottom: -150px; right: -100px;
+  }
+
+  &__inner { @include inner-container; position: relative; z-index: 1; }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba($warning, 0.15);
+    color: $warning;
+    border: 1px solid rgba($warning, 0.3);
+    border-radius: 999px;
+    padding: 0.35rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    .bi { font-size: 0.9rem; }
+  }
+
+  &__title {
+    font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+    font-weight: 900;
+    color: $white;
+    margin-bottom: 0.5rem;
+  }
+
+  &__subtitle {
+    color: rgba($white, 0.65);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__countdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: $radius-md;
+    padding: 0.85rem 1.5rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+
+    @media (min-width: 1440px) { grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 768px)  { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 480px)  { grid-template-columns: 1fr; }
+  }
+}
+
+// Countdown units
+.countdown {
+  &__unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: $white;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    min-width: 2.5ch;
+    text-align: center;
+  }
+
+  &__label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba($white, 0.5);
+    margin-top: 0.25rem;
+  }
+
+  &__sep {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: rgba($white, 0.4);
+    margin-bottom: 0.85rem;
+  }
+}
+
+// Flash card
+.flash-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-lg;
+  overflow: hidden;
+  cursor: pointer;
+  transition: $t-cubic;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba($primary, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.2);
+  }
+
+  &__thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+  }
+
+  &__thumb:hover img { transform: scale(1.04); }
+
+  &__discount {
+    position: absolute;
+    top: 0.6rem; right: 0.6rem;
+    background: #ef4444;
+    color: $white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.25rem 0.55rem;
+    border-radius: $radius-sm;
+  }
+
+  &__body { padding: 1rem; }
+
+  &__title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: $white;
+    margin-bottom: 0.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__desc {
+    font-size: 0.78rem;
+    color: rgba($white, 0.55);
+    margin-bottom: 0.6rem;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+    @include cm-star-color;
+  }
+
+  &__stars { font-size: 0.75rem; }
+
+  &__score {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $warning;
+  }
+
+  &__stud {
+    font-size: 0.72rem;
+    color: rgba($white, 0.45);
+  }
+
+  &__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+  }
+
+  &__price {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: $white;
+  }
+
+  &__orig {
+    font-size: 0.78rem;
+    color: rgba($white, 0.45);
+    text-decoration: line-through;
+  }
+
+  &__cta {
+    display: block;
+    text-align: center;
+    background: linear-gradient(135deg, $primary, $accent);
+    color: $white;
+    border-radius: $radius-sm;
+    padding: 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: $t-cubic;
+
+    &:hover {
+      background: linear-gradient(135deg, $primary-dark, $accent-dark);
+      color: $white;
+    }
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// 2. TRENDING BESTSELLERS
+// ──────────────────────────────────────────────────────────────
+.bestsellers {
+  background: $white;
+  @include section-padding;
+
+  &__inner { @include inner-container; }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  &__eyebrow { @include cm-eyebrow; }
+  &__title   { @include cm-section-title; }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: $text-mid;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+
+    @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 640px)  { grid-template-columns: 1fr; }
+    @media (min-width: 1440px) { gap: 2rem; }
+  }
+}
+
+.bs-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  @include card-hover-lift;
+
+  &__thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+  }
+
+  &:hover &__thumb img { transform: scale(1.04); }
+
+  &__badge {
+    position: absolute;
+    top: 0.6rem; left: 0.6rem;
+    background: $warning;
+    color: #000;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: $radius-sm;
+  }
+
+  &__body {
+    padding: 1rem 1.1rem;
+    flex: 1;
+  }
+
+  &__category {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $primary;
+    margin-bottom: 0.4rem;
+  }
+
+  &__title {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $text-dark;
+    text-decoration: none;
+    margin-bottom: 0.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    &:hover { color: $primary; }
+  }
+
+  &__instructor {
+    font-size: 0.78rem;
+    color: $text-mid;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    .bi { color: $primary; }
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.4rem;
+    @include cm-star-color;
+  }
+
+  &__score {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: $warning;
+  }
+
+  &__stars { font-size: 0.72rem; }
+
+  &__review-count {
+    font-size: 0.72rem;
+    color: $text-muted;
+  }
+
+  &__students {
+    font-size: 0.75rem;
+    color: $text-mid;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    .bi { color: $accent; }
+  }
+
+  &__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  &__price {
+    font-size: 1rem;
+    font-weight: 800;
+    color: $text-dark;
+
+    &--free {
+      color: $accent;
+    }
+  }
+
+  &__orig {
+    font-size: 0.78rem;
+    color: $text-muted;
+    text-decoration: line-through;
+  }
+
+  &__footer {
+    padding: 0.75rem 1.1rem;
+    border-top: 1px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__cta {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $primary;
+    text-decoration: none;
+    transition: $t-cubic;
+
+    &:hover { color: $primary-dark; text-decoration: underline; }
+  }
+
+  &__cart {
+    width: 34px; height: 34px;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: $t-cubic;
+
+    &--add {
+      background: $primary;
+      color: $white;
+      &:hover { background: $primary-dark; color: $white; }
+    }
+
+    &--done {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// 3. SKILL CAROUSELS
+// ──────────────────────────────────────────────────────────────
+.skill-carousels {
+  background: $bg;
+  @include section-padding;
+
+  &__inner { @include inner-container; }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  &__eyebrow  { @include cm-eyebrow; }
+  &__title    { @include cm-section-title; }
+  &__subtitle { font-size: 1rem; color: $text-mid; }
+
+  // Tab pills
+  &__tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    background: $white;
+    border: 1.5px solid $border;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $text-mid;
+    cursor: pointer;
+    transition: $t-cubic;
+
+    &:hover,
+    &.is-active {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+    }
+  }
+
+  // Panel container
+  &__panel {
+    display: none;
+    position: relative;
+
+    &.is-active { display: block; }
+  }
+
+  // Arrow buttons
+  &__arrow {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    z-index: 10;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: $white;
+    border: 1.5px solid $border;
+    box-shadow: $shadow-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: $text-dark;
+    cursor: pointer;
+    transition: $t-cubic;
+
+    &:hover {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+    }
+
+    &--prev { left: -20px; }
+    &--next { right: -20px; }
+
+    @media (max-width: 768px) {
+      display: none; // rely on native touch swipe
+    }
+  }
+
+  // Scrollable track
+  &__track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 0.25rem 1rem;
+
+    // Hide scrollbars cross-browser
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+}
+
+// Skill carousel card
+.sc-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  cursor: pointer;
+  transition: $t-cubic;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+
+  &__thumb {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+  }
+
+  &:hover &__thumb img { transform: scale(1.05); }
+
+  &__body { padding: 0.75rem 0.9rem; }
+
+  &__title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__desc {
+    font-size: 0.73rem;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.4rem;
+    @include cm-star-color;
+  }
+
+  &__score {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $warning;
+  }
+
+  &__stars { font-size: 0.68rem; }
+
+  &__price {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: $primary;
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// 4. LEARNING PATHS
+// ──────────────────────────────────────────────────────────────
+.learning-paths {
+  background: $white;
+  @include section-padding;
+
+  &__inner { @include inner-container; }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  &__eyebrow  { @include cm-eyebrow; }
+  &__title    { @include cm-section-title; }
+  &__subtitle { font-size: 1rem; color: $text-mid; max-width: 560px; margin: 0 auto; }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+.lp-card {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 0;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: $t-cubic;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-3px);
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__thumb {
+    position: relative;
+    overflow: hidden;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+      display: block;
+    }
+  }
+
+  &:hover &__thumb img { transform: scale(1.04); }
+
+  &__badge {
+    position: absolute;
+    bottom: 1rem; left: 1rem;
+    background: linear-gradient(135deg, $primary, $accent);
+    color: $white;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  &__content {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  &__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: $text-muted;
+    .bi { color: $primary; }
+  }
+
+  &__title {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 800;
+    color: $text-dark;
+    margin-bottom: 0.65rem;
+  }
+
+  &__desc {
+    font-size: 0.9rem;
+    color: $text-mid;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  &__course-list {
+    list-style: none;
+    padding: 0; margin: 0 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  &__course-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    background: #f8fafc;
+    border-radius: $radius-sm;
+    border: 1px solid $border;
+  }
+
+  &__course-icon { color: $primary; font-size: 0.9rem; }
+
+  &__course-name {
+    flex: 1;
+    font-size: 0.83rem;
+    color: $text-dark;
+    font-weight: 500;
+  }
+
+  &__course-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+
+    &--included {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: auto;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: linear-gradient(135deg, $primary, $accent);
+    color: $white;
+    text-decoration: none;
+    padding: 0.75rem 1.75rem;
+    border-radius: $radius-sm;
+    font-size: 0.88rem;
+    font-weight: 700;
+    transition: $t-cubic;
+    box-shadow: 0 4px 15px rgba($primary, 0.25);
+
+    &:hover {
+      background: linear-gradient(135deg, $primary-dark, $accent-dark);
+      color: $white;
+      transform: translateX(2px);
+      box-shadow: 0 8px 25px rgba($primary, 0.35);
+    }
+  }
+
+  &__guarantee {
+    font-size: 0.75rem;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    .bi { color: #16a34a; }
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// 5. LANDING FOOTER
+// ──────────────────────────────────────────────────────────────
+.lf {
+  background: $bg-dark;
+  color: rgba($white, 0.75);
+  font-size: 0.87rem;
+
+  &__inner {
+    @include inner-container;
+    padding-top: 4rem;
+    padding-bottom: 3rem;
+    display: grid;
+    grid-template-columns: 300px 1fr 280px;
+    gap: 3rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  &__brand { display: flex; flex-direction: column; gap: 0.85rem; }
+
+  &__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: $white;
+    text-decoration: none;
+
+    .bi { color: $primary; font-size: 1.5rem; }
+
+    &:hover { color: rgba($white, 0.9); }
+  }
+
+  &__tagline {
+    color: rgba($white, 0.5);
+    line-height: 1.6;
+    font-size: 0.85rem;
+  }
+
+  &__socials {
+    display: flex;
+    gap: 0.65rem;
+  }
+
+  &__social {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba($white, 0.06);
+    border: 1px solid rgba($white, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba($white, 0.6);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: $t-cubic;
+
+    &:hover {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+    }
+  }
+
+  &__nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+
+    @media (max-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__col-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $white;
+    margin-bottom: 1rem;
+  }
+
+  &__links {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+
+    a {
+      color: rgba($white, 0.55);
+      text-decoration: none;
+      transition: $t-cubic;
+
+      &:hover { color: $white; }
+    }
+  }
+
+  &__newsletter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  &__newsletter-text {
+    color: rgba($white, 0.55);
+    font-size: 0.83rem;
+  }
+
+  &__newsletter-form {
+    display: flex;
+    gap: 0;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    border: 1px solid rgba($white, 0.1);
+  }
+
+  &__email-input {
+    flex: 1;
+    background: rgba($white, 0.06);
+    border: none;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.83rem;
+    color: $white;
+    outline: none;
+
+    &::placeholder { color: rgba($white, 0.3); }
+  }
+
+  &__subscribe-btn {
+    background: $primary;
+    color: $white;
+    border: none;
+    padding: 0 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: $t-cubic;
+    white-space: nowrap;
+
+    &:hover { background: $primary-dark; }
+  }
+
+  &__newsletter-note {
+    font-size: 0.7rem;
+    color: rgba($white, 0.3);
+  }
+
+  &__bottom {
+    @include inner-container;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-top: 1px solid rgba($white, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    @media (max-width: 640px) { flex-direction: column; text-align: center; }
+  }
+
+  &__copy { color: rgba($white, 0.4); font-size: 0.8rem; }
+
+  &__legal {
+    display: flex;
+    gap: 1.25rem;
+
+    a {
+      font-size: 0.78rem;
+      color: rgba($white, 0.4);
+      text-decoration: none;
+      transition: $t-cubic;
+
+      &:hover { color: $white; }
+    }
+  }
+}

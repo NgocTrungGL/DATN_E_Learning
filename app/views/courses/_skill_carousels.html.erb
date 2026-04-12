@@ -1,0 +1,164 @@
+<%#
+  SKILL CAROUSELS — Category-based exploration section
+  Horizontal scrollable rows with scroll-snap, native swipe on mobile
+%>
+
+<%
+  # Pull categories from DB and attach courses; fallback to hardcoded
+  categories_db = Category.includes(:courses).limit(5).to_a
+
+  # Hardcoded category/course data used if DB is empty or a slot is missing
+  hc_categories = [
+    {
+      name:    "Web Development",
+      icon:    "bi-code-slash",
+      courses: [
+        { title: "Full-Stack Rails 7", desc: "APIs, Hotwire, Postgres", thumb: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=225&fit=crop", price: "2,499,000 ₫", rating: 4.8 },
+        { title: "React 18 Masterclass", desc: "Hooks, Context, Next.js", thumb: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=225&fit=crop", price: "1,999,000 ₫", rating: 4.9 },
+        { title: "TypeScript Deep Dive", desc: "Advanced types & patterns", thumb: "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?w=400&h=225&fit=crop", price: "1,299,000 ₫", rating: 4.7 },
+        { title: "CSS Grid & Layout", desc: "Modern, responsive design", thumb: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=225&fit=crop", price: "Free",         rating: 4.6 },
+        { title: "Node.js & REST APIs", desc: "Express, Auth, Deployment", thumb: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=225&fit=crop", price: "2,199,000 ₫", rating: 4.8 },
+      ]
+    },
+    {
+      name:    "Data Science",
+      icon:    "bi-bar-chart-fill",
+      courses: [
+        { title: "Python for Data Science", desc: "NumPy, Pandas, Matplotlib", thumb: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop", price: "2,799,000 ₫", rating: 4.9 },
+        { title: "Machine Learning A–Z", desc: "Supervised & unsupervised", thumb: "https://images.unsplash.com/photo-1527474305487-b87b222841cc?w=400&h=225&fit=crop", price: "3,499,000 ₫", rating: 4.8 },
+        { title: "SQL for Analysts", desc: "Queries, aggregations, CTEs", thumb: "https://images.unsplash.com/photo-1483478550801-ceba5fe50e8e?w=400&h=225&fit=crop", price: "Free",         rating: 4.7 },
+        { title: "Power BI & Tableau", desc: "BI dashboards that impress", thumb: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=225&fit=crop", price: "1,999,000 ₫", rating: 4.6 },
+        { title: "Deep Learning with PyTorch", desc: "CNNs, RNNs, Transformers", thumb: "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=400&h=225&fit=crop", price: "4,499,000 ₫", rating: 4.9 },
+      ]
+    },
+    {
+      name:    "UI/UX Design",
+      icon:    "bi-palette-fill",
+      courses: [
+        { title: "Figma for Beginners", desc: "Components, Auto Layout", thumb: "https://images.unsplash.com/photo-1618788372246-79faff0c3742?w=400&h=225&fit=crop", price: "Free",         rating: 4.8 },
+        { title: "Design Systems 101", desc: "Build scalable design tokens", thumb: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=225&fit=crop", price: "2,299,000 ₫", rating: 4.7 },
+        { title: "UX Research Methods", desc: "User interviews, affinity maps", thumb: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop", price: "1,799,000 ₫", rating: 4.8 },
+        { title: "Motion Design in Figma", desc: "Micro-animations & prototypes", thumb: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&h=225&fit=crop", price: "2,999,000 ₫", rating: 4.9 },
+        { title: "Brand Identity Design", desc: "Logo, typography, color", thumb: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=225&fit=crop", price: "1,499,000 ₫", rating: 4.6 },
+      ]
+    },
+    {
+      name:    "Cloud & DevOps",
+      icon:    "bi-cloud-fill",
+      courses: [
+        { title: "AWS Solutions Architect", desc: "SAA-C03 exam prep + labs", thumb: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=225&fit=crop", price: "3,999,000 ₫", rating: 4.9 },
+        { title: "Docker & Kubernetes",    desc: "Containerise everything", thumb: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=400&h=225&fit=crop", price: "2,499,000 ₫", rating: 4.8 },
+        { title: "CI/CD with GitHub Actions", desc: "Automate your deployments", thumb: "https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?w=400&h=225&fit=crop", price: "1,999,000 ₫", rating: 4.7 },
+        { title: "Terraform for DevOps",  desc: "Infrastructure as Code", thumb: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=225&fit=crop", price: "2,799,000 ₫", rating: 4.8 },
+        { title: "Linux for Developers",  desc: "Shell scripting & sysadmin", thumb: "https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?w=400&h=225&fit=crop", price: "Free",         rating: 4.6 },
+      ]
+    },
+  ]
+
+  # Merge DB categories first, fill with hardcoded for missing slots
+  display_cats = hc_categories.map.with_index do |hc, i|
+    db_cat = categories_db[i]
+    if db_cat && db_cat.courses.any?
+      { name: db_cat.name, icon: hc[:icon], db_courses: db_cat.courses.limit(5).to_a, hc_courses: hc[:courses] }
+    else
+      { name: hc[:name], icon: hc[:icon], db_courses: [], hc_courses: hc[:courses] }
+    end
+  end
+%>
+
+<section class="skill-carousels" aria-label="Browse by Skill">
+  <div class="skill-carousels__inner">
+
+    <div class="skill-carousels__header">
+      <div class="skill-carousels__eyebrow">Explore Skills</div>
+      <h2 class="skill-carousels__title">Find Your Next Skill</h2>
+      <p class="skill-carousels__subtitle">
+        Browse curated courses by category — swipe on mobile, scroll on desktop.
+      </p>
+    </div>
+
+    <%# Category tab pills %>
+    <div class="skill-carousels__tabs" role="tablist" id="skill-tabs">
+      <% display_cats.each_with_index do |cat, idx| %>
+        <button class="skill-carousels__tab <%= 'is-active' if idx == 0 %>"
+                role="tab"
+                data-target="skill-track-<%= idx %>"
+                aria-selected="<%= idx == 0 ? 'true' : 'false' %>">
+          <i class="bi <%= cat[:icon] %>"></i>
+          <%= cat[:name] %>
+        </button>
+      <% end %>
+    </div>
+
+    <%# One scrollable track per category %>
+    <% display_cats.each_with_index do |cat, cat_idx| %>
+      <div class="skill-carousels__panel <%= 'is-active' if cat_idx == 0 %>"
+           id="skill-track-<%= cat_idx %>"
+           role="tabpanel">
+
+        <button class="skill-carousels__arrow skill-carousels__arrow--prev"
+                aria-label="Scroll left"
+                data-track="skill-track-<%= cat_idx %>">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div class="skill-carousels__track" id="skill-inner-<%= cat_idx %>">
+          <% 5.times do |i| %>
+            <% db_c = cat[:db_courses][i] %>
+            <% hc_c = cat[:hc_courses][i] %>
+
+            <% if db_c %>
+              <%
+                thumb = db_c.thumbnail_url.presence || hc_c&.dig(:thumb) ||
+                        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop"
+                price_txt = db_c.free? ? "Free" :
+                            number_to_currency(db_c.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".")
+                reviews = db_c.reviews
+                avg = reviews.any? ? reviews.average(:rating).to_f.round(1) : (hc_c&.dig(:rating) || 4.5)
+              %>
+              <article class="sc-card" data-href="<%= course_path(db_c) %>">
+                <div class="sc-card__thumb">
+                  <img src="<%= thumb %>" alt="<%= db_c.title %>" loading="lazy">
+                </div>
+                <div class="sc-card__body">
+                  <p class="sc-card__title"><%= db_c.title.truncate(50) %></p>
+                  <div class="sc-card__rating">
+                    <span class="sc-card__score"><%= avg %></span>
+                    <span class="sc-card__stars">
+                      <% avg.floor.times do %><i class="bi bi-star-fill"></i><% end %>
+                    </span>
+                  </div>
+                  <span class="sc-card__price"><%= price_txt %></span>
+                </div>
+              </article>
+            <% elsif hc_c %>
+              <article class="sc-card" data-href="<%= courses_path %>">
+                <div class="sc-card__thumb">
+                  <img src="<%= hc_c[:thumb] %>" alt="<%= hc_c[:title] %>" loading="lazy">
+                </div>
+                <div class="sc-card__body">
+                  <p class="sc-card__title"><%= hc_c[:title] %></p>
+                  <p class="sc-card__desc"><%= hc_c[:desc] %></p>
+                  <div class="sc-card__rating">
+                    <span class="sc-card__score"><%= hc_c[:rating] %></span>
+                    <span class="sc-card__stars">
+                      <% hc_c[:rating].floor.times do %><i class="bi bi-star-fill"></i><% end %>
+                    </span>
+                  </div>
+                  <span class="sc-card__price"><%= hc_c[:price] %></span>
+                </div>
+              </article>
+            <% end %>
+          <% end %>
+        </div>
+
+        <button class="skill-carousels__arrow skill-carousels__arrow--next"
+                aria-label="Scroll right"
+                data-track="skill-inner-<%= cat_idx %>">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    <% end %>
+
+  </div>
+</section>

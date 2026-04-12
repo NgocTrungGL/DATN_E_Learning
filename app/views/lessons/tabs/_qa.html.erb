@@ -1,0 +1,67 @@
+<article class="lesson-tabs__qa">
+  <header class="lesson-tabs__qa-toolbar">
+    <label class="lesson-tabs__search-wrap" for="lesson-qa-search">
+      <svg class="lesson-tabs__search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <input id="lesson-qa-search" class="lesson-tabs__search-input" type="search" placeholder="Tìm trong câu hỏi cộng đồng" aria-label="Search questions">
+    </label>
+
+    <button class="lesson-tabs__ask-btn" type="button">Đặt câu hỏi</button>
+  </header>
+
+  <div class="lesson-tabs__question-list">
+    <article class="lesson-tabs__question-card">
+      <div class="lesson-tabs__vote-stack">
+        <button class="lesson-tabs__upvote-btn" type="button" aria-label="Upvote question">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 5L4 14H20L12 5Z"/>
+          </svg>
+        </button>
+        <span class="lesson-tabs__vote-count">24</span>
+      </div>
+
+      <div class="lesson-tabs__question-body">
+        <header class="lesson-tabs__question-meta">
+          <span class="lesson-tabs__avatar" aria-hidden="true">EW</span>
+          <div class="lesson-tabs__author-block">
+            <span class="lesson-tabs__author-name">Emma Wilson</span>
+            <time class="lesson-tabs__question-time" datetime="2026-04-10T10:15:00Z">3 hours ago</time>
+          </div>
+          <span class="lesson-tabs__badge lesson-tabs__badge--verified">Instructor Endorsed</span>
+        </header>
+        <h3 class="lesson-tabs__question-title">Khi nào service object nên trả về result object thay vì boolean?</h3>
+        <p class="lesson-tabs__question-text">
+          Mình muốn xử lý lỗi rõ ràng ở controller. Trả về object gồm trạng thái và lỗi chi tiết có phải là cách tốt hơn so với chỉ trả true/false không?
+        </p>
+      </div>
+    </article>
+
+    <article class="lesson-tabs__question-card">
+      <div class="lesson-tabs__vote-stack">
+        <button class="lesson-tabs__upvote-btn" type="button" aria-label="Upvote question">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 5L4 14H20L12 5Z"/>
+          </svg>
+        </button>
+        <span class="lesson-tabs__vote-count">11</span>
+      </div>
+
+      <div class="lesson-tabs__question-body">
+        <header class="lesson-tabs__question-meta">
+          <span class="lesson-tabs__avatar" aria-hidden="true">DN</span>
+          <div class="lesson-tabs__author-block">
+            <span class="lesson-tabs__author-name">Daniel Nguyen</span>
+            <time class="lesson-tabs__question-time" datetime="2026-04-09T13:40:00Z">1 day ago</time>
+          </div>
+          <span class="lesson-tabs__badge">Resolved</span>
+        </header>
+        <h3 class="lesson-tabs__question-title">Làm sao tránh model bị lạm dụng callback trong dự án Rails lớn?</h3>
+        <p class="lesson-tabs__question-text">
+          Mình đang tìm hướng tổ chức để business rule dễ đọc hơn, nhưng vẫn đảm bảo transaction và side effect chạy nhất quán.
+        </p>
+      </div>
+    </article>
+  </div>
+</article>

@@ -1,0 +1,123 @@
+<%#
+  TRENDING BESTSELLERS — Social proof section
+  DB: courses with most reviews or highest rating
+%>
+
+<%
+  # Pull top courses by review count; use all_courses if none
+  trending_db = Course.joins(:reviews)
+                      .group("courses.id")
+                      .order("COUNT(reviews.id) DESC")
+                      .limit(6)
+                      .to_a
+  trending_db = Course.order(created_at: :desc).limit(6).to_a if trending_db.empty?
+
+  # Hardcoded enrichment for display (injected when DB lacks these metadata fields)
+  enrichment = [
+    { badge: "⭐ Bestseller", students: "42,835", orig_price: 4_999_000 },
+    { badge: "🔥 Hot & New",  students: "28,190", orig_price: 3_999_000 },
+    { badge: "⭐ Bestseller", students: "35,670", orig_price: 5_999_000 },
+    { badge: "🏆 Top Rated",  students: "19,220", orig_price: 4_499_000 },
+    { badge: "⭐ Bestseller", students: "24,500", orig_price: 3_499_000 },
+    { badge: "🔥 Hot & New",  students: "11,800", orig_price: 2_999_000 },
+  ]
+%>
+
+<section class="bestsellers" aria-label="Trending Bestsellers">
+  <div class="bestsellers__inner">
+
+    <div class="bestsellers__header">
+      <div class="bestsellers__eyebrow">Trending Now</div>
+      <h2 class="bestsellers__title">Bestselling Courses</h2>
+      <p class="bestsellers__subtitle">
+        Join millions of learners already upskilling with our most popular courses.
+      </p>
+    </div>
+
+    <div class="bestsellers__grid">
+      <% trending_db.each_with_index do |course, i| %>
+        <%
+          reviews     = course.reviews
+          avg         = reviews.any? ? reviews.average(:rating).to_f.round(1) : 4.5
+          r_count     = reviews.count
+          thumb       = course.thumbnail_url.presence ||
+                          "https://images.unsplash.com/photo-#{1516321318423 + i * 10}?w=600&h=340&fit=crop&q=80"
+          en          = enrichment[i] || enrichment.last
+          badge_txt   = en[:badge]
+          stud_txt    = en[:students]
+          orig        = en[:orig_price]
+          show_slash  = !course.free? && orig > course.price
+        %>
+        <article class="bs-card">
+          <div class="bs-card__thumb">
+            <%= link_to course_path(course) do %>
+              <img src="<%= thumb %>" alt="<%= course.title %>" loading="lazy">
+            <% end %>
+            <span class="bs-card__badge"><%= badge_txt %></span>
+          </div>
+
+          <div class="bs-card__body">
+            <% if course.category %>
+              <div class="bs-card__category"><%= course.category.name %></div>
+            <% end %>
+
+            <%= link_to course.title.truncate(60), course_path(course), class: "bs-card__title" %>
+
+            <div class="bs-card__instructor">
+              <i class="bi bi-person-fill"></i>
+              <%= course.creator&.name || "E-Learning Team" %>
+            </div>
+
+            <div class="bs-card__rating">
+              <span class="bs-card__score"><%= avg %></span>
+              <span class="bs-card__stars">
+                <% avg.floor.times do %><i class="bi bi-star-fill"></i><% end %>
+                <% if (avg % 1) >= 0.5 %><i class="bi bi-star-half"></i><% end %>
+                <% (5 - avg.ceil).times do %><i class="bi bi-star" style="opacity:0.25;"></i><% end %>
+              </span>
+              <span class="bs-card__review-count">(<%= r_count > 0 ? r_count : "1,200+" %>)</span>
+            </div>
+
+            <div class="bs-card__students">
+              <i class="bi bi-people-fill"></i> <%= stud_txt %> students
+            </div>
+
+            <div class="bs-card__pricing">
+              <% if course.free? %>
+                <span class="bs-card__price bs-card__price--free">Free</span>
+              <% else %>
+                <span class="bs-card__price">
+                  <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+                </span>
+                <% if show_slash %>
+                  <span class="bs-card__orig">
+                    <%= number_to_currency(orig, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+                  </span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="bs-card__footer">
+            <%= link_to "View Course →", course_path(course), class: "bs-card__cta" %>
+            <% if current_user && !course.free? %>
+              <% if current_user.cart&.courses&.include?(course) %>
+                <%= link_to cart_path, class: "bs-card__cart bs-card__cart--done", title: "In cart" do %>
+                  <i class="bi bi-check-lg"></i>
+                <% end %>
+              <% else %>
+                <%= link_to cart_items_path(course_id: course.id),
+                      data: { turbo_method: :post },
+                      class: "bs-card__cart bs-card__cart--add",
+                      title: "Add to cart" do %>
+                  <i class="bi bi-cart-plus"></i>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        </article>
+      <% end %>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,297 @@
+<%# ═══════════════════════════════════════════════════════════
+    _preview_modal.html.erb
+    Cinema-mode video preview — Pure CSS/JS, No Bootstrap
+    
+    Locals: course (Course)
+    ═══════════════════════════════════════════════════════════ %>
+
+<% all_lessons  = course.course_modules.flat_map { |m| m.lessons.to_a } %>
+<% free_lessons = all_lessons.select(&:free_preview?) %>
+<% has_access   = current_user && can?(:access_content, course) %>
+
+<%# ── Modal root ─────────────────────────────────────────── %>
+<div class="pm" id="pm-modal">
+  <div class="pm__backdrop" id="pm-backdrop"></div>
+
+  <div class="pm__dialog">
+    <%# Close button %>
+    <button class="pm__close" id="pm-close" aria-label="Close preview">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <%# ── Left column: Video ─────────────────────────────── %>
+    <div class="pm__video-col">
+
+      <%# Title bar %>
+      <div class="pm__title-bar">
+        <div class="pm__title-icon"><i class="bi bi-play-circle-fill"></i></div>
+        <div class="pm__title-text" id="pm-title">Free Preview</div>
+        <div class="pm__title-badge">Preview</div>
+      </div>
+
+      <%# Video player with watermark %>
+      <div class="pm__video-wrapper">
+        <iframe id="pm-frame"
+                src=""
+                title="Lesson Preview"
+                allow="autoplay; encrypted-media"
+                allowfullscreen></iframe>
+
+        <%# Watermark overlay for content protection %>
+        <div class="pm__watermark">E-Learning Preview</div>
+      </div>
+
+      <%# Custom controls %>
+      <div class="pm__controls">
+        <button class="pm__ctrl-btn" id="pm-play-btn" title="Play/Pause">
+          <i class="bi bi-play-fill" id="pm-play-icon"></i>
+        </button>
+
+        <span class="pm__time" id="pm-time">0:00 / 0:00</span>
+
+        <div class="pm__progress-track" id="pm-progress">
+          <div class="pm__progress-fill" id="pm-progress-fill"></div>
+        </div>
+
+        <button class="pm__ctrl-btn" id="pm-vol-btn" title="Mute/Unmute">
+          <i class="bi bi-volume-up-fill" id="pm-vol-icon"></i>
+        </button>
+
+        <div class="pm__volume-track" id="pm-volume">
+          <div class="pm__volume-fill" id="pm-volume-fill"></div>
+        </div>
+
+        <select class="pm__speed-select" id="pm-speed" title="Playback Speed">
+          <option value="0.5">0.5×</option>
+          <option value="0.75">0.75×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.25">1.25×</option>
+          <option value="1.5">1.5×</option>
+          <option value="2">2×</option>
+        </select>
+
+        <button class="pm__ctrl-btn" id="pm-fullscreen" title="Fullscreen">
+          <i class="bi bi-arrows-fullscreen"></i>
+        </button>
+      </div>
+    </div>
+
+    <%# ── Right column: Sidebar ──────────────────────────── %>
+    <div class="pm__sidebar">
+
+      <%# Header %>
+      <div class="pm__sidebar-header">
+        <span class="pm__sidebar-title">Course Lessons</span>
+        <span class="pm__sidebar-count">
+          <%= free_lessons.count %> Free Preview<%= free_lessons.count == 1 ? '' : 's' %>
+        </span>
+      </div>
+
+      <%# Playlist %>
+      <div class="pm__playlist" id="pm-playlist">
+
+        <%# FREE preview lessons %>
+        <% free_lessons.each_with_index do |lesson, idx| %>
+          <button class="pm__playlist-item <%= 'is-active' if idx == 0 %>"
+                  data-video-url="<%= lesson.video_url %>"
+                  data-lesson-title="<%= lesson.title %>"
+                  data-free="true"
+                  onclick="pmPlayItem(this)">
+            <div class="pm__pl-icon pm__pl-icon--free">
+              <i class="bi bi-play-circle-fill"></i>
+            </div>
+            <div class="pm__pl-info">
+              <div class="pm__pl-title"><%= lesson.title %></div>
+              <div class="pm__pl-meta">
+                <i class="bi bi-<%= lesson.video_url.present? ? 'camera-video' : 'file-text' %>"></i>
+                <%= lesson.video_url.present? ? 'Video' : 'Reading' %>
+              </div>
+            </div>
+            <span class="pm__pl-badge pm__pl-badge--free">
+              <i class="bi bi-eye-fill"></i> Free
+            </span>
+          </button>
+        <% end %>
+
+
+
+      </div>
+
+      <%# CTA Section — Minimal Integrated (Option A) %>
+      <div class="pm__sidebar-integrated-cta">
+        <% unless has_access %>
+          <% if course.free? %>
+            <%= button_to course_enrollments_path(course),
+                  method: :post,
+                  class: "pm__inline-cta" do %>
+              <i class="bi bi-unlock-fill"></i> Unlock all <%= all_lessons.count %> lessons
+            <% end %>
+          <% else %>
+            <%= button_to create_checkout_session_path(course_id: course.id),
+                  method: :post,
+                  class: "pm__inline-cta",
+                  data: { turbo: false } do %>
+              <i class="bi bi-unlock-fill"></i> Unlock all <%= all_lessons.count %> lessons
+            <% end %>
+          <% end %>
+        <% else %>
+          <div class="pm__inline-enrolled">
+            <i class="bi bi-patch-check-fill"></i> You have full access
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+  </div><%# .pm__dialog %>
+</div><%# .pm %>
+
+<%# ── JavaScript — Preview Modal Controller ────────────── %>
+<script>
+(function() {
+  'use strict';
+
+  // ── Refs ─────────────────────────────────────────────────
+  const modal       = document.getElementById('pm-modal');
+  const backdrop    = document.getElementById('pm-backdrop');
+  const closeBtn    = document.getElementById('pm-close');
+  const frame       = document.getElementById('pm-frame');
+  const titleEl     = document.getElementById('pm-title');
+  const playBtn     = document.getElementById('pm-play-btn');
+  const playIcon    = document.getElementById('pm-play-icon');
+  const progressBar = document.getElementById('pm-progress');
+  const progressFl  = document.getElementById('pm-progress-fill');
+  const volBtn      = document.getElementById('pm-vol-btn');
+  const volIcon     = document.getElementById('pm-vol-icon');
+  const speedSel    = document.getElementById('pm-speed');
+  const fsBtn       = document.getElementById('pm-fullscreen');
+
+  let isPlaying = false;
+  let isMuted   = false;
+
+  // ── Open modal ───────────────────────────────────────────
+  window.pmOpen = function(videoUrl, title) {
+    const embedUrl = pmYTEmbed(videoUrl);
+    titleEl.textContent = title || 'Free Preview';
+    frame.src = embedUrl ? (embedUrl + '?autoplay=1&rel=0&modestbranding=1&enablejsapi=1') : '';
+    isPlaying = true;
+    playIcon.className = 'bi bi-pause-fill';
+
+    // Mark active item
+    document.querySelectorAll('.pm__playlist-item').forEach(function(item) {
+      item.classList.remove('is-active');
+      var icon = item.querySelector('.pm__pl-icon');
+      if (icon) {
+        icon.classList.remove('pm__pl-icon--playing');
+        if (item.dataset.free === 'true') icon.classList.add('pm__pl-icon--free');
+      }
+    });
+
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  // ── Close modal ──────────────────────────────────────────
+  window.pmClose = function() {
+    frame.src = '';
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+    isPlaying = false;
+    playIcon.className = 'bi bi-play-fill';
+    progressFl.style.width = '0%';
+  };
+
+  // ── playlist item click ──────────────────────────────────
+  window.pmPlayItem = function(el) {
+    if (el.classList.contains('is-locked')) return;
+
+    document.querySelectorAll('.pm__playlist-item').forEach(function(item) {
+      item.classList.remove('is-active');
+      var icon = item.querySelector('.pm__pl-icon');
+      if (icon) {
+        icon.classList.remove('pm__pl-icon--playing');
+        if (item.dataset.free === 'true') icon.classList.add('pm__pl-icon--free');
+      }
+    });
+
+    el.classList.add('is-active');
+    var icon = el.querySelector('.pm__pl-icon');
+    if (icon) {
+      icon.classList.remove('pm__pl-icon--free');
+      icon.classList.add('pm__pl-icon--playing');
+      icon.querySelector('i').className = 'bi bi-soundwave';
+    }
+
+    var url = el.dataset.videoUrl;
+    var title = el.dataset.lessonTitle;
+    titleEl.textContent = title || 'Free Preview';
+    var embedUrl = pmYTEmbed(url);
+    frame.src = embedUrl ? (embedUrl + '?autoplay=1&rel=0&modestbranding=1') : '';
+    isPlaying = true;
+    playIcon.className = 'bi bi-pause-fill';
+  };
+
+  // ── Custom controls (cosmetic — YT iframe limits API) ────
+  if (playBtn) {
+    playBtn.addEventListener('click', function() {
+      isPlaying = !isPlaying;
+      playIcon.className = isPlaying ? 'bi bi-pause-fill' : 'bi bi-play-fill';
+      // Note: YouTube iframe API postMessage can be used here for deeper control
+    });
+  }
+
+  if (volBtn) {
+    volBtn.addEventListener('click', function() {
+      isMuted = !isMuted;
+      volIcon.className = isMuted ? 'bi bi-volume-mute-fill' : 'bi bi-volume-up-fill';
+      var volFill = document.getElementById('pm-volume-fill');
+      if (volFill) volFill.style.width = isMuted ? '0%' : '80%';
+    });
+  }
+
+  if (fsBtn) {
+    fsBtn.addEventListener('click', function() {
+      var wrapper = document.querySelector('.pm__video-wrapper');
+      if (wrapper) {
+        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+        else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+      }
+    });
+  }
+
+  // Simulate progress (cosmetic for iframe — real progress needs YT API)
+  var progInterval;
+  function startFakeProgress() {
+    var w = 0;
+    clearInterval(progInterval);
+    progInterval = setInterval(function() {
+      if (!isPlaying) return;
+      w += 0.15;
+      if (w > 100) w = 0;
+      if (progressFl) progressFl.style.width = w + '%';
+    }, 300);
+  }
+  startFakeProgress();
+
+  // ── Event listeners ──────────────────────────────────────
+  if (backdrop) backdrop.addEventListener('click', pmClose);
+  if (closeBtn) closeBtn.addEventListener('click', pmClose);
+
+  // Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+      pmClose();
+    }
+  });
+
+  // ── YouTube embed URL helper ─────────────────────────────
+  function pmYTEmbed(url) {
+    if (!url) return null;
+    var re = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    var m = url.match(re);
+    return (m && m[2].length === 11)
+      ? 'https://www.youtube.com/embed/' + m[2]
+      : null;
+  }
+
+})();
+</script>

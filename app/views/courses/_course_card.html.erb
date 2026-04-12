@@ -1,0 +1,127 @@
+<%# ============================================================ %>
+<%# COURSE CARD PARTIAL — Pure CSS classes (no Bootstrap)      %>
+<%# Usage: render 'courses/course_card', course: course        %>
+<%# ============================================================ %>
+
+<%
+  # ── Computed values ──────────────────────────────────────
+  reviews      = course.reviews
+  has_reviews  = reviews.any?
+  avg_rating   = has_reviews ? reviews.average(:rating).to_f : nil
+  review_count = has_reviews ? reviews.count : 0
+  total_stud   = course.respond_to?(:total_students) ? course.total_students.to_i : 0
+
+  # ── Badge logic ──────────────────────────────────────────
+  # FUTURE: replace with course.best_seller? / course.is_new? / course.popular?
+  badge = if !course.free? && total_stud > 500
+    { label: :bestseller, text: "⭐ Best Seller" }
+  elsif course.created_at > 30.days.ago
+    { label: :new, text: "✨ New" }
+  elsif total_stud > 100
+    { label: :popular, text: "🔥 Popular" }
+  end
+
+  # ── Thumbnail fallback ──────────────────────────────────
+  thumb = course.thumbnail_url.presence ||
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=340&fit=crop&q=80"
+%>
+
+<article class="course-card">
+
+  <%# ── Thumbnail ─────────────────────────────────────── %>
+  <div class="card-thumb">
+    <%= link_to course_path(course) do %>
+      <img src="<%= thumb %>" alt="<%= course.title %>" loading="lazy">
+    <% end %>
+
+    <% if badge %>
+      <span class="card-badge badge-<%= badge[:label] %>"><%= badge[:text] %></span>
+    <% end %>
+
+    <span class="card-price-overlay <%= 'price-free' if course.free? %>">
+      <% if course.free? %>
+        Free
+      <% else %>
+        <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+      <% end %>
+    </span>
+  </div>
+
+  <%# ── Body ──────────────────────────────────────────── %>
+  <div class="card-body">
+
+    <% if course.category %>
+      <div class="card-category"><%= course.category.name %></div>
+    <% end %>
+
+    <%= link_to course.title, course_path(course), class: "card-title" %>
+
+    <% if course.description.present? %>
+      <p class="card-description"><%= course.description.truncate(120) %></p>
+    <% end %>
+
+    <div class="card-instructor">
+      <i class="bi bi-person-fill instructor-icon"></i>
+      <%= course.creator&.name || "E-Learning Team" %>
+    </div>
+
+    <div class="card-rating">
+      <% if has_reviews %>
+        <span class="rating-score"><%= avg_rating.round(1) %></span>
+        <span class="rating-stars">
+          <% 5.times do |i| %>
+            <% if i < avg_rating.floor %>
+              <i class="bi bi-star-fill"></i>
+            <% elsif i == avg_rating.floor && (avg_rating % 1 >= 0.5) %>
+              <i class="bi bi-star-half"></i>
+            <% else %>
+              <i class="bi bi-star" style="opacity:0.3;"></i>
+            <% end %>
+          <% end %>
+        </span>
+        <span class="rating-count">(<%= review_count %>)</span>
+      <% else %>
+        <span style="font-size:0.73rem; color:#94a3b8; font-style:italic;">No reviews yet</span>
+      <% end %>
+
+      <% if total_stud > 0 %>
+        <div class="students-count">
+          <i class="bi bi-people-fill"></i>
+          <%= number_to_human(total_stud, format: "%n%u", units: { thousand: "k", million: "M" }) %>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <%# ── Card Footer ────────────────────────────────────── %>
+  <div class="card-footer">
+    <span class="card-price-label <%= 'is-free' if course.free? %>">
+      <% if course.free? %>
+        <i class="bi bi-award-fill"></i> Free
+      <% else %>
+        <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+      <% end %>
+    </span>
+
+    <div class="card-actions">
+      <%= link_to "View Course", course_path(course), class: "btn-view-course" %>
+
+      <% if current_user && !course.free? %>
+        <% if current_user.cart&.courses&.include?(course) %>
+          <%= link_to cart_path, class: "btn-cart btn-cart-done", title: "Already in cart" do %>
+            <i class="bi bi-check-lg"></i>
+          <% end %>
+        <% else %>
+          <%= link_to cart_items_path(course_id: course.id),
+                data: { turbo_method: :post },
+                class: "btn-cart btn-cart-add",
+                title: "Add to cart" do %>
+            <i class="bi bi-cart-plus"></i>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+</article>
