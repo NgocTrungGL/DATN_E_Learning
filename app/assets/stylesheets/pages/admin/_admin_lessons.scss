@@ -1,0 +1,405 @@
+// ============================================================
+// ADMIN LESSONS — Strict BEM Page Styles
+// ============================================================
+
+.admin-lessons {
+  background: $bg;
+  padding: 1.5rem 0 3rem;
+
+  @media (min-width: 768px) {
+    padding: 2rem 0 3.5rem;
+  }
+
+  &__inner {
+    @include inner-container;
+  }
+
+  &__backlink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+    color: $text-mid;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  &__hero,
+  &__panel {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+  }
+
+  &__hero {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1.15rem;
+    background:
+      radial-gradient(circle at top right, rgba($accent, 0.1) 0%, rgba($accent, 0) 45%),
+      linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      padding: 1.3rem 1.4rem;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $accent;
+  }
+
+  &__title {
+    margin: 0;
+    color: $text-dark;
+    font-size: clamp(1.3rem, 2vw, 1.85rem);
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  &__subtitle {
+    margin: 0.55rem 0 0;
+    color: $text-mid;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  &__dot {
+    margin: 0 0.35rem;
+    color: $text-muted;
+  }
+
+  &__hero-stats {
+    display: flex;
+    justify-content: flex-start;
+
+    @media (min-width: 768px) {
+      justify-content: flex-end;
+    }
+  }
+
+  &__stat-card {
+    border: 1px solid rgba($primary, 0.2);
+    border-radius: $radius-md;
+    background: rgba($primary, 0.05);
+    padding: 0.78rem 0.9rem;
+    min-width: 175px;
+  }
+
+  &__stat-label {
+    display: block;
+    color: $text-muted;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  &__stat-value {
+    display: block;
+    margin-top: 0.3rem;
+    color: $text-dark;
+    font-size: 1.35rem;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    @media (min-width: 1440px) {
+      grid-template-columns: minmax(380px, 0.95fr) minmax(0, 1.4fr);
+      gap: 1.2rem;
+    }
+  }
+
+  &__panel {
+    overflow: hidden;
+
+    &--form {
+      position: sticky;
+      top: 1.2rem;
+      padding: 1rem;
+    }
+
+    &--list {
+      padding: 1rem;
+    }
+  }
+
+  &__panel-head {
+    margin-bottom: 0.95rem;
+
+    h2 {
+      margin: 0;
+      color: $text-dark;
+      font-size: 1.02rem;
+      font-weight: 800;
+    }
+
+    p {
+      margin: 0.36rem 0 0;
+      color: $text-mid;
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+  }
+
+  &__errors {
+    border: 1px solid rgba($danger, 0.28);
+    background: rgba($danger, 0.08);
+    border-radius: $radius-md;
+    padding: 0.72rem 0.8rem;
+    margin-bottom: 0.85rem;
+
+    ul {
+      margin: 0;
+      padding-left: 1rem;
+    }
+
+    li {
+      color: darken($danger, 10%);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+  }
+
+  &__form {
+    display: grid;
+    gap: 0.82rem;
+  }
+
+  &__field {
+    background: linear-gradient(180deg, #fff 0%, rgba($primary, 0.025) 100%);
+    border: 1px solid rgba($primary, 0.14);
+    border-radius: $radius-md;
+    padding: 0.85rem;
+  }
+
+  &__label {
+    display: inline-block;
+    margin-bottom: 0.42rem;
+    color: $text-dark;
+    font-size: 0.84rem;
+    font-weight: 700;
+  }
+
+  &__input,
+  &__textarea {
+    border-radius: $radius-sm;
+    border-color: rgba($primary-dark, 0.16);
+
+    &:focus {
+      border-color: rgba($primary, 0.55);
+      box-shadow: 0 0 0 0.22rem rgba($primary, 0.16);
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 8.5rem;
+  }
+
+  &__input-group .input-group-text {
+    border-color: rgba($primary-dark, 0.16);
+    background: rgba($primary, 0.08);
+    color: $primary-dark;
+
+    .bi-youtube {
+      color: #ef4444;
+    }
+  }
+
+  &__actions {
+    margin-top: 0.25rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed rgba($primary, 0.22);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  &__action-btn {
+    min-width: 8.7rem;
+    font-weight: 700;
+  }
+
+  &__list-head {
+    display: grid;
+    gap: 0.55rem;
+    margin-bottom: 0.8rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    h2 {
+      margin: 0;
+      color: $text-dark;
+      font-size: 1.02rem;
+      font-weight: 800;
+    }
+  }
+
+  &__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.34rem;
+    border: 1px solid rgba($primary, 0.2);
+    border-radius: 999px;
+    background: rgba($primary, 0.06);
+    color: $primary-dark;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.28rem 0.66rem;
+  }
+
+  &__list {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  &__lesson-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.65rem;
+    align-items: center;
+    border: 1px solid rgba($primary, 0.14);
+    border-radius: $radius-md;
+    background: linear-gradient(180deg, #fff 0%, rgba($primary, 0.02) 100%);
+    box-shadow: 0 8px 18px rgba($primary-dark, 0.05);
+    padding: 0.72rem;
+    cursor: grab;
+
+    @media (min-width: 768px) {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 0.8rem;
+    }
+  }
+
+  &__drag-handle {
+    color: $text-muted;
+    font-size: 1.08rem;
+    padding: 0.1rem 0.2rem;
+  }
+
+  &__lesson-copy {
+    min-width: 0;
+
+    h3 {
+      margin: 0;
+      color: $text-dark;
+      font-size: 0.93rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+  }
+
+  &__quiz-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.32rem;
+    border-radius: 999px;
+    border: 1px solid rgba(#f59e0b, 0.44);
+    background: rgba(#f59e0b, 0.14);
+    color: darken(#f59e0b, 18%);
+    font-size: 0.71rem;
+    font-weight: 700;
+    padding: 0.14rem 0.5rem;
+  }
+
+  &__lesson-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.42rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      min-width: 12.5rem;
+    }
+  }
+
+  &__lesson-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.32rem;
+    min-height: 2.2rem;
+    border-radius: $radius-sm;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0 0.72rem;
+    border: 1px solid transparent;
+    line-height: 1;
+  }
+
+  &__lesson-action--edit {
+    border-color: rgba($primary, 0.24);
+    background: rgba($primary, 0.06);
+    color: $primary;
+
+    &:hover {
+      background: rgba($primary, 0.12);
+      color: $primary-dark;
+    }
+  }
+
+  &__lesson-action--delete {
+    border-color: rgba($danger, 0.24);
+    background: rgba($danger, 0.06);
+    color: darken($danger, 6%);
+
+    &:hover {
+      background: rgba($danger, 0.12);
+      color: darken($danger, 12%);
+    }
+  }
+
+  &__empty {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    gap: 0.55rem;
+    min-height: 260px;
+    border: 1px dashed rgba($primary, 0.3);
+    border-radius: $radius-md;
+    background: #fff;
+    padding: 1.2rem 1rem;
+
+    i {
+      font-size: 1.8rem;
+      color: $primary;
+    }
+
+    p {
+      margin: 0;
+      color: $text-mid;
+      font-size: 0.9rem;
+      max-width: 38ch;
+      line-height: 1.6;
+    }
+  }
+}

@@ -1,56 +1,120 @@
-<h2 class="mb-4">Quản lý Người dùng</h2>
+<%# Admin Users Index — Premium BEM Redesign %>
 
-<div class="table-responsive">
-  <table class="table table-hover border align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>Avatar</th>
-        <th>Thông tin</th>
-        <th>Vai trò</th>
-        <th>Ngày tham gia</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @users.each do |user| %>
+<div class="usr-page">
+
+  <%# ── Page Header ─────────────────────────────────────────── %>
+  <header class="usr-page__header">
+    <div class="usr-page__header-left">
+      <div class="usr-page__breadcrumb">
+        <i class="bi bi-people-fill"></i>
+        <span>System Admin</span>
+      </div>
+      <h1 class="usr-page__title">User Management</h1>
+      <p class="usr-page__subtitle">Overview of all registered users, their roles and activity.</p>
+    </div>
+    <div class="usr-page__header-right">
+      <div class="usr-page__stat-pill">
+        <i class="bi bi-person-check"></i>
+        <strong><%= @pagy.count %></strong>
+        <span>total users</span>
+      </div>
+    </div>
+  </header>
+
+  <%# ── Table Card ────────────────────────────────────────────── %>
+  <div class="usr-table-card">
+    <table class="usr-table">
+      <thead>
         <tr>
-          <td>
-            <img src="<%= user.avatar_url.presence || "https://ui-avatars.com/api/?name=#{user.name}&background=random" %>"
-                 class="rounded-circle" width="40" height="40">
-          </td>
-          <td>
-            <div class="fw-bold"><%= user.name %></div>
-            <div class="text-muted small"><%= user.email %></div>
-          </td>
-          <td>
-            <% if user.admin? %>
-              <span class="badge bg-danger">Admin</span>
-            <% else %>
-              <span class="badge bg-primary">Học viên</span>
-            <% end %>
-          </td>
-          <td><%= user.created_at.strftime("%d/%m/%Y") %></td>
-          <td>
-            <% if user != current_user %>
-              <%= button_to admin_user_path(user), method: :delete,
-                    class: "btn btn-sm btn-outline-danger",
-                    data: { confirm: "Bạn có chắc muốn xóa user này?" } do %>
-                <i class="bi bi-trash"></i> Xóa
-              <% end %>
-            <% end %>
-          </td>
+          <th class="usr-table__th usr-table__th--avatar">Avatar</th>
+          <th class="usr-table__th usr-table__th--info">
+            <i class="bi bi-person-badge"></i> User Info
+          </th>
+          <th class="usr-table__th usr-table__th--role">
+            <i class="bi bi-shield-lock"></i> Role
+          </th>
+          <th class="usr-table__th usr-table__th--joined">
+            <i class="bi bi-calendar-event"></i> Joined Date
+          </th>
+          <th class="usr-table__th usr-table__th--actions">Actions</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%== pagy_bootstrap_nav(@pagy) %>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr class="usr-table__row">
+            
+            <%# Avatar %>
+            <td class="usr-table__td">
+              <div class="usr-table__avatar">
+                <img src="<%= user.avatar_url.presence || "https://ui-avatars.com/api/?name=#{user.name}&background=random" %>"
+                     class="usr-table__avatar-img" alt="<%= user.name %>">
+              </div>
+            </td>
+
+            <%# Info %>
+            <td class="usr-table__td">
+              <div class="usr-table__info">
+                <span class="usr-table__name"><%= user.name %></span>
+                <span class="usr-table__email"><%= user.email %></span>
+              </div>
+            </td>
+
+            <%# Role %>
+            <td class="usr-table__td">
+              <div class="usr-table__role-cell">
+                <% if user.admin? %>
+                  <span class="usr-badge usr-badge--admin">
+                    <i class="bi bi-shield-fill-check"></i> Admin
+                  </span>
+                <% elsif user.instructor? %>
+                  <span class="usr-badge usr-badge--instructor">
+                    <i class="bi bi-mortarboard"></i> Instructor
+                  </span>
+                <% else %>
+                  <span class="usr-badge usr-badge--student">
+                    <i class="bi bi-person"></i> Student
+                  </span>
+                <% end %>
+              </div>
+            </td>
+
+            <%# Joined %>
+            <td class="usr-table__td">
+              <span class="usr-table__date">
+                <%= user.created_at.strftime("%b %d, %Y") %>
+              </span>
+            </td>
+
+            <%# Actions %>
+            <td class="usr-table__td usr-table__td--actions">
+              <div class="usr-table__action-group">
+                <% if user != current_user %>
+                  <%= button_to admin_user_path(user), method: :delete,
+                        class: "usr-btn usr-btn--delete",
+                        title: "Delete user",
+                        data: { turbo_confirm: "Are you sure you want to delete this user? This cannot be undone." } do %>
+                    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Delete' %>
+                  <% end %>
+                <% else %>
+                  <span class="usr-table__self-badge">Current User</span>
+                <% end %>
+              </div>
+            </td>
+
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
 
-  <div class="text-center text-muted small mt-2">
-    Hiển thị <b><%= @pagy.items %></b> tài khoản / trang
-    (Tổng <b><%= @pagy.count %></b> người dùng)
-  </div>
-<% end %>
+  <%# ── Pagination ───────────────────────────────────────────── %>
+  <% if @pagy.pages > 1 %>
+    <div class="usr-pagination">
+      <div class="usr-pagination__nav"><%== pagy_nav(@pagy) %></div>
+      <p class="usr-pagination__note">
+        Showing <strong><%= @pagy.items %></strong> of <strong><%= @pagy.count %></strong> users
+      </p>
+    </div>
+  <% end %>
+
+</div>

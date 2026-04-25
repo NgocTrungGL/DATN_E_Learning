@@ -782,10 +782,6 @@
     </div>
   </div>
 </section>
-
-<%# ============================================================ %>
-<%# SECTION 10: FAQ                                            %>
-<%# ============================================================ %>
 <section class="faq-section" id="faq">
   <div class="container">
     <div class="row justify-content-center">
@@ -946,7 +942,8 @@
 <%# ============================================================ %>
 <script>
   // Scroll Reveal Animation using IntersectionObserver
-  document.addEventListener('DOMContentLoaded', function() {
+  // Use 'turbo:load' so this runs on EVERY navigation (Turbo + hard reload)
+  document.addEventListener('turbo:load', function() {
     const revealElements = document.querySelectorAll('[data-reveal]');
 
     if (!revealElements.length) return;

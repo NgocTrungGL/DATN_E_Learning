@@ -1,83 +1,118 @@
+<%# Admin Question Form — Premium BEM Redesign %>
+<%# Preserves: Stimulus data-controller="question-form", data-action, data-*-target %>
+
 <%= form_with(model: [:admin, @question], data: { controller: "question-form" }) do |f| %>
 
+  <%# ── Validation Errors ──────────────────────────────────── %>
   <% if @question.errors.any? %>
-    <div class="alert alert-danger shadow-sm">
-      <ul class="mb-0">
-        <% @question.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
-      </ul>
+    <div class="qs-form__errors">
+      <i class="bi bi-exclamation-triangle-fill qs-form__errors-icon"></i>
+      <div>
+        <strong class="qs-form__errors-title"><%= @question.errors.count %> error(s) need fixing:</strong>
+        <ul class="qs-form__errors-list">
+          <% @question.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   <% end %>
 
-  <div class="card shadow-lg border-0">
-    <div class="card-header bg-primary text-white py-3">
-      <h4 class="mb-0 fw-semibold">✏️ Tạo / Chỉnh sửa Câu hỏi</h4>
+  <%# ── Card 1: Question Info ──────────────────────────────── %>
+  <div class="qs-form__card">
+    <div class="qs-form__card-header">
+      <h2 class="qs-form__card-title">Question Information</h2>
+      <p class="qs-form__card-subtitle">Enter the question text, type and difficulty level</p>
     </div>
+    <div class="qs-form__card-body">
 
-    <div class="card-body p-4">
-      <h5 class="fw-bold mb-3">📌 Thông tin câu hỏi</h5>
-
-      <div class="mb-4">
-        <%= f.label :question_text, "Nội dung câu hỏi", class: "form-label fw-semibold" %>
-        <%= f.text_area :question_text, rows: 4, class: "form-control shadow-sm", required: true %>
+      <div class="qs-form__field qs-form__field--full">
+        <label class="qs-form__label qs-form__label--required">
+          <i class="bi bi-chat-left-text"></i> Question Text
+        </label>
+        <%= f.text_area :question_text, rows: 4, class: "qs-form__textarea", required: true,
+              placeholder: "Enter the full question text here..." %>
       </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-4">
-          <%= f.label :question_type, "Loại câu hỏi", class: "form-label fw-semibold" %>
+      <div class="qs-form__grid">
+        <div class="qs-form__field">
+          <label class="qs-form__label qs-form__label--required">
+            <i class="bi bi-ui-radios"></i> Question Type
+          </label>
           <%= f.select :question_type,
                 Question.question_types.keys.map { |k| [k.humanize, k] },
                 {},
-                class: "form-select shadow-sm",
+                class: "qs-form__select",
                 data: { question_form_target: "typeSelect", action: "change->question-form#toggleType" } %>
         </div>
-
-        <div class="col-md-6 mb-4">
-          <%= f.label :difficulty, "Độ khó", class: "form-label fw-semibold" %>
-          <%= f.select :difficulty, Question.difficulties.keys.map { |k| [k.humanize, k] }, {}, class: "form-select shadow-sm" %>
+        <div class="qs-form__field">
+          <label class="qs-form__label qs-form__label--required">
+            <i class="bi bi-bar-chart"></i> Difficulty
+          </label>
+          <%= f.select :difficulty, Question.difficulties.keys.map { |k| [k.humanize, k] },
+                {}, class: "qs-form__select" %>
         </div>
       </div>
 
-      <hr>
+    </div>
+  </div>
 
-      <h5 class="fw-bold mb-3">📚 Liên kết khóa học</h5>
-      <div class="row">
-        <div class="col-md-12 mb-4">
-          <%= f.label :course_id, "Gắn vào Khóa học (bắt buộc)", class: "form-label fw-semibold" %>
-          <%= f.collection_select :course_id, @courses, :id, :title, { prompt: "--- Chọn một khóa học ---" }, { class: "form-select shadow-sm", required: true } %>
-        </div>
+  <%# ── Card 2: Course Link ───────────────────────────────── %>
+  <div class="qs-form__card">
+    <div class="qs-form__card-header">
+      <h2 class="qs-form__card-title">Course Association</h2>
+      <p class="qs-form__card-subtitle">Link this question to a course so it appears in the question bank</p>
+    </div>
+    <div class="qs-form__card-body">
+      <div class="qs-form__field qs-form__field--full">
+        <label class="qs-form__label qs-form__label--required">
+          <i class="bi bi-book"></i> Course
+        </label>
+        <%= f.collection_select :course_id, @courses, :id, :title,
+              { prompt: "--- Select a course ---" },
+              { class: "qs-form__select", required: true } %>
       </div>
+    </div>
+  </div>
 
-      <hr>
+  <%# ── Card 3: Answer Options ────────────────────────────── %>
+  <div class="qs-form__card">
+    <div class="qs-form__card-header">
+      <h2 class="qs-form__card-title">Answer Options</h2>
+      <p class="qs-form__card-subtitle">Check the checkbox to mark the correct answer(s)</p>
+    </div>
+    <div class="qs-form__card-body">
 
-      <h5 class="fw-bold mb-3">📝 Các lựa chọn trả lời</h5>
-      <p class="text-muted" data-question-form-target: "instructionText">
-        Đánh dấu vào ô để chọn đáp án đúng.
-      </p>
-
-      <div id="question_options" data-question-form-target="optionsList" class="bg-light p-3 rounded-3 border">
+      <div class="qs-options-list" id="question_options"
+           data-question-form-target="optionsList">
         <%= f.fields_for :question_options do |option_form| %>
           <%= render "question_option_fields", f: option_form %>
         <% end %>
       </div>
 
-      <div class="mt-3" data-question-form-target="addButtonContainer">
+      <div class="qs-form__add-option" data-question-form-target="addButtonContainer">
         <template data-question-form-target="template">
           <%= f.fields_for :question_options, QuestionOption.new, child_index: 'NEW_RECORD' do |option_form| %>
             <%= render "question_option_fields", f: option_form %>
           <% end %>
         </template>
 
-        <button type="button" class="btn btn-outline-primary btn-sm dashed-border" data-action="question-form#addAssociation">
-          <i class="bi bi-plus-circle me-1"></i> Thêm lựa chọn khác
+        <button type="button"
+                class="qs-form__add-btn"
+                data-action="question-form#addAssociation">
+          <i class="bi bi-plus-circle"></i> Add another option
         </button>
       </div>
 
     </div>
   </div>
 
-  <div class="mt-4 d-flex gap-2">
-    <%= f.submit "💾 Lưu câu hỏi", class: "btn btn-primary px-4 py-2 fw-semibold" %>
-    <%= link_to "🔙 Hủy", admin_questions_path, class: "btn btn-secondary px-4 py-2" %>
+  <%# ── Actions ─────────────────────────────────────────────── %>
+  <div class="qs-form__actions">
+    <%= link_to admin_questions_path, class: "qs-form__btn qs-form__btn--cancel" do %>
+      Cancel
+    <% end %>
+    <%= f.submit "Save Question", class: "qs-form__btn qs-form__btn--save" %>
   </div>
 
 <% end %>

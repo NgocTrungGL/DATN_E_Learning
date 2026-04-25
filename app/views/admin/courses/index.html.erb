@@ -1,47 +1,141 @@
-<h1><%= t('admin.courses.index.title') %></h1>
+<%# Admin Courses Index — Premium Table-based Redesign %>
 
-<div class="mb-3">
-  <%= link_to t('admin.courses.index.new_course'), new_admin_course_path, class: "btn btn-success" %>
-</div>
+<div class="crs-page">
 
-<div class="row">
-  <% @courses.each do |course| %>
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-      <div class="card h-100 course-card shadow-sm">
-        <%= link_to admin_course_path(course), class: "stretched-link text-decoration-none text-dark" do %>
-          <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/800x400' %>"
-               class="card-img-top course-img"
-               alt="<%= course.title %>">
-        <% end %>
-
-        <div class="card-body d-flex flex-column">
-          <div class="flex-grow-1">
-            <h5 class="card-title"><%= course.title %></h5>
-            <p class="card-text text-muted"><%= course.category&.name || t('admin.courses.index.uncategorized') %></p>
-            <p class="card-text"><%= truncate(course.description.to_s, length: 120) %></p>
-          </div>
-
-          <div class="mt-2" style="position: relative; z-index: 10;">
-            <%= link_to t('admin.courses.index.add_module'), new_admin_course_course_module_path(course), class: "btn btn-primary btn-sm me-2" %>
-            <%= link_to t('admin.courses.index.edit'), edit_admin_course_path(course), class: "btn btn-warning btn-sm me-2" %>
-            <%= link_to t('admin.courses.index.delete'),
-                        admin_course_path(course),
-                        data: { turbo_method: :delete, turbo_confirm: t('admin.courses.index.confirm_delete') },
-                        class: "btn btn-danger btn-sm" %>
-          </div>
-        </div>
+  <%# ── Page Header ──────────────────────────────────────────── %>
+  <header class="crs-page__header">
+    <div class="crs-page__header-left">
+      <div class="crs-page__breadcrumb">
+        <i class="bi bi-collection-play-fill"></i>
+        <span><%= t('admin.courses.index.eyebrow') %></span>
       </div>
+      <h1 class="crs-page__title"><%= t('admin.courses.index.title') %></h1>
+      <p class="crs-page__subtitle"><%= t('admin.courses.index.subtitle') %></p>
+    </div>
+
+    <div class="crs-page__header-right">
+      <div class="crs-page__stat-pill">
+        <i class="bi bi-journal-bookmark-fill"></i>
+        <strong><%= @pagy&.count || @courses.size %></strong>
+        <span><%= t('admin.courses.index.counter_suffix') %></span>
+      </div>
+
+      <%= link_to new_admin_course_path, class: 'crs-page__cta' do %>
+        <i class="bi bi-plus-lg"></i>
+        <span><%= t('admin.courses.index.new_course') %></span>
+      <% end %>
+    </div>
+  </header>
+
+  <%# ── Table Card ───────────────────────────────────────────── %>
+  <% if @courses.any? %>
+    <div class="crs-table-card">
+      <table class="crs-table">
+        <thead>
+          <tr>
+            <th class="crs-table__th crs-table__th--course">
+              <i class="bi bi-play-circle"></i> Khóa học
+            </th>
+            <th class="crs-table__th crs-table__th--category">
+              <i class="bi bi-tag"></i> Danh mục
+            </th>
+            <th class="crs-table__th crs-table__th--price">
+              <i class="bi bi-currency-dollar"></i> Giá
+            </th>
+            <th class="crs-table__th crs-table__th--actions">
+              <%= t('admin.courses.index.actions') %>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @courses.each do |course| %>
+            <tr class="crs-table__row">
+
+              <%# Course info cell %>
+              <td class="crs-table__td crs-table__td--course">
+                <div class="crs-table__course-cell">
+                  <div class="crs-table__thumb">
+                    <% if course.thumbnail_url.present? %>
+                      <img src="<%= course.thumbnail_url %>" alt="<%= course.title %>" class="crs-table__thumb-img">
+                    <% else %>
+                      <div class="crs-table__thumb-placeholder">
+                        <i class="bi bi-play-circle-fill"></i>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="crs-table__course-info">
+                    <span class="crs-table__course-title">
+                      <%= link_to course.title, admin_course_path(course), class: 'crs-table__course-link' %>
+                    </span>
+                    <span class="crs-table__course-desc">
+                      <%= course.description.present? ? truncate(course.description, length: 70) : "Chưa có mô tả" %>
+                    </span>
+                  </div>
+                </div>
+              </td>
+
+              <%# Category %>
+              <td class="crs-table__td crs-table__td--category">
+                <span class="crs-table__cat-badge">
+                  <%= course.category&.name || t('admin.courses.index.uncategorized') %>
+                </span>
+              </td>
+
+              <%# Price %>
+              <td class="crs-table__td crs-table__td--price">
+                <% if course.price.present? && course.price > 0 %>
+                  <span class="crs-table__price"><%= number_with_delimiter(course.price.to_i) %>&nbsp;VNĐ</span>
+                <% else %>
+                  <span class="crs-table__price-free">Miễn phí</span>
+                <% end %>
+              </td>
+
+              <%# Actions — icon-only buttons with title tooltip %>
+              <td class="crs-table__td crs-table__td--actions">
+                <div class="crs-table__action-group">
+                  <%= link_to admin_course_path(course), class: 'crs-btn crs-btn--view', title: 'Xem chi tiết' do %>
+                    <%= image_tag 'view.png', class: 'crs-btn__img', alt: 'Xem' %>
+                  <% end %>
+                  <%= link_to new_admin_course_course_module_path(course), class: 'crs-btn crs-btn--module', title: 'Thêm chương' do %>
+                    <%= image_tag 'add.png', class: 'crs-btn__img', alt: 'Thêm chương' %>
+                  <% end %>
+                  <%= link_to edit_admin_course_path(course), class: 'crs-btn crs-btn--edit', title: 'Chỉnh sửa' do %>
+                    <%= image_tag 'edit.png', class: 'crs-btn__img', alt: 'Sửa' %>
+                  <% end %>
+                  <%= link_to admin_course_path(course),
+                      data: { turbo_method: :delete, turbo_confirm: t('admin.courses.index.confirm_delete') },
+                      class: 'crs-btn crs-btn--delete', title: 'Xóa' do %>
+                    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Xóa' %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="crs-empty">
+      <div class="crs-empty__icon">
+        <i class="bi bi-journal-bookmark"></i>
+      </div>
+      <h3><%= t('admin.courses.index.empty_title') %></h3>
+      <p><%= t('admin.courses.index.empty_text') %></p>
+      <%= link_to new_admin_course_path, class: 'crs-page__cta' do %>
+        <i class="bi bi-plus-lg"></i>
+        <span><%= t('admin.courses.index.new_course') %></span>
+      <% end %>
     </div>
   <% end %>
-</div>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%# Dùng <%== để render HTML (raw) vì pagy trả về html string %>
-    <%== pagy_bootstrap_nav(@pagy) %>
-  </div>
 
-  <div class="text-center text-muted small mt-2">
-    Hiển thị <b><%= @pagy.items %></b> kết quả / trang
-    (Tổng <b><%= @pagy.count %></b> khóa học)
-  </div>
-<% end %>
+  <%# ── Pagination ───────────────────────────────────────────── %>
+  <% if @pagy.pages > 1 %>
+    <div class="crs-pagination">
+      <div class="crs-pagination__nav"><%== pagy_nav(@pagy) %></div>
+      <p class="crs-pagination__note">
+        <%= t('admin.courses.index.pagination_note', items: @pagy.items, count: @pagy.count) %>
+      </p>
+    </div>
+  <% end %>
+
+</div>

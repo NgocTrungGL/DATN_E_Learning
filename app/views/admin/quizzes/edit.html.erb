@@ -1,2 +1,31 @@
-<h1>Chỉnh sửa Bài kiểm tra</h1>
-<%= render "form" %>
+<%# Admin Quizzes Edit — Premium BEM Redesign %>
+
+<div class="qz-page">
+
+  <div class="qz-backlink">
+    <%= link_to admin_quiz_path(@quiz) do %>
+      <i class="bi bi-arrow-left"></i>
+      <span>Quay lại chi tiết</span>
+    <% end %>
+  </div>
+
+  <header class="qz-page__header qz-page__header--compact">
+    <div class="qz-page__header-left">
+      <div class="qz-page__breadcrumb">
+        <i class="bi bi-pencil-fill"></i>
+        <span>Quiz Management</span>
+      </div>
+      <h1 class="qz-page__title">Chỉnh sửa: <%= @quiz.title %></h1>
+      <p class="qz-page__subtitle">Cập nhật cấu hình bài kiểm tra.</p>
+    </div>
+    <div class="qz-page__header-right">
+      <%= link_to admin_quiz_path(@quiz), class: 'qz-hero-btn qz-hero-btn--secondary' do %>
+        <i class="bi bi-eye"></i>
+        <span>Xem chi tiết</span>
+      <% end %>
+    </div>
+  </header>
+
+  <%= render "form" %>
+
+</div>

@@ -1,4 +1,28 @@
-<div class="container mt-4">
-  <h3>✏️ <%= t('courses.edit.title') %></h3>
+<%# Admin Courses Edit — Premium BEM Redesign %>
+
+<div class="crs-page">
+
+  <div class="crs-backlink">
+    <%= link_to admin_courses_path do %>
+      <i class="bi bi-arrow-left"></i>
+      <span><%= t('admin.courses.form.back') %></span>
+    <% end %>
+  </div>
+
+  <header class="crs-page__header crs-page__header--compact">
+    <div class="crs-page__header-left">
+      <div class="crs-page__breadcrumb">
+        <i class="bi bi-pencil-fill"></i>
+        <span>Quản lý khóa học</span>
+      </div>
+      <h1 class="crs-page__title"><%= t('admin.courses.edit.title') %></h1>
+      <p class="crs-page__subtitle">
+        <%= t('admin.courses.edit.subtitle') %> &mdash;
+        <strong><%= @course.title %></strong>
+      </p>
+    </div>
+  </header>
+
   <%= render 'form', course: @course %>
+
 </div>

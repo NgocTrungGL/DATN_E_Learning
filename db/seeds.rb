@@ -173,7 +173,6 @@ ActiveRecord::Base.transaction do
         course_id: course.id,
         lesson_id: course_lessons.last.id,
         title: "Bài kiểm tra: #{course.title}",
-        description: "Vượt qua bài test này để hoàn thành khóa học.",
         total_questions: 5,
         time_limit: 15,
         created_by: course.created_by,

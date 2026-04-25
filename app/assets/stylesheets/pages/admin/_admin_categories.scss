@@ -1,0 +1,761 @@
+// ============================================================
+// ADMIN CATEGORIES — Premium BEM Page Styles
+// Blocks: .cat-page, .cat-table-card, .cat-table,
+//         .cat-show-layout, .cat-detail-card, .cat-form
+// ============================================================
+
+// ── Page Shell ──────────────────────────────────────────────
+.cat-page {
+  padding: 2rem 2.5rem 4rem;
+  background: $bg;
+  min-height: 100%;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem 1rem 3rem;
+  }
+}
+
+// ── Back Link ───────────────────────────────────────────────
+.cat-backlink {
+  margin-bottom: 1.25rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: $text-mid;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: $t;
+
+    &:hover { color: $primary; }
+    .bi { font-size: 0.9rem; }
+  }
+}
+
+// ── Page Header ─────────────────────────────────────────────
+.cat-page__header {
+  background: linear-gradient(135deg, $bg-dark 0%, #1e293b 60%, #1a3a6b 100%);
+  border-radius: $radius-xl;
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+
+  // Decorative circle
+  &::after {
+    content: '';
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 220px;
+    height: 220px;
+    background: rgba($primary, 0.12);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  &--compact {
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+
+    &::after { width: 140px; height: 140px; right: -40px; top: -40px; }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.cat-page__breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba($white, 0.55);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+
+  .bi { font-size: 0.85rem; color: $warning; }
+}
+
+.cat-page__title {
+  color: $white;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+}
+
+.cat-page__subtitle {
+  color: rgba($white, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+  max-width: 52rem;
+}
+
+.cat-page__header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.cat-page__stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba($white, 0.1);
+  border: 1px solid rgba($white, 0.15);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  color: $white;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
+
+  strong { font-size: 1.1rem; font-weight: 900; }
+  .bi { color: $warning; }
+}
+
+.cat-page__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $primary;
+  color: $white;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.7rem 1.4rem;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: $t;
+  box-shadow: 0 4px 14px rgba($primary, 0.35);
+  white-space: nowrap;
+
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba($primary, 0.45);
+  }
+}
+
+// ── Table Card ───────────────────────────────────────────────
+.cat-table-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+}
+
+// ── Table ───────────────────────────────────────────────────
+.cat-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  &__th {
+    padding: 0.9rem 1.35rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-muted;
+    background: $bg;
+    border-bottom: 2px solid $border;
+    white-space: nowrap;
+
+    .bi { margin-right: 0.3rem; opacity: 0.6; }
+
+    &--actions { text-align: right; padding-right: 1.5rem; }
+  }
+
+  &__row {
+    border-bottom: 1px solid $border;
+    transition: background 0.18s ease;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba($primary, 0.025); }
+  }
+
+  &__td {
+    padding: 1.1rem 1.35rem;
+    vertical-align: middle;
+
+    &--actions { text-align: right; }
+    &--parent { text-align: center; }
+  }
+
+  // Parent aligning
+  &__parent-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 6px;
+    min-width: 60px;
+    transition: $t;
+
+    &--parent {
+      background: $primary-light;
+      color: $primary;
+      border: 1px solid rgba($primary, 0.1);
+    }
+
+    &--root {
+      background: $bg;
+      color: $text-muted;
+      border: 1px solid $border;
+      opacity: 0.6;
+    }
+  }
+
+  &__name-text {
+    font-weight: 700;
+    color: $text-dark;
+    font-size: 0.95rem;
+  }
+
+  &__desc-text {
+    font-size: 0.85rem;
+    color: $text-mid;
+    line-height: 1.55;
+  }
+
+  // Parent badges
+  &__parent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: $primary-light;
+    color: $primary;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  &__root-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: $success-light;
+    color: darken($success, 5%);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  // Action buttons
+  &__action-group {
+    display: flex;
+    gap: 0.45rem;
+    justify-content: flex-end;
+  }
+
+  // Empty state
+  &__empty {
+    padding: 5rem 2rem;
+    text-align: center;
+    color: $text-muted;
+
+    &-icon {
+      width: 72px;
+      height: 72px;
+      background: $primary-light;
+      border-radius: $radius-lg;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 2rem;
+      color: $primary;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: $text-dark;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: $text-mid;
+    }
+  }
+}
+
+// ── Table Action Buttons ─────────────────────────────────────
+.cat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: $radius-md;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1.5px solid;
+  transition: $t;
+  cursor: pointer;
+  background: transparent;
+  white-space: nowrap;
+
+  &--edit {
+    border-color: $primary;
+    color: $primary;
+    &:hover { background: $primary; color: $white; }
+  }
+
+  &--delete {
+    border-color: $danger;
+    color: $danger;
+    &:hover { background: $danger; color: $white; }
+  }
+
+  &--view {
+    border-color: $accent;
+    color: $accent;
+    &:hover { background: $accent; color: $white; }
+  }
+}
+
+// ── Pagination ───────────────────────────────────────────────
+.cat-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border;
+
+  &__note {
+    font-size: 0.8rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    gap: 0.35rem;
+
+    a, span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-md;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1.5px solid $border;
+      color: $text-mid;
+      transition: $t;
+
+      &:hover { border-color: $primary; color: $primary; background: $primary-light; }
+      &[aria-current="page"] { background: $primary; border-color: $primary; color: $white; }
+    }
+  }
+}
+
+// ── Show Page — 2-column layout ──────────────────────────────
+.cat-show-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Detail card
+.cat-detail-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  &__header {
+    padding: 1rem 1.5rem;
+    background: $bg;
+    border-bottom: 1px solid $border;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: $text-dark;
+
+    .bi { color: $primary; font-size: 1rem; }
+  }
+
+  &__body { padding: 1.75rem; }
+}
+
+.cat-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.cat-info-item {
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 1rem 1.25rem;
+
+  &--full { grid-column: 1 / -1; }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $text-muted;
+    margin-bottom: 0.65rem;
+
+    .bi { font-size: 0.8rem; }
+  }
+
+  &__value {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: $text-dark;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    &--badge {
+      background: $primary-light;
+      color: $primary;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    &--root {
+      background: $success-light;
+      color: darken($success, 5%);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+  }
+
+  &__copy {
+    font-size: 0.9rem;
+    color: $text-mid;
+    line-height: 1.75;
+    p:last-child { margin-bottom: 0; }
+  }
+
+  &__empty {
+    color: $text-muted;
+    font-style: italic;
+    font-size: 0.88rem;
+  }
+}
+
+// Show sidebar
+.cat-show-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &__card {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $text-muted;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid $border;
+    margin-bottom: 0.25rem;
+
+    .bi { color: $warning; }
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    border-radius: $radius-md;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: $t;
+    text-align: center;
+    border: 1.5px solid;
+
+    &--primary {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+      box-shadow: 0 4px 12px rgba($primary, 0.3);
+      &:hover { background: $primary-dark; color: $white; transform: translateY(-1px); }
+    }
+
+    &--secondary {
+      background: transparent;
+      border-color: $border;
+      color: $text-mid;
+      &:hover { background: $bg; color: $text-dark; }
+    }
+  }
+
+  &__meta {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-xl;
+    padding: 1.25rem;
+    box-shadow: $shadow-sm;
+  }
+
+  &__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.83rem;
+    color: $text-mid;
+
+    .bi { color: $text-muted; }
+    strong { margin-left: auto; color: $text-dark; font-weight: 700; }
+  }
+}
+
+// ── Form Wrapper & Card ──────────────────────────────────────
+.cat-form-wrapper {
+  width: 100%;
+}
+
+.cat-form {
+  &__errors {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: $danger-light;
+    border: 1.5px solid rgba($danger, 0.25);
+    border-radius: $radius-md;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+
+    &-icon { font-size: 1.2rem; color: $danger; flex-shrink: 0; margin-top: 1px; }
+
+    &-title {
+      display: block;
+      color: $danger;
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 0.35rem;
+    }
+
+    &-list {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: darken($danger, 5%);
+      font-size: 0.85rem;
+    }
+  }
+
+  &__card {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-md;
+
+    &-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.75rem;
+      background: linear-gradient(135deg, $bg-dark, #1e293b);
+      border-bottom: 1px solid rgba($white, 0.06);
+    }
+
+    &-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba($white, 0.08);
+      border: 1px solid rgba($white, 0.1);
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: $warning;
+      flex-shrink: 0;
+    }
+
+    &-title {
+      color: $white;
+      font-size: 1rem;
+      font-weight: 800;
+      margin: 0 0 0.15rem;
+    }
+
+    &-subtitle {
+      color: rgba($white, 0.5);
+      font-size: 0.8rem;
+      margin: 0;
+    }
+
+    &-body { padding: 1.75rem; }
+  }
+
+  // Field
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-bottom: 1.5rem;
+
+    &:last-child { margin-bottom: 0; }
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.83rem;
+    font-weight: 800;
+    color: $text-dark;
+
+    .bi { font-size: 0.85rem; color: $primary; }
+
+    &--required::after { content: " *"; color: $danger; }
+  }
+
+  &__input,
+  &__select,
+  &__textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: $bg;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    font-size: 0.9rem;
+    color: $text-dark;
+    transition: $t;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+
+    &::placeholder { color: $text-muted; }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+
+  &__hint {
+    font-size: 0.76rem;
+    color: $text-muted;
+    line-height: 1.5;
+  }
+
+  // Form actions
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.25rem 1.75rem;
+    background: $bg;
+    border-top: 1px solid $border;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.75rem;
+    border-radius: $radius-md;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: $t;
+    border: 1.5px solid;
+
+    &--save {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+      box-shadow: 0 4px 14px rgba($primary, 0.3);
+      &:hover { background: $primary-dark; transform: translateY(-1px); box-shadow: 0 6px 18px rgba($primary, 0.4); }
+    }
+
+    &--cancel {
+      background: transparent;
+      border-color: $border;
+      color: $text-mid;
+      &:hover { background: $border; color: $text-dark; }
+    }
+  }
+}

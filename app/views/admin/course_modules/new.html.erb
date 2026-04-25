@@ -1,98 +1,122 @@
-<div class="row">
-  <div class="col-md-5">
-    <div class="card shadow-sm sticky-top" style="top: 20px; z-index: 1;">
-      <div class="card-header bg-white py-3">
-        <h4 class="mb-0 text-primary"><i class="bi bi-plus-circle-dotted"></i> Thêm Chương Mới</h4>
-        <small class="text-muted">Khóa học: <strong><%= @course.title %></strong></small>
-      </div>
-
-      <div class="card-body">
-        <%= form_with(model: [:admin, @course, @course_module]) do |f| %>
-          <% if @course_module.errors.any? %>
-            <div class="alert alert-danger small">
-              <ul class="mb-0 ps-3">
-                <% @course_module.errors.full_messages.each do |msg| %>
-                  <li><%= msg %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-
-          <div class="mb-3">
-            <%= f.label :title, "Tên chương", class: "form-label fw-bold" %>
-            <%= f.text_field :title, class: "form-control", placeholder: "Ví dụ: Nhập môn...", autofocus: true %>
-          </div>
-
-          <div class="mb-3">
-            <%= f.label :description, "Mô tả ngắn", class: "form-label fw-bold" %>
-            <%= f.text_area :description, rows: 3, class: "form-control", placeholder: "Nội dung chính của chương..." %>
-          </div>
-
-          <%= f.hidden_field :order_index %>
-
-          <div class="d-grid gap-2 mt-4">
-            <%= f.submit "Lưu & Thêm tiếp", class: "btn btn-primary fw-bold" %>
-            <%= link_to "Quay lại Khóa học", admin_course_path(@course), class: "btn btn-outline-secondary" %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-7 mt-4 mt-md-0">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="mb-0 text-secondary">Cấu trúc Khóa học</h5>
-      <span class="badge bg-info text-dark"><i class="bi bi-arrows-move"></i> Kéo thả để sắp xếp</span>
-    </div>
-
-    <div class="list-group shadow-sm mb-4"
-         data-controller="sortable"
-         data-sortable-url-value="<%= sort_admin_course_modules_path %>">
-
-      <% @modules.each do |mod| %>
-        <div class="list-group-item list-group-item-action d-flex align-items-center p-3" data-id="<%= mod.id %>">
-          <div class="drag-handle me-3 text-muted" style="cursor: grab;">
-            <i class="bi bi-grip-vertical fs-4"></i>
-          </div>
-
-          <div class="flex-grow-1">
-            <div class="fw-bold text-dark"><%= mod.title %></div>
-            <div class="small text-muted"><%= pluralize(mod.lessons.count, "bài học") %></div>
-          </div>
-
-          <div class="btn-group">
-            <%= link_to edit_admin_course_module_path(mod), class: "btn btn-sm btn-light text-primary" do %>
-              <i class="bi bi-pencil-square"></i>
-            <% end %>
-            <%= button_to admin_course_module_path(mod), method: :delete, class: "btn btn-sm btn-light text-danger", data: { confirm: "Xóa chương này?" } do %>
-              <i class="bi bi-trash"></i>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
-      <% if @modules.empty? %>
-        <div class="text-center p-4 text-muted border rounded bg-light">
-          Chưa có chương nào. Hãy thêm ở bên trái.
-        </div>
-      <% end %>
-    </div>
-
-    <% if @big_quizzes.any? %>
-      <h6 class="text-secondary mt-4 mb-2">Bài kiểm tra lớn (Cuối khóa)</h6>
-      <div class="list-group border-warning">
-        <% @big_quizzes.each do |quiz| %>
-          <div class="list-group-item list-group-item-warning d-flex align-items-center p-3">
-            <i class="bi bi-trophy-fill me-3 text-warning"></i>
-            <div class="flex-grow-1">
-              <div class="fw-bold"><%= quiz.title %></div>
-              <small><%= quiz.total_questions %> câu hỏi</small>
-            </div>
-            <%= link_to "Chi tiết", admin_quiz_path(quiz), class: "btn btn-sm btn-outline-dark" %>
-          </div>
-        <% end %>
-      </div>
+<section class="admin-course-modules">
+  <div class="admin-course-modules__inner">
+    <%= link_to admin_course_path(@course), class: 'admin-course-modules__backlink' do %>
+      <i class="bi bi-arrow-left"></i>
+      <span><%= t('admin.course_modules.form.back_to_course') %></span>
     <% end %>
 
+    <header class="admin-course-modules__hero">
+      <div class="admin-course-modules__hero-copy">
+        <p class="admin-course-modules__eyebrow"><%= t('admin.course_modules.new.eyebrow') %></p>
+        <h1 class="admin-course-modules__title"><%= t('admin.course_modules.new.title') %></h1>
+        <p class="admin-course-modules__subtitle">
+          <%= t('admin.course_modules.new.for_course', course_title: @course.title) %>
+        </p>
+      </div>
+
+      <div class="admin-course-modules__hero-stats">
+        <article class="admin-course-modules__stat-card">
+          <span class="admin-course-modules__stat-label">Tổng chương</span>
+          <strong class="admin-course-modules__stat-value"><%= @modules.size %></strong>
+        </article>
+
+        <article class="admin-course-modules__stat-card">
+          <span class="admin-course-modules__stat-label">Quiz lớn</span>
+          <strong class="admin-course-modules__stat-value"><%= @big_quizzes.size %></strong>
+        </article>
+      </div>
+    </header>
+
+    <div class="admin-course-modules__layout">
+      <section class="admin-course-modules__panel admin-course-modules__panel--form">
+        <div class="admin-course-modules__panel-head">
+          <div>
+            <h2 class="admin-course-modules__panel-title"><%= t('admin.course_modules.form.panel_title', default: 'Thêm chương mới') %></h2>
+            <p class="admin-course-modules__panel-subtitle"><%= t('admin.course_modules.form.panel_subtitle', default: 'Đặt tên rõ ràng để học viên và admin dễ theo dõi cấu trúc khóa học.') %></p>
+          </div>
+
+          <div class="admin-course-modules__panel-badge">
+            <i class="bi bi-folder2-open"></i>
+            <span><%= @course.title %></span>
+          </div>
+        </div>
+
+        <%= render 'form', mode: :new, submit_key: 'admin.course_modules.form.submit_new' %>
+      </section>
+
+      <aside class="admin-course-modules__panel admin-course-modules__panel--outline">
+        <div class="admin-course-modules__outline-head">
+          <div>
+            <h2><%= t('admin.course_modules.outline.title') %></h2>
+            <p class="admin-course-modules__outline-note"><%= t('admin.course_modules.outline.reorder_hint') %></p>
+          </div>
+
+          <span class="admin-course-modules__hint">
+            <i class="bi bi-arrows-move"></i>
+            Kéo để sắp xếp
+          </span>
+        </div>
+
+        <% if @modules.any? %>
+          <div class="admin-course-modules__outline-list"
+               data-controller="sortable"
+            data-sortable-param-value="course_module"
+            data-sortable-handle-value=".admin-course-modules__outline-item"
+               data-sortable-url-value="<%= sort_admin_course_modules_path %>">
+            <% @modules.each do |mod| %>
+              <article class="admin-course-modules__outline-item" data-id="<%= mod.id %>">
+                <div class="admin-course-modules__drag-handle drag-handle">
+                  <i class="bi bi-grip-vertical"></i>
+                </div>
+
+                <div class="admin-course-modules__outline-copy">
+                  <h3><%= mod.title %></h3>
+                  <p><%= t('admin.course_modules.outline.lesson_count', count: mod.lessons.count) %></p>
+                </div>
+
+                <div class="admin-course-modules__outline-actions">
+                  <%= link_to edit_admin_course_module_path(mod), class: 'admin-course-modules__action admin-course-modules__action--edit' do %>
+                    <i class="bi bi-pencil-square"></i>
+                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.edit', default: 'Sửa') %></span>
+                  <% end %>
+
+                  <%= link_to admin_course_module_path(mod),
+                              class: 'admin-course-modules__action admin-course-modules__action--delete',
+                              data: { turbo_method: :delete, turbo_confirm: t('admin.course_modules.outline.confirm_delete') } do %>
+                    <i class="bi bi-trash"></i>
+                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.delete', default: 'Xóa') %></span>
+                  <% end %>
+                </div>
+              </article>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="admin-course-modules__empty">
+            <i class="bi bi-journal-plus"></i>
+            <p><%= t('admin.course_modules.outline.empty') %></p>
+          </div>
+        <% end %>
+
+        <% if @big_quizzes.any? %>
+          <div class="admin-course-modules__quizzes">
+            <div class="admin-course-modules__quizzes-head">
+              <h3><%= t('admin.course_modules.outline.big_quizzes') %></h3>
+              <span class="admin-course-modules__quizzes-chip"><%= @big_quizzes.size %></span>
+            </div>
+            <div class="admin-course-modules__quiz-list">
+              <% @big_quizzes.each do |quiz| %>
+                <article class="admin-course-modules__quiz-item">
+                  <div>
+                    <h4><%= quiz.title %></h4>
+                    <p><%= t('admin.course_modules.outline.question_count', count: quiz.total_questions) %></p>
+                  </div>
+                  <%= link_to t('admin.course_modules.outline.quiz_detail'), admin_quiz_path(quiz), class: 'btn-action btn-action--neutral' %>
+                </article>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </aside>
+    </div>
   </div>
-</div>
+</section>

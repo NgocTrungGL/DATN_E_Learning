@@ -4,7 +4,10 @@
 // ============================================================
 
 // 1. Vendors
+// Bootstrap is kept until ALL public/instructor pages are migrated to custom BEM.
+// It will be removed in the final phase once migration is 100% complete.
 @import "bootstrap";
+
 
 // 2. Abstracts
 @import "abstracts/variables";
@@ -20,7 +23,12 @@
 @import "components/my_course_card";
 @import "pages/navbar"; // Navbar is a global component
 
-// 5. Pages
+// 5. Layouts (scoped inline styles extracted from views)
+@import "pages/layout_learning";
+@import "pages/layout_instructor";
+@import "pages/layout_business";
+
+// 6. Pages
 @import "pages/login";
 @import "pages/auth";
 @import "pages/landing";
@@ -31,3 +39,16 @@
 @import "pages/course_detail";
 @import "pages/preview_modal";
 @import "pages/lesson";
+@import "pages/admin/admin_layout";
+@import "pages/admin/admin_components";
+@import "pages/admin/admin_categories";
+@import "pages/admin/admin_courses";
+@import "pages/admin/admin_course_modules";
+@import "pages/admin/admin_course_reviews";
+@import "pages/admin/admin_lessons";
+@import "pages/admin/admin_quizzes";
+@import "pages/admin/admin_questions";
+@import "pages/admin/admin_comments";
+@import "pages/admin/admin_reviews";
+@import "pages/admin/admin_users";
+@import "pages/admin/admin_enrollments";

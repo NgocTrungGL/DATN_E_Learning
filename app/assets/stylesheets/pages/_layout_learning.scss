@@ -1,0 +1,20 @@
+// ============================================================
+// LEARNING LAYOUT
+// Scoped styles to prevent Turbo leak
+// ============================================================
+
+body.layout-learning {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f8fafc;
+  
+  /* Lesson page overrides body scroll — main column handles its own */
+  .lesson-page ~ * { overflow: visible; }
+  
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+}

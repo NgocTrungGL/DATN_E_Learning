@@ -162,7 +162,7 @@
 <% content_for :page_js do %>
 <script>
   <%# Dynamically load courses_market.js safely using module-like approach %>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('turbo:load', function() {
     // ── CountdownTimer
     (function() {
       var root  = document.getElementById('flash-countdown');

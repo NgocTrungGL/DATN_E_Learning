@@ -1,0 +1,29 @@
+<section class="admin-lessons">
+  <div class="admin-lessons__inner">
+    <%= link_to admin_course_path(@course_module.course), class: 'admin-lessons__backlink' do %>
+      <i class="bi bi-arrow-left"></i>
+      <span>Quay lại khóa học</span>
+    <% end %>
+
+    <header class="admin-lessons__hero">
+      <div class="admin-lessons__hero-copy">
+        <p class="admin-lessons__eyebrow">Quản lý bài học</p>
+        <h1 class="admin-lessons__title">Chỉnh sửa bài học</h1>
+        <p class="admin-lessons__subtitle">
+          Chương: <strong><%= @course_module.title %></strong>
+          <span class="admin-lessons__dot">•</span>
+          Khóa: <strong><%= @course_module.course.title %></strong>
+        </p>
+      </div>
+    </header>
+
+    <section class="admin-lessons__panel admin-lessons__panel--form">
+      <div class="admin-lessons__panel-head">
+        <h2>Cập nhật nội dung bài học</h2>
+        <p>Điều chỉnh tiêu đề, mô tả, video và tài liệu đính kèm cho bài học này.</p>
+      </div>
+
+      <%= render 'form', submit_text: 'Cập nhật bài học' %>
+    </section>
+  </div>
+</section>

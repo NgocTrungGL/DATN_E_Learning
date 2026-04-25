@@ -1,22 +1,89 @@
-<%= form_with(model: [:admin, @category], local: true, class: 'needs-validation') do |form| %>
-  <div class="mb-3">
-    <%= form.label :name, t('categories.form.name'), class: 'form-label' %>
-    <%= form.text_field :name, class: 'form-control', required: true %>
+<%# Admin Categories Form Partial — Premium BEM Redesign %>
+<%# Preserves: form_with model, local: true, collection_select with Category.order %>
+
+<%= form_with(model: [:admin, @category], local: true) do |form| %>
+
+  <%# ── Validation errors ──────────────────────────────────── %>
+  <% if @category.errors.any? %>
+    <div class="cat-form__errors">
+      <i class="bi bi-exclamation-triangle-fill cat-form__errors-icon"></i>
+      <div>
+        <strong class="cat-form__errors-title">
+          <%= t('admin.categories.form.errors_title', count: @category.errors.count) %>
+        </strong>
+        <ul class="cat-form__errors-list">
+          <% @category.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <%# ── Form card ───────────────────────────────────────────── %>
+  <div class="cat-form__card">
+    <div class="cat-form__card-header">
+      <div class="cat-form__card-icon">
+        <i class="bi bi-folder-plus"></i>
+      </div>
+      <div>
+        <h2 class="cat-form__card-title">Thông tin danh mục</h2>
+        <p class="cat-form__card-subtitle">Điền đầy đủ thông tin để tạo hoặc cập nhật danh mục</p>
+      </div>
+    </div>
+
+    <div class="cat-form__card-body">
+
+      <%# Name %>
+      <div class="cat-form__field">
+        <label class="cat-form__label cat-form__label--required">
+          <i class="bi bi-tag-fill"></i>
+          <%= t('admin.categories.form.name') %>
+        </label>
+        <%= form.text_field :name,
+            class: 'cat-form__input',
+            required: true,
+            placeholder: "VD: Lập trình Web, Thiết kế UI/UX..." %>
+        <span class="cat-form__hint">Tên danh mục sẽ hiển thị công khai trên hệ thống.</span>
+      </div>
+
+      <%# Description %>
+      <div class="cat-form__field">
+        <label class="cat-form__label">
+          <i class="bi bi-text-paragraph"></i>
+          <%= t('admin.categories.form.description') %>
+        </label>
+        <%= form.text_area :description,
+            class: 'cat-form__textarea',
+            rows: 4,
+            placeholder: "Mô tả ngắn gọn về danh mục này..." %>
+        <span class="cat-form__hint">Tùy chọn — giúp người dùng hiểu rõ hơn về danh mục.</span>
+      </div>
+
+      <%# Parent category %>
+      <div class="cat-form__field">
+        <label class="cat-form__label">
+          <i class="bi bi-diagram-2-fill"></i>
+          <%= t('admin.categories.form.parent_category') %>
+        </label>
+        <%= form.collection_select :parent_id, Category.order(:name), :id, :name,
+              { include_blank: t('admin.categories.form.none') },
+              class: 'cat-form__select' %>
+        <span class="cat-form__hint"><%= t('admin.categories.form.parent_hint') %></span>
+      </div>
+
+    </div>
+
+    <%# ── Form actions ─────────────────────────────────────── %>
+    <div class="cat-form__actions">
+      <%= link_to admin_categories_path, class: 'cat-form__btn cat-form__btn--cancel' do %>
+        <i class="bi bi-x-lg"></i>
+        <%= t('admin.categories.form.back') %>
+      <% end %>
+
+      <%= form.submit t('admin.categories.form.submit'), class: 'cat-form__btn cat-form__btn--save' %>
+    </div>
+
   </div>
 
-  <div class="mb-3">
-    <%= form.label :description, t('categories.form.description'), class: 'form-label' %>
-    <%= form.text_area :description, class: 'form-control' %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.label :parent_id, t('categories.form.parent_category'), class: 'form-label' %>
-    <%= form.collection_select :parent_id, Category.all, :id, :name,
-          { include_blank: t('categories.form.none') }, class: 'form-select' %>
-  </div>
-
-  <div>
-    <%= form.submit t('admin.categories.form.submit'), class: 'btn btn-success' %>
-    <%= link_to t('categories.form.back'), categories_path, class: 'btn btn-secondary' %>
-  </div>
 <% end %>

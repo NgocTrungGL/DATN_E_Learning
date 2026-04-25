@@ -62,26 +62,40 @@ en:
       # Views
       index:
         title: "Course Management"
+        eyebrow: "Learning Content"
+        subtitle: "Manage courses, learning journeys, and curriculum structure from one admin workspace."
         new_course: "Create New Course"
+        counter_suffix: "courses"
         uncategorized: "Uncategorized"
+        empty_description: "This course has no description yet"
         add_module: "Add Module"
         edit: "Edit"
         delete: "Delete"
         confirm_delete: "Are you sure you want to delete this course?"
+        empty_title: "No courses yet"
+        empty_text: "Create your first course to start building your learning catalog."
+        pagination_note: "Showing %{items} courses / page (Total %{count} courses)"
       new:
+        eyebrow: "Create"
         title: "New Course"
+        subtitle: "Set up the core information to publish this course in the system."
       edit:
+        eyebrow: "Update"
         title: "Edit Course"
+        subtitle: "Update course information while keeping a consistent admin experience."
       show:
+        admin_view: "Admin View"
+        subtitle: "Review the full course structure and manage modules and lessons from one screen."
         uncategorized: "Uncategorized"
+        empty_description: "This course has no description yet"
         add_module: "Add New Module"
         edit_course: "Edit Course"
         delete_course: "Delete Course"
         confirm_delete_course: "Are you sure you want to delete this entire course?"
-        back_to_list: "Back to List (Admin)"
+        back_to_list: "Back to List"
         content_admin: "Course Content (Admin)"
         no_content: "This course has no content yet. Click 'Add New Module'."
-        module_admin: "Manage Module:"
+        lesson_count: "%{count} lessons"
         edit_module: "Edit Module"
         delete_module: "Delete Module"
         confirm_delete_module: "Deleting the module '%{title}' will remove all its lessons. Are you sure?"
@@ -91,15 +105,20 @@ en:
         edit: "Edit"
         delete: "Delete"
         confirm_delete_lesson: "Are you sure you want to delete the lesson '%{title}'?"
+        empty_modules_title: "No modules yet"
 
       # === ĐÂY LÀ PHẦN ĐÃ SỬA LỖI CHO BẠN ===
       form:
+        errors_title: "%{count} error(s) occurred:"
         title: "Title"
         description: "Description"
         thumbnail_url: "Thumbnail URL"
+        thumbnail_placeholder: "https://example.com/thumbnail.jpg"
         category: "Category"
         none: "None"
-        created_by: "Created By (User ID)"
+        price_label: "Course Price (VND)"
+        price_placeholder: "Enter 0 for a free course"
+        price_hint: "Enter 0 if this is a free course."
         submit: "Save Course" # Đã sửa
         back: "Back"
 
@@ -111,18 +130,39 @@ en:
         success: "Module was successfully updated."
       destroy:
         success: "Module was successfully deleted."
+        failure: "Unable to delete this module."
 
       # Views
       form:
         errors_title: "%{count} error(s) occurred:"
         title: "Module Title"
+        title_placeholder: "Example: Introduction, Overview, Project Practice..."
         description: "Description (optional)"
+        description_placeholder: "Describe what learners will cover in this module"
         order_index: "Order (e.g., 1)"
         submit: "Save Module"
+        submit_new: "Save and continue"
+        submit_edit: "Update Module"
+        back_to_course: "Back to Course"
       new:
+        eyebrow: "Create Module"
         title: "Add New Module"
         for_course: "For course: %{course_title}"
-        back_to_course: "Back to Course"
+      edit:
+        eyebrow: "Update Module"
+        title: "Edit Module"
+        for_course: "For course: %{course_title}"
+      outline:
+        title: "Course Structure"
+        current_title: "Current Structure"
+        reorder_hint: "Drag to reorder"
+        lesson_count: "%{count} lessons"
+        editing: "Editing"
+        confirm_delete: "Delete this module?"
+        empty: "No modules yet. Add your first module from the form panel."
+        big_quizzes: "Final Course Quizzes"
+        question_count: "%{count} questions"
+        quiz_detail: "Details"
 
     lessons:
       # Thông báo Flash

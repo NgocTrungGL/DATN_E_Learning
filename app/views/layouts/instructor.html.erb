@@ -7,102 +7,16 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-    <style>
-      body {
-        min-height: 100vh;
-        overflow-x: hidden;
-        background-color: #f0f2f5; /* Nền xám sáng dễ chịu */
-      }
-
-      .instructor-wrapper {
-        display: flex;
-        width: 100%;
-        align-items: stretch;
-      }
-
-      /* --- SIDEBAR MÀU XANH --- */
-      #inst-sidebar {
-        min-width: 260px;
-        max-width: 260px;
-        min-height: 100vh;
-        background: #0d6efd; /* Màu xanh Primary Bootstrap */
-        background: linear-gradient(180deg, #0d6efd 0%, #0a58ca 100%); /* Gradient cho đẹp */
-        color: #fff;
-        transition: all 0.3s;
-      }
-
-      #inst-sidebar .sidebar-header {
-        padding: 20px;
-        background: rgba(0, 0, 0, 0.1);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      #inst-sidebar ul.components {
-        padding: 20px 0;
-      }
-
-      /* Tiêu đề nhóm */
-      #inst-sidebar ul li.header-text {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.75rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        padding: 15px 25px 5px 25px;
-      }
-
-      #inst-sidebar ul li a {
-        padding: 12px 25px;
-        font-size: 0.95rem;
-        display: block;
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-        transition: 0.2s;
-        border-left: 4px solid transparent;
-      }
-
-      #inst-sidebar ul li a:hover {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.1);
-        border-left-color: #fff;
-      }
-
-      #inst-sidebar ul li a.active {
-        color: #0d6efd; /* Chữ xanh */
-        background: #fff; /* Nền trắng */
-        border-left-color: #ffc107; /* Vạch vàng */
-        font-weight: 600;
-        border-radius: 30px 0 0 30px; /* Bo tròn góc phải lạ mắt */
-        margin-left: 10px; /* Thụt vào 1 chút */
-      }
-
-      #inst-sidebar ul li a i {
-        margin-right: 10px;
-        width: 20px;
-        text-align: center;
-      }
-
-      /* --- CONTENT --- */
-      #inst-content {
-        width: 100%;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .inst-topbar {
-        background: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,.05);
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-    </style>
   </head>
 
-  <body>
+  <body class="layout-instructor">
     <div class="instructor-wrapper">
 
       <%= render "layouts/instructor_sidebar" %>

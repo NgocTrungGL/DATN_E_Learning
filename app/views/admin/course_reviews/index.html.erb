@@ -1,131 +1,152 @@
-<div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1 class="h3 fw-bold mb-0">Hàng chờ kiểm duyệt</h1>
-      <p class="text-muted small">Danh sách các khóa học đang chờ Admin phê duyệt.</p>
+<%# Admin Course Reviews — Premium BEM Redesign %>
+<%# Pattern consistent with crs-page / cat-page design system %>
+
+<div class="rev-page">
+
+  <%# ── Page Header ─────────────────────────────────────────── %>
+  <header class="rev-page__header">
+    <div class="rev-page__header-left">
+      <div class="rev-page__breadcrumb">
+        <i class="bi bi-shield-check"></i>
+        <span>Content Moderation</span>
+      </div>
+      <h1 class="rev-page__title">Review Queue</h1>
+      <p class="rev-page__subtitle">Courses awaiting admin approval before going public on the platform.</p>
     </div>
 
-    <div class="bg-white p-2 rounded shadow-sm border">
-      <span class="text-muted small text-uppercase fw-bold me-2">Tổng chờ xử lý:</span>
-      <span class="badge bg-danger rounded-pill fs-6"><%= Course.pending.count %></span>
+    <div class="rev-page__header-right">
+      <div class="rev-page__stat-pill">
+        <i class="bi bi-hourglass-split"></i>
+        <strong><%= Course.pending.count %></strong>
+        <span>Pending</span>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <div class="card border-0 shadow-sm">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="bg-light text-secondary small text-uppercase">
-            <tr>
-              <th scope="col" class="ps-4" style="width: 40%;">Thông tin khóa học</th>
-              <th scope="col" style="width: 20%;">Giảng viên</th>
-              <th scope="col" style="width: 15%;">Thời gian gửi</th>
-              <th scope="col" class="text-end pe-4" style="width: 25%;">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if @pending_courses.any? %>
-              <% @pending_courses.each do |course| %>
-                <tr>
-                  <td class="ps-4 py-3">
-                    <div class="d-flex align-items-start">
-                      <div class="position-relative me-3">
-                        <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/80x50' %>"
-                             class="rounded border shadow-sm"
-                             style="width: 100px; height: 60px; object-fit: cover;">
-                        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-warning text-dark border border-light shadow-sm">
-                          Pending
-                        </span>
+  <%# ── Table Card ───────────────────────────────────────────── %>
+  <% if @pending_courses.any? %>
+    <div class="rev-table-card">
+      <table class="rev-table">
+        <thead>
+          <tr>
+            <th class="rev-table__th">
+              <i class="bi bi-play-circle"></i> Course
+            </th>
+            <th class="rev-table__th rev-table__th--instructor">
+              <i class="bi bi-person-fill"></i> Instructor
+            </th>
+            <th class="rev-table__th rev-table__th--time">
+              <i class="bi bi-clock"></i> Submitted
+            </th>
+            <th class="rev-table__th rev-table__th--actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pending_courses.each do |course| %>
+            <tr class="rev-table__row">
+
+              <%# Course cell %>
+              <td class="rev-table__td">
+                <div class="rev-table__course-cell">
+                  <div class="rev-table__thumb">
+                    <% if course.thumbnail_url.present? %>
+                      <img src="<%= course.thumbnail_url %>" class="rev-table__thumb-img" alt="<%= course.title %>">
+                    <% else %>
+                      <div class="rev-table__thumb-placeholder">
+                        <i class="bi bi-play-circle-fill"></i>
                       </div>
-
-                      <div>
-                        <h6 class="fw-bold mb-1 text-dark">
-                          <%= link_to truncate(course.title, length: 60), admin_course_path(course), class: "text-decoration-none text-dark", target: "_blank" %>
-                        </h6>
-                        <div class="text-muted small mb-1">
-                          <i class="bi bi-tag-fill me-1"></i> <%= course.category&.name || "Chưa phân loại" %>
-                          <span class="mx-1">•</span>
-                          <span class="text-primary fw-bold">
-                            <%= course.free? ? "Miễn phí" : number_to_currency(course.price, unit: '₫', precision: 0) %>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <div class="avatar-wrapper avatar-xs me-2">
-                        <% if course.creator.avatar_url.present? %>
-                          <img src="<%= course.creator.avatar_url %>" class="avatar-img rounded-circle border">
-                        <% else %>
-                          <div class="avatar-text rounded-circle bg-light text-secondary border small">
-                            <%= course.creator.name.first.upcase %>
-                          </div>
-                        <% end %>
-                      </div>
-                      <div>
-                        <div class="small fw-bold"><%= course.creator.name %></div>
-                        <div class="small text-muted" style="font-size: 0.75rem;"><%= course.creator.email %></div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td>
-                    <div class="small text-dark fw-bold">
-                      <%= time_ago_in_words(course.updated_at) %> trước
-                    </div>
-                    <div class="small text-muted" style="font-size: 0.75rem;">
-                      <%= course.updated_at.strftime("%H:%M - %d/%m/%Y") %>
-                    </div>
-                  </td>
-
-                  <td class="text-end pe-4">
-                    <div class="d-flex justify-content-end gap-2">
-                      <%= link_to admin_course_path(course), class: "btn btn-outline-secondary btn-sm", target: "_blank", title: "Xem nội dung chi tiết" do %>
-                        <i class="bi bi-eye"></i> Xem
-                      <% end %>
-
-                      <%= button_to approve_admin_course_review_path(course),
-                          method: :patch,
-                          class: "btn btn-success btn-sm fw-bold",
-                          data: { confirm: "Xác nhận duyệt khóa học này và công khai lên hệ thống?" } do %>
-                        <i class="bi bi-check-lg"></i> Duyệt
-                      <% end %>
-
-                      <%= button_to reject_admin_course_review_path(course),
-                          method: :patch,
-                          class: "btn btn-danger btn-sm",
-                          title: "Từ chối khóa học này",
-                          data: { confirm: "Bạn có chắc muốn từ chối khóa học này không?" } do %>
-                        <i class="bi bi-x-lg"></i>
-                      <% end %>
-                    </div>
-                  </td>
-                </tr>
-              <% end %>
-            <% else %>
-              <tr>
-                <td colspan="4" class="text-center py-5">
-                  <div class="d-flex flex-column align-items-center justify-content-center text-muted">
-                    <div class="bg-light rounded-circle p-4 mb-3">
-                      <i class="bi bi-check2-all fs-1 text-success"></i>
-                    </div>
-                    <h5 class="fw-bold">Tuyệt vời!</h5>
-                    <p class="mb-0">Không có khóa học nào đang chờ duyệt.</p>
+                    <% end %>
+                    <span class="rev-table__status-badge">Pending</span>
                   </div>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    </div>
+                  <div class="rev-table__course-info">
+                    <span class="rev-table__course-title">
+                      <%= link_to truncate(course.title, length: 72), admin_course_path(course),
+                          target: '_blank', class: 'rev-table__course-link' %>
+                    </span>
+                    <span class="rev-table__course-meta">
+                      <i class="bi bi-tag-fill"></i>
+                      <%= course.category&.name || 'Uncategorized' %>
+                      <span class="rev-table__dot">·</span>
+                      <span class="rev-table__price">
+                        <%= course.free? ? 'Free' : number_to_currency(course.price, unit: '₫', precision: 0) %>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </td>
 
-    <% if @pagy.pages > 1 %>
-      <div class="card-footer bg-white py-3 border-top-0 d-flex justify-content-end">
-        <%== pagy_bootstrap_nav(@pagy) %>
+              <%# Instructor cell %>
+              <td class="rev-table__td rev-table__td--instructor">
+                <div class="rev-table__instructor">
+                  <div class="rev-table__avatar">
+                    <% if course.creator.avatar_url.present? %>
+                      <img src="<%= course.creator.avatar_url %>" class="rev-table__avatar-img" alt="<%= course.creator.name %>">
+                    <% else %>
+                      <span class="rev-table__avatar-text"><%= course.creator.name.first.upcase %></span>
+                    <% end %>
+                  </div>
+                  <div>
+                    <p class="rev-table__instructor-name"><%= course.creator.name %></p>
+                    <p class="rev-table__instructor-email"><%= course.creator.email %></p>
+                  </div>
+                </div>
+              </td>
+
+              <%# Time cell %>
+              <td class="rev-table__td rev-table__td--time">
+                <p class="rev-table__time-ago"><%= time_ago_in_words(course.updated_at) %> ago</p>
+                <p class="rev-table__time-abs"><%= course.updated_at.strftime('%H:%M · %d/%m/%Y') %></p>
+              </td>
+
+              <%# Actions cell %>
+              <td class="rev-table__td rev-table__td--actions">
+                <div class="rev-table__action-group">
+                  <%= link_to admin_course_path(course),
+                      class: 'rev-btn rev-btn--view',
+                      target: '_blank',
+                      title: 'View course detail' do %>
+                    <i class="bi bi-eye"></i>
+                    <span>View</span>
+                  <% end %>
+
+                  <%= button_to approve_admin_course_review_path(course),
+                      method: :patch,
+                      class: 'rev-btn rev-btn--approve',
+                      data: { confirm: 'Approve this course and make it public?' } do %>
+                    <i class="bi bi-check-lg"></i>
+                    <span>Approve</span>
+                  <% end %>
+
+                  <%= button_to reject_admin_course_review_path(course),
+                      method: :patch,
+                      class: 'rev-btn rev-btn--reject',
+                      data: { confirm: 'Are you sure you want to reject this course?' } do %>
+                    <i class="bi bi-x-lg"></i>
+                    <span>Reject</span>
+                  <% end %>
+                </div>
+              </td>
+
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rev-empty">
+      <div class="rev-empty__icon">
+        <i class="bi bi-check2-all"></i>
       </div>
-    <% end %>
-  </div>
+      <h2>All Clear!</h2>
+      <p>No courses are currently pending review.</p>
+    </div>
+  <% end %>
+
+  <%# ── Pagination ───────────────────────────────────────────── %>
+  <% if @pagy.pages > 1 %>
+    <div class="rev-pagination">
+      <div class="rev-pagination__nav"><%== pagy_nav(@pagy) %></div>
+    </div>
+  <% end %>
+
 </div>

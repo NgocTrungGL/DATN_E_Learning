@@ -1,0 +1,94 @@
+// ============================================================
+// INSTRUCTOR LAYOUT
+// Scoped styles to prevent Turbo leak
+// ============================================================
+
+body.layout-instructor {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: #f0f2f5;
+
+  .instructor-wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  /* --- SIDEBAR MÀU XANH --- */
+  #inst-sidebar {
+    min-width: 260px;
+    max-width: 260px;
+    min-height: 100vh;
+    background: #0d6efd;
+    background: linear-gradient(180deg, #0d6efd 0%, #0a58ca 100%);
+    color: #fff;
+    transition: all 0.3s;
+
+    .sidebar-header {
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    ul.components {
+      padding: 20px 0;
+    }
+
+    ul li.header-text {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 15px 25px 5px 25px;
+    }
+
+    ul li a {
+      padding: 12px 25px;
+      font-size: 0.95rem;
+      display: block;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: 0.2s;
+      border-left: 4px solid transparent;
+
+      &:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        border-left-color: #fff;
+      }
+
+      &.active {
+        color: #0d6efd;
+        background: #fff;
+        border-left-color: #ffc107;
+        font-weight: 600;
+        border-radius: 30px 0 0 30px;
+        margin-left: 10px;
+      }
+
+      i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+      }
+    }
+  }
+
+  /* --- CONTENT --- */
+  #inst-content {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .inst-topbar {
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

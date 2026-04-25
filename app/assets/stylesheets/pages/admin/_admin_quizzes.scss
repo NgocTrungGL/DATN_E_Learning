@@ -1,0 +1,925 @@
+// ============================================================
+// ADMIN QUIZZES — Premium BEM SCSS
+// Blocks: .qz-page, .qz-table, .qz-btn,
+//         .qz-config-card, .qz-manual-grid,
+//         .qz-questions-panel, .qz-sidebar,
+//         .qz-form, .qz-empty, .qz-pagination
+// Design tokens from abstracts/_variables.scss
+// ============================================================
+
+// ── Page Shell ──────────────────────────────────────────────
+.qz-page {
+  padding: 2rem 2.5rem 4rem;
+  background: $bg;
+  min-height: 100%;
+
+  @media (max-width: 768px) { padding: 1.25rem 1rem 3rem; }
+}
+
+// ── Back Link ───────────────────────────────────────────────
+.qz-backlink {
+  margin-bottom: 1.25rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: $text-mid;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: $t;
+    &:hover { color: $primary; }
+  }
+}
+
+// ── Page Header ─────────────────────────────────────────────
+.qz-page__header {
+  background: linear-gradient(135deg, $bg-dark 0%, #1e293b 60%, #1a3a6b 100%);
+  border-radius: $radius-xl;
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 220px; height: 220px;
+    background: rgba($primary, 0.12);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  &--compact {
+    padding: 1.5rem 2.5rem;
+    margin-bottom: 1.5rem;
+    &::after { width: 140px; height: 140px; right: -40px; top: -40px; }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.qz-page__breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba($white, 0.55);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+  .bi { font-size: 0.85rem; color: $warning; }
+}
+
+.qz-page__title {
+  color: $white;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+}
+
+.qz-page__subtitle {
+  color: rgba($white, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.qz-page__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.qz-page__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba($white, 0.65);
+  font-size: 0.82rem;
+  .bi { color: $warning; }
+}
+
+.qz-page__header-left { position: relative; z-index: 1; }
+
+.qz-page__header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.qz-page__stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba($white, 0.1);
+  border: 1px solid rgba($white, 0.15);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  color: $white;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
+  strong { font-size: 1.1rem; font-weight: 900; }
+  .bi { color: $warning; }
+}
+
+.qz-page__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $primary;
+  color: $white;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.7rem 1.4rem;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: $t;
+  box-shadow: 0 4px 14px rgba($primary, 0.35);
+  white-space: nowrap;
+  &:hover { background: $primary-dark; color: $white; transform: translateY(-1px); }
+}
+
+.qz-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: $t;
+  border: 1.5px solid;
+  white-space: nowrap;
+
+  &--secondary {
+    background: rgba($white, 0.1);
+    border-color: rgba($white, 0.2);
+    color: $white;
+    &:hover { background: rgba($white, 0.2); color: $white; }
+  }
+}
+
+// ── Table Card ───────────────────────────────────────────────
+.qz-table-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+  margin-bottom: 1.75rem;
+}
+
+// ── Table ────────────────────────────────────────────────────
+.qz-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  &__th {
+    padding: 0.9rem 1.35rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-muted;
+    background: $bg;
+    border-bottom: 2px solid $border;
+    white-space: nowrap;
+    .bi { margin-right: 0.3rem; opacity: 0.6; }
+    &--actions { text-align: right; padding-right: 1.5rem; }
+    &--type { text-align: center; }
+  }
+
+  &__row {
+    border-bottom: 1px solid $border;
+    transition: background 0.18s ease;
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba($primary, 0.02); }
+  }
+
+  &__td {
+    padding: 1rem 1.35rem;
+    vertical-align: middle;
+    &--actions { text-align: right; }
+    &--type { text-align: center; }
+  }
+
+  &__quiz-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  &__quiz-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-sm;
+    background: $primary-light;
+    color: $primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  &__quiz-title {
+    display: block;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: $text-dark;
+  }
+
+  &__quiz-desc {
+    display: block;
+    font-size: 0.77rem;
+    color: $text-muted;
+    margin-top: 0.2rem;
+  }
+
+  &__course-name {
+    font-size: 0.85rem;
+    color: $text-mid;
+    font-weight: 500;
+  }
+
+  &__action-group {
+    display: inline-flex;
+    gap: 0.4rem;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+}
+
+// ── Type Badges ──────────────────────────────────────────────
+.qz-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+
+  &--lesson {
+    background: $warning-light;
+    color: darken($warning, 10%);
+    border: 1px solid rgba($warning, 0.2);
+  }
+
+  &--general {
+    background: $primary-light;
+    color: $primary;
+    border: 1px solid rgba($primary, 0.15);
+  }
+}
+
+// ── Action Buttons ───────────────────────────────────────────
+.qz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 84px;
+  padding: 0.42rem 0.9rem;
+  border-radius: $radius-md;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1.5px solid;
+  transition: $t;
+  cursor: pointer;
+  background: transparent;
+  white-space: nowrap;
+  box-sizing: border-box;
+  .bi { font-size: 0.78rem; }
+
+  &--view   { border-color: $accent;  color: $accent;  &:hover { background: $accent;  color: $white; } }
+  &--edit   { border-color: $primary; color: $primary; &:hover { background: $primary; color: $white; } }
+  &--delete { border-color: $danger;  color: $danger;  &:hover { background: $danger;  color: $white; } }
+}
+
+// ── Empty State ──────────────────────────────────────────────
+.qz-empty {
+  padding: 5rem 2rem;
+  text-align: center;
+
+  &__icon {
+    width: 72px;
+    height: 72px;
+    background: $primary-light;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 2rem;
+    color: $primary;
+  }
+
+  h3 { font-size: 1.15rem; font-weight: 800; color: $text-dark; margin-bottom: 0.5rem; }
+  p { font-size: 0.9rem; color: $text-muted; margin-bottom: 1.5rem; }
+}
+
+// ── Pagination ───────────────────────────────────────────────
+.qz-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border;
+
+  &__nav { display: flex; align-items: center; justify-content: center; }
+  &__note { font-size: 0.8rem; color: $text-muted; margin: 0; }
+
+  nav {
+    display: flex;
+    gap: 0.35rem;
+    a, span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-md;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1.5px solid $border;
+      color: $text-mid;
+      background: $white;
+      transition: $t;
+      &:hover { border-color: $primary; color: $primary; background: $primary-light; }
+      &[aria-current="page"] { background: $primary; border-color: $primary; color: $white; }
+    }
+  }
+}
+
+// ── Random Mode Banner (show page) ───────────────────────────
+.qz-random-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: $warning-light;
+  border: 1.5px solid rgba($warning, 0.25);
+  border-radius: $radius-lg;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+
+  &__icon {
+    width: 44px;
+    height: 44px;
+    background: $warning;
+    color: $white;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: darken($warning, 20%);
+    margin: 0 0 0.35rem;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: darken($warning, 15%);
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+// ── Config Card (Random show) ────────────────────────────────
+.qz-config-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  &__header {
+    padding: 1rem 1.5rem;
+    background: $bg;
+    border-bottom: 1px solid $border;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $text-dark;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    .bi { color: $primary; }
+  }
+
+  &__body { padding: 1.5rem; }
+
+  &__scoring {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: $primary-light;
+    border-radius: $radius-sm;
+    font-size: 0.84rem;
+    color: $primary;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  &__footer {
+    padding: 0.75rem 1.5rem;
+    background: $bg;
+    border-top: 1px solid $border;
+    font-size: 0.8rem;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    .bi { color: $primary; }
+  }
+}
+
+// ── Stats Grid ───────────────────────────────────────────────
+.qz-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.qz-stat {
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 1rem;
+  text-align: center;
+
+  &__label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+  }
+
+  &__value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 900;
+    color: $text-dark;
+    &--easy   { color: $success; }
+    &--medium { color: $warning; }
+    &--hard   { color: $danger; }
+  }
+}
+
+// ── Manual Grid (show page) ──────────────────────────────────
+.qz-manual-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+// ── Questions Panel ──────────────────────────────────────────
+.qz-questions-panel {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.35rem;
+    background: $bg;
+    border-bottom: 1px solid $border;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  &__empty {
+    padding: 3rem 2rem;
+    text-align: center;
+    color: $text-muted;
+    .bi { font-size: 2rem; display: block; margin-bottom: 0.75rem; }
+    p { font-size: 0.85rem; line-height: 1.65; margin: 0; }
+  }
+
+  &__list { display: flex; flex-direction: column; }
+}
+
+// ── Count Badge ──────────────────────────────────────────────
+.qz-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  background: $primary;
+  color: $white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border-radius: 999px;
+}
+
+// ── Question Item ────────────────────────────────────────────
+.qz-question-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.35rem;
+  border-bottom: 1px solid rgba($border, 0.6);
+  transition: background 0.15s ease;
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba($primary, 0.02); }
+
+  &__content { flex: 1; min-width: 0; }
+
+  &__text {
+    font-size: 0.87rem;
+    color: $text-dark;
+    font-weight: 500;
+    margin: 0 0 0.35rem;
+    line-height: 1.5;
+  }
+
+  &__tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+}
+
+// ── Tags ─────────────────────────────────────────────────────
+.qz-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+
+  &--single   { background: $primary-light; color: $primary; }
+  &--multiple { background: $accent-light;  color: $accent;  }
+  &--easy     { background: $success-light; color: darken($success, 10%); }
+  &--medium   { background: $warning-light; color: darken($warning, 15%); }
+  &--hard     { background: $danger-light;  color: darken($danger, 10%);  }
+}
+
+// ── Remove Button ────────────────────────────────────────────
+.qz-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-sm;
+  background: transparent;
+  border: 1.5px solid $danger;
+  color: $danger;
+  cursor: pointer;
+  transition: $t;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  &:hover { background: $danger; color: $white; }
+}
+
+// ── Sidebar ──────────────────────────────────────────────────
+.qz-sidebar {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 1.5rem;
+
+  &__header {
+    padding: 1rem 1.35rem;
+    background: linear-gradient(135deg, $bg-dark, #1e293b);
+    color: $white;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    .bi { color: $warning; }
+  }
+
+  &__body { padding: 1.25rem; }
+
+  &__hint {
+    font-size: 0.82rem;
+    color: $text-mid;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    background: $bg;
+    font-size: 0.85rem;
+    color: $text-dark;
+    margin-bottom: 0.75rem;
+    transition: $t;
+    &:focus { outline: none; border-color: $primary; box-shadow: 0 0 0 3px rgba($primary, 0.1); }
+  }
+
+  &__submit {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: $primary;
+    color: $white;
+    border: none;
+    border-radius: $radius-md;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: $t;
+    &:hover { background: $primary-dark; transform: translateY(-1px); }
+  }
+
+  &__exhausted {
+    padding: 0.85rem;
+    background: $success-light;
+    border-radius: $radius-md;
+    font-size: 0.82rem;
+    color: darken($success, 10%);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid $border;
+    margin: 1rem 0;
+  }
+
+  &__create-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.65rem;
+    border: 1.5px dashed $primary;
+    border-radius: $radius-md;
+    color: $primary;
+    font-size: 0.83rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: $t;
+    background: transparent;
+    &:hover { background: $primary-light; }
+  }
+}
+
+// ── Form Styles (new/edit) ───────────────────────────────────
+.qz-form {
+  &__errors {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: $danger-light;
+    border: 1.5px solid rgba($danger, 0.25);
+    border-radius: $radius-md;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+
+    &-icon { font-size: 1.2rem; color: $danger; flex-shrink: 0; margin-top: 1px; }
+    &-title { display: block; color: $danger; font-weight: 800; font-size: 0.9rem; margin-bottom: 0.35rem; }
+    &-list { margin: 0; padding-left: 1.15rem; color: darken($danger, 5%); font-size: 0.85rem; }
+  }
+
+  &__card {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+    margin-bottom: 1.5rem;
+
+    &-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.75rem;
+      background: linear-gradient(135deg, $bg-dark, #1e293b);
+      border-bottom: 1px solid rgba($white, 0.06);
+    }
+
+    &-header--random {
+      background: linear-gradient(135deg, #1a3a1a, #14532d);
+    }
+
+    &-icon {
+      width: 44px; height: 44px;
+      background: rgba($white, 0.08);
+      border: 1px solid rgba($white, 0.12);
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: $warning;
+      flex-shrink: 0;
+    }
+
+    &-icon--random { color: $success; }
+
+    &-title { color: $white; font-size: 1rem; font-weight: 800; margin: 0 0 0.15rem; }
+    &-subtitle { color: rgba($white, 0.5); font-size: 0.8rem; margin: 0; }
+    &-body { padding: 1.5rem 1.75rem; }
+
+    &--random { border-color: rgba($success, 0.2); }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    @media (max-width: 768px) { grid-template-columns: 1fr; }
+  }
+
+  &__random-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    &--full { grid-column: 1 / -1; }
+  }
+
+  &__count-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.75rem;
+    border-radius: $radius-md;
+    border: 1.5px solid;
+
+    &--easy   { background: $success-light; border-color: rgba($success, 0.3); }
+    &--medium { background: $warning-light; border-color: rgba($warning, 0.3); }
+    &--hard   { background: $danger-light;  border-color: rgba($danger,  0.3); }
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: $text-dark;
+    .bi { font-size: 0.85rem; color: $primary; }
+    &--required::after { content: " *"; color: $danger; }
+  }
+
+  &__optional {
+    font-weight: 400;
+    color: $text-muted;
+    font-size: 0.78rem;
+  }
+
+  &__input,
+  &__select,
+  &__textarea {
+    width: 100%;
+    padding: 0.72rem 1rem;
+    background: $bg;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    font-size: 0.9rem;
+    color: $text-dark;
+    transition: $t;
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+    &::placeholder { color: $text-muted; }
+  }
+
+  &__textarea { resize: vertical; min-height: 80px; }
+
+  &__hint {
+    font-size: 0.76rem;
+    color: $text-muted;
+    line-height: 1.5;
+  }
+
+  &__mode-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+    border-radius: $radius-lg;
+    margin-bottom: 1.5rem;
+    .bi { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+
+    &--manual {
+      background: $primary-light;
+      border: 1.5px solid rgba($primary, 0.2);
+      color: $primary-dark;
+    }
+
+    strong { display: block; margin-bottom: 0.25rem; }
+    p { font-size: 0.83rem; margin: 0; opacity: 0.85; }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.75rem;
+    border-radius: $radius-md;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: $t;
+    border: 1.5px solid;
+
+    &--save {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+      box-shadow: 0 4px 14px rgba($primary, 0.3);
+      &:hover { background: $primary-dark; transform: translateY(-1px); }
+    }
+
+    &--cancel {
+      background: transparent;
+      border-color: $border;
+      color: $text-mid;
+      &:hover { background: $border; color: $text-dark; }
+    }
+  }
+}

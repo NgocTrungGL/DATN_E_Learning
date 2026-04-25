@@ -1,118 +1,91 @@
-<nav id="sidebar">
-  <div class="sidebar-header">
-    <%= link_to admin_dashboard_path, class: "text-white text-decoration-none fs-5 fw-bold d-flex align-items-center" do %>
-      <i class="bi bi-shield-lock-fill text-warning fs-3 me-2"></i>
+<%# ============================================================ %>
+<%# ADMIN SIDEBAR — Redesigned UI (BEM)                       %>
+<%# ============================================================ %>
+
+<nav class="admin-sidebar" id="sidebar">
+  
+  <%# ── Header / Brand ────────────────────────────────────── %>
+  <div class="admin-sidebar__header">
+    <%= link_to admin_dashboard_path, class: "admin-sidebar__brand" do %>
+      <i class="bi bi-shield-lock-fill"></i>
       <span>ADMIN PORTAL</span>
     <% end %>
   </div>
 
-  <ul class="list-unstyled components">
-    <li>
-      <%= link_to admin_dashboard_path, class: "#{'active' if controller_name == 'dashboard'}" do %>
-        <i class="bi bi-speedometer2"></i> Dashboard
+  <%# ── Navigation List ───────────────────────────────────── %>
+  <div class="admin-sidebar__nav">
+    
+    <%# Dashboard %>
+    <%= link_to admin_dashboard_path, class: "admin-sidebar__link #{'active' if controller_name == 'dashboard'}" do %>
+      <span><i class="bi bi-speedometer2"></i> Dashboard</span>
+    <% end %>
+
+    <%# Section: Nội dung đào tạo %>
+    <div class="admin-sidebar__group">Nội dung đào tạo</div>
+    
+    <%= link_to admin_course_reviews_path, class: "admin-sidebar__link #{'active' if controller_name == 'course_reviews'}" do %>
+      <span><i class="bi bi-check-circle-fill" style="color: #f59e0b;"></i> Duyệt Khóa học</span>
+      <% pending_count = Course.pending.count %>
+      <% if pending_count > 0 %>
+        <span class="admin-sidebar__badge admin-sidebar__badge--pulse"><%= pending_count %></span>
       <% end %>
-    </li>
+    <% end %>
 
-    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Nội dung đào tạo</li>
+    <%= link_to admin_courses_path, class: "admin-sidebar__link #{'active' if controller_name == 'courses' && params[:status].blank?}" do %>
+      <span><i class="bi bi-collection-play"></i> Tất cả Khóa học</span>
+    <% end %>
 
-    <li>
-      <%= link_to admin_course_reviews_path, class: "d-flex justify-content-between align-items-center #{'active' if controller_name == 'course_reviews'}" do %>
-        <span><i class="bi bi-check-circle-fill text-warning"></i> Duyệt Khóa học</span>
-        <% pending_count = Course.pending.count %>
-        <% if pending_count > 0 %>
-          <span class="badge bg-danger rounded-pill animate__animated animate__pulse animate__infinite"><%= pending_count %></span>
-        <% end %>
-      <% end %>
-    </li>
-    <li>
-      <%= link_to admin_courses_path, class: "#{'active' if controller_name == 'courses' && params[:status].blank?}" do %>
-        <i class="bi bi-collection-play"></i> Tất cả Khóa học
-      <% end %>
-    </li>
+    <%= link_to admin_categories_path, class: "admin-sidebar__link #{'active' if controller_name == 'categories'}" do %>
+      <span><i class="bi bi-tags"></i> Danh mục</span>
+    <% end %>
 
-    <li>
-      <%= link_to admin_categories_path, class: "#{'active' if controller_name == 'categories'}" do %>
-        <i class="bi bi-tags"></i> Danh mục
-      <% end %>
-    </li>
+    <%# Section: Kiểm tra & Đánh giá %>
+    <div class="admin-sidebar__group">Kiểm tra & Đánh giá</div>
+    
+    <%= link_to admin_quizzes_path, class: "admin-sidebar__link #{'active' if controller_name == 'quizzes'}" do %>
+      <span><i class="bi bi-card-checklist"></i> Bài kiểm tra</span>
+    <% end %>
 
-    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Kiểm tra & Đánh giá</li>
+    <%= link_to admin_questions_path, class: "admin-sidebar__link #{'active' if controller_name == 'questions'}" do %>
+      <span><i class="bi bi-question-square"></i> Ngân hàng câu hỏi</span>
+    <% end %>
 
-    <li>
-      <%= link_to admin_quizzes_path, class: "#{'active' if controller_name == 'quizzes'}" do %>
-        <i class="bi bi-card-checklist"></i> Bài kiểm tra
-      <% end %>
-    </li>
+    <%# Section: Tương tác & Cộng đồng %>
+    <div class="admin-sidebar__group">Tương tác & Cộng đồng</div>
 
-    <li>
-      <%= link_to admin_questions_path, class: "#{'active' if controller_name == 'questions'}" do %>
-        <i class="bi bi-question-square"></i> Ngân hàng câu hỏi
-      <% end %>
-    </li>
+    <%= link_to admin_reviews_path, class: "admin-sidebar__link #{'active' if controller_name == 'reviews'}" do %>
+      <span><i class="bi bi-star"></i> Đánh giá (Reviews)</span>
+    <% end %>
 
-    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Tương tác & Cộng đồng</li>
+    <%= link_to admin_comments_path, class: "admin-sidebar__link #{'active' if controller_name == 'comments'}" do %>
+      <span><i class="bi bi-chat-dots"></i> Hỏi đáp (Comments)</span>
+    <% end %>
 
-    <li>
-      <%= link_to admin_reviews_path, class: "#{'active' if controller_name == 'reviews'}" do %>
-        <i class="bi bi-star"></i> Đánh giá (Reviews)
-      <% end %>
-    </li>
+    <%# Section: Người dùng & Tài chính %>
+    <div class="admin-sidebar__group">Người dùng & Hệ thống</div>
 
-    <li>
-      <%= link_to admin_comments_path, class: "#{'active' if controller_name == 'comments'}" do %>
-        <i class="bi bi-chat-dots"></i> Hỏi đáp (Comments)
-      <% end %>
-    </li>
+    <%= link_to admin_users_path, class: "admin-sidebar__link #{'active' if controller_name == 'users'}" do %>
+      <span><i class="bi bi-people-fill"></i> Người dùng</span>
+    <% end %>
 
-    <li class="px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">Người dùng & Tài chính</li>
+    <%= link_to admin_instructor_profiles_path, class: "admin-sidebar__link #{'active' if controller_name == 'instructors'}" do %>
+      <span><i class="bi bi-person-lines-fill"></i> Duyệt Giảng viên</span>
+    <% end %>
 
-    <li>
-      <%= link_to admin_users_path, class: "#{'active' if controller_name == 'users'}" do %>
-        <i class="bi bi-people-fill"></i> Người dùng hệ thống
-      <% end %>
-    </li>
+    <%# Section: Quản lý Tài chính %>
+    <div class="admin-sidebar__group">Quản lý Tài chính</div>
 
-    <li>
-      <%= link_to admin_instructor_profiles_path, class: "#{'active' if controller_name == 'instructors'}" do %>
-        <i class="bi bi-person-lines-fill"></i> Duyệt Giảng viên
-      <% end %>
-    </li>
+    <%= link_to admin_revenues_path, class: "admin-sidebar__link #{'active' if controller_name == 'revenues'}" do %>
+      <span><i class="bi bi-cash-coin" style="color: #10b981;"></i> Doanh thu hệ thống</span>
+    <% end %>
 
-    <li class="header-text px-3 pt-3 pb-1 text-uppercase small text-muted fw-bold" style="font-size: 0.7rem;">QUẢN LÝ TÀI CHÍNH</li>
+    <%= link_to admin_enrollments_path, class: "admin-sidebar__link #{'active' if controller_name == 'enrollments'}" do %>
+      <span><i class="bi bi-receipt-cutoff"></i> Duyệt Ghi danh</span>
+    <% end %>
 
-    <li>
-      <%= link_to admin_revenues_path, class: "#{'active' if controller_name == 'revenues'}" do %>
-        <i class="bi bi-cash-coin text-success"></i>
-        <span>Doanh thu hệ thống</span>
-      <% end %>
-    </li>
+    <%= link_to admin_payouts_path, class: "admin-sidebar__link #{'active' if controller_name == 'payouts'}" do %>
+      <span><i class="bi bi-bank2" style="color: #ef4444;"></i> Yêu cầu rút tiền</span>
+    <% end %>
 
-    <li>
-      <%= link_to admin_enrollments_path, class: "#{'active' if controller_name == 'enrollments'}" do %>
-        <i class="bi bi-receipt-cutoff"></i>
-        <span>Duyệt Ghi danh</span>
-      <% end %>
-    </li>
-     <li>
-      <%= link_to admin_payouts_path, class: "#{'active' if controller_name == 'payouts'}" do %>
-        <i class="bi bi-bank2 text-danger"></i>
-        <span>Yêu cầu rút tiền</span>
-      <% end %>
-    </li>
-  </ul>
-  <li class="header-text">QUẢN LÝ TÀI CHÍNH</li>
-
-    <li>
-      <%= link_to admin_revenues_path, class: "#{'active' if controller_name == 'revenues'}" do %>
-        <i class="bi bi-cash-coin text-success"></i>
-        <span>Doanh thu hệ thống</span>
-      <% end %>
-    </li>
-
-    <li>
-      <%= link_to admin_enrollments_path, class: "#{'active' if controller_name == 'enrollments'}" do %>
-        <i class="bi bi-receipt-cutoff"></i>
-        <span>Duyệt Ghi danh</span>
-      <% end %>
-    </li>
+  </div>
 </nav>

@@ -1,142 +1,130 @@
-<div class="container-fluid py-4">
-  <h2 class="h3 fw-bold text-gray-800 mb-4 border-start border-4 border-info ps-3">Tài chính Hệ thống</h2>
+<%# Admin Revenues Index — Bootstrap-free BEM redesign %>
+<%# Chartkick helpers: line_chart, pie_chart — kept as-is %>
 
-  <div class="row mb-4 g-3">
+<div class="admin-page-header">
+  <div class="admin-page-header__inner">
+    <div>
+      <div class="admin-page-header__badge"><i class="bi bi-cash-coin"></i> Tài chính</div>
+      <h1 class="admin-page-header__title">Tài chính Hệ thống</h1>
+    </div>
+  </div>
+</div>
 
-    <div class="col-xl-4 col-md-6">
-      <div class="card bg-info text-white shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs fw-bold text-uppercase mb-1 opacity-75">Ví Admin (30% Phí)</div>
-              <div class="h2 mb-0 fw-bold">
-                <%= number_to_currency(@wallet.balance, unit: "₫", precision: 0, format: "%n %u") %>
-              </div>
-            </div>
-            <div class="col-auto">
-              <i class="bi bi-safe2-fill fs-1 opacity-50"></i>
-            </div>
-          </div>
-          <p class="mb-0 mt-2 small opacity-75">Số tiền thực tế bạn có thể rút.</p>
-        </div>
+<div class="admin-page-body">
+
+  <%# ── Financial Summary Widgets ─────────────────────────── %>
+  <div class="admin-stats">
+    <div class="admin-stats__card admin-stats__card--accent">
+      <i class="bi bi-safe2-fill admin-stats__icon"></i>
+      <div class="admin-stats__value">
+        <%= number_to_currency(@wallet.balance, unit: "₫", precision: 0, format: "%n %u") %>
+      </div>
+      <div class="admin-stats__label">Ví Admin (30% Phí)</div>
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Số tiền thực tế bạn có thể rút</div>
+    </div>
+
+    <div class="admin-stats__card admin-stats__card--success">
+      <i class="bi bi-graph-up-arrow admin-stats__icon"></i>
+      <div class="admin-stats__value">
+        <%= number_to_currency(@total_platform_revenue, unit: "₫", precision: 0, format: "%n %u") %>
+      </div>
+      <div class="admin-stats__label">Tổng doanh thu (Lifetime)</div>
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Tổng phí 30% đã thu từ trước đến nay</div>
+    </div>
+
+    <div class="admin-stats__card admin-stats__card--warning">
+      <i class="bi bi-bank admin-stats__icon"></i>
+      <div class="admin-stats__value">
+        <%= number_to_currency(@total_system_balance, unit: "₫", precision: 0, format: "%n %u") %>
+      </div>
+      <div class="admin-stats__label">Tổng System Hold</div>
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Tổng số dư tất cả ví (Admin + GV)</div>
+    </div>
+  </div>
+
+  <%# ── Charts ────────────────────────────────────────────── %>
+  <div style="display:grid; grid-template-columns:1fr 380px; gap:1.5rem; margin-bottom:2rem;">
+    <div class="admin-card">
+      <div class="admin-card__header">
+        <h5><i class="bi bi-bar-chart-line" style="color:#0d9488;"></i> Biểu đồ doanh thu (30 ngày gần nhất)</h5>
+      </div>
+      <div class="admin-card__body">
+        <%= line_chart @revenue_chart_data, prefix: "₫", thousands: ",", colors: ["#0d9488"], height: "300px", empty: "Chưa có dữ liệu doanh thu" %>
       </div>
     </div>
 
-    <div class="col-xl-4 col-md-6">
-      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-success">
-        <div class="card-body">
-          <div class="text-xs fw-bold text-success text-uppercase mb-1">Tổng doanh thu (Lifetime)</div>
-          <div class="h3 mb-0 fw-bold text-gray-800">
-            <%= number_to_currency(@total_platform_revenue, unit: "₫", precision: 0, format: "%n %u") %>
-          </div>
-          <p class="text-muted small mt-2 mb-0">Tổng số tiền phí 30% đã thu được từ trước đến nay.</p>
-        </div>
+    <div class="admin-card">
+      <div class="admin-card__header">
+        <h5><i class="bi bi-pie-chart-fill" style="color:#10b981;"></i> Top khóa học bán chạy</h5>
       </div>
-    </div>
-
-    <div class="col-xl-4 col-md-6">
-      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-warning">
-        <div class="card-body">
-          <div class="text-xs fw-bold text-warning text-uppercase mb-1">Tổng tiền System Hold</div>
-          <div class="h3 mb-0 fw-bold text-gray-800">
-            <%= number_to_currency(@total_system_balance, unit: "₫", precision: 0, format: "%n %u") %>
-          </div>
-          <p class="text-muted small mt-2 mb-0">Tổng số dư của tất cả các ví (Admin + Giảng viên).</p>
-        </div>
+      <div class="admin-card__body">
+        <%= pie_chart @top_courses_data, donut: true, height: "300px", empty: "Chưa có dữ liệu" %>
       </div>
     </div>
   </div>
-  <%# ======================= %>
-<div class="row mb-4">
-    <div class="col-lg-8">
-      <div class="card shadow border-0 mb-4 h-100">
-        <div class="card-header py-3 bg-white">
-          <h6 class="m-0 fw-bold text-primary">Biểu đồ doanh thu (30 ngày gần nhất)</h6>
-        </div>
-        <div class="card-body">
-          <%# prefix: "₫" để hiện đơn vị tiền tệ, thousands: "," để format số %>
-          <%= line_chart @revenue_chart_data, prefix: "₫", thousands: ",", colors: ["#36b9cc"], height: "300px", empty: "Chưa có dữ liệu doanh thu" %>
-        </div>
-      </div>
-    </div>
 
-    <div class="col-lg-4">
-      <div class="card shadow border-0 mb-4 h-100">
-        <div class="card-header py-3 bg-white">
-          <h6 class="m-0 fw-bold text-success">Top khóa học bán chạy</h6>
-        </div>
-        <div class="card-body">
-          <%= pie_chart @top_courses_data, donut: true, height: "300px", empty: "Chưa có dữ liệu" %>
-        </div>
-      </div>
+  <%# ── Revenue Transaction Log ───────────────────────────── %>
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <h5><i class="bi bi-journal-text" style="color:#2563eb;"></i> Nhật ký doanh thu (Platform Fee)</h5>
     </div>
-  </div>
-<%# =========================== %>
-  <div class="card shadow border-0">
-    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
-      <h6 class="m-0 fw-bold text-primary">Nhật ký doanh thu (Platform Fee)</h6>
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="bg-light">
+    <div style="overflow:hidden;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Mã GD</th>
+            <th>Loại giao dịch</th>
+            <th>Số tiền (30%)</th>
+            <th>Nguồn gốc</th>
+            <th>Thời gian</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @transactions.each do |txn| %>
             <tr>
-              <th class="ps-4">Mã GD</th>
-              <th>Loại giao dịch</th>
-              <th>Số tiền (30%)</th>
-              <th>Nguồn gốc</th>
-              <th>Thời gian</th>
+              <td style="font-family:monospace; color:#94a3b8; font-size:0.8rem;">#<%= txn.id %></td>
+              <td>
+                <% if txn.platform_fee? %>
+                  <span class="admin-badge admin-badge--info"><i class="bi bi-pie-chart-fill"></i> Phí nền tảng</span>
+                <% else %>
+                  <span class="admin-badge admin-badge--neutral"><%= txn.transaction_type %></span>
+                <% end %>
+              </td>
+              <td style="font-weight:800; font-size:1.05rem; color:#10b981;">
+                +<%= number_to_currency(txn.amount, unit: "₫", precision: 0, format: "%n %u") %>
+              </td>
+              <td>
+                <% if txn.source.is_a?(Enrollment) %>
+                  <div class="admin-table__title"><%= txn.source.course.title %></div>
+                  <div class="admin-table__sub">
+                    Giá gốc: <%= number_to_currency(txn.source.price, unit: "₫", precision: 0) %>
+                    | HV: <%= txn.source.user.name %>
+                  </div>
+                <% end %>
+              </td>
+              <td class="admin-table__sub"><%= txn.created_at.strftime("%d/%m/%Y %H:%M") %></td>
             </tr>
-          </thead>
-          <tbody>
-            <% @transactions.each do |txn| %>
-              <tr>
-                <td class="ps-4 font-monospace text-muted small">#<%= txn.id %></td>
+          <% end %>
 
-                <td>
-                  <% if txn.platform_fee? %>
-                    <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
-                      <i class="bi bi-pie-chart-fill me-1"></i> Phí nền tảng
-                    </span>
-                  <% else %>
-                    <span class="badge bg-secondary"><%= txn.transaction_type %></span>
-                  <% end %>
-                </td>
-
-                <td class="fw-bold fs-5 text-success">
-                  +<%= number_to_currency(txn.amount, unit: "₫", precision: 0, format: "%n %u") %>
-                </td>
-
-                <td>
-                  <% if txn.source.is_a?(Enrollment) %>
-                    <div>Đơn hàng: <strong><%= txn.source.course.title %></strong></div>
-                    <div class="small text-muted">
-                      Giá gốc: <%= number_to_currency(txn.source.price, unit: "₫", precision: 0) %>
-                      | HV: <%= txn.source.user.name %>
-                    </div>
-                  <% end %>
-                </td>
-
-                <td class="text-muted small">
-                  <%= txn.created_at.strftime("%d/%m/%Y %H:%M") %>
-                </td>
-              </tr>
-            <% end %>
-
-            <% if @transactions.empty? %>
-              <tr>
-                <td colspan="5" class="text-center py-5 text-muted">Chưa có doanh thu nào.</td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+          <% if @transactions.empty? %>
+            <tr>
+              <td colspan="5">
+                <div class="admin-table__empty">
+                  <i class="bi bi-cash-coin"></i>
+                  <p>Chưa có doanh thu nào.</p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </div>
 
   <% if @pagy.pages > 1 %>
-    <div class="mt-4 d-flex justify-content-center">
-      <%== pagy_bootstrap_nav(@pagy) %>
+    <div class="admin-pagination">
+      <%== pagy_nav(@pagy) %>
     </div>
   <% end %>
+
 </div>

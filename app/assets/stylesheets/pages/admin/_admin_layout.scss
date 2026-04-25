@@ -1,0 +1,161 @@
+// ============================================================
+// ADMIN LAYOUT — Professional Dashboard Styles
+// BEM: .admin-wrapper, .admin-sidebar, .admin-topbar
+// ============================================================
+
+.admin-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  min-height: 100vh;
+}
+
+// ── Admin Sidebar ──────────────────────────────────────────
+.admin-sidebar {
+  min-width: 280px;
+  max-width: 280px;
+  background: $bg-dark;
+  color: $white;
+  transition: $t;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+
+  &__header {
+    padding: 24px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba($white, 0.05);
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: $white;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+
+    .bi {
+      font-size: 1.75rem;
+      color: $warning;
+      filter: drop-shadow(0 0 8px rgba($warning, 0.4));
+    }
+
+    span {
+      background: linear-gradient(to right, $white, rgba($white, 0.7));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  &__nav {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px 0;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($white, 0.1);
+      border-radius: 10px;
+    }
+  }
+
+  &__group {
+    padding: 16px 24px 8px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: $text-muted;
+    letter-spacing: 0.1em;
+    opacity: 0.8;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    color: rgba($white, 0.7);
+    text-decoration: none !important;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: $t;
+    border-left: 4px solid transparent;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bi {
+      font-size: 1.1rem;
+      transition: $t;
+    }
+
+    &:hover {
+      color: $white;
+      background: rgba($white, 0.04);
+      border-left-color: rgba($primary, 0.5);
+      
+      .bi { transform: scale(1.1); }
+    }
+
+    &.active {
+      color: $white;
+      background: rgba($primary, 0.1);
+      border-left-color: $primary;
+      font-weight: 700;
+
+      .bi { color: $primary; }
+    }
+  }
+
+  &__badge {
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 20px;
+    background: $danger;
+    color: $white;
+    box-shadow: 0 0 10px rgba($danger, 0.4);
+    
+    &--pulse {
+      animation: sidebar-badge-pulse 2s infinite;
+    }
+  }
+}
+
+// ── Admin Content Area ─────────────────────────────────────
+.admin-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background: $bg;
+  min-width: 0; // Fixes flex child overflow
+}
+
+// ── Admin Topbar ───────────────────────────────────────────
+.admin-topbar {
+  background: $white;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid $border;
+}
+
+@keyframes sidebar-badge-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba($danger, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba($danger, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba($danger, 0); }
+}
