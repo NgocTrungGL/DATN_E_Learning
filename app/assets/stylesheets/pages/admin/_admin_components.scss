@@ -1,0 +1,440 @@
+// ============================================================
+// ADMIN SHARED COMPONENTS
+// Reusable BEM blocks for all admin pages
+// ============================================================
+
+// ── Admin Table ──────────────────────────────────────────────
+.admin-table-wrapper {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  thead {
+    background: $bg;
+    border-bottom: 2px solid $border;
+
+    th {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: $text-muted;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $border;
+    transition: $t;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba($primary, 0.02); }
+  }
+
+  td {
+    padding: 0.9rem 1.25rem;
+    color: $text-dark;
+    vertical-align: middle;
+  }
+
+  &__title {
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: 0.2rem;
+  }
+
+  &__sub {
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+  }
+
+  // Empty state
+  &__empty {
+    padding: 4rem;
+    text-align: center;
+    color: $text-muted;
+
+    .bi { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; opacity: 0.35; }
+    p { font-size: 0.9rem; margin: 0; }
+  }
+}
+
+// ── Admin Badge ──────────────────────────────────────────────
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  &--success { background: $success-light; color: darken($success, 5%); }
+  &--warning { background: $warning-light; color: darken($warning, 15%); }
+  &--danger  { background: $danger-light;  color: darken($danger, 5%); }
+  &--info    { background: $primary-light; color: $primary; }
+  &--neutral { background: rgba($text-mid, 0.1); color: $text-mid; }
+  &--accent  { background: $accent-light; color: $accent; }
+}
+
+// ── Admin Action Buttons ─────────────────────────────────────
+.btn-action {
+  padding: 0.4rem 0.85rem;
+  border-radius: $radius-md;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1.5px solid;
+  transition: $t;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  background: transparent;
+  white-space: nowrap;
+
+  &--info    { border-color: $primary; color: $primary; &:hover { background: $primary; color: $white; } }
+  &--warning { border-color: $warning; color: darken($warning, 10%); &:hover { background: $warning; color: $white; } }
+  &--danger  { border-color: $danger;  color: $danger;  &:hover { background: $danger; color: $white; } }
+  &--success { border-color: $success; color: $success; &:hover { background: $success; color: $white; } }
+  &--neutral { border-color: $border;  color: $text-mid; &:hover { background: $bg; color: $text-dark; } }
+}
+
+// ── Admin Form Fields ────────────────────────────────────────
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+
+  &__label {
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: $text-mid;
+
+    &--required::after { content: " *"; color: $danger; }
+  }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+}
+
+.admin-input,
+.admin-select,
+.admin-textarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  background: $bg;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  color: $text-dark;
+  transition: $t;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    background: $white;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  &::placeholder { color: $text-muted; }
+}
+
+.admin-textarea { resize: vertical; min-height: 90px; }
+
+// ── Admin Alert / Info Banners ───────────────────────────────
+.admin-alert {
+  padding: 1rem 1.25rem;
+  border-radius: $radius-md;
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1.5px solid;
+
+  .bi { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+  &--info    { background: $primary-light; border-color: rgba($primary, 0.2); color: $primary; }
+  &--warning { background: $warning-light; border-color: rgba($warning, 0.3); color: darken($warning, 15%); }
+  &--danger  { background: $danger-light;  border-color: rgba($danger, 0.2);  color: darken($danger, 5%); }
+  &--success { background: $success-light; border-color: rgba($success, 0.2); color: darken($success, 5%); }
+
+  ul { margin: 0.25rem 0 0; padding-left: 1.25rem; }
+}
+
+// ── Admin Stats Grid (dashboard widgets) ─────────────────────
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  &__card {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    padding: 1.5rem;
+    box-shadow: $shadow-sm;
+    transition: $t;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    &--primary::before  { background: $primary; }
+    &--success::before  { background: $success; }
+    &--warning::before  { background: $warning; }
+    &--danger::before   { background: $danger; }
+    &--accent::before   { background: $accent; }
+
+    &:hover { box-shadow: $shadow-md; transform: translateY(-2px); }
+  }
+
+  &__icon {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+    display: block;
+
+    .admin-stats__card--primary  & { color: $primary; }
+    .admin-stats__card--success  & { color: $success; }
+    .admin-stats__card--warning  & { color: $warning; }
+    .admin-stats__card--danger   & { color: $danger; }
+    .admin-stats__card--accent   & { color: $accent; }
+  }
+
+  &__value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: $text-dark;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  &__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $text-muted;
+  }
+}
+
+// ── Admin Pagination ─────────────────────────────────────────
+.admin-pagination, [class*="-pagination"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border;
+
+  &__info, &__note {
+    font-size: 0.82rem;
+    color: $text-muted;
+    margin-bottom: 0.25rem;
+  }
+
+  // Robust target for any nav element generated by Pagy/Kaminari inside these containers
+  nav, .pagy-nav, [class*="__nav"] {
+    display: flex;
+    gap: 0.45rem;
+    justify-content: center;
+    align-items: center;
+
+    a, span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: $radius-md;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none !important;
+      border: 1.5px solid $border !important;
+      color: $text-mid !important;
+      background: $white !important;
+      transition: $t;
+      
+      &:hover {
+        border-color: $primary !important;
+        color: $primary !important;
+        background: $primary-light !important;
+        transform: translateY(-1px);
+      }
+
+      &[aria-current="page"], &.current, &.active {
+        background: $primary !important;
+        border-color: $primary !important;
+        color: $white !important;
+        box-shadow: 0 4px 10px rgba($primary, 0.25);
+      }
+
+      &.prev, &.next, &.gap {
+        font-size: 1.1rem;
+        &.disabled {
+          opacity: 0.4;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+// ── Admin Form Grid ──────────────────────────────────────────
+.admin-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.admin-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+// ── Admin Form Card ──────────────────────────────────────────
+.admin-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  margin-bottom: 1.5rem;
+
+  &__header {
+    padding: 0.9rem 1.5rem;
+    background: $bg;
+    border-bottom: 1px solid $border;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    h5 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: $text-dark;
+    }
+
+    .step-badge {
+      width: 26px; height: 26px;
+      background: $primary;
+      color: $white;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  }
+
+  &__body { padding: 1.5rem; }
+
+  &__footer {
+    padding: 0.85rem 1.5rem;
+    background: $bg;
+    border-top: 1px solid $border;
+    font-size: 0.8rem;
+    color: $text-muted;
+  }
+}
+
+// ── Admin Form Actions ───────────────────────────────────────
+.admin-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-bottom: 2rem;
+
+  .btn-save {
+    background: $primary;
+    color: $white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: $radius-md;
+    font-weight: 700;
+    cursor: pointer;
+    transition: $t;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+
+    &:hover { background: $primary-dark; box-shadow: 0 6px 16px rgba($primary, 0.3); }
+  }
+
+  .btn-cancel {
+    background: transparent;
+    color: $text-mid;
+    border: 1.5px solid $border;
+    padding: 0.75rem 1.5rem;
+    border-radius: $radius-md;
+    font-weight: 600;
+    text-decoration: none;
+    transition: $t;
+    font-size: 0.9rem;
+
+    &:hover { background: $bg; color: $text-dark; }
+  }
+}
+
+// ── Checkbox / Toggle ────────────────────────────────────────
+.admin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: $primary;
+    cursor: pointer;
+  }
+
+  &__label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin-top: 0.2rem;
+  }
+}

@@ -28,6 +28,7 @@
     <h5 class="mb-3 text-secondary">Danh sách chương (Kéo thả để sắp xếp)</h5>
     <div class="list-group shadow-sm"
          data-controller="sortable"
+          data-sortable-param-value="course_module"
          data-sortable-url-value="<%= sort_instructor_course_modules_path %>"> <% @modules.each do |mod| %>
         <div class="list-group-item d-flex align-items-center p-3" data-id="<%= mod.id %>">
           <div class="drag-handle me-3 text-muted" style="cursor: grab;"><i class="bi bi-grip-vertical fs-4"></i></div>

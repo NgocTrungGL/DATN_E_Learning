@@ -51,6 +51,7 @@
     <h5 class="mb-3 text-secondary">Danh sách bài học (Kéo thả)</h5>
     <div class="list-group shadow-sm"
          data-controller="sortable"
+          data-sortable-param-value="lesson"
          data-sortable-url-value="<%= sort_instructor_lessons_path %>">
 
       <% @lessons.each do |l| %>

@@ -1,0 +1,203 @@
+// ============================================================
+// ADMIN COMMENTS — Premium BEM SCSS
+// Block: .cm-page
+// Design tokens from abstracts/_variables.scss
+// ============================================================
+
+.cm-page {
+  padding: 2rem 2.5rem 4rem;
+  background: $bg;
+  min-height: 100%;
+
+  @media (max-width: 768px) { padding: 1.25rem 1rem 3rem; }
+}
+
+// ── Page Header ─────────────────────────────────────────────
+.cm-page__header {
+  background: linear-gradient(135deg, $bg-dark 0%, #1e293b 60%, #1a3a6b 100%);
+  border-radius: $radius-xl;
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 220px; height: 220px;
+    background: rgba($primary, 0.1);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+}
+
+.cm-page__breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba($white, 0.5);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+  .bi { color: $warning; }
+}
+
+.cm-page__title {
+  color: $white;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  margin: 0 0 0.35rem;
+}
+
+.cm-page__subtitle {
+  color: rgba($white, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.cm-page__header-right { flex-shrink: 0; }
+
+.cm-page__stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba($white, 0.1);
+  border: 1px solid rgba($white, 0.15);
+  border-radius: 999px;
+  padding: 0.5rem 1.25rem;
+  color: $white;
+  font-size: 0.85rem;
+  strong { font-size: 1.2rem; font-weight: 900; }
+  .bi { color: $warning; }
+}
+
+// ── Table Card ───────────────────────────────────────────────
+.cm-table-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+}
+
+// ── Table ────────────────────────────────────────────────────
+.cm-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  &__th {
+    padding: 1rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-muted;
+    background: $bg;
+    border-bottom: 2px solid $border;
+    text-align: left;
+    white-space: nowrap;
+    .bi { margin-right: 0.4rem; opacity: 0.6; }
+
+    &--actions { text-align: right; }
+  }
+
+  &__row {
+    border-bottom: 1px solid $border;
+    transition: $t;
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba($primary, 0.02); }
+  }
+
+  &__td {
+    padding: 1.25rem 1.5rem;
+    vertical-align: middle;
+    &--actions { text-align: right; }
+  }
+
+  // User Cell
+  &__user-cell { display: flex; align-items: center; gap: 0.75rem; }
+  
+  &__avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: $primary-light;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba($primary, 0.1);
+  }
+
+  &__avatar-img { width: 100%; height: 100%; object-fit: cover; }
+  &__avatar-text { color: $primary; font-weight: 800; font-size: 0.9rem; }
+  &__user-name { display: block; font-weight: 700; color: $text-dark; margin-bottom: 0.1rem; }
+
+  // Location
+  &__location { display: flex; flex-direction: column; gap: 0.2rem; }
+  &__lesson {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.85rem; font-weight: 600; color: $text-dark;
+    .bi { color: $primary; }
+  }
+
+  // Content
+  &__body-text {
+    font-size: 0.88rem; color: $text-mid; line-height: 1.6;
+    margin: 0 0 0.25rem;
+  }
+
+  &__sub { font-size: 0.78rem; color: $text-muted; }
+
+  &__action-group {
+    display: inline-flex; gap: 0.5rem; justify-content: flex-end;
+  }
+}
+
+// ── Badges ───────────────────────────────────────────────────
+.cm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+
+  &--info { background: $primary-light; color: $primary; }
+  &--neutral { background: $bg; color: $text-muted; border: 1px solid $border; }
+}
+
+// ── Buttons ──────────────────────────────────────────────────
+.cm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: $radius-md;
+  border: 1.5px solid $border;
+  background: $white;
+  transition: $t;
+  cursor: pointer;
+
+  &:hover { transform: translateY(-1px); }
+
+  &--view { &:hover { border-color: $primary; background: $primary-light; } }
+  &--delete { &:hover { border-color: $danger; background: $danger-light; } }
+}
+
+// ── Pagination ───────────────────────────────────────────────
+// Styles inherited from _admin_components.scss (.cm-pagination)

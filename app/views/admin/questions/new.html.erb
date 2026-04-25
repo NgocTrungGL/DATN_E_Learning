@@ -1,2 +1,25 @@
-<h1>Tạo câu hỏi mới</h1>
-<%= render "form" %>
+<%# Admin Questions New %>
+
+<div class="qs-page">
+
+  <div class="qs-backlink">
+    <%= link_to admin_questions_path do %>
+      <i class="bi bi-arrow-left"></i>
+      <span>Back to Question Bank</span>
+    <% end %>
+  </div>
+
+  <header class="qs-page__header qs-page__header--compact">
+    <div class="qs-page__header-left">
+      <div class="qs-page__breadcrumb">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Question Bank</span>
+      </div>
+      <h1 class="qs-page__title">New Question</h1>
+      <p class="qs-page__subtitle">Add a new question to the question bank.</p>
+    </div>
+  </header>
+
+  <%= render "form" %>
+
+</div>

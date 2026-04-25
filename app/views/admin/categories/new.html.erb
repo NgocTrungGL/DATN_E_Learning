@@ -1,4 +1,27 @@
-<div class="container mt-4">
-  <h3><%= t('admin.categories.new.title') %></h3>
-  <%= render 'form', category: @category %>
+<%# Admin Categories New — Premium BEM Redesign %>
+
+<div class="cat-page">
+
+  <div class="cat-backlink">
+    <%= link_to admin_categories_path do %>
+      <i class="bi bi-arrow-left"></i>
+      <span><%= t('admin.categories.form.back') %></span>
+    <% end %>
+  </div>
+
+  <header class="cat-page__header cat-page__header--compact">
+    <div class="cat-page__header-left">
+      <div class="cat-page__breadcrumb">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Quản lý danh mục</span>
+      </div>
+      <h1 class="cat-page__title"><%= t('admin.categories.new.title') %></h1>
+      <p class="cat-page__subtitle"><%= t('admin.categories.new.subtitle') %></p>
+    </div>
+  </header>
+
+  <div class="cat-form-wrapper">
+    <%= render 'form', category: @category %>
+  </div>
+
 </div>

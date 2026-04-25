@@ -1,52 +1,140 @@
-<h1>Ngân hàng Câu hỏi</h1>
+<%# Admin Questions Index — Premium BEM Redesign %>
 
-<div class="mb-3">
-  <%= link_to "Tạo câu hỏi mới", new_admin_question_path, class: "btn btn-primary" %>
-</div>
+<div class="qs-page">
 
-<table class="table table-striped table-hover">
-  <thead class="table-light">
-    <tr>
-      <th>Câu hỏi</th>
-      <th>Loại</th>
-      <th>Độ khó</th>
-      <th>Gắn với (Khóa/Bài)</th>
-      <th style="width: 150px;">Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @questions.each do |question| %>
-      <tr>
-        <td><%= truncate(question.question_text, length: 80) %></td>
-        <td><%= question.question_type %></td>
-        <td><%= question.difficulty %></td>
-        <td>
-          <% if question.course %>
-            <span class="badge bg-secondary"><%= question.course.title %></span>
-          <% elsif question.lesson %>
-            <span class="badge bg-info"><%= question.lesson.title %></span>
-          <% else %>
-            <span class="text-muted">Chung</span>
+  <%# ── Page Header ─────────────────────────────────────────── %>
+  <header class="qs-page__header">
+    <div class="qs-page__header-left">
+      <div class="qs-page__breadcrumb">
+        <i class="bi bi-question-square"></i>
+        <span>Question Bank</span>
+      </div>
+      <h1 class="qs-page__title">Question Bank</h1>
+      <p class="qs-page__subtitle">Manage all questions available across courses for quizzes.</p>
+    </div>
+    <div class="qs-page__header-right">
+      <div class="qs-page__stat-pill">
+        <i class="bi bi-question-circle"></i>
+        <strong><%= @pagy&.count || @questions.size %></strong>
+        <span>questions</span>
+      </div>
+      <%= link_to new_admin_question_path, class: 'qs-page__cta' do %>
+        <i class="bi bi-plus-lg"></i>
+        <span>New Question</span>
+      <% end %>
+    </div>
+  </header>
+
+  <%# ── Table Card ────────────────────────────────────────────── %>
+  <div class="qs-table-card">
+    <% if @questions.any? %>
+      <table class="qs-table">
+        <thead>
+          <tr>
+            <th class="qs-table__th qs-table__th--question">
+              <i class="bi bi-chat-left-text"></i> Question
+            </th>
+            <th class="qs-table__th qs-table__th--type">
+              <i class="bi bi-ui-radios"></i> Type
+            </th>
+            <th class="qs-table__th qs-table__th--difficulty">
+              <i class="bi bi-bar-chart"></i> Difficulty
+            </th>
+            <th class="qs-table__th qs-table__th--course">
+              <i class="bi bi-book"></i> Course
+            </th>
+            <th class="qs-table__th qs-table__th--actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @questions.each do |question| %>
+            <tr class="qs-table__row">
+
+              <%# Question text %>
+              <td class="qs-table__td">
+                <span class="qs-table__question-text"><%= truncate(question.question_text, length: 80) %></span>
+              </td>
+
+              <%# Type badge %>
+              <td class="qs-table__td qs-table__td--center">
+                <% if question.question_type == 'single' %>
+                  <span class="qs-badge qs-badge--single">
+                    <i class="bi bi-ui-radios"></i> Single
+                  </span>
+                <% else %>
+                  <span class="qs-badge qs-badge--multiple">
+                    <i class="bi bi-check-square"></i> Multiple
+                  </span>
+                <% end %>
+              </td>
+
+              <%# Difficulty badge %>
+              <td class="qs-table__td qs-table__td--center">
+                <% case question.difficulty %>
+                <% when 'easy' %>
+                  <span class="qs-badge qs-badge--easy">Easy</span>
+                <% when 'medium' %>
+                  <span class="qs-badge qs-badge--medium">Medium</span>
+                <% when 'hard' %>
+                  <span class="qs-badge qs-badge--hard">Hard</span>
+                <% end %>
+              </td>
+
+              <%# Course %>
+              <td class="qs-table__td">
+                <% if question.course %>
+                  <span class="qs-table__course">
+                    <i class="bi bi-book"></i> <%= question.course.title.truncate(35) %>
+                  </span>
+                <% elsif question.lesson %>
+                  <span class="qs-table__course qs-table__course--lesson">
+                    <i class="bi bi-play-circle"></i> <%= question.lesson.title.truncate(35) %>
+                  </span>
+                <% else %>
+                  <span class="qs-table__course qs-table__course--general">General</span>
+                <% end %>
+              </td>
+
+              <%# Actions %>
+              <td class="qs-table__td qs-table__td--actions">
+                <div class="qs-table__action-group">
+                  <%= link_to edit_admin_question_path(question),
+                      class: 'qs-btn qs-btn--edit', title: 'Edit question' do %>
+                    <%= image_tag 'edit.png', class: 'crs-btn__img', alt: 'Edit' %>
+                  <% end %>
+                  <%= link_to admin_question_path(question),
+                      data: { turbo_method: :delete, turbo_confirm: 'Delete this question?' },
+                      class: 'qs-btn qs-btn--delete', title: 'Delete question' do %>
+                    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Delete' %>
+                  <% end %>
+                </div>
+              </td>
+
+            </tr>
           <% end %>
-        </td>
-        <td>
-          <%= link_to "Sửa", edit_admin_question_path(question), class: "btn btn-sm btn-warning" %>
-          <%= link_to "Xóa", admin_question_path(question), data: {
-                turbo_method: :delete,
-                turbo_confirm: "Bạn có chắc muốn xóa câu hỏi này?"
-              }, class: "btn btn-sm btn-danger" %>
-        </td>
-      </tr>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="qs-empty">
+        <div class="qs-empty__icon"><i class="bi bi-question-square"></i></div>
+        <h3>No questions yet</h3>
+        <p>Start building your question bank by creating the first question.</p>
+        <%= link_to new_admin_question_path, class: 'qs-page__cta' do %>
+          <i class="bi bi-plus-lg"></i>
+          <span>New Question</span>
+        <% end %>
+      </div>
     <% end %>
-  </tbody>
-</table>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%== pagy_bootstrap_nav(@pagy) %>
   </div>
 
-  <div class="text-center text-muted small mt-2">
-    Hiển thị <b><%= @pagy.items %></b> câu hỏi / trang
-    (Tổng <b><%= @pagy.count %></b> câu)
-  </div>
-<% end %>
+  <%# ── Pagination ───────────────────────────────────────────── %>
+  <% if @pagy.pages > 1 %>
+    <div class="qs-pagination">
+      <div class="qs-pagination__nav"><%== pagy_nav(@pagy) %></div>
+      <p class="qs-pagination__note">
+        Showing <strong><%= @pagy.items %></strong> of <strong><%= @pagy.count %></strong> questions
+      </p>
+    </div>
+  <% end %>
+
+</div>

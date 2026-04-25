@@ -1,0 +1,931 @@
+// ============================================================
+// ADMIN COURSES — Premium BEM Page Styles
+// Blocks: .crs-page, .crs-table-card, .crs-table,
+//         .crs-hero, .crs-modules, .crs-module-card,
+//         .crs-lesson-item, .crs-form
+// ============================================================
+
+// ── Page Shell ──────────────────────────────────────────────
+.crs-page {
+  padding: 2rem 2.5rem 4rem;
+  background: $bg;
+  min-height: 100%;
+
+  @media (max-width: 768px) { padding: 1.25rem 1rem 3rem; }
+}
+
+// ── Back Link ───────────────────────────────────────────────
+.crs-backlink {
+  margin-bottom: 1.25rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: $text-mid;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: $t;
+
+    &:hover { color: $primary; }
+  }
+}
+
+// ── Page Header ─────────────────────────────────────────────
+.crs-page__header {
+  background: linear-gradient(135deg, $bg-dark 0%, #1e293b 60%, #1a3a6b 100%);
+  border-radius: $radius-xl;
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 220px; height: 220px;
+    background: rgba($primary, 0.12);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  &--compact {
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    &::after { width: 140px; height: 140px; right: -40px; top: -40px; }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.crs-page__breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba($white, 0.55);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+
+  .bi { font-size: 0.85rem; color: $warning; }
+}
+
+.crs-page__title {
+  color: $white;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+}
+
+.crs-page__subtitle {
+  color: rgba($white, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+  max-width: 52rem;
+}
+
+.crs-page__header-left { position: relative; z-index: 1; }
+
+.crs-page__header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) { width: 100%; justify-content: space-between; }
+}
+
+.crs-page__stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba($white, 0.1);
+  border: 1px solid rgba($white, 0.15);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  color: $white;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
+
+  strong { font-size: 1.1rem; font-weight: 900; }
+  .bi { color: $warning; }
+}
+
+.crs-page__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $primary;
+  color: $white;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.7rem 1.4rem;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: $t;
+  box-shadow: 0 4px 14px rgba($primary, 0.35);
+  white-space: nowrap;
+
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba($primary, 0.45);
+  }
+}
+
+// ── Table Card ───────────────────────────────────────────────
+.crs-table-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+  margin-bottom: 1.75rem;
+}
+
+// ── Table ────────────────────────────────────────────────────
+.crs-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  &__th {
+    padding: 0.9rem 1.35rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-muted;
+    background: $bg;
+    border-bottom: 2px solid $border;
+    white-space: nowrap;
+
+    .bi { margin-right: 0.3rem; opacity: 0.6; }
+    &--actions { text-align: right; padding-right: 1.5rem; }
+    &--price { text-align: right; }
+    &--category { text-align: center; }
+  }
+
+  &__row {
+    border-bottom: 1px solid $border;
+    transition: background 0.18s ease;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba($primary, 0.02); }
+  }
+
+  &__td {
+    padding: 1rem 1.35rem;
+    vertical-align: middle;
+
+    &--actions { text-align: right; }
+    &--price { text-align: right; }
+    &--category { text-align: center; }
+  }
+
+  // Course cell with thumbnail
+  &__course-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__thumb {
+    width: 80px;
+    height: 52px;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: $bg;
+    border: 1px solid $border;
+
+    &-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    &-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-muted;
+      font-size: 1.4rem;
+    }
+  }
+
+  &__course-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  &__course-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: $text-dark;
+  }
+
+  &__course-link {
+    color: inherit;
+    text-decoration: none;
+    transition: $t;
+    &:hover { color: $primary; }
+  }
+
+  &__course-desc {
+    font-size: 0.78rem;
+    color: $text-muted;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // Category badge
+  &__cat-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $accent-light;
+    color: $accent;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  // Price
+  &__price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $primary;
+    white-space: nowrap;
+  }
+
+  &__price-free {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $success-light;
+    color: darken($success, 5%);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  // Action group — icon-only row
+  &__action-group {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+}
+
+// ── Action Buttons — icon-only square ───────────────────────
+.crs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: $radius-md;
+  font-size: 0.88rem;
+  text-decoration: none;
+  border: 1.5px solid;
+  transition: $t;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0;
+
+  &--view   { border-color: $accent;  color: $accent;  &:hover { background: $accent;  color: $white; } }
+  &--module { border-color: $warning; color: darken($warning, 10%); &:hover { background: $warning; color: $white; } }
+  &--edit   { border-color: $primary; color: $primary; &:hover { background: $primary; color: $white; } }
+  &--delete { border-color: $danger;  color: $danger;  &:hover { background: $danger;  color: $white; } }
+
+  // Image icon inside button
+  &__img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+  }
+
+  // When using image, remove colored border — just subtle grey
+  &:has(&__img) {
+    border-color: $border;
+    background: $bg;
+    &:hover { background: $border; border-color: darken($border, 8%); }
+  }
+}
+
+// ── Empty State ──────────────────────────────────────────────
+.crs-empty {
+  background: $white;
+  border: 1px dashed rgba($primary, 0.3);
+  border-radius: $radius-xl;
+  padding: 5rem 2rem;
+  text-align: center;
+  color: $text-muted;
+  box-shadow: $shadow-sm;
+
+  &--modules { margin-top: 0; }
+
+  &__icon {
+    width: 72px;
+    height: 72px;
+    background: $primary-light;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 2rem;
+    color: $primary;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $text-dark;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: $text-mid;
+  }
+}
+
+// ── Pagination ───────────────────────────────────────────────
+.crs-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border;
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__note {
+    font-size: 0.8rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    gap: 0.35rem;
+
+    a, span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-md;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1.5px solid $border;
+      color: $text-mid;
+      background: $white;
+      transition: $t;
+
+      &:hover { border-color: $primary; color: $primary; background: $primary-light; }
+      &[aria-current="page"] { background: $primary; border-color: $primary; color: $white; }
+    }
+  }
+}
+
+// ── Course Hero (show page) ──────────────────────────────────
+.crs-hero {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 2rem;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+  margin-bottom: 1.75rem;
+
+  @media (max-width: 1024px) { grid-template-columns: 1fr; }
+
+  &__media {
+    @media (max-width: 1024px) {
+      max-height: 240px;
+      overflow: hidden;
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+
+    @media (max-width: 1024px) {
+      max-height: 240px;
+      object-position: center;
+    }
+  }
+
+  &__content {
+    padding: 2rem 2rem 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+
+    @media (max-width: 1024px) { padding: 1.5rem; }
+  }
+
+  &__title {
+    font-size: clamp(1.3rem, 3vw, 1.9rem);
+    font-weight: 800;
+    color: $text-dark;
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  &__cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: $accent-light;
+    color: $accent;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  &__price-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: $primary-light;
+    color: $primary;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  &__desc {
+    color: $text-mid;
+    font-size: 0.9rem;
+    line-height: 1.75;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid $border;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: $radius-md;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: $t;
+    border: 1.5px solid;
+    white-space: nowrap;
+
+    &--primary {
+      background: $warning;
+      border-color: $warning;
+      color: $white;
+      box-shadow: 0 4px 12px rgba($warning, 0.3);
+      &:hover { background: darken($warning, 8%); color: $white; transform: translateY(-1px); }
+    }
+
+    &--secondary {
+      background: transparent;
+      border-color: $primary;
+      color: $primary;
+      &:hover { background: $primary; color: $white; }
+    }
+
+    &--danger {
+      background: transparent;
+      border-color: $danger;
+      color: $danger;
+      &:hover { background: $danger; color: $white; }
+    }
+  }
+}
+
+// ── Modules Panel (show page) ────────────────────────────────
+.crs-modules {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  &__header {
+    padding: 1.25rem 1.75rem;
+    background: $bg;
+    border-bottom: 1px solid $border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: $text-dark;
+    margin: 0 0 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .bi { color: $primary; }
+  }
+
+  &__subtitle {
+    font-size: 0.8rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// ── Module Card ──────────────────────────────────────────────
+.crs-module-card {
+  border-bottom: 1px solid $border;
+
+  &:last-child { border-bottom: none; }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.75rem;
+    background: rgba($primary, 0.02);
+    border-bottom: 1px solid $border;
+    flex-wrap: wrap;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  &__index {
+    width: 32px;
+    height: 32px;
+    background: $primary;
+    color: $white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 0.15rem;
+  }
+
+  &__count {
+    font-size: 0.76rem;
+    color: $text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+}
+
+// ── Lesson List ──────────────────────────────────────────────
+.crs-lesson-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crs-lesson-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.75rem;
+  border-bottom: 1px solid rgba($border, 0.6);
+  transition: background 0.15s ease;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba($primary, 0.02); }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+
+  &__num {
+    font-size: 0.72rem;
+    color: $text-muted;
+    font-weight: 700;
+    min-width: 2.2rem;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 0.88rem;
+    color: $text-dark;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+}
+
+.crs-lesson-empty {
+  padding: 1.25rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: $text-muted;
+  font-style: italic;
+  font-size: 0.85rem;
+
+  .bi { font-size: 1rem; }
+}
+
+// ── Form Styles (new/edit) ───────────────────────────────────
+.crs-form {
+  &__errors {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: $danger-light;
+    border: 1.5px solid rgba($danger, 0.25);
+    border-radius: $radius-md;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+
+    &-icon { font-size: 1.2rem; color: $danger; flex-shrink: 0; margin-top: 1px; }
+
+    &-title {
+      display: block;
+      color: $danger;
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 0.35rem;
+    }
+
+    &-list {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: darken($danger, 5%);
+      font-size: 0.85rem;
+    }
+  }
+
+  &__card {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-md;
+
+    &-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.75rem;
+      background: linear-gradient(135deg, $bg-dark, #1e293b);
+      border-bottom: 1px solid rgba($white, 0.06);
+    }
+
+    &-icon {
+      width: 44px; height: 44px;
+      background: rgba($white, 0.08);
+      border: 1px solid rgba($white, 0.1);
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: $warning;
+      flex-shrink: 0;
+    }
+
+    &-title {
+      color: $white;
+      font-size: 1rem;
+      font-weight: 800;
+      margin: 0 0 0.15rem;
+    }
+
+    &-subtitle {
+      color: rgba($white, 0.5);
+      font-size: 0.8rem;
+      margin: 0;
+    }
+
+    &-body { padding: 1.75rem; }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+
+    @media (max-width: 768px) { grid-template-columns: 1fr; }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+
+    &--full { grid-column: 1 / -1; }
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.83rem;
+    font-weight: 800;
+    color: $text-dark;
+
+    .bi { font-size: 0.85rem; color: $primary; }
+    &--required::after { content: " *"; color: $danger; }
+  }
+
+  &__input,
+  &__select,
+  &__textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: $bg;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    font-size: 0.9rem;
+    color: $text-dark;
+    transition: $t;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+
+    &::placeholder { color: $text-muted; }
+  }
+
+  &__textarea { resize: vertical; min-height: 120px; }
+
+  &__price-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+
+    .crs-form__input {
+      border-radius: $radius-md 0 0 $radius-md;
+    }
+  }
+
+  &__price-suffix {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    height: 100%;
+    min-height: 47px;
+    background: $primary-light;
+    color: $primary;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border: 1.5px solid $border;
+    border-left: none;
+    border-radius: 0 $radius-md $radius-md 0;
+    white-space: nowrap;
+  }
+
+  &__hint {
+    font-size: 0.76rem;
+    color: $text-muted;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.25rem 1.75rem;
+    background: $bg;
+    border-top: 1px solid $border;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.75rem;
+    border-radius: $radius-md;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: $t;
+    border: 1.5px solid;
+
+    &--save {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+      box-shadow: 0 4px 14px rgba($primary, 0.3);
+      &:hover { background: $primary-dark; transform: translateY(-1px); box-shadow: 0 6px 18px rgba($primary, 0.4); }
+    }
+
+    &--cancel {
+      background: transparent;
+      border-color: $border;
+      color: $text-mid;
+      &:hover { background: $border; color: $text-dark; }
+    }
+  }
+}

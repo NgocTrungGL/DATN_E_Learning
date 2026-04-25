@@ -1,113 +1,162 @@
-<div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="h3 fw-bold text-gray-800 border-start border-4 border-primary ps-3 mb-1">
-        Lịch sử Ghi danh & Đơn hàng
-      </h2>
-      <p class="text-muted small mb-0 ms-3">Giám sát các giao dịch đăng ký khóa học.</p>
+<%# Admin Enrollments Index — Premium BEM Redesign %>
+
+<div class="en-page">
+
+  <%# ── Page Header ─────────────────────────────────────────── %>
+  <header class="en-page__header">
+    <div class="en-page__header-left">
+      <div class="en-page__breadcrumb">
+        <i class="bi bi-wallet2"></i>
+        <span>Finance & Sales</span>
+      </div>
+      <h1 class="en-page__title">Enrollment & Orders</h1>
+      <p class="en-page__subtitle">Track course subscriptions, transaction history and payment statuses.</p>
     </div>
-
-    <div class="btn-group shadow-sm">
-      <%= link_to "Tất cả", admin_enrollments_path, class: "btn btn-outline-secondary #{'active' if params[:status].blank?}" %>
-      <%= link_to admin_enrollments_path(status: 'active'), class: "btn btn-outline-success #{'active' if params[:status] == 'active'}" do %>
-        <i class="bi bi-check-circle-fill"></i> Đã thanh toán
-      <% end %>
-      <%= link_to admin_enrollments_path(status: 'pending'), class: "btn btn-outline-warning #{'active' if params[:status] == 'pending'}" do %>
-        <i class="bi bi-hourglass-split"></i> Chưa thanh toán
-      <% end %>
-    </div>
-  </div>
-
-  <div class="card shadow-sm border-0">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="bg-light">
-            <tr class="text-uppercase text-secondary small fw-bold">
-              <th class="ps-4 py-3">Mã đơn</th>
-              <th>Học viên</th>
-              <th>Khóa học / Giảng viên</th>
-              <th>Giá trị đơn</th>
-              <th>Trạng thái</th>
-              <th>Ngày tạo</th>
-              <th class="text-end pe-4">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @enrollments.each do |enrollment| %>
-              <tr>
-                <td class="ps-4 font-monospace text-muted small">#<%= enrollment.id %></td>
-
-                <td>
-                  <div class="d-flex align-items-center">
-                    <img src="https://ui-avatars.com/api/?name=<%= ERB::Util.url_encode(enrollment.user.name) %>&background=random&size=128&bold=true&format=png&rounded=true"
-                         class="rounded-circle me-2 shadow-sm"
-                         style="width: 40px; height: 40px; object-fit: cover;"
-                         alt="<%= enrollment.user.name %>">
-
-                    <div>
-                      <div class="fw-bold text-dark"><%= enrollment.user.name %></div>
-                      <small class="text-muted"><%= enrollment.user.email %></small>
-                    </div>
-                  </div>
-                </td>
-
-                <td>
-                  <span class="d-block text-truncate fw-bold text-primary" style="max-width: 200px;">
-                    <%= enrollment.course.title %>
-                  </span>
-                  <small class="text-muted">GV: <%= enrollment.course.creator&.name %></small>
-                </td>
-
-                <td class="fw-bold">
-                  <% if enrollment.price.nil? || enrollment.price.to_i == 0 %>
-                    <span class="text-success fw-bold">Miễn phí</span>
-                  <% else %>
-                    <%= number_to_currency(enrollment.price, unit: "₫", precision: 0, format: "%n %u") %>
-                  <% end %>
-                </td>
-
-                <td>
-                  <% if enrollment.active? %>
-                    <span class="badge bg-success">
-                      <i class="bi bi-check-lg"></i> Thành công
-                    </span>
-                  <% elsif enrollment.pending? %>
-                    <span class="badge bg-warning text-dark">
-                      <i class="bi bi-clock"></i> Chờ thanh toán
-                    </span>
-                  <% else %>
-                    <span class="badge bg-danger">Đã hủy</span>
-                  <% end %>
-                </td>
-
-                <td class="small text-muted">
-                  <%= enrollment.created_at.strftime("%d/%m/%Y %H:%M") %>
-                </td>
-                  <td class="text-end pe-4">
-                    <%= link_to admin_enrollment_path(enrollment),
-                        data: {
-                          turbo_method: :delete,
-                          turbo_confirm: "Xóa đơn hàng ##{enrollment.id}?"
-                        },
-                        class: "text-danger fs-5" do %>
-                      🗑️
-                    <% end %>
-                  </td>
-              </tr>
-            <% end %>
-            <% if @enrollments.empty? %>
-              <tr><td colspan="7" class="text-center py-5 text-muted">Chưa có dữ liệu.</td></tr>
-            <% end %>
-          </tbody>
-        </table>
+    
+    <div class="en-page__header-right">
+      <div class="en-page__filter-group">
+        <%= link_to admin_enrollments_path, 
+            class: "en-filter-btn #{'en-filter-btn--active' if params[:status].blank?}" do %>
+          <span>All Orders</span>
+        <% end %>
+        <%= link_to admin_enrollments_path(status: 'active'), 
+            class: "en-filter-btn #{'en-filter-btn--active' if params[:status] == 'active'}" do %>
+          <i class="bi bi-check-circle"></i> <span>Paid</span>
+        <% end %>
+        <%= link_to admin_enrollments_path(status: 'pending'), 
+            class: "en-filter-btn #{'en-filter-btn--active' if params[:status] == 'pending'}" do %>
+          <i class="bi bi-hourglass-split"></i> <span>Pending</span>
+        <% end %>
       </div>
     </div>
+  </header>
+
+  <%# ── Table Card ────────────────────────────────────────────── %>
+  <div class="en-table-card">
+    <% if @enrollments.any? %>
+      <table class="en-table">
+        <thead>
+          <tr>
+            <th class="en-table__th en-table__th--id">ID</th>
+            <th class="en-table__th en-table__th--student">
+              <i class="bi bi-person"></i> Student
+            </th>
+            <th class="en-table__th en-table__th--course">
+              <i class="bi bi-book"></i> Course / Instructor
+            </th>
+            <th class="en-table__th en-table__th--price">
+              <i class="bi bi-tag"></i> Price
+            </th>
+            <th class="en-table__th en-table__th--status">
+              <i class="bi bi-shield-check"></i> Status
+            </th>
+            <th class="en-table__th en-table__th--date">
+              <i class="bi bi-clock"></i> Date
+            </th>
+            <th class="en-table__th en-table__th--actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @enrollments.each do |enrollment| %>
+            <tr class="en-table__row">
+              
+              <%# ID %>
+              <td class="en-table__td">
+                <span class="en-table__order-id">#<%= enrollment.id %></span>
+              </td>
+
+              <%# Student %>
+              <td class="en-table__td">
+                <div class="en-table__user-cell">
+                  <div class="en-table__avatar">
+                    <img src="https://ui-avatars.com/api/?name=<%= ERB::Util.url_encode(enrollment.user.name) %>&background=random&size=80&bold=true&format=png"
+                         class="en-table__avatar-img" alt="<%= enrollment.user.name %>">
+                  </div>
+                  <div>
+                    <span class="en-table__username"><%= enrollment.user.name %></span>
+                    <span class="en-table__sub"><%= enrollment.user.email %></span>
+                  </div>
+                </div>
+              </td>
+
+              <%# Course %>
+              <td class="en-table__td">
+                <div class="en-table__course">
+                  <span class="en-table__course-title" title="<%= enrollment.course.title %>">
+                    <%= enrollment.course.title.truncate(35) %>
+                  </span>
+                  <span class="en-table__sub">Instr: <%= enrollment.course.creator&.name %></span>
+                </div>
+              </td>
+
+              <%# Price %>
+              <td class="en-table__td">
+                <div class="en-table__price">
+                  <% if enrollment.price.nil? || enrollment.price.to_i == 0 %>
+                    <span class="en-price-badge en-price-badge--free">Free</span>
+                  <% else %>
+                    <span class="en-price-value text-gradient-primary">
+                      <%= number_to_currency(enrollment.price, unit: "₫", precision: 0, format: "%n %u") %>
+                    </span>
+                  <% end %>
+                </div>
+              </td>
+
+              <%# Status %>
+              <td class="en-table__td">
+                <div class="en-table__status">
+                  <% if enrollment.active? %>
+                    <span class="en-status en-status--paid">
+                      <i class="bi bi-check-circle-fill"></i> Paid
+                    </span>
+                  <% elsif enrollment.pending? %>
+                    <span class="en-status en-status--pending">
+                      <i class="bi bi-hourglass-split"></i> Pending
+                    </span>
+                  <% else %>
+                    <span class="en-status en-status--cancelled">Cancelled</span>
+                  <% end %>
+                </div>
+              </td>
+
+              <%# Date %>
+              <td class="en-table__td">
+                <div class="en-table__date">
+                  <span class="en-table__date-full"><%= enrollment.created_at.strftime("%b %d, %Y") %></span>
+                  <span class="en-table__sub"><%= enrollment.created_at.strftime("%H:%M") %></span>
+                </div>
+              </td>
+
+              <%# Actions %>
+              <td class="en-table__td en-table__td--actions">
+                <div class="en-table__action-group">
+                  <%= link_to admin_enrollment_path(enrollment),
+                        data: { turbo_method: :delete, turbo_confirm: "Delete order ##{enrollment.id}?" },
+                        class: "en-btn en-btn--delete",
+                        title: "Delete order" do %>
+                    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Delete' %>
+                  <% end %>
+                </div>
+              </td>
+
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="en-empty">
+        <div class="en-empty__icon"><i class="bi bi-receipt-cutoff"></i></div>
+        <h3>No enrollment data</h3>
+        <p>Your sales records and enrollment history will be listed here.</p>
+      </div>
+    <% end %>
   </div>
 
+  <%# ── Pagination ───────────────────────────────────────────── %>
   <% if @pagy.pages > 1 %>
-    <div class="d-flex justify-content-center mt-4">
-      <%== pagy_bootstrap_nav(@pagy) %>
+    <div class="en-pagination">
+      <div class="en-pagination__nav"><%== pagy_nav(@pagy) %></div>
     </div>
   <% end %>
+
 </div>

@@ -1,42 +1,52 @@
-<%= form_with(model: [:admin, @course_module, @lesson]) do |form| %>
+<% form_scope = @lesson.persisted? ? [:admin, @lesson] : [:admin, @course_module, @lesson] %>
+<% submit_text = local_assigns[:submit_text] || (@lesson.persisted? ? 'Cập nhật bài học' : 'Lưu & Thêm bài tiếp') %>
+
+<%= form_with(model: form_scope, class: 'admin-lessons__form') do |form| %>
   <% if @lesson.errors.any? %>
-    <div style="color: red">
-      <h2><%= t('admin.lessons.form.errors_count', count: @lesson.errors.count) %></h2>
+    <div class="admin-lessons__errors">
       <ul>
-        <% @lesson.errors.each do |error| %>
-          <li><%= error.full_message %></li>
+        <% @lesson.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
         <% end %>
       </ul>
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title, t('admin.lessons.form.title') %><br>
-    <%= form.text_field :title, style: "width: 400px" %>
+  <div class="admin-lessons__field">
+    <%= form.label :title, 'Tên bài học', class: 'admin-lessons__label' %>
+    <%= form.text_field :title,
+                        class: 'admin-input admin-lessons__input',
+                        placeholder: 'Ví dụ: Cài đặt môi trường...',
+                        autofocus: true,
+                        required: true %>
   </div>
 
-  <div>
-    <%= form.label :description, t('admin.lessons.form.description') %><br>
-    <%= form.text_area :description, rows: 4, style: "width: 400px" %>
+  <div class="admin-lessons__field">
+    <%= form.label :description, 'Mô tả nội dung', class: 'admin-lessons__label' %>
+    <%= form.text_area :description,
+                       rows: 4,
+                       class: 'admin-textarea admin-lessons__textarea',
+                       placeholder: 'Tóm tắt nội dung bài học...' %>
   </div>
 
-  <div>
-    <%= form.label :video_url, t('admin.lessons.form.video_url') %><br>
-    <%= form.text_field :video_url, style: "width: 400px" %>
+  <div class="admin-lessons__field">
+    <%= form.label :video_url, 'Link Video (YouTube)', class: 'admin-lessons__label' %>
+    <%= form.text_field :video_url,
+                        class: 'admin-input admin-lessons__input',
+                        placeholder: 'https://youtube.com/...' %>
   </div>
 
-  <div>
-    <%= form.label :attachment_url, t('admin.lessons.form.attachment_url') %><br>
-    <%= form.text_field :attachment_url, style: "width: 400px" %>
+  <div class="admin-lessons__field">
+    <%= form.label :attachment_url, 'Link Tài liệu đính kèm', class: 'admin-lessons__label' %>
+    <%= form.text_field :attachment_url,
+                        class: 'admin-input admin-lessons__input',
+                        placeholder: 'Link Google Drive / PDF...' %>
   </div>
 
-  <div>
-    <%= form.label :order_index, t('admin.lessons.form.order_index') %><br>
-    <%= form.number_field :order_index %>
-  </div>
+  <%= form.hidden_field :order_index %>
 
-  <br>
-  <div>
-    <%= form.submit t('admin.lessons.form.submit') %>
+  <div class="admin-lessons__actions">
+    <%= link_to 'Quay lại khóa học', admin_course_path(@course_module.course), class: 'btn-cancel admin-lessons__action-btn' %>
+    <%= form.submit submit_text, class: 'btn-save admin-lessons__action-btn' %>
   </div>
 <% end %>

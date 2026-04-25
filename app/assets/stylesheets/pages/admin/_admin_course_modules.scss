@@ -1,0 +1,540 @@
+// ============================================================
+// ADMIN COURSE MODULES — Strict BEM Page Styles
+// Design tokens from abstracts/_variables.scss
+// ============================================================
+
+.admin-course-modules {
+  background: $bg;
+  padding: 1.5rem 0 2.5rem;
+
+  @media (min-width: 768px) {
+    padding: 2rem 0 3rem;
+  }
+
+  &__inner {
+    @include inner-container;
+  }
+
+  &__backlink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: $text-mid;
+    text-decoration: none;
+    margin-bottom: 0.9rem;
+    font-weight: 600;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  &__hero {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1.15rem;
+    background:
+      radial-gradient(circle at top right, rgba($accent, 0.12) 0%, rgba($accent, 0) 46%),
+      linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.35rem 1.5rem;
+    }
+  }
+
+  &__hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+
+    @media (min-width: 768px) {
+      min-width: 260px;
+    }
+  }
+
+  &__stat-card {
+    border: 1px solid rgba($primary, 0.18);
+    border-radius: $radius-md;
+    background: rgba($primary, 0.05);
+    padding: 0.8rem 0.9rem;
+  }
+
+  &__stat-label {
+    display: block;
+    color: $text-muted;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__stat-value {
+    display: block;
+    margin-top: 0.35rem;
+    color: $text-dark;
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    @media (min-width: 1440px) {
+      grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1.35fr);
+      gap: 1.2rem;
+    }
+  }
+
+  &__panel {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+
+    &--form {
+      padding: 1rem;
+      position: sticky;
+      top: 1.2rem;
+
+      @media (min-width: 1440px) {
+        padding: 1.15rem;
+      }
+    }
+
+    &--outline {
+      padding: 1rem;
+
+      @media (min-width: 1440px) {
+        padding: 1.15rem;
+      }
+    }
+  }
+
+  &__panel-head {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: 0.95rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $accent;
+  }
+
+  &__title {
+    margin: 0;
+    color: $text-dark;
+    font-size: clamp(1.25rem, 2vw, 1.7rem);
+    line-height: 1.3;
+    font-weight: 800;
+  }
+
+  &__subtitle {
+    margin: 0.5rem 0 0;
+    color: $text-mid;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  &__panel-title {
+    margin: 0;
+    color: $text-dark;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  &__panel-subtitle {
+    margin: 0.35rem 0 0;
+    color: $text-mid;
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+
+  &__panel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: fit-content;
+    border-radius: 999px;
+    border: 1px solid rgba($primary, 0.18);
+    background: rgba($primary, 0.06);
+    color: $primary-dark;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.34rem 0.72rem;
+  }
+
+  &__errors {
+    border: 1px solid rgba($danger, 0.32);
+    background: rgba($danger, 0.08);
+    border-radius: $radius-md;
+    padding: 0.8rem;
+    margin-bottom: 0.85rem;
+  }
+
+  &__errors-title {
+    color: darken($danger, 8%);
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  &__errors-list {
+    margin: 0;
+    padding-left: 1rem;
+
+    li {
+      color: darken($danger, 12%);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+  }
+
+  &__field-group {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  &__field {
+    background: linear-gradient(180deg, #fff 0%, rgba($primary, 0.03) 100%);
+    border: 1px solid rgba($primary, 0.16);
+    border-radius: $radius-md;
+    padding: 0.85rem;
+    box-shadow: 0 8px 18px rgba($primary-dark, 0.05);
+
+    &:focus-within {
+      border-color: rgba($primary, 0.4);
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.08), 0 10px 20px rgba($primary-dark, 0.08);
+    }
+  }
+
+  &__label {
+    display: inline-block;
+    margin-bottom: 0.42rem;
+    color: $text-dark;
+    font-size: 0.83rem;
+    font-weight: 700;
+  }
+
+  &__input,
+  &__textarea {
+    border-radius: $radius-sm;
+    border-color: rgba($primary-dark, 0.16);
+    background: #fff;
+
+    &:focus {
+      border-color: rgba($primary, 0.55);
+      box-shadow: 0 0 0 0.22rem rgba($primary, 0.16);
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 9rem;
+  }
+
+  &__form-actions,
+  &__outline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__form-actions {
+    margin-top: 0.9rem;
+    justify-content: flex-end;
+    padding-top: 0.9rem;
+    border-top: 1px dashed rgba($primary, 0.22);
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.32rem;
+    min-height: 2.25rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: $radius-sm;
+    line-height: 1;
+    white-space: nowrap;
+    box-sizing: border-box;
+
+    i {
+      font-size: 0.9rem;
+    }
+
+    span {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
+  &__outline-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+    gap: 0.45rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &__action--edit {
+    width: 100%;
+    border: 1px solid rgba($primary, 0.24);
+    background: rgba($primary, 0.06);
+    color: $primary;
+
+    &:hover {
+      background: rgba($primary, 0.12);
+      border-color: rgba($primary, 0.38);
+      color: $primary-dark;
+    }
+  }
+
+  &__action--delete {
+    width: 100%;
+    border: 1px solid rgba($danger, 0.24);
+    background: rgba($danger, 0.06);
+    color: darken($danger, 6%);
+
+    &:hover {
+      background: rgba($danger, 0.12);
+      border-color: rgba($danger, 0.38);
+      color: darken($danger, 12%);
+    }
+  }
+
+  &__action--edit,
+  &__action--delete {
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba($primary-dark, 0.04);
+    text-decoration: none;
+  }
+
+  &__action-text {
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+  }
+
+  &__outline-head {
+    display: grid;
+    gap: 0.45rem;
+    margin-bottom: 0.85rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    h2 {
+      margin: 0;
+      color: $text-dark;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+  }
+
+  &__outline-note {
+    margin: 0.35rem 0 0;
+    color: $text-mid;
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  &__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    border: 1px solid rgba($primary, 0.2);
+    background: rgba($primary, 0.06);
+    color: $primary-dark;
+    border-radius: 999px;
+    padding: 0.28rem 0.65rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+  }
+
+  &__outline-list {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  &__outline-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.65rem;
+    border: 1px solid rgba($primary, 0.14);
+    border-radius: $radius-md;
+    padding: 0.75rem;
+    background: linear-gradient(180deg, #fff 0%, rgba($primary, 0.025) 100%);
+    box-shadow: 0 8px 18px rgba($primary-dark, 0.05);
+    cursor: grab;
+
+    @media (min-width: 768px) {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    &--active {
+      border-color: rgba($primary, 0.4);
+      box-shadow: 0 0 0 0.18rem rgba($primary, 0.1);
+      background: rgba($primary, 0.03);
+    }
+  }
+
+  &__drag-handle {
+    color: $text-muted;
+    font-size: 1.1rem;
+    align-self: center;
+    cursor: grab;
+    padding: 0.15rem 0.2rem;
+  }
+
+  &__outline-copy {
+    h3 {
+      margin: 0;
+      color: $text-dark;
+      font-size: 0.96rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    p {
+      margin: 0.2rem 0 0;
+      color: $text-muted;
+      font-size: 0.82rem;
+    }
+  }
+
+  &__active-chip {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid rgba($accent, 0.35);
+    background: rgba($accent, 0.1);
+    color: $accent-dark;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.12rem 0.48rem;
+    vertical-align: middle;
+  }
+
+  &__empty {
+    display: grid;
+    place-items: center;
+    gap: 0.4rem;
+    text-align: center;
+    padding: 1.2rem 1rem;
+    border: 1px dashed rgba($primary, 0.32);
+    border-radius: $radius-md;
+    background: #fff;
+
+    i {
+      font-size: 1.5rem;
+      color: $primary;
+    }
+
+    p {
+      margin: 0;
+      color: $text-mid;
+      font-size: 0.88rem;
+    }
+  }
+
+  &__quizzes {
+    margin-top: 0.9rem;
+    border-top: 1px solid $border;
+    padding-top: 0.9rem;
+
+    h3 {
+      margin: 0;
+      color: $text-dark;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+  }
+
+  &__quizzes-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  &__quizzes-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    border-radius: 999px;
+    background: rgba(#f59e0b, 0.16);
+    color: darken(#f59e0b, 16%);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.16rem 0.45rem;
+  }
+
+  &__quiz-list {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  &__quiz-item {
+    display: grid;
+    gap: 0.45rem;
+    border: 1px solid rgba(#f59e0b, 0.45);
+    border-radius: $radius-md;
+    padding: 0.65rem;
+    background: rgba(#f59e0b, 0.09);
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    h4 {
+      margin: 0;
+      color: $text-dark;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0.2rem 0 0;
+      color: $text-mid;
+      font-size: 0.8rem;
+    }
+  }
+}

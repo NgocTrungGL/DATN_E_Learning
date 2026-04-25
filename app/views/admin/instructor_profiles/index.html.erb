@@ -1,37 +1,83 @@
-<h2>Duyệt Giảng viên</h2>
-<table class="table table-hover align-middle">
-  <thead class="table-light">
-    <tr>
-      <th>Ứng viên</th>
-      <th>Thông tin</th>
-      <th>CV</th>
-      <th>Trạng thái</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @instructor_profiles.each do |profile| %>
-      <tr>
-        <td>
-          <div class="fw-bold"><%= profile.user.name %></div>
-          <small class="text-muted"><%= profile.user.email %></small>
-        </td>
-        <td>
-          <small>SĐT: <%= profile.phone %></small><br>
-          <small>LinkedIn: <%= link_to "Link", profile.linkedin_url, target: "_blank" %></small>
-        </td>
-        <td><%= link_to "Xem CV", profile.cv_url, target: "_blank", class: "btn btn-sm btn-outline-info" %></td>
-        <td>
-          <% badge_color = profile.pending? ? "bg-warning text-dark" : (profile.approved? ? "bg-success" : "bg-danger") %>
-          <span class="badge <%= badge_color %>"><%= profile.status.humanize %></span>
-        </td>
-        <td>
-          <% if profile.pending? %>
-            <%= button_to "Duyệt", approve_admin_instructor_path(profile), method: :patch, class: "btn btn-success btn-sm d-inline" %>
-            <%= button_to "Từ chối", reject_admin_instructor_path(profile), method: :patch, class: "btn btn-outline-danger btn-sm d-inline" %>
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<%# Admin Instructor Profiles Index — Bootstrap-free BEM redesign %>
+
+<div class="admin-page-header">
+  <div class="admin-page-header__inner">
+    <div>
+      <div class="admin-page-header__badge"><i class="bi bi-person-lines-fill"></i> Hệ thống</div>
+      <h1 class="admin-page-header__title">Duyệt Giảng viên</h1>
+    </div>
+  </div>
+</div>
+
+<div class="admin-page-body">
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Ứng viên</th>
+          <th>Thông tin liên hệ</th>
+          <th>CV</th>
+          <th>Trạng thái</th>
+          <th style="text-align: right;">Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @instructor_profiles.each do |profile| %>
+          <tr>
+            <td>
+              <div class="admin-table__title"><%= profile.user.name %></div>
+              <div class="admin-table__sub"><%= profile.user.email %></div>
+            </td>
+            <td>
+              <div class="admin-table__sub">SĐT: <%= profile.phone %></div>
+              <% if profile.linkedin_url.present? %>
+                <div class="admin-table__sub">
+                  <%= link_to "LinkedIn →", profile.linkedin_url, target: "_blank", style: "color: #2563eb; text-decoration: none; font-size: 0.78rem;" %>
+                </div>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to profile.cv_url, target: "_blank", class: "btn-action btn-action--info" do %>
+                <i class="bi bi-file-earmark-person"></i> Xem CV
+              <% end %>
+            </td>
+            <td>
+              <% if profile.pending? %>
+                <span class="admin-badge admin-badge--warning"><i class="bi bi-hourglass"></i> Chờ duyệt</span>
+              <% elsif profile.approved? %>
+                <span class="admin-badge admin-badge--success"><i class="bi bi-check-circle"></i> Đã duyệt</span>
+              <% else %>
+                <span class="admin-badge admin-badge--danger"><i class="bi bi-x-circle"></i> Từ chối</span>
+              <% end %>
+            </td>
+            <td>
+              <div class="admin-table__actions">
+                <% if profile.pending? %>
+                  <%= button_to "Duyệt", approve_admin_instructor_path(profile), method: :patch,
+                        class: "btn-action btn-action--success" do %>
+                    <i class="bi bi-check-lg"></i> Duyệt
+                  <% end %>
+                  <%= button_to "Từ chối", reject_admin_instructor_path(profile), method: :patch,
+                        class: "btn-action btn-action--danger" do %>
+                    <i class="bi bi-x-lg"></i> Từ chối
+                  <% end %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+
+        <% if @instructor_profiles.empty? %>
+          <tr>
+            <td colspan="5">
+              <div class="admin-table__empty">
+                <i class="bi bi-person-badge"></i>
+                <p>Chưa có hồ sơ giảng viên nào cần xét duyệt.</p>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

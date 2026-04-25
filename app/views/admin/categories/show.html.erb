@@ -1,9 +1,98 @@
-<div class="container mt-4">
-  <h3>📁 <%= @category.name %> (<%= t('admin.categories.show.admin_view') %>)</h3>
+<%# Admin Categories Show — Premium BEM Redesign %>
 
-  <p><strong><%= t('admin.categories.show.description') %>:</strong> <%= @category.description %></p>
-  <p><strong><%= t('admin.categories.show.parent') %>:</strong> <%= @category.parent&.name || t('admin.categories.show.no_parent') %></p>
+<div class="cat-page">
 
-  <%= link_to t('admin.categories.show.edit'), edit_admin_category_path(@category), class: 'btn btn-warning' %>
-  <%= link_to t('admin.categories.show.back_to_list'), admin_categories_path, class: 'btn btn-secondary' %>
+  <%# ── Back link ────────────────────────────────────────────── %>
+  <div class="cat-backlink">
+    <%= link_to admin_categories_path do %>
+      <i class="bi bi-arrow-left"></i>
+      <span><%= t('admin.categories.show.back_to_list') %></span>
+    <% end %>
+  </div>
+
+  <%# ── Page Header (compact) ───────────────────────────────── %>
+  <header class="cat-page__header cat-page__header--compact">
+    <div class="cat-page__header-left">
+      <div class="cat-page__breadcrumb">
+        <i class="bi bi-eye-fill"></i>
+        <span><%= t('admin.categories.show.admin_view') %></span>
+      </div>
+      <h1 class="cat-page__title"><%= @category.name %></h1>
+      <p class="cat-page__subtitle"><%= t('admin.categories.show.subtitle') %></p>
+    </div>
+  </header>
+
+  <%# ── 2-column content area ──────────────────────────────── %>
+  <div class="cat-show-layout">
+
+    <%# Main detail panel %>
+    <main class="cat-detail-card">
+      <div class="cat-detail-card__header">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>Chi tiết danh mục</span>
+      </div>
+
+      <div class="cat-detail-card__body">
+        <div class="cat-info-grid">
+          <div class="cat-info-item">
+            <span class="cat-info-item__label">
+              <i class="bi bi-tag"></i> <%= t('admin.categories.show.parent') %>
+            </span>
+            <% if @category.parent.present? %>
+              <span class="cat-info-item__value cat-info-item__value--badge">
+                <i class="bi bi-arrow-up-right"></i>
+                <%= @category.parent.name %>
+              </span>
+            <% else %>
+              <span class="cat-info-item__value cat-info-item__value--root">
+                <i class="bi bi-house-fill"></i>
+                <%= t('admin.categories.show.no_parent') %>
+              </span>
+            <% end %>
+          </div>
+
+          <div class="cat-info-item cat-info-item--full">
+            <span class="cat-info-item__label">
+              <i class="bi bi-text-paragraph"></i> <%= t('admin.categories.show.description') %>
+            </span>
+            <div class="cat-info-item__copy">
+              <% if @category.description.present? %>
+                <%= simple_format(h(@category.description)) %>
+              <% else %>
+                <span class="cat-info-item__empty"><%= t('admin.categories.show.empty_description') %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%# Action sidebar %>
+    <aside class="cat-show-sidebar">
+      <div class="cat-show-sidebar__card">
+        <div class="cat-show-sidebar__title">
+          <i class="bi bi-lightning-charge-fill"></i> Hành động
+        </div>
+
+        <%= link_to edit_admin_category_path(@category), class: 'cat-show-sidebar__btn cat-show-sidebar__btn--primary' do %>
+          <i class="bi bi-pencil-fill"></i>
+          <span><%= t('admin.categories.show.edit') %></span>
+        <% end %>
+
+        <%= link_to admin_categories_path, class: 'cat-show-sidebar__btn cat-show-sidebar__btn--secondary' do %>
+          <i class="bi bi-list-ul"></i>
+          <span><%= t('admin.categories.show.back_to_list') %></span>
+        <% end %>
+      </div>
+
+      <div class="cat-show-sidebar__meta">
+        <div class="cat-show-sidebar__meta-item">
+          <i class="bi bi-folder2"></i>
+          <span>Danh mục</span>
+          <strong>#<%= @category.id %></strong>
+        </div>
+      </div>
+    </aside>
+
+  </div>
 </div>

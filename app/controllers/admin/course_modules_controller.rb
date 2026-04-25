@@ -62,7 +62,11 @@ class Admin::CourseModulesController < Admin::BaseController
 
   # PATCH /admin/course_modules/sort
   def sort
-    params[:course_module].each_with_index do |id, index|
+    module_ids = Array(params[:course_module]).map(&:to_i).reject(&:zero?)
+
+    return head :unprocessable_entity if module_ids.empty?
+
+    module_ids.each_with_index do |id, index|
       CourseModule.where(id:).update_all(order_index: index + 1)
     end
 

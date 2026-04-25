@@ -1,2 +1,25 @@
-<h1>Chỉnh sửa câu hỏi</h1>
-<%= render "form" %>
+<%# Admin Questions Edit %>
+
+<div class="qs-page">
+
+  <div class="qs-backlink">
+    <%= link_to admin_questions_path do %>
+      <i class="bi bi-arrow-left"></i>
+      <span>Back to Question Bank</span>
+    <% end %>
+  </div>
+
+  <header class="qs-page__header qs-page__header--compact">
+    <div class="qs-page__header-left">
+      <div class="qs-page__breadcrumb">
+        <i class="bi bi-pencil-fill"></i>
+        <span>Question Bank</span>
+      </div>
+      <h1 class="qs-page__title">Edit Question</h1>
+      <p class="qs-page__subtitle">Update the question content, type or answer options.</p>
+    </div>
+  </header>
+
+  <%= render "form" %>
+
+</div>

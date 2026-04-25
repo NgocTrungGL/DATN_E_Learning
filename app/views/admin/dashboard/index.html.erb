@@ -1,163 +1,116 @@
-<div class="container-fluid py-4">
-  <h2 class="h3 fw-bold text-gray-800 mb-4 border-start border-4 border-primary ps-3">Tổng quan hệ thống</h2>
+<%# Admin Dashboard — Bootstrap-free BEM redesign %>
 
-  <div class="row g-4 mb-4">
+<div class="admin-page-header">
+  <div class="admin-page-header__inner">
+    <div>
+      <div class="admin-page-header__badge"><i class="bi bi-speedometer2"></i> Tổng quan</div>
+      <h1 class="admin-page-header__title">Dashboard Hệ thống</h1>
+    </div>
+  </div>
+</div>
 
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-primary">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs fw-bold text-primary text-uppercase mb-1">Học viên</div>
-              <div class="h3 mb-0 fw-bold text-gray-800"><%= @total_students %></div>
-            </div>
-            <div class="col-auto">
-              <i class="bi bi-people-fill fs-1 text-gray-300 opacity-25"></i>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="admin-page-body">
+
+  <%# ── Stats Widget Grid ──────────────────────────────────── %>
+  <div class="admin-stats">
+    <div class="admin-stats__card admin-stats__card--primary">
+      <i class="bi bi-people-fill admin-stats__icon"></i>
+      <div class="admin-stats__value"><%= @total_students %></div>
+      <div class="admin-stats__label">Học viên</div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-success">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs fw-bold text-success text-uppercase mb-1">Giảng viên</div>
-              <div class="h3 mb-0 fw-bold text-gray-800"><%= @total_instructors %></div>
-            </div>
-            <div class="col-auto">
-              <i class="bi bi-person-video3 fs-1 text-gray-300 opacity-25"></i>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="admin-stats__card admin-stats__card--success">
+      <i class="bi bi-person-video3 admin-stats__icon"></i>
+      <div class="admin-stats__value"><%= @total_instructors %></div>
+      <div class="admin-stats__label">Giảng viên</div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-info">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs fw-bold text-info text-uppercase mb-1">Tổng Khóa học</div>
-              <div class="h3 mb-0 fw-bold text-gray-800"><%= @total_courses %></div>
-            </div>
-            <div class="col-auto">
-              <i class="bi bi-collection-play-fill fs-1 text-gray-300 opacity-25"></i>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="admin-stats__card admin-stats__card--accent">
+      <i class="bi bi-collection-play-fill admin-stats__icon"></i>
+      <div class="admin-stats__value"><%= @total_courses %></div>
+      <div class="admin-stats__label">Tổng Khóa học</div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-0 shadow-sm h-100 py-2 border-start border-4 border-warning bg-warning-subtle">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs fw-bold text-warning text-uppercase mb-1">Chờ duyệt</div>
-              <div class="h3 mb-0 fw-bold text-dark"><%= @pending_enrollments.count %></div>
-            </div>
-            <div class="col-auto">
-              <i class="bi bi-hourglass-split fs-1 text-warning opacity-50"></i>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="admin-stats__card admin-stats__card--warning">
+      <i class="bi bi-hourglass-split admin-stats__icon"></i>
+      <div class="admin-stats__value"><%= @pending_enrollments.count %></div>
+      <div class="admin-stats__label">Chờ duyệt</div>
     </div>
   </div>
 
-  <div class="row g-4">
+  <%# ── Two-column feed area ───────────────────────────────── %>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
 
-    <div class="col-lg-6">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-header py-3 bg-white border-bottom d-flex justify-content-between align-items-center">
-          <h6 class="m-0 fw-bold text-primary">Đánh giá mới nhất</h6>
-          <%= link_to "Xem tất cả", admin_reviews_path, class: "btn btn-sm btn-outline-primary" %>
-        </div>
-        <div class="card-body p-0">
-          <div class="list-group list-group-flush">
-            <% @latest_reviews.each do |review| %>
-              <div class="list-group-item px-3 py-3">
-                <div class="d-flex w-100 justify-content-between">
-                  <div class="d-flex align-items-center">
-                    <div class="avatar-wrapper avatar-xs me-2">
-                      <% if review.user.avatar_url.present? %>
-                        <img
-                          src="<%= review.user.avatar_url %>"
-                          alt="<%= review.user.name %>"
-                          class="avatar-img">
-                      <% else %>
-                        <div class="avatar-text avatar-xs-text">
-                          <%= review.user.name.first.upcase %>
-                        </div>
-                      <% end %>
-                    </div>
-
-                    <span class="fw-bold small"><%= review.user.name %></span>
+    <%# Latest Reviews %>
+    <div class="admin-card">
+      <div class="admin-card__header" style="justify-content:space-between;">
+        <h5><i class="bi bi-star" style="color:#f59e0b;"></i> Đánh giá mới nhất</h5>
+        <%= link_to "Xem tất cả", admin_reviews_path, class: "btn-action btn-action--info", style: "font-size:0.78rem;" %>
+      </div>
+      <div class="admin-card__body" style="padding:0;">
+        <% @latest_reviews.each do |review| %>
+          <div style="padding:0.9rem 1.25rem; border-bottom:1px solid #f1f5f9; display:flex; flex-direction:column; gap:0.3rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <% if review.user.avatar_url.present? %>
+                  <img src="<%= review.user.avatar_url %>" style="width:28px; height:28px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                <% else %>
+                  <div style="width:28px; height:28px; border-radius:50%; background:#eff6ff; color:#2563eb; font-weight:800; font-size:0.8rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <%= review.user.name.first.upcase %>
                   </div>
-                  <small class="text-warning">
-                    <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
-                  </small>
-                </div>
-                <p class="mb-1 small text-muted mt-2 fst-italic">"<%= review.content.truncate(60) %>"</p>
-                <small class="text-muted" style="font-size: 0.75rem">Khóa: <%= review.course.title.truncate(30) %></small>
+                <% end %>
+                <span style="font-weight:700; font-size:0.85rem; color:#0f172a;"><%= review.user.name %></span>
               </div>
-            <% end %>
-            <% if @latest_reviews.empty? %>
-              <div class="text-center py-4 text-muted small">Chưa có đánh giá nào.</div>
-            <% end %>
+              <span style="color:#f59e0b; font-size:0.8rem;">
+                <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
+              </span>
+            </div>
+            <p style="font-size:0.8rem; color:#64748b; font-style:italic; margin:0;">"<%= review.content.truncate(60) %>"</p>
+            <span style="font-size:0.73rem; color:#94a3b8;">Khóa: <%= review.course.title.truncate(30) %></span>
           </div>
-        </div>
+        <% end %>
+        <% if @latest_reviews.empty? %>
+          <div style="padding:2rem; text-align:center; color:#94a3b8; font-size:0.85rem;">Chưa có đánh giá nào.</div>
+        <% end %>
       </div>
     </div>
 
-    <div class="col-lg-6">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-header py-3 bg-white border-bottom d-flex justify-content-between align-items-center">
-          <h6 class="m-0 fw-bold text-success">Thành viên mới gia nhập</h6>
-          <%= link_to "Quản lý User", admin_users_path, class: "btn btn-sm btn-outline-success" %>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="bg-light">
-                <tr>
-                  <th class="ps-3 border-0">Tên</th>
-                  <th class="border-0">Email</th>
-                  <th class="border-0">Ngày tạo</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% @latest_users.each do |user| %>
-                  <tr>
-                    <td class="ps-3">
-                      <div class="d-flex align-items-center">
-                        <div class="avatar-wrapper avatar-xs me-2">
-                            <% if user.avatar_url.present? %>
-                              <img
-                                src="<%= user.avatar_url %>"
-                                alt="<%= user.name %>"
-                                class="avatar-img">
-                            <% else %>
-                              <div class="avatar-text avatar-xs-text">
-                                <%= user.name.first.upcase %>
-                              </div>
-                            <% end %>
-                          </div>
-
-                        <span class="small fw-bold"><%= user.name %></span>
+    <%# Latest Users %>
+    <div class="admin-card">
+      <div class="admin-card__header" style="justify-content:space-between;">
+        <h5><i class="bi bi-person-plus" style="color:#10b981;"></i> Thành viên mới gia nhập</h5>
+        <%= link_to "Quản lý User", admin_users_path, class: "btn-action btn-action--success", style: "font-size:0.78rem;" %>
+      </div>
+      <div style="overflow:hidden;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Tên</th>
+              <th>Email</th>
+              <th>Ngày tạo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @latest_users.each do |user| %>
+              <tr>
+                <td>
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <% if user.avatar_url.present? %>
+                      <img src="<%= user.avatar_url %>" style="width:28px; height:28px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                    <% else %>
+                      <div style="width:28px; height:28px; border-radius:50%; background:#eff6ff; color:#2563eb; font-weight:800; font-size:0.78rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <%= user.name.first.upcase %>
                       </div>
-                    </td>
-                    <td class="small text-muted"><%= user.email %></td>
-                    <td class="small text-muted"><%= user.created_at.strftime("%d/%m") %></td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    <% end %>
+                    <span style="font-weight:700; font-size:0.85rem;"><%= user.name %></span>
+                  </div>
+                </td>
+                <td class="admin-table__sub"><%= user.email %></td>
+                <td class="admin-table__sub"><%= user.created_at.strftime("%d/%m/%Y") %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
     </div>
 

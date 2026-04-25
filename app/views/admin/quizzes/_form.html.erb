@@ -1,37 +1,50 @@
-<%# Kết hợp 2 controller: form-refresh (cũ) và quiz-form (mới) %>
+<%# Admin Quiz Form Partial — Premium BEM Redesign %>
+<%# Preserves: Stimulus data-controller, data-action, data-*-target %>
+
 <div data-controller="form-refresh quiz-form">
   <%= form_with(model: [:admin, @quiz]) do |f| %>
 
-    <%# --- HIỂN THỊ LỖI --- %>
+    <%# ── Validation Errors ──────────────────────────────────── %>
     <% if @quiz.errors.any? %>
-      <div class="alert alert-danger shadow-sm">
-        <ul class="mb-0">
-          <% @quiz.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
+      <div class="qz-form__errors">
+        <i class="bi bi-exclamation-triangle-fill qz-form__errors-icon"></i>
+        <div>
+          <strong class="qz-form__errors-title"><%= @quiz.errors.count %> lỗi cần sửa:</strong>
+          <ul class="qz-form__errors-list">
+            <% @quiz.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
       </div>
     <% end %>
 
-    <%# ================= THÔNG TIN BÀI KIỂM TRA ================= %>
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-light">
-        <h5 class="mb-0">1. Thông tin bài kiểm tra</h5>
+    <%# ── Card 1: Thông tin bài kiểm tra ──────────────────────── %>
+    <div class="qz-form__card">
+      <div class="qz-form__card-header">
+        <div>
+          <h2 class="qz-form__card-title">Quiz Information</h2>
+          <p class="qz-form__card-subtitle">Enter title, select course and lesson</p>
+        </div>
       </div>
+      <div class="qz-form__card-body">
 
-      <div class="card-body">
-        <div class="mb-3">
-          <%= f.label :title, "Tiêu đề Bài kiểm tra", class: "form-label fw-bold" %>
-          <%= f.text_field :title, class: "form-control", required: true %>
+        <div class="qz-form__field qz-form__field--full">
+          <label class="qz-form__label qz-form__label--required">
+            <i class="bi bi-pencil-fill"></i> Tiêu đề
+          </label>
+          <%= f.text_field :title, class: "qz-form__input", required: true, placeholder: "VD: Bài kiểm tra cuối chương 1..." %>
         </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <%= f.label :course_id, "Khóa học (Bắt buộc)", class: "form-label fw-bold" %>
+        <div class="qz-form__grid">
+          <div class="qz-form__field">
+            <label class="qz-form__label qz-form__label--required">
+              <i class="bi bi-book"></i> Khóa học
+            </label>
             <%= f.collection_select :course_id, @courses, :id, :title,
               { prompt: "--- Chọn Khóa học ---" },
               {
-                class: "form-select",
+                class: "qz-form__select",
                 required: true,
                 data: {
                   form_refresh_target: "courseSelect",
@@ -40,13 +53,16 @@
               } %>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <%= f.label :lesson_id, "Bài học (Tùy chọn)", class: "form-label fw-bold" %>
+          <div class="qz-form__field">
+            <label class="qz-form__label">
+              <i class="bi bi-layers"></i> Bài học
+              <span class="qz-form__optional">(Tùy chọn)</span>
+            </label>
             <%= f.select :lesson_id,
               @lessons&.map { |l| [l.title, l.id] } || [],
-              { include_blank: "--- Không chọn (Là bài thi cuối khóa) ---" },
+              { include_blank: "--- Không chọn (Bài thi cuối khóa) ---" },
               {
-                class: "form-select",
+                class: "qz-form__select",
                 data: {
                   form_refresh_target: "lessonSelect",
                   quiz_form_target: "lessonSelect",
@@ -56,109 +72,114 @@
           </div>
         </div>
 
-        <div class="mb-3">
-          <%= f.label :description, "Mô tả", class: "form-label" %>
-          <%= f.text_area :description, rows: 2, class: "form-control" %>
+        <div class="qz-form__field qz-form__field--full" style="margin-top:1rem;">
+          <label class="qz-form__label">
+            <i class="bi bi-text-paragraph"></i> Mô tả
+          </label>
+          <%= f.text_area :description, rows: 2, class: "qz-form__textarea", placeholder: "Mô tả ngắn về bài kiểm tra (tuỳ chọn)..." %>
         </div>
+
       </div>
     </div>
 
-    <%# ================= CÀI ĐẶT CHUNG ================= %>
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-light">
-        <h5 class="mb-0">2. Cài đặt chung</h5>
+    <%# ── Card 2: Cài đặt chung ────────────────────────────────── %>
+    <div class="qz-form__card">
+      <div class="qz-form__card-header">
+        <div>
+          <h2 class="qz-form__card-title">General Settings</h2>
+          <p class="qz-form__card-subtitle">Time limit, pass score and question count</p>
+        </div>
       </div>
+      <div class="qz-form__card-body">
 
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <%= f.label :time_limit, "Thời gian (phút)", class: "form-label" %>
-            <%= f.number_field :time_limit, class: "form-control", placeholder: "Để trống nếu không giới hạn" %>
+        <div class="qz-form__grid">
+          <div class="qz-form__field">
+            <label class="qz-form__label">
+              <i class="bi bi-clock"></i> Thời gian (phút)
+            </label>
+            <%= f.number_field :time_limit, class: "qz-form__input", placeholder: "Để trống nếu không giới hạn" %>
           </div>
-
-          <div class="col-md-6 mb-3">
-            <%= f.label :pass_score, "Điểm đậu (%)", class: "form-label" %>
-            <%= f.number_field :pass_score, value: @quiz.pass_score || 70, class: "form-control" %>
+          <div class="qz-form__field">
+            <label class="qz-form__label">
+              <i class="bi bi-check-circle"></i> Điểm đậu (%)
+            </label>
+            <%= f.number_field :pass_score, value: @quiz.pass_score || 70, class: "qz-form__input" %>
           </div>
         </div>
 
-        <div class="mb-3">
-          <%= f.label :total_questions, "Tổng số câu hỏi", class: "form-label fw-bold" %>
+        <div class="qz-form__field qz-form__field--full" style="margin-top:1rem;">
+          <label class="qz-form__label qz-form__label--required">
+            <i class="bi bi-123"></i> Tổng số câu hỏi
+          </label>
           <%= f.number_field :total_questions,
-                class: "form-control border-primary",
+                class: "qz-form__input",
                 required: true,
                 data: { quiz_form_target: "totalInput" } %>
-          <div class="form-text small text-muted" data-quiz-form-target="totalHint">
+          <span class="qz-form__hint" data-quiz-form-target="totalHint">
             Nhập tổng số câu hỏi cần có trong bài kiểm tra.
-          </div>
+          </span>
         </div>
 
-        <div class="mb-3">
-          <%= f.label :scoring_type, "Cách tính điểm", class: "form-label fw-bold" %>
+        <div class="qz-form__field qz-form__field--full" style="margin-top:1rem;">
+          <label class="qz-form__label">
+            <i class="bi bi-calculator"></i> Cách tính điểm
+          </label>
           <%= f.select :scoring_type,
-            Quiz.scoring_types.keys.map { |k| [k == "equal" ? "Đồng cấp" : "Phân cấp (easy < medium < hard, 1:2:3)", k] },
-            {}, class: "form-select" %>
+            Quiz.scoring_types.keys.map { |k| [k == "equal" ? "Đồng cấp (Mọi câu bằng nhau)" : "Phân cấp (Dễ:TB:Khó = 1:2:3)", k] },
+            {}, class: "qz-form__select" %>
         </div>
+
       </div>
     </div>
 
-    <%# ================= MANUAL MODE ================= %>
-    <div class="alert alert-primary border-primary shadow-sm d-none mb-4"
+    <%# ── Manual Mode Banner ─────────────────────────────────────── %>
+    <div class="qz-form__mode-banner qz-form__mode-banner--manual d-none"
          data-quiz-form-target="manualSection">
-      <h5 class="fw-bold mb-1">
-        <i class="bi bi-hand-index-thumb"></i> Chế độ: Mini Quiz
-      </h5>
-      <p class="mb-0 small">
-        Đây là Mini Quiz. Nhập <strong>Tổng số câu hỏi</strong> ở trên,
-        sau đó thêm câu hỏi thủ công ở trang chi tiết.
-      </p>
+      <i class="bi bi-hand-index-thumb"></i>
+      <div>
+        <strong>Chế độ: Mini Quiz</strong>
+        <p>Đây là Mini Quiz. Nhập <strong>Tổng số câu hỏi</strong> ở trên, sau đó thêm câu hỏi thủ công ở trang chi tiết.</p>
+      </div>
     </div>
 
-    <%# ================= RANDOM MODE ================= %>
-    <div class="card border-warning shadow-sm mb-4"
+    <%# ── Random Mode Card ───────────────────────────────────────── %>
+    <div class="qz-form__card qz-form__card--random"
          data-quiz-form-target="randomSection">
-      <div class="card-header bg-warning fw-bold">
-        <i class="bi bi-shuffle"></i> Cấu hình Đề thi Ngẫu nhiên
+      <div class="qz-form__card-header qz-form__card-header--random">
+        <div>
+          <h2 class="qz-form__card-title">Random Mode Configuration</h2>
+          <p class="qz-form__card-subtitle">System auto-selects questions by difficulty. Enter count per level:</p>
+        </div>
       </div>
-
-      <div class="card-body bg-light">
-        <p class="small mb-3">
-          Hệ thống tự động lấy câu hỏi theo độ khó. Nhập số lượng từng loại:
-        </p>
-
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <%= f.label :easy_count, "Số câu Dễ", class: "form-label text-success fw-bold" %>
-            <%= f.number_field :easy_count,
-              class: "form-control border-success",
-              min: 0,
-              data: { quiz_form_target: "countInput", action: "input->quiz-form#updateTotal" } %>
+      <div class="qz-form__card-body">
+        <div class="qz-form__random-grid">
+          <div class="qz-form__count-field qz-form__count-field--easy">
+            <label class="qz-form__label">Số câu Dễ</label>
+            <%= f.number_field :easy_count, class: "qz-form__input",
+                  min: 0,
+                  data: { quiz_form_target: "countInput", action: "input->quiz-form#updateTotal" } %>
           </div>
-
-          <div class="col-md-4 mb-3">
-            <%= f.label :medium_count, "Số câu Trung bình", class: "form-label text-warning fw-bold" %>
-            <%= f.number_field :medium_count,
-              class: "form-control border-warning",
-              min: 0,
-              data: { quiz_form_target: "countInput", action: "input->quiz-form#updateTotal" } %>
+          <div class="qz-form__count-field qz-form__count-field--medium">
+            <label class="qz-form__label">Số câu Trung bình</label>
+            <%= f.number_field :medium_count, class: "qz-form__input",
+                  min: 0,
+                  data: { quiz_form_target: "countInput", action: "input->quiz-form#updateTotal" } %>
           </div>
-
-          <div class="col-md-4 mb-3">
-            <%= f.label :hard_count, "Số câu Khó", class: "form-label text-danger fw-bold" %>
-            <%= f.number_field :hard_count,
-              class: "form-control border-danger",
-              min: 0,
-              data: { quiz_form_target: "countInput", action: "input->quiz-form#updateTotal" } %>
+          <div class="qz-form__count-field qz-form__count-field--hard">
+            <label class="qz-form__label">Số câu Khó</label>
+            <%= f.number_field :hard_count, class: "qz-form__input",
+                  min: 0,
+                  data: { quiz_form_target: "countInput", action: "input->quiz-form#updateTotal" } %>
           </div>
         </div>
       </div>
     </div>
 
-    <%# ================= ACTION ================= %>
-    <div class="d-flex justify-content-end gap-2 pb-5">
-      <%= link_to "Hủy", admin_quizzes_path, class: "btn btn-outline-secondary px-4" %>
-      <%= button_tag type: "submit", class: "btn btn-primary px-4 fw-bold" do %>
-        <i class="bi bi-check-lg"></i> Lưu & Tiếp tục
+    <%# ── Actions ─────────────────────────────────────────────── %>
+    <div class="qz-form__actions">
+      <%= link_to "Hủy", admin_quizzes_path, class: "qz-form__btn qz-form__btn--cancel" %>
+      <%= button_tag type: "submit", class: "qz-form__btn qz-form__btn--save" do %>
+        <i class="bi bi-check-lg"></i> Lưu &amp; Tiếp tục
       <% end %>
     </div>
 

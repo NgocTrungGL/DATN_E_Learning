@@ -1,53 +1,120 @@
-<h1>Quản lý Bài kiểm tra (Quizzes)</h1>
+<%# Admin Quizzes Index — Premium BEM Redesign %>
 
-<div class="mb-3">
-  <%= link_to "Tạo bài kiểm tra mới", new_admin_quiz_path, class: "btn btn-primary" %>
-</div>
+<div class="qz-page">
 
-<table class="table table-hover">
-  <thead class="table-light">
-    <tr>
-      <th>Tiêu đề Quiz</th>
-      <th>Khóa học</th>
-      <th>Bài học</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @quizzes.each do |quiz| %>
-      <tr>
-        <td>
-          <strong><%= quiz.title %></strong><br>
-          <small><%= truncate(quiz.description, length: 70) %></small>
-        </td>
-        <td><%= quiz.course.title %></td>
-        <td>
-          <% if quiz.lesson %>
-            <%= quiz.lesson.title %>
-          <% else %>
-            <span class="badge bg-info text-dark">Bài kiểm tra chung</span>
+  <%# ── Page Header ─────────────────────────────────────────── %>
+  <header class="qz-page__header">
+    <div class="qz-page__header-left">
+      <div class="qz-page__breadcrumb">
+        <i class="bi bi-card-checklist"></i>
+        <span>Quiz Management</span>
+      </div>
+      <h1 class="qz-page__title">Quiz Management</h1>
+      <p class="qz-page__subtitle">Create and manage all quizzes for your courses.</p>
+    </div>
+    <div class="qz-page__header-right">
+      <div class="qz-page__stat-pill">
+        <i class="bi bi-card-checklist"></i>
+        <strong><%= @pagy&.count || @quizzes.size %></strong>
+        <span>quizzes</span>
+      </div>
+      <%= link_to new_admin_quiz_path, class: 'qz-page__cta' do %>
+        <i class="bi bi-plus-lg"></i>
+        <span>New Quiz</span>
+      <% end %>
+    </div>
+  </header>
+
+  <%# ── Table ────────────────────────────────────────────────── %>
+  <div class="qz-table-card">
+    <% if @quizzes.any? %>
+      <table class="qz-table">
+        <thead>
+          <tr>
+            <th class="qz-table__th qz-table__th--quiz">
+              <i class="bi bi-card-checklist"></i> Quiz
+            </th>
+            <th class="qz-table__th qz-table__th--course">
+              <i class="bi bi-book"></i> Course
+            </th>
+            <th class="qz-table__th qz-table__th--type">
+              <i class="bi bi-layers"></i> Type
+            </th>
+            <th class="qz-table__th qz-table__th--actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @quizzes.each do |quiz| %>
+            <tr class="qz-table__row">
+
+              <%# Quiz info %>
+              <td class="qz-table__td">
+                <span class="qz-table__quiz-title"><%= quiz.title %></span>
+              </td>
+
+              <%# Course %>
+              <td class="qz-table__td">
+                <span class="qz-table__course-name"><%= quiz.course.title %></span>
+              </td>
+
+              <%# Type badge %>
+              <td class="qz-table__td qz-table__td--type">
+                <% if quiz.lesson %>
+                  <span class="qz-badge qz-badge--lesson">
+                    <i class="bi bi-layers"></i> Mini Quiz
+                  </span>
+                <% else %>
+                  <span class="qz-badge qz-badge--general">
+                    <i class="bi bi-mortarboard"></i> Cuối khóa
+                  </span>
+                <% end %>
+              </td>
+
+              <%# Actions %>
+              <td class="qz-table__td qz-table__td--actions">
+                <div class="qz-table__action-group">
+                  <%= link_to admin_quiz_path(quiz), class: 'qz-btn qz-btn--view', title: 'Xem câu hỏi' do %>
+                    <i class="bi bi-list-check"></i>
+                    <span>Questions</span>
+                  <% end %>
+                  <%= link_to edit_admin_quiz_path(quiz), class: 'qz-btn qz-btn--edit', title: 'Chỉnh sửa' do %>
+                    <i class="bi bi-pencil"></i>
+                    <span>Edit</span>
+                  <% end %>
+                  <%= link_to admin_quiz_path(quiz),
+                      data: { turbo_method: :delete, turbo_confirm: 'Bạn có chắc muốn xóa bài kiểm tra này?' },
+                      class: 'qz-btn qz-btn--delete', title: 'Xóa' do %>
+                    <i class="bi bi-trash"></i>
+                    <span>Delete</span>
+                  <% end %>
+                </div>
+              </td>
+
+            </tr>
           <% end %>
-        </td>
-        <td>
-          <%# Link 'show' này là nơi chúng ta sẽ thêm câu hỏi (Phần 3) %>
-          <%= link_to "Quản lý câu hỏi", admin_quiz_path(quiz), class: "btn btn-sm btn-info" %>
-          <%= link_to "Sửa", edit_admin_quiz_path(quiz), class: "btn btn-sm btn-warning" %>
-          <%= link_to "Xóa", admin_quiz_path(quiz), data: {
-                turbo_method: :delete,
-                turbo_confirm: "Bạn có chắc muốn xóa bài kiểm tra này?"
-              }, class: "btn btn-sm btn-danger" %>
-        </td>
-      </tr>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="qz-empty">
+        <div class="qz-empty__icon"><i class="bi bi-card-checklist"></i></div>
+        <h3>Chưa có bài kiểm tra nào</h3>
+        <p>Bắt đầu tạo bài kiểm tra đầu tiên cho các khóa học.</p>
+        <%= link_to new_admin_quiz_path, class: 'qz-page__cta' do %>
+          <i class="bi bi-plus-lg"></i>
+          <span>Tạo bài kiểm tra mới</span>
+        <% end %>
+      </div>
     <% end %>
-  </tbody>
-</table>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%== pagy_bootstrap_nav(@pagy) %>
   </div>
 
-  <div class="text-center text-muted small mt-2">
-    Hiển thị <b><%= @pagy.items %></b> bài kiểm tra / trang
-    (Tổng <b><%= @pagy.count %></b> bài)
-  </div>
-<% end %>
+  <%# ── Pagination ───────────────────────────────────────────── %>
+  <% if @pagy.pages > 1 %>
+    <div class="qz-pagination">
+      <div class="qz-pagination__nav"><%== pagy_nav(@pagy) %></div>
+      <p class="qz-pagination__note">
+        Hiển thị <strong><%= @pagy.items %></strong> / Tổng <strong><%= @pagy.count %></strong> bài kiểm tra
+      </p>
+    </div>
+  <% end %>
+
+</div>

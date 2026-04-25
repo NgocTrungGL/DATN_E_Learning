@@ -1,113 +1,164 @@
-<div class="admin-container">
+<%# Admin Courses Show — Premium BEM Redesign %>
 
-  <div class="card mb-4 p-4 shadow-sm">
-    <div class="course-hero">
+<div class="crs-page">
 
-      <img src="<%= @course.thumbnail_url.presence || 'https://via.placeholder.com/800x400' %>"
-           class="course-thumb"
-           alt="<%= @course.title %>">
+  <div class="crs-backlink">
+    <%= link_to admin_courses_path do %>
+      <i class="bi bi-arrow-left"></i>
+      <span><%= t('admin.courses.show.back_to_list') %></span>
+    <% end %>
+  </div>
 
-      <div>
-        <h2 class="fw-bold mb-1"><%= @course.title %></h2>
-        <p class="text-muted mb-2">
+  <%# ── Course Hero ─────────────────────────────────────────── %>
+  <div class="crs-hero">
+    <div class="crs-hero__media">
+      <img src="<%= @course.thumbnail_url.presence || 'https://via.placeholder.com/800x450?text=No+Image' %>"
+           class="crs-hero__img" alt="<%= @course.title %>">
+    </div>
+
+    <div class="crs-hero__content">
+      <div class="crs-page__breadcrumb" style="margin-bottom:0.6rem;">
+        <i class="bi bi-eye-fill"></i>
+        <span><%= t('admin.courses.show.admin_view') %></span>
+      </div>
+      <h1 class="crs-hero__title"><%= @course.title %></h1>
+
+      <div class="crs-hero__meta">
+        <span class="crs-hero__cat-badge">
+          <i class="bi bi-tag-fill"></i>
           <%= @course.category&.name || t('admin.courses.show.uncategorized') %>
-        </p>
-        <p><%= @course.description %></p>
-
-        <div class="course-actions mt-3">
-          <%= link_to t('admin.courses.show.add_module'),
-                new_admin_course_course_module_path(@course),
-                class: "btn btn-primary" %>
-
-          <%= link_to t('admin.courses.show.edit_course'),
-                edit_admin_course_path(@course),
-                class: "btn btn-warning" %>
-
-          <%= link_to t('admin.courses.show.delete_course'),
-                admin_course_path(@course),
-                data: { turbo_method: :delete, turbo_confirm: t('admin.courses.show.confirm_delete_course') },
-                class: "btn btn-danger" %>
-
-          <%= link_to t('admin.courses.show.back_to_list'),
-                admin_courses_path,
-                class: "btn btn-outline-secondary mt-2" %>
-        </div>
+        </span>
+        <span class="crs-hero__price-badge">
+          <i class="bi bi-cash-coin"></i>
+          <% if @course.price.present? && @course.price > 0 %>
+            <%= number_with_delimiter(@course.price.to_i) %> VNĐ
+          <% else %>
+            Miễn phí
+          <% end %>
+        </span>
       </div>
 
+      <p class="crs-hero__desc">
+        <%= @course.description.present? ? @course.description : t('admin.courses.show.empty_description') %>
+      </p>
+
+      <div class="crs-hero__actions">
+        <%= link_to new_admin_course_course_module_path(@course), class: 'crs-hero__btn crs-hero__btn--primary' do %>
+          <i class="bi bi-collection-play"></i>
+          <span><%= t('admin.courses.show.add_module') %></span>
+        <% end %>
+
+        <%= link_to edit_admin_course_path(@course), class: 'crs-hero__btn crs-hero__btn--secondary' do %>
+          <i class="bi bi-pencil-fill"></i>
+          <span><%= t('admin.courses.show.edit_course') %></span>
+        <% end %>
+
+        <%= link_to admin_course_path(@course),
+            data: { turbo_method: :delete, turbo_confirm: t('admin.courses.show.confirm_delete_course') },
+            class: 'crs-hero__btn crs-hero__btn--danger' do %>
+          <i class="bi bi-trash-fill"></i>
+          <span><%= t('admin.courses.show.delete_course') %></span>
+        <% end %>
+      </div>
     </div>
   </div>
-<div class="card shadow-sm">
-  <div class="card-header fw-bold">
-    <%= t('admin.courses.show.content_admin') %>
-  </div>
 
-  <div class="card-body p-3">
-    <div class="accordion" id="courseContentAccordion">
+  <%# ── Modules & Lessons Panel ──────────────────────────────── %>
+  <div class="crs-modules">
+    <div class="crs-modules__header">
+      <div>
+        <h2 class="crs-modules__title">
+          <i class="bi bi-layout-text-sidebar-reverse"></i>
+          <%= t('admin.courses.show.content_admin') %>
+        </h2>
+        <p class="crs-modules__subtitle"><%= @course.course_modules.count %> chương · <%= @course.course_modules.sum { |m| m.lessons.count } %> bài học</p>
+      </div>
+    </div>
 
-      <% @course.course_modules.each_with_index do |module_item, index| %>
-        <div class="accordion-item mb-2">
-          <h2 class="accordion-header">
-            <button class="accordion-button <%= 'collapsed' if index > 0 %>"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#module-<%= module_item.id %>">
-              <div class="module-header w-100">
-                <span><%= module_item.title %></span>
-                <small class="text-muted">
-                  <%= module_item.lessons.count %> lessons
-                </small>
+    <% if @course.course_modules.any? %>
+      <div class="crs-modules__list">
+        <% @course.course_modules.each_with_index do |module_item, midx| %>
+          <div class="crs-module-card">
+            <div class="crs-module-card__header">
+              <div class="crs-module-card__left">
+                <div>
+                  <h3 class="crs-module-card__title"><%= module_item.title %></h3>
+                  <span class="crs-module-card__count">
+                    <%= t('admin.courses.show.lesson_count', count: module_item.lessons.count) %>
+                  </span>
+                </div>
               </div>
-            </button>
-          </h2>
-
-          <div id="module-<%= module_item.id %>"
-               class="accordion-collapse collapse <%= 'show' if index == 0 %>">
-            <div class="accordion-body">
-
-              <div class="admin-box mb-3">
-                <%= link_to t('admin.courses.show.edit_module'),
-                      edit_admin_course_module_path(module_item),
-                      class: "btn btn-sm btn-outline-secondary" %>
-
-                <%= link_to t('admin.courses.show.delete_module'),
-                      admin_course_module_path(module_item),
-                      data: { turbo_method: :delete, turbo_confirm: t('admin.courses.show.confirm_delete_module', title: module_item.title) },
-                      class: "btn btn-sm btn-outline-danger" %>
-
-                <%= link_to t('admin.courses.show.add_lesson'),
-                      new_admin_course_module_lesson_path(module_item),
-                      class: "btn btn-sm btn-success float-end" %>
+              <div class="crs-module-card__actions">
+                <%= link_to new_admin_course_module_lesson_path(module_item),
+                    class: 'crs-btn crs-btn--module',
+                    title: 'Thêm bài học vào chương này' do %>
+                  <%= image_tag 'addlessonthismodule.png', class: 'crs-btn__img', alt: 'Thêm bài học' %>
+                <% end %>
+                <%= link_to edit_admin_course_module_path(module_item),
+                    class: 'crs-btn crs-btn--edit',
+                    title: 'Chỉnh sửa chương' do %>
+                  <%= image_tag 'edit.png', class: 'crs-btn__img', alt: 'Sửa' %>
+                <% end %>
+                <%= link_to admin_course_module_path(module_item),
+                    data: { turbo_method: :delete, turbo_confirm: t('admin.courses.show.confirm_delete_module', title: module_item.title) },
+                    class: 'crs-btn crs-btn--delete',
+                    title: 'Xóa chương' do %>
+                  <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Xóa' %>
+                <% end %>
               </div>
-
-              <% if module_item.lessons.empty? %>
-                <p class="text-muted"><em>No lessons yet</em></p>
-              <% else %>
-                <ul class="list-group">
-                  <% module_item.lessons.each do |lesson| %>
-                    <li class="list-group-item lesson-item">
-                      <span><%= lesson.title %></span>
-                      <div class="lesson-actions">
-                        <%= link_to "👁", lesson_path(lesson),
-                              class: "btn btn-sm btn-outline-info", target: "_blank" %>
-
-                        <%= link_to "✏️", edit_admin_lesson_path(lesson),
-                              class: "btn btn-sm btn-outline-warning" %>
-
-                        <%= link_to "🗑", admin_lesson_path(lesson),
-                              data: { turbo_method: :delete, turbo_confirm: t('admin.courses.show.confirm_delete_lesson', title: lesson.title) },
-                              class: "btn btn-sm btn-outline-danger" %>
-                      </div>
-                    </li>
-                  <% end %>
-                </ul>
-              <% end %>
-
             </div>
+
+            <% if module_item.lessons.any? %>
+              <ul class="crs-lesson-list">
+                <% module_item.lessons.each_with_index do |lesson, lidx| %>
+                  <li class="crs-lesson-item">
+                    <div class="crs-lesson-item__left">
+                      <span class="crs-lesson-item__title"><%= lesson.title %></span>
+                    </div>
+                    <div class="crs-lesson-item__actions">
+                      <%= link_to lesson_path(lesson),
+                          class: 'crs-btn crs-btn--view',
+                          target: '_blank',
+                          title: 'Xem bài học' do %>
+                        <%= image_tag 'view.png', class: 'crs-btn__img', alt: 'Xem' %>
+                      <% end %>
+                      <%= link_to edit_admin_lesson_path(lesson),
+                          class: 'crs-btn crs-btn--edit',
+                          title: 'Chỉnh sửa bài học' do %>
+                        <%= image_tag 'edit.png', class: 'crs-btn__img', alt: 'Sửa' %>
+                      <% end %>
+                      <%= link_to admin_lesson_path(lesson),
+                          data: { turbo_method: :delete, turbo_confirm: t('admin.courses.show.confirm_delete_lesson', title: lesson.title) },
+                          class: 'crs-btn crs-btn--delete',
+                          title: 'Xóa bài học' do %>
+                        <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Xóa' %>
+                      <% end %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <div class="crs-lesson-empty">
+                <i class="bi bi-inbox"></i>
+                <span><%= t('admin.courses.show.no_lessons') %></span>
+              </div>
+            <% end %>
           </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="crs-empty crs-empty--modules">
+        <div class="crs-empty__icon">
+          <i class="bi bi-folder2-open"></i>
         </div>
-      <% end %>
-
-    </div>
+        <h3><%= t('admin.courses.show.empty_modules_title') %></h3>
+        <p><%= t('admin.courses.show.no_content') %></p>
+        <%= link_to new_admin_course_course_module_path(@course), class: 'crs-page__cta' do %>
+          <i class="bi bi-plus-circle"></i>
+          <span><%= t('admin.courses.show.add_module') %></span>
+        <% end %>
+      </div>
+    <% end %>
   </div>
-</div>
 
-</div> <!-- admin-container -->
+</div>

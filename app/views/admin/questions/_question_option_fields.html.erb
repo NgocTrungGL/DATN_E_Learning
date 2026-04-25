@@ -1,21 +1,28 @@
-<div class="nested-form-wrapper border rounded px-3 py-2 mb-3 bg-white shadow-sm" data-new-record="<%= f.object.new_record? %>">
-  <div class="d-flex align-items-center gap-3">
+<%# Question Option Fields — Premium BEM Redesign %>
+<%# Preserves: Stimulus data-action="change->question-form#handleCheck" %>
+<%# Preserves: Stimulus data-action="question-form#removeAssociation" %>
+<%# Preserves: .nested-form-wrapper (used by removeAssociation) %>
+<%# Preserves: .option-selector class (used by toggleType to switch radio/checkbox) %>
 
-    <div class="form-check m-0">
-      <%# Class 'option-selector' dùng để JS tìm và xử lý logic Single/Multiple %>
-      <%= f.check_box :is_correct, class: "form-check-input option-selector",
-          data: { action: "change->question-form#handleCheck" } %>
-    </div>
+<div class="qs-option-row nested-form-wrapper" data-new-record="<%= f.object.new_record? %>">
 
-    <div class="flex-grow-1">
-      <%= f.text_field :option_text, class: "form-control", placeholder: "Nhập nội dung đáp án..." %>
-    </div>
+  <%# Checkbox/Radio — class MUST stay "option-selector" for Stimulus toggleType %>
+  <%= f.check_box :is_correct,
+      class: "option-selector qs-option-row__selector",
+      data: { action: "change->question-form#handleCheck" } %>
 
-    <button type="button" class="btn btn-outline-danger btn-sm"
-            data-action="question-form#removeAssociation">
-      <i class="bi bi-trash"></i>
-    </button>
-
-    <%= f.hidden_field :_destroy %>
+  <div class="qs-option-row__input-wrap">
+    <%= f.text_field :option_text,
+        class: "qs-option-row__input",
+        placeholder: "Enter answer option text..." %>
   </div>
+
+  <button type="button"
+          class="qs-option-row__remove"
+          data-action="question-form#removeAssociation"
+          title="Remove option">
+    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Remove' %>
+  </button>
+
+  <%= f.hidden_field :_destroy %>
 </div>

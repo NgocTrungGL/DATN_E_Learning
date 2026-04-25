@@ -7,10 +7,15 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   </head>
 
-  <body class="bg-light">
+  <body class="bg-light layout-business">
     <div class="d-flex" id="wrapper">
 
       <%= render 'layouts/business_sidebar' %>
@@ -41,12 +46,6 @@
       </div>
     </div>
 
-    <style>
-      #wrapper { overflow-x: hidden; }
-      .sidebar-heading { padding: 1.5rem 1.25rem; font-size: 1.2rem; }
-      .list-group-item { border: none; padding: 1rem 1.25rem; }
-      .list-group-item.active { background-color: #0d6efd; color: white; font-weight: bold; border-radius: 0.5rem; }
-      .list-group-item-action:hover { background-color: #e9ecef; color: #000; border-radius: 0.5rem; }
-    </style>
+
   </body>
 </html>

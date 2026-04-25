@@ -1,39 +1,118 @@
-<%= form_with(model: [:admin, @course]) do |form| %>
+<%# Admin Courses Form Partial — Premium BEM Redesign %>
+<%# Preserves: form_with model, local:true, collection_select Category, input-group price %>
 
-  <div class="mb-3">
-    <%= form.label :title, t('courses.form.title'), class: 'form-label' %>
-    <%= form.text_field :title, class: 'form-control', required: true %>
-  </div>
+<%= form_with(model: [:admin, @course], local: true) do |form| %>
 
-  <div class="mb-3">
-    <%= form.label :description, t('courses.form.description'), class: 'form-label' %>
-    <%= form.text_area :description, class: 'form-control' %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.label :thumbnail_url, t('courses.form.thumbnail_url'), class: 'form-label' %>
-    <%= form.text_field :thumbnail_url, class: 'form-control' %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.label :category_id, t('courses.form.category'), class: 'form-label' %>
-    <%= form.collection_select :category_id, Category.all, :id, :name,
-          { include_blank: t('courses.form.none') }, class: 'form-select' %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.label :price, "Giá khóa học (VND)", class: "form-label" %>
-    <div class="input-group">
-      <span class="input-group-text">₫</span>
-      <%= form.number_field :price, class: "form-control", step: 1000, min: 0, placeholder: "Nhập 0 nếu miễn phí" %>
+  <%# ── Validation errors ──────────────────────────────────────── %>
+  <% if @course.errors.any? %>
+    <div class="crs-form__errors">
+      <i class="bi bi-exclamation-triangle-fill crs-form__errors-icon"></i>
+      <div>
+        <strong class="crs-form__errors-title">
+          <%= t('admin.courses.form.errors_title', count: @course.errors.count) %>
+        </strong>
+        <ul class="crs-form__errors-list">
+          <% @course.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
     </div>
-    <div class="form-text">Nhập 0 để tạo khóa học miễn phí.</div>
-  </div>
+  <% end %>
 
-  <div class="mt-4">
-    <%= form.submit t('admin.courses.form.submit'), class: 'btn btn-success' %>
+  <%# ── Form card ─────────────────────────────────────────────── %>
+  <div class="crs-form__card">
+    <div class="crs-form__card-header">
+      <div class="crs-form__card-icon">
+        <i class="bi bi-journal-plus"></i>
+      </div>
+      <div>
+        <h2 class="crs-form__card-title">Thông tin khóa học</h2>
+        <p class="crs-form__card-subtitle">Điền đầy đủ thông tin để tạo hoặc cập nhật khóa học</p>
+      </div>
+    </div>
 
-    <%= link_to t('courses.form.back'), admin_courses_path, class: 'btn btn-secondary' %>
+    <div class="crs-form__card-body">
+
+      <%# 2-column grid for main fields %>
+      <div class="crs-form__grid">
+
+        <%# Title %>
+        <div class="crs-form__field crs-form__field--full">
+          <label class="crs-form__label crs-form__label--required">
+            <i class="bi bi-pencil-fill"></i>
+            <%= t('admin.courses.form.title') %>
+          </label>
+          <%= form.text_field :title,
+              class: 'crs-form__input',
+              required: true,
+              placeholder: "VD: Lập trình Ruby on Rails từ cơ bản..." %>
+          <span class="crs-form__hint">Tên khóa học sẽ hiển thị công khai trên hệ thống.</span>
+        </div>
+
+        <%# Category %>
+        <div class="crs-form__field">
+          <label class="crs-form__label">
+            <i class="bi bi-tag-fill"></i>
+            <%= t('admin.courses.form.category') %>
+          </label>
+          <%= form.collection_select :category_id, Category.order(:name), :id, :name,
+                { include_blank: t('admin.courses.form.none') },
+                class: 'crs-form__select' %>
+        </div>
+
+        <%# Price %>
+        <div class="crs-form__field">
+          <label class="crs-form__label">
+            <i class="bi bi-cash-coin"></i>
+            <%= t('admin.courses.form.price_label') %>
+          </label>
+          <div class="crs-form__price-group">
+            <%= form.number_field :price,
+                class: 'crs-form__input',
+                step: 1000,
+                min: 0,
+                placeholder: t('admin.courses.form.price_placeholder') %>
+            <span class="crs-form__price-suffix">VNĐ</span>
+          </div>
+          <span class="crs-form__hint"><%= t('admin.courses.form.price_hint') %></span>
+        </div>
+
+        <%# Thumbnail URL %>
+        <div class="crs-form__field crs-form__field--full">
+          <label class="crs-form__label">
+            <i class="bi bi-image-fill"></i>
+            <%= t('admin.courses.form.thumbnail_url') %>
+          </label>
+          <%= form.text_field :thumbnail_url,
+              class: 'crs-form__input',
+              placeholder: t('admin.courses.form.thumbnail_placeholder') %>
+          <span class="crs-form__hint">Nhập URL ảnh bìa cho khóa học (tỷ lệ 16:9 khuyến nghị).</span>
+        </div>
+
+        <%# Description %>
+        <div class="crs-form__field crs-form__field--full">
+          <label class="crs-form__label">
+            <i class="bi bi-text-paragraph"></i>
+            <%= t('admin.courses.form.description') %>
+          </label>
+          <%= form.text_area :description,
+              class: 'crs-form__textarea',
+              rows: 5,
+              placeholder: "Mô tả ngắn gọn về nội dung và lợi ích của khóa học..." %>
+        </div>
+
+      </div>
+    </div>
+
+    <%# ── Form actions ─────────────────────────────────────────  %>
+    <div class="crs-form__actions">
+      <%= link_to admin_courses_path, class: 'crs-form__btn crs-form__btn--cancel' do %>
+        <i class="bi bi-x-lg"></i>
+        <%= t('admin.courses.form.back') %>
+      <% end %>
+      <%= form.submit t('admin.courses.form.submit'), class: 'crs-form__btn crs-form__btn--save' %>
+    </div>
   </div>
 
 <% end %>

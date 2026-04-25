@@ -1,0 +1,12 @@
+// ============================================================
+// BUSINESS LAYOUT
+// Scoped styles to prevent Turbo leak
+// ============================================================
+
+body.layout-business {
+  #wrapper { overflow-x: hidden; }
+  .sidebar-heading { padding: 1.5rem 1.25rem; font-size: 1.2rem; }
+  .list-group-item { border: none; padding: 1rem 1.25rem; }
+  .list-group-item.active { background-color: #0d6efd; color: white; font-weight: bold; border-radius: 0.5rem; }
+  .list-group-item-action:hover { background-color: #e9ecef; color: #000; border-radius: 0.5rem; }
+}

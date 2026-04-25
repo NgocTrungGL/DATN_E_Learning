@@ -1,122 +1,136 @@
-<div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3 fw-bold text-gray-800 border-start border-4 border-primary ps-3">
-      Quản lý Hỏi đáp
-    </h2>
-    <div class="badge bg-light text-dark border p-2">
-      Tổng cộng: <%= @comments.count %> bình luận
+<%# Admin Comments Index — Premium BEM Redesign %>
+
+<div class="cm-page">
+
+  <%# ── Page Header ─────────────────────────────────────────── %>
+  <header class="cm-page__header">
+    <div class="cm-page__header-left">
+      <div class="cm-page__breadcrumb">
+        <i class="bi bi-chat-dots"></i>
+        <span>Interactions</span>
+      </div>
+      <h1 class="cm-page__title">Q&A Management</h1>
+      <p class="cm-page__subtitle">Moderate student questions and instructor responses across lessons.</p>
     </div>
-  </div>
-
-  <div class="card shadow-sm border-0">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="bg-light">
-            <tr class="text-uppercase text-secondary small fw-bold">
-              <th class="ps-4 py-3" style="width: 20%;">Người dùng</th>
-              <th style="width: 15%;">Loại</th>
-              <th style="width: 20%;">Vị trí (Bài học)</th>
-              <th style="width: 30%;">Nội dung bình luận</th>
-              <th style="width: 15%;" class="text-end pe-4">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @comments.each do |comment| %>
-              <tr>
-                <td class="ps-4">
-                  <div class="d-flex align-items-center">
-                    <div class="avatar-wrapper avatar-sm me-2">
-                      <% if comment.user.avatar_url.present? %>
-                        <img
-                          src="<%= comment.user.avatar_url %>"
-                          alt="<%= comment.user.name %>"
-                          class="avatar-img">
-                      <% else %>
-                        <div class="avatar-text avatar-sm-text">
-                          <%= comment.user.name.first.upcase %>
-                        </div>
-                      <% end %>
-                    </div>
-
-                    <div>
-                      <div class="fw-bold text-dark"><%= comment.user.name %></div>
-                      <span class="badge bg-secondary" style="font-size: 0.65rem;"><%= comment.user.role.capitalize %></span>
-                    </div>
-                  </div>
-                </td>
-
-                <td>
-                  <% if comment.parent_id.nil? %>
-                    <span class="badge bg-primary text-white">
-                      <i class="bi bi-question-circle-fill me-1"></i> Câu hỏi gốc
-                    </span>
-                  <% else %>
-                    <span class="badge bg-secondary text-white">
-                      <i class="bi bi-reply-fill me-1"></i> Trả lời
-                    </span>
-                    <div class="small text-muted mt-1" style="font-size: 0.75rem">
-                      của ID #<%= comment.parent_id %>
-                    </div>
-                  <% end %>
-                </td>
-
-                <td>
-                  <div class="d-flex align-items-center text-secondary">
-                    <i class="bi bi-play-circle me-2"></i>
-                    <div class="text-truncate" style="max-width: 180px;" title="<%= comment.lesson.title %>">
-                      <%= comment.lesson.title %>
-                    </div>
-                  </div>
-                  <small class="text-muted d-block mt-1">
-                    Khóa: <%= comment.lesson.course.title.truncate(20) %>
-                  </small>
-                </td>
-
-                <td>
-                  <div class="text-dark small mb-1 text-break">
-                    <%= comment.body.truncate(120) %>
-                  </div>
-                  <small class="text-muted">
-                    <i class="bi bi-clock me-1"></i><%= time_ago_in_words(comment.created_at) %> trước
-                  </small>
-                </td>
-
-                <td class="text-end pe-4">
-                  <%= link_to lesson_path(comment.lesson, anchor: "comment-#{comment.id}"), class: "btn btn-link btn-sm text-decoration-none text-secondary", target: "_blank", title: "Xem thực tế" do %>
-                    <i class="bi bi-box-arrow-up-right"></i>
-                  <% end %>
-
-                  <%= link_to admin_comment_path(comment),
-                      data: { turbo_method: :delete, turbo_confirm: "CẢNH BÁO QUAN TRỌNG:\n\nNếu bạn xóa bình luận này, TẤT CẢ các câu trả lời con (Replies) của nó cũng sẽ bị xóa theo!\n\nBạn có chắc chắn muốn tiếp tục?" },
-                      class: "btn btn-outline-danger btn-sm shadow-sm ms-1" do %>
-                    <i class="bi bi-trash-fill me-1"></i> Xóa
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-
-            <% if @comments.empty? %>
-              <tr>
-                <td colspan="5" class="text-center py-5 text-muted">
-                  <i class="bi bi-chat-square-dots fs-1 d-block mb-3 opacity-50"></i>
-                  Chưa có thảo luận nào trong hệ thống.
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+    <div class="cm-page__header-right">
+      <div class="cm-page__stat-pill">
+        <i class="bi bi-chat-left-text"></i>
+        <strong><%= @pagy.count %></strong>
+        <span>comments</span>
       </div>
     </div>
-  </div>
-</div>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%== pagy_bootstrap_nav(@pagy) %>
+  </header>
+
+  <%# ── Table Card ────────────────────────────────────────────── %>
+  <div class="cm-table-card">
+    <% if @comments.any? %>
+      <table class="cm-table">
+        <thead>
+          <tr>
+            <th class="cm-table__th cm-table__th--user">
+              <i class="bi bi-person"></i> User
+            </th>
+            <th class="cm-table__th cm-table__th--type">
+              <i class="bi bi-diagram-2"></i> Type
+            </th>
+            <th class="cm-table__th cm-table__th--location">
+              <i class="bi bi-geo-alt"></i> Location
+            </th>
+            <th class="cm-table__th cm-table__th--content">
+              <i class="bi bi-chat-square-text"></i> Content
+            </th>
+            <th class="cm-table__th cm-table__th--actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @comments.each do |comment| %>
+            <tr class="cm-table__row">
+
+              <%# User info %>
+              <td class="cm-table__td">
+                <div class="cm-table__user-cell">
+                  <div class="cm-table__avatar">
+                    <% if comment.user.avatar_url.present? %>
+                      <img src="<%= comment.user.avatar_url %>" class="cm-table__avatar-img" alt="<%= comment.user.name %>">
+                    <% else %>
+                      <span class="cm-table__avatar-text"><%= comment.user.name.first.upcase %></span>
+                    <% end %>
+                  </div>
+                  <div>
+                    <span class="cm-table__user-name"><%= comment.user.name %></span>
+                    <span class="cm-badge cm-badge--neutral"><%= comment.user.role.capitalize %></span>
+                  </div>
+                </div>
+              </td>
+
+              <%# Type %>
+              <td class="cm-table__td">
+                <% if comment.parent_id.nil? %>
+                  <span class="cm-badge cm-badge--info">
+                    <i class="bi bi-question-circle"></i> Question
+                  </span>
+                <% else %>
+                  <div class="cm-table__reply">
+                    <span class="cm-badge cm-badge--neutral"><i class="bi bi-reply"></i> Reply</span>
+                    <span class="cm-table__sub">to #<%= comment.parent_id %></span>
+                  </div>
+                <% end %>
+              </td>
+
+              <%# Location %>
+              <td class="cm-table__td">
+                <div class="cm-table__location">
+                  <span class="cm-table__lesson" title="<%= comment.lesson.title %>">
+                    <i class="bi bi-play-circle"></i> <%= comment.lesson.title.truncate(30) %>
+                  </span>
+                  <span class="cm-table__sub">Course: <%= comment.lesson.course.title.truncate(20) %></span>
+                </div>
+              </td>
+
+              <%# Content %>
+              <td class="cm-table__td">
+                <p class="cm-table__body-text"><%= truncate(comment.body, length: 120) %></p>
+                <div class="cm-table__sub">
+                  <i class="bi bi-clock"></i> <%= time_ago_in_words(comment.created_at) %> ago
+                </div>
+              </td>
+
+              <%# Actions %>
+              <td class="cm-table__td cm-table__td--actions">
+                <div class="cm-table__action-group">
+                  <%= link_to lesson_path(comment.lesson, anchor: "comment-#{comment.id}"),
+                      class: 'cm-btn cm-btn--view', target: '_blank', title: 'View in lesson' do %>
+                    <%= image_tag 'view.png', class: 'crs-btn__img', alt: 'View' %>
+                  <% end %>
+                  <%= link_to admin_comment_path(comment),
+                      data: { turbo_method: :delete, turbo_confirm: 'WARNING: Deleting this comment will remove all child replies. Continue?' },
+                      class: 'cm-btn cm-btn--delete', title: 'Delete' do %>
+                    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Delete' %>
+                  <% end %>
+                </div>
+              </td>
+
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="cm-empty">
+        <div class="cm-empty__icon"><i class="bi bi-chat-square-dots"></i></div>
+        <h3>No discussions yet</h3>
+        <p>Comments from students will appear here for management.</p>
+      </div>
+    <% end %>
   </div>
 
-  <div class="text-center text-muted small mt-2">
-    Hiển thị <b><%= @pagy.items %></b> bình luận / trang
-    (Tổng <b><%= @pagy.count %></b> bình luận)
-  </div>
-<% end %>
+  <%# ── Pagination ───────────────────────────────────────────── %>
+  <% if @pagy.pages > 1 %>
+    <div class="cm-pagination">
+      <div class="cm-pagination__nav"><%== pagy_nav(@pagy) %></div>
+      <p class="cm-pagination__note">
+        Showing <strong><%= @pagy.items %></strong> of <strong><%= @pagy.count %></strong> comments
+      </p>
+    </div>
+  <% end %>
+
+</div>

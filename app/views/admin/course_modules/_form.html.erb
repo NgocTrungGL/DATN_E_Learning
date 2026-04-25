@@ -1,35 +1,45 @@
-<%= form_with(model: [:admin, @course, @course_module]) do |form| %>
+<% form_scope = mode == :edit ? [:admin, @course_module] : [:admin, @course, @course_module] %>
+
+<%= form_with(model: form_scope, local: true, class: 'needs-validation') do |form| %>
   <% if @course_module.errors.any? %>
-    <div style="color: red">
-      <h2>
-        <%= t('admin.course_modules.form.errors_title',
-               count: @course_module.errors.count) %>
-      </h2>
-      <ul>
-        <% @course_module.errors.each do |error| %>
-          <li><%= error.full_message %></li>
+    <div class="admin-course-modules__errors">
+      <div class="admin-course-modules__errors-title">
+        <%= t('admin.course_modules.form.errors_title', count: @course_module.errors.count) %>
+      </div>
+      <ul class="admin-course-modules__errors-list">
+        <% @course_module.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
         <% end %>
       </ul>
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title, t('admin.course_modules.form.title') %><br>
-    <%= form.text_field :title, style: "width: 400px" %>
+  <div class="admin-course-modules__field-group">
+    <div class="admin-course-modules__field">
+      <%= form.label :title, t('admin.course_modules.form.title'), class: 'admin-course-modules__label' %>
+      <%= form.text_field :title,
+                          class: 'admin-input admin-course-modules__input',
+                          placeholder: t('admin.course_modules.form.title_placeholder'),
+                          autofocus: true,
+                          required: true %>
+    </div>
+
+    <div class="admin-course-modules__field">
+      <%= form.label :description, t('admin.course_modules.form.description'), class: 'admin-course-modules__label' %>
+      <%= form.text_area :description,
+                         rows: 4,
+                         class: 'admin-textarea admin-course-modules__textarea',
+                         placeholder: t('admin.course_modules.form.description_placeholder') %>
+    </div>
+
+    <%= form.hidden_field :order_index %>
   </div>
 
-  <div>
-    <%= form.label :description, t('admin.course_modules.form.description') %><br>
-    <%= form.text_area :description, rows: 4, style: "width: 400px" %>
-  </div>
+  <div class="admin-course-modules__form-actions">
+    <%= link_to admin_course_path(@course), class: 'btn-cancel admin-course-modules__action' do %>
+      <%= t('admin.course_modules.form.back_to_course') %>
+    <% end %>
 
-  <div>
-    <%= form.label :order_index, t('admin.course_modules.form.order_index') %><br>
-    <%= form.number_field :order_index %>
-  </div>
-
-  <br>
-  <div>
-    <%= form.submit t('admin.course_modules.form.submit') %>
+    <%= form.submit t(submit_key), class: 'btn-save admin-course-modules__action' %>
   </div>
 <% end %>

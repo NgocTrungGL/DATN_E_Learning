@@ -1,6 +1,7 @@
 class Admin::LessonsController < Admin::BaseController
   before_action :set_course_module, only: [:new, :create]
   before_action :set_lesson, only: [:show, :edit, :update, :destroy]
+  before_action :set_lesson_context, only: [:edit, :update]
   # GET /admin/lessons/1
   def show; end
 
@@ -39,7 +40,7 @@ class Admin::LessonsController < Admin::BaseController
   # PATCH/PUT /admin/lessons/1
   def update
     if @lesson.update(lesson_params)
-      redirect_to admin_course_path(@lesson.course_module.course),
+      redirect_to new_admin_course_module_lesson_path(@course_module),
                   notice: t("admin.lessons.update.success")
     else
       render :edit, status: :unprocessable_entity
@@ -94,5 +95,9 @@ class Admin::LessonsController < Admin::BaseController
   def lesson_params
     params.require(:lesson).permit(:title, :description, :video_url,
                                    :attachment_url, :order_index)
+  end
+
+  def set_lesson_context
+    @course_module = @lesson.course_module
   end
 end

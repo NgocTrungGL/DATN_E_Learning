@@ -1,50 +1,128 @@
-<div class="container mt-4">
-  <h2 class="mb-3"><%= t('admin.categories.index.title') %></h2>
+<%# Admin Categories Index — Premium BEM Redesign %>
 
-  <%= link_to t('admin.categories.index.new_category'),
-              new_admin_category_path,
-              class: 'btn btn-primary mb-3' %>
+<div class="cat-page">
 
-  <table class="table table-bordered table-hover">
-    <thead class="table-light">
-      <tr>
-        <th><%= t('admin.categories.index.name') %></th>
-        <th><%= t('admin.categories.index.description') %></th>
-        <th><%= t('admin.categories.index.parent') %></th>
-        <th><%= t('admin.categories.index.actions') %></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @categories.each do |category| %>
-        <tr>
-          <td><%= category.name %></td>
-          <td><%= truncate(category.description, length: 60) %></td>
-          <td><%= category.parent&.name || t('admin.categories.index.no_parent') %></td>
-          <td>
-            <%= link_to t('admin.categories.index.edit'),
-                        edit_admin_category_path(category),
-                        class: 'btn btn-sm btn-warning' %>
+  <%# ── Page Header ──────────────────────────────────────────── %>
+  <header class="cat-page__header">
+    <div class="cat-page__header-left">
+      <div class="cat-page__breadcrumb">
+        <i class="bi bi-tags-fill"></i>
+        <span><%= t('admin.categories.index.eyebrow') %></span>
+      </div>
+      <h1 class="cat-page__title"><%= t('admin.categories.index.title') %></h1>
+      <p class="cat-page__subtitle"><%= t('admin.categories.index.subtitle') %></p>
+    </div>
 
-            <%= link_to t('admin.categories.index.delete'),
-                        admin_category_path(category),
-                        data: {
-                          turbo_method: :delete,
-                          turbo_confirm: t('admin.categories.index.confirm_delete')
-                        },
-                        class: 'btn btn-sm btn-danger' %>
-          </td>
-        </tr>
+    <div class="cat-page__header-right">
+      <div class="cat-page__stat-pill">
+        <i class="bi bi-folder2-open"></i>
+        <strong><%= @pagy&.count || @categories.size %></strong>
+        <span><%= t('admin.categories.index.counter_suffix') %></span>
+      </div>
+
+      <%= link_to new_admin_category_path, class: 'cat-page__cta' do %>
+        <i class="bi bi-plus-lg"></i>
+        <span><%= t('admin.categories.index.new_category') %></span>
       <% end %>
-    </tbody>
-  </table>
-</div>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%== pagy_bootstrap_nav(@pagy) %>
+    </div>
+  </header>
+
+  <%# ── Table Card ───────────────────────────────────────────── %>
+  <div class="cat-table-card">
+    <table class="cat-table">
+      <thead>
+        <tr>
+          <th class="cat-table__th cat-table__th--name">
+            <i class="bi bi-tag"></i> <%= t('admin.categories.index.name') %>
+          </th>
+          <th class="cat-table__th cat-table__th--desc">
+            <i class="bi bi-text-left"></i> <%= t('admin.categories.index.description') %>
+          </th>
+          <th class="cat-table__th cat-table__th--parent">
+            <i class="bi bi-diagram-2"></i> <%= t('admin.categories.index.parent') %>
+          </th>
+          <th class="cat-table__th cat-table__th--actions">
+            <%= t('admin.categories.index.actions') %>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @categories.any? %>
+          <% @categories.each_with_index do |category, idx| %>
+            <tr class="cat-table__row">
+              <td class="cat-table__td cat-table__td--name">
+                <span class="cat-table__name-text"><%= category.name %></span>
+              </td>
+
+              <td class="cat-table__td cat-table__td--desc">
+                <span class="cat-table__desc-text">
+                  <%= category.description.present? ? truncate(category.description, length: 90) : t('admin.categories.index.empty_description') %>
+                </span>
+              </td>
+
+              <td class="cat-table__td cat-table__td--parent">
+                <div class="cat-table__parent-wrapper">
+                  <% if category.parent.present? %>
+                    <span class="cat-table__badge cat-table__badge--parent">
+                      <%= category.parent.name %>
+                    </span>
+                  <% else %>
+                    <span class="cat-table__badge cat-table__badge--root">
+                      —
+                    </span>
+                  <% end %>
+                </div>
+              </td>
+
+              <td class="cat-table__td cat-table__td--actions">
+                <div class="cat-table__action-group">
+                  <%= link_to edit_admin_category_path(category), class: 'cat-btn cat-btn--edit' do %>
+                    <i class="bi bi-pencil-fill"></i>
+                    <span><%= t('admin.categories.index.edit') %></span>
+                  <% end %>
+
+                  <%= link_to admin_category_path(category),
+                      data: {
+                        turbo_method: :delete,
+                        turbo_confirm: t('admin.categories.index.confirm_delete')
+                      },
+                      class: 'cat-btn cat-btn--delete' do %>
+                    <i class="bi bi-trash-fill"></i>
+                    <span><%= t('admin.categories.index.delete') %></span>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="4">
+              <div class="cat-table__empty">
+                <div class="cat-table__empty-icon">
+                  <i class="bi bi-tags"></i>
+                </div>
+                <h3><%= t('admin.categories.index.empty_title') %></h3>
+                <p><%= t('admin.categories.index.empty_text') %></p>
+                <%= link_to new_admin_category_path, class: 'cat-page__cta' do %>
+                  <i class="bi bi-plus-lg"></i>
+                  <span><%= t('admin.categories.index.new_category') %></span>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
 
-  <div class="text-center text-muted small mt-2">
-    Hiển thị <b><%= @pagy.items %></b> danh mục / trang
-    (Tổng <b><%= @pagy.count %></b> danh mục)
-  </div>
-<% end %>
+  <%# ── Pagination ───────────────────────────────────────────── %>
+  <% if @pagy.pages > 1 %>
+    <div class="cat-pagination">
+      <%== pagy_nav(@pagy) %>
+      <p class="cat-pagination__note">
+        <%= t('admin.categories.index.pagination_note', items: @pagy.items, count: @pagy.count) %>
+      </p>
+    </div>
+  <% end %>
+
+</div>
