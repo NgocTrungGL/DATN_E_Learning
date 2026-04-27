@@ -41,7 +41,7 @@ ActiveRecord::Base.transaction do
   # 2. Tạo Users (Admins, Instructors, Students)
   # ==========================================
   puts "Tạo Users & Profiles & Wallets..."
-  
+
   valid_genders = Profile.respond_to?(:genders) ? Profile.genders.keys : ["male", "female"]
 
   def create_user_with_extras(name, email, role, org = nil, valid_genders = ["male", "female"])
@@ -56,10 +56,10 @@ ActiveRecord::Base.transaction do
 
     # User's after_create hook already created a wallet and profile, so we just update them
     user.wallet.update!(balance: rand(0.0..5000.0).round(2)) if user.wallet
-    
+
     if user.profile
       user.profile.update!(
-        bio: Faker::Lorem.paragraph, 
+        bio: Faker::Lorem.paragraph,
         phone: "0#{rand(100000000..999999999)}",
         gender: valid_genders.sample,
         dob: Faker::Date.birthday(min_age: 18, max_age: 65)
@@ -77,7 +77,7 @@ ActiveRecord::Base.transaction do
 
   instructors = NUM_INSTRUCTORS.times.map do |i|
     user = create_user_with_extras(Faker::Name.name, "instructor#{i+1}@example.com", "instructor", nil, valid_genders)
-    
+
     InstructorProfile.create!(
       user: user,
       bio_detailed: Faker::Lorem.paragraphs(number: 3).join("\n"),
@@ -107,7 +107,7 @@ ActiveRecord::Base.transaction do
   parent_categories = 4.times.map do
     Category.create!(name: Faker::ProgrammingLanguage.unique.name, description: Faker::Lorem.sentence)
   end
-  
+
   categories = parent_categories + (NUM_CATEGORIES - 4).times.map do
     Category.create!(
       name: Faker::Job.unique.field,
@@ -124,7 +124,7 @@ ActiveRecord::Base.transaction do
 
   courses = NUM_COURSES.times.map do |i|
     thumbnail = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop&q=80&sig=#{i}"
-    
+
     course = Course.create!(
       title: Faker::Educator.course_name + " " + Faker::App.version,
       description: Faker::Lorem.paragraphs(number: 4).join("\n"),
@@ -150,9 +150,9 @@ ActiveRecord::Base.transaction do
           course_module: mod,
           title: "Bài #{l_index + 1}: #{Faker::Lorem.sentence(word_count: 4)}",
           description: Faker::Lorem.paragraph,
-          video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", 
+          video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
           order_index: l_index + 1,
-          free_preview: l_index == 0 
+          free_preview: l_index == 0
         )
 
         # Comments
@@ -173,6 +173,7 @@ ActiveRecord::Base.transaction do
         course_id: course.id,
         lesson_id: course_lessons.last.id,
         title: "Bài kiểm tra: #{course.title}",
+        description: "Vượt qua bài test này để hoàn thành khóa học.",
         total_questions: 5,
         time_limit: 15,
         created_by: course.created_by,
@@ -197,7 +198,7 @@ ActiveRecord::Base.transaction do
           created_by: course.created_by,
           question_options_attributes: options_attrs
         )
-        
+
         QuizQuestion.create!(quiz: quiz, question: question, order_index: q_index + 1)
       end
     end
@@ -209,7 +210,7 @@ ActiveRecord::Base.transaction do
   # 5. Tạo Enrollments, Licenses & Progress
   # ==========================================
   puts "Tạo Enrollments, Reviews & Progress..."
-  
+
   valid_enrollment_status = Enrollment.respond_to?(:statuses) ? Enrollment.statuses.keys : ["active", "pending", "rejected"]
   valid_progress_status = ProgressTracking.respond_to?(:statuses) ? ProgressTracking.statuses.keys : ["not_started", "in_progress", "completed"]
 
@@ -219,7 +220,7 @@ ActiveRecord::Base.transaction do
 
   students.each do |student|
     enrolled_courses = published_courses.sample(rand(2..6))
-    
+
     enrolled_courses.each do |course|
       # Khóa primary key hoặc unique index trên user_id và course_id ở enrolments:
       next if Enrollment.exists?(user: student, course: course)
@@ -244,7 +245,7 @@ ActiveRecord::Base.transaction do
       # Progress
       course_lessons = course.course_modules.flat_map(&:lessons)
       next if course_lessons.empty?
-      
+
       course_lessons.sample(rand(1..course_lessons.size)).each do |lesson|
         next if ProgressTracking.exists?(user: student, lesson: lesson)
 
@@ -266,7 +267,7 @@ ActiveRecord::Base.transaction do
   puts "Tạo dữ liệu giao dịch & Giỏ hàng..."
   students.first(15).each do |student|
     cart = Cart.find_or_create_by!(user: student)
-    
+
     course_to_add = published_courses.sample
     unless CartItem.exists?(cart: cart, course: course_to_add) || Enrollment.exists?(user: student, course: course_to_add)
       CartItem.create!(
