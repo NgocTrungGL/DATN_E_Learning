@@ -126,33 +126,3 @@
   </div>
 </div>
 
-<style>
-  .hover-shadow:hover { box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
-  .hover-text-danger:hover { color: #dc3545 !important; }
-  .transition-base { transition: all 0.2s ease-in-out; }
-  .border-dashed { border-style: dashed !important; }
-
-  /* Strong avatar rules scoped to comments list to override bootstrap img rules */
-  .comments-list img.avatar,
-  .comments-list img.avatar-sm {
-    width: 48px !important;
-    height: 48px !important;
-    min-width: 48px !important;
-    min-height: 48px !important;
-    aspect-ratio: 1 / 1 !important;
-    object-fit: cover !important;
-    display: inline-block !important;
-    flex: 0 0 auto !important;
-    border-radius: 50% !important;
-  }
-  /* smaller variant */
-  .comments-list img.avatar-sm {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
-  }
-
-  /* ensure rounded-circle utility doesn't get overridden elsewhere */
-  .comments-list img.rounded-circle { border-radius: 50% !important; }
-</style>
