@@ -588,78 +588,68 @@
         <% end %>
 
         <%# ── CTA Button Logic ─────────────────────────────── %>
-        <% if current_user %>
-
-          <% if has_access %>
-            <%# ENROLLED / OWNER / ADMIN: go to course %>
-            <% if first_lesson %>
-              <%= link_to lesson_path(first_lesson), class: "cd-btn cd-btn--success" do %>
-                <i class="bi bi-play-circle-fill"></i>
-                <% if current_user.admin? %>
-                  Start Learning (Admin)
-                <% elsif is_creator %>
-                  Preview Course
-                <% else %>
-                  Continue Learning
-                <% end %>
-              <% end %>
-            <% else %>
-              <button class="cd-btn cd-btn--ghost" disabled>Content Coming Soon</button>
-            <% end %>
-
-          <% else %>
-            <%# NOT ENROLLED %>
-            <% pending = current_user.enrollments.find_by(course: @course, status: :pending) %>
-
-            <% if pending %>
-              <%# PENDING PAYMENT %>
-              <div class="cd-pending-state">
-                <div class="title"><i class="bi bi-clock-history"></i> Payment Pending</div>
-                <div class="sub">Complete payment to access the course.</div>
-              </div>
-              <%= button_to create_checkout_session_path(course_id: @course.id),
-                    method: :post,
-                    class: "cd-btn cd-btn--outline",
-                    data: { turbo: false } do %>
-                <i class="bi bi-credit-card"></i> Continue to Payment
-              <% end %>
-
-            <% elsif @course.free? %>
-              <%# FREE ENROLLMENT %>
-              <%= button_to course_enrollments_path(@course),
-                    method: :post,
-                    class: "cd-btn cd-btn--primary" do %>
-                <i class="bi bi-person-plus-fill"></i> Enroll for Free
-              <% end %>
-
-            <% else %>
-              <%# PAID COURSE %>
-              <%= button_to create_checkout_session_path(course_id: @course.id),
-                    method: :post,
-                    class: "cd-btn cd-btn--stripe",
-                    data: { turbo: false } do %>
-                <i class="bi bi-credit-card-2-front-fill"></i> Buy Now
-              <% end %>
-
-              <% if in_cart %>
-                <%= link_to cart_path, class: "cd-btn cd-btn--outline" do %>
-                  <i class="bi bi-cart-check-fill"></i> In Cart — Go to Cart
-                <% end %>
+        <% if has_access %>
+          <%# ENROLLED / OWNER / ADMIN: go to course %>
+          <% if first_lesson %>
+            <%= link_to lesson_path(first_lesson), class: "cd-btn cd-btn--success" do %>
+              <i class="bi bi-play-circle-fill"></i>
+              <% if current_user&.admin? %>
+                Start Learning (Admin)
+              <% elsif is_creator %>
+                Preview Course
               <% else %>
-                <%= link_to cart_items_path(course_id: @course.id),
-                      data: { turbo_method: :post },
-                      class: "cd-btn cd-btn--outline" do %>
-                  <i class="bi bi-cart-plus"></i> Add to Cart
-                <% end %>
+                Continue Learning
               <% end %>
-
             <% end %>
+          <% else %>
+            <button class="cd-btn cd-btn--ghost" disabled>Content Coming Soon</button>
           <% end %>
 
         <% else %>
-          <%# GUEST: prompt to login %>
-          <%= link_to new_user_session_path, class: "cd-btn cd-btn--primary" do %>
-            <i class="bi bi-box-arrow-in-right"></i> Login to Enroll
+          <%# NOT ENROLLED OR GUEST %>
+          <% pending = current_user&.enrollments&.find_by(course: @course, status: :pending) %>
+
+          <% if pending %>
+            <%# PENDING PAYMENT %>
+            <div class="cd-pending-state">
+              <div class="title"><i class="bi bi-clock-history"></i> Payment Pending</div>
+              <div class="sub">Complete payment to access the course.</div>
+            </div>
+            <%= button_to create_checkout_session_path(course_id: @course.id),
+                  method: :post,
+                  class: "cd-btn cd-btn--outline",
+                  data: { turbo: false } do %>
+              <i class="bi bi-credit-card"></i> Continue to Payment
+            <% end %>
+
+          <% elsif @course.free? %>
+            <%# FREE ENROLLMENT %>
+            <%= button_to course_enrollments_path(@course),
+                  method: :post,
+                  class: "cd-btn cd-btn--primary" do %>
+              <i class="bi bi-person-plus-fill"></i> Enroll for Free
+            <% end %>
+
+          <% else %>
+            <%# PAID COURSE %>
+            <%= button_to create_checkout_session_path(course_id: @course.id),
+                  method: :post,
+                  class: "cd-btn cd-btn--stripe",
+                  data: { turbo: false } do %>
+              <i class="bi bi-credit-card-2-front-fill"></i> Buy Now
+            <% end %>
+
+            <% if in_cart %>
+              <%= link_to cart_path, class: "cd-btn cd-btn--outline" do %>
+                <i class="bi bi-cart-check-fill"></i> In Cart — Go to Cart
+              <% end %>
+            <% else %>
+              <%= link_to cart_items_path(course_id: @course.id),
+                    data: { turbo_method: :post },
+                    class: "cd-btn cd-btn--outline" do %>
+                <i class="bi bi-cart-plus"></i> Add to Cart
+              <% end %>
+            <% end %>
           <% end %>
         <% end %>
 

@@ -80,6 +80,43 @@
   }
 
   // Action Buttons
+  .btn-cart {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: $text-mid;
+    font-size: 1.25rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+
+    &:hover {
+      background: $bg;
+      color: $primary;
+    }
+
+    &__badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: $danger;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+      padding: 0 4px;
+    }
+  }
+
   .btn-login, .btn-signup {
     padding: 0.6rem 1.5rem !important;
     border-radius: 0.75rem !important;
