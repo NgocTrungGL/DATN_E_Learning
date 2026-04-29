@@ -8,7 +8,7 @@ class Business::DashboardController < ApplicationController
 
     if @organization.nil?
       redirect_to root_path,
-                  alert: "Tài khoản của bạn chưa được liên kết với doanh nghiệp nào."
+                  alert: "Bạn chưa được liên kết với doanh nghiệp nào"
       return
     end
 
