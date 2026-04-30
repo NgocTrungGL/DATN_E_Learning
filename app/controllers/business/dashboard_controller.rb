@@ -6,6 +6,12 @@ class Business::DashboardController < ApplicationController
   def index
     @organization = current_user.organization
 
+    if @organization.nil?
+      redirect_to root_path,
+                  alert: "Bạn chưa được liên kết với doanh nghiệp nào"
+      return
+    end
+
     @total_employees = @organization.users.where(role: :employee).count
   end
 

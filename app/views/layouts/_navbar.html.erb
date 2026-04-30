@@ -15,64 +15,86 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <%# --- NAV LINKS --- %>
-    <div class="collapse navbar-collapse" id="navbarMain">
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-        
-        <%# --- COURSES DROPDOWN --- %>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="coursesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Courses
-          </a>
-          <ul class="dropdown-menu border-0 shadow" aria-labelledby="coursesDropdown">
-            <%# FUTURE: Replace hardcoded categories with Category.where(parent_id: nil) loop %>
-            <li>
-              <%= link_to categories_path, class: "dropdown-item" do %>
-                <i class="bi bi-code-slash"></i> Web Development
-              <% end %>
-            </li>
-            <li>
-              <%= link_to categories_path, class: "dropdown-item" do %>
-                <i class="bi bi-graph-up"></i> Data Science
-              <% end %>
-            </li>
-            <li>
-              <%= link_to categories_path, class: "dropdown-item" do %>
-                <i class="bi bi-palette"></i> Design & UI/UX
-              <% end %>
-            </li>
-            <li>
-              <%= link_to categories_path, class: "dropdown-item" do %>
-                <i class="bi bi-hdd-network"></i> DevOps & Cloud
-              <% end %>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <%= link_to courses_path, class: "dropdown-item fw-bold text-primary" do %>
-                <i class="bi bi-arrow-right-circle"></i> Browse All Courses
-              <% end %>
-            </li>
-          </ul>
-        </li>
+      <%# --- NAV LINKS --- %>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          
+          <%# --- COURSES DROPDOWN --- %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="coursesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Courses
+            </a>
+            <ul class="dropdown-menu border-0 shadow" aria-labelledby="coursesDropdown">
+              <li>
+                <%= link_to categories_path, class: "dropdown-item" do %>
+                  <i class="bi bi-code-slash"></i> Web Development
+                <% end %>
+              </li>
+              <li>
+                <%= link_to categories_path, class: "dropdown-item" do %>
+                  <i class="bi bi-graph-up"></i> Data Science
+                <% end %>
+              </li>
+              <li>
+                <%= link_to categories_path, class: "dropdown-item" do %>
+                  <i class="bi bi-palette"></i> Design & UI/UX
+                <% end %>
+              </li>
+              <li>
+                <%= link_to categories_path, class: "dropdown-item" do %>
+                  <i class="bi bi-hdd-network"></i> DevOps & Cloud
+                <% end %>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <%= link_to courses_path, class: "dropdown-item fw-bold text-primary" do %>
+                  <i class="bi bi-arrow-right-circle"></i> Browse All Courses
+                <% end %>
+              </li>
+            </ul>
+          </li>
 
-        <li class="nav-item">
-          <a class="nav-link" href="#learning-paths">Learning Paths</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#pricing">Pricing</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#instructors">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#cta">Contact</a>
-        </li>
-      </ul>
+          <% if request.path.start_with?('/courses') %>
+            <%# --- COURSE PAGE SPECIFIC LINKS --- %>
+            <li class="nav-item">
+              <%= link_to "E-learning business", (current_user&.company_admin? ? business_root_path : b2b_register_path), class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <% if current_user&.instructor? %>
+                <%= link_to "For Instructors", instructor_root_path, class: "nav-link" %>
+              <% else %>
+                <%= link_to "Start Teaching", new_instructor_registration_path, class: "nav-link" %>
+              <% end %>
+            </li>
+          <% else %>
+            <%# --- DEFAULT LINKS (ROOT PAGE) --- %>
+            <li class="nav-item">
+              <a class="nav-link" href="#learning-paths">Learning Paths</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#pricing">Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#instructors">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#cta">Contact</a>
+            </li>
+          <% end %>
+        </ul>
 
       <%# --- AUTH BUTTONS / USER SECTION --- %>
       <div class="d-flex align-items-center gap-3 btn-group-mobile">
         <% if current_user %>
           <%# --- Logged In State --- %>
+          <%# --- CART ICON --- %>
+          <%= link_to cart_path, class: "btn-cart me-2" do %>
+            <i class="bi bi-cart3"></i>
+            <% if current_cart && current_cart.cart_items.count > 0 %>
+              <span class="btn-cart__badge"><%= current_cart.cart_items.count %></span>
+            <% end %>
+          <% end %>
+
           <div class="nav-item dropdown">
             <a class="nav-link p-0 d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <% if current_user.avatar_url.present? %>
