@@ -1,54 +1,11 @@
 <%#
-  FLASH SALES — Urgency / FOMO section
-  DB: pulls first 4 paid courses, falls back to hardcoded data
+  FLASH SALES — Dynamic urgency section
+  Props: coupon, courses
 %>
 
 <%
-  # Try DB first
-  raw_flash = Course.where("price > 0").order(created_at: :desc).limit(4).to_a
-
-  # Hardcoded fallback data (used if a slot is empty)
-  hardcoded = [
-    {
-      title:       "Complete Web Development Bootcamp 2025",
-      description: "HTML, CSS, JS, React, Node — everything from scratch.",
-      thumb:       "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=600&h=340&fit=crop&q=80",
-      price:       2_499_000,
-      orig_price:  4_999_000,
-      rating:      4.8,
-      students:    "42k",
-    },
-    {
-      title:       "Ultimate UI/UX Design Masterclass",
-      description: "Figma, prototyping, and design systems for modern products.",
-      thumb:       "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=340&fit=crop&q=80",
-      price:       1_999_000,
-      orig_price:  3_999_000,
-      rating:      4.9,
-      students:    "28k",
-    },
-    {
-      title:       "Data Science & Machine Learning A–Z",
-      description: "Python, Pandas, Scikit-learn, real-world projects.",
-      thumb:       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=340&fit=crop&q=80",
-      price:       2_999_000,
-      orig_price:  5_999_000,
-      rating:      4.7,
-      students:    "35k",
-    },
-    {
-      title:       "AWS Certified Solutions Architect",
-      description: "Pass the SAA-C03 exam and master cloud infrastructure.",
-      thumb:       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=340&fit=crop&q=80",
-      price:       3_499_000,
-      orig_price:  6_499_000,
-      rating:      4.8,
-      students:    "19k",
-    },
-  ]
-
-  # Flash sale ends 6 hours from server start (idempotent via Rails cache)
-  ends_at = Rails.cache.fetch("flash_sale_ends_at", expires_in: 6.hours) { 6.hours.from_now }
+  return if local_assigns[:coupon].nil? || local_assigns[:courses].blank?
+  ends_at = coupon.end_at
 %>
 
 <section class="flash-sales" aria-label="Flash Sale">
@@ -66,17 +23,17 @@
            data-ends-at="<%= ends_at.iso8601 %>"
            id="flash-countdown">
         <div class="countdown__unit">
-          <span class="countdown__num" id="cd-hours">06</span>
+          <span class="countdown__num">00</span>
           <span class="countdown__label">HRS</span>
         </div>
         <span class="countdown__sep">:</span>
         <div class="countdown__unit">
-          <span class="countdown__num" id="cd-mins">00</span>
+          <span class="countdown__num">00</span>
           <span class="countdown__label">MIN</span>
         </div>
         <span class="countdown__sep">:</span>
         <div class="countdown__unit">
-          <span class="countdown__num" id="cd-secs">00</span>
+          <span class="countdown__num">00</span>
           <span class="countdown__label">SEC</span>
         </div>
       </div>
@@ -84,33 +41,31 @@
 
     <%# Cards grid %>
     <div class="flash-sales__grid">
-      <% 4.times do |i| %>
-        <% db_course = raw_flash[i] %>
-        <% hc        = hardcoded[i] %>
-        <% thumb     = db_course&.thumbnail_url.presence || hc[:thumb] %>
-        <% title_txt = db_course&.title || hc[:title] %>
-        <% desc_txt  = db_course&.description&.truncate(80) || hc[:description] %>
-        <% sale_price = db_course ? db_course.price * 0.6 : hc[:price] %>
-        <% orig_price = db_course ? db_course.price : hc[:orig_price] %>
-        <% rating_val = hc[:rating] %>
-        <% stud_txt   = hc[:students] %>
-        <% link_url   = db_course ? course_path(db_course) : courses_path %>
+      <% courses.each do |course| %>
+        <% thumb     = course.thumbnail_url.presence || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=340&fit=crop&q=80" %>
+        <% title_txt = course.title %>
+        <% desc_txt  = course.description&.truncate(80) %>
+        <% sale_price = course.discounted_price %>
+        <% orig_price = course.price %>
+        <% rating_val = course.reviews.any? ? course.reviews.average(:rating).to_f.round(1) : 4.5 %>
+        <% stud_txt   = number_to_human(course.total_students.to_i, format: "%n%u", units: { thousand: "k", million: "M" }) %>
+        <% link_url   = course_path(course) %>
 
         <article class="flash-card">
           <div class="flash-card__thumb">
             <img src="<%= thumb %>" alt="<%= title_txt %>" loading="lazy">
-            <span class="flash-card__discount">-40%</span>
+            <span class="flash-card__discount"><%= course.discount_label %></span>
           </div>
           <div class="flash-card__body">
-            <p class="flash-card__title"><%= title_txt %></p>
+            <p class="flash-card__title text-truncate" title="<%= title_txt %>"><%= title_txt %></p>
             <p class="flash-card__desc"><%= desc_txt %></p>
             <div class="flash-card__rating">
               <span class="flash-card__stars">
                 <% rating_val.floor.times do %><i class="bi bi-star-fill"></i><% end %>
                 <% if (rating_val % 1) >= 0.5 %><i class="bi bi-star-half"></i><% end %>
               </span>
-              <span class="flash-card__score"><%= rating_val %></span>
-              <span class="flash-card__stud">(<%= stud_txt %> students)</span>
+              <span class="flash-card__score text-white"><%= rating_val %></span>
+              <span class="flash-card__stud ms-2">(<%= stud_txt %> students)</span>
             </div>
             <div class="flash-card__pricing">
               <span class="flash-card__price">

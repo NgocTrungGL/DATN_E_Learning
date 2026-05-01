@@ -87,5 +87,9 @@
       <span><i class="bi bi-bank2" style="color: #ef4444;"></i> Yêu cầu rút tiền</span>
     <% end %>
 
+    <%= link_to admin_coupons_path, class: "admin-sidebar__link #{'active' if controller_name == 'coupons'}" do %>
+      <span><i class="bi bi-ticket-perforated" style="color: #8b5cf6;"></i> Mã giảm giá</span>
+    <% end %>
+
   </div>
 </nav>

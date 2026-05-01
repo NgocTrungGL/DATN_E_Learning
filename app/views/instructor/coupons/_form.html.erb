@@ -1,0 +1,80 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h4 class="mb-0 fw-bold">
+            <i class="bi bi-ticket-perforated text-success me-2"></i>
+            <%= @coupon.new_record? ? "Tạo mã giảm giá mới" : "Chỉnh sửa mã: #{@coupon.code}" %>
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <%= form_with(model: [:instructor, @coupon]) do |f| %>
+            <% if @coupon.errors.any? %>
+              <div class="alert alert-danger border-0 shadow-sm mb-4">
+                <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Có lỗi xảy ra:</h6>
+                <ul class="mb-0 small">
+                  <% @coupon.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :code, "Mã giảm giá (Code)", class: "form-label fw-bold" %>
+                <%= f.text_field :code, class: "form-control", placeholder: "Ví dụ: KHUYENMAI20", required: true %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :status, "Trạng thái", class: "form-label fw-bold" %>
+                <%= f.select :status, Coupon.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "form-select" } %>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :discount_type, "Loại giảm giá", class: "form-label fw-bold" %>
+                <%= f.select :discount_type, Coupon.discount_types.keys.map { |k| [k.humanize, k] }, {}, { class: "form-select" } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :discount_value, "Giá trị giảm", class: "form-label fw-bold" %>
+                <div class="input-group">
+                  <%= f.number_field :discount_value, class: "form-control", step: :any, required: true %>
+                  <span class="input-group-text">%/₫</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :start_at, "Thời gian bắt đầu", class: "form-label fw-bold" %>
+                <%= f.datetime_local_field :start_at, class: "form-control", required: true %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :end_at, "Thời gian kết thúc", class: "form-label fw-bold" %>
+                <%= f.datetime_local_field :end_at, class: "form-control", required: true %>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <%= f.label :course_id, "Chọn khóa học áp dụng", class: "form-label fw-bold" %>
+              <%= f.collection_select :course_id, @courses, :id, :title, { include_blank: "--- Chọn khóa học ---" }, { class: "form-select", required: true } %>
+              <div class="form-text small text-muted">Giảng viên chỉ có thể tạo mã cho từng khóa học riêng biệt.</div>
+            </div>
+
+            <div class="mb-4">
+              <%= f.label :usage_limit, "Giới hạn lượt dùng (0 = Không giới hạn)", class: "form-label fw-bold" %>
+              <%= f.number_field :usage_limit, class: "form-control", min: 0 %>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+              <%= f.submit "Lưu thông tin", class: "btn btn-success px-4 fw-bold text-white" %>
+              <%= link_to "Hủy", instructor_coupons_path, class: "btn btn-outline-secondary px-4" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

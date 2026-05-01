@@ -1,18 +1,21 @@
-<%= turbo_stream.append "courses-grid" do %>
-  <% @courses.each do |course| %>
-    <%= render 'courses/course_card', course: course %>
-  <% end %>
-<% end %>
-
-<%= turbo_stream.update "courses-pagination" do %>
-  <div class="courses-pagination-wrapper">
-    <% if @has_more %>
-      <%= link_to courses_path(@current_filters.merge(page: @page + 1, format: :turbo_stream)), 
-            data: { turbo_frame: "courses-pagination" }, 
-            id: "see-more-button", 
-            class: "btn-see-more" do %>
-        See More <i class="bi bi-chevron-down"></i>
-      <% end %>
+<%# Only handle pagination (appending) here. Page 1 replacement is handled by Turbo Frame in index.html.erb %>
+<% if @page > 1 %>
+  <%= turbo_stream.append "courses-grid" do %>
+    <% @courses.each do |course| %>
+      <%= render 'courses/course_card', course: course %>
     <% end %>
-  </div>
+  <% end %>
+
+  <%= turbo_stream.update "courses-pagination" do %>
+    <div class="courses-pagination-wrapper">
+      <% if @has_more %>
+        <%= link_to courses_path(@current_filters.merge(page: @page + 1, format: :turbo_stream)), 
+              data: { turbo_frame: "courses-pagination" }, 
+              id: "see-more-button", 
+              class: "btn-see-more" do %>
+          See More <i class="bi bi-chevron-down"></i>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>

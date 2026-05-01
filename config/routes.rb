@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   # --- THANH TOÁN ---
   post 'create-checkout-session', to: 'checkouts#create'
   post 'webhooks', to: 'webhooks#create'
-  resource :cart, only: [:show]
+  resource :cart, only: [:show] do
+    post :apply_coupon, on: :member
+  end
   post 'checkout-cart', to: 'checkouts#create_from_cart', as: 'checkout_cart'
 
   # Route trang thành công
@@ -98,6 +100,7 @@ Rails.application.routes.draw do
       resources :quiz_questions, only: [:create], shallow: false
     end
     resources :quiz_questions, only: [:destroy]
+    resources :coupons
   end
 
   # --- INSTRUCTOR NAMESPACE (GIẢNG VIÊN) ---
@@ -131,6 +134,7 @@ Rails.application.routes.draw do
       resources :quiz_questions, only: [:create], shallow: false
     end
     resources :quiz_questions, only: [:destroy]
+    resources :coupons
   end
 
   # --- B2B: ĐĂNG KÝ DOANH NGHIỆP ---

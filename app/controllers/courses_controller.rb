@@ -3,12 +3,19 @@ class CoursesController < ApplicationController
     @page = (params[:page] || 1).to_i
     @per_page = (@page == 1 ? 8 : 12)
 
-    @courses_scope = Course.published.includes(:category, :creator).recent
-    @courses_scope = apply_filters(@courses_scope)
+    @active_global_coupon = Coupon.global.valid.order(discount_value: :desc).first
+    if @active_global_coupon
+      @sale_courses = Course.published.where(allow_admin_discounts: true)
+                            .where("price > 0")
+                            .order(Arel.sql("RAND()")).limit(4)
+    end
+
+    @q = Course.published.includes(:category, :creator).ransack(params[:q])
+    @courses_scope = @q.result(distinct: true).recent
 
     @courses = @courses_scope.offset(current_offset).limit(@per_page)
     @has_more = @courses_scope.offset(current_offset + @per_page).exists?
-    @current_filters = course_params
+    @current_filters = params.permit(:page, q: {}).to_h
 
     respond_to do |format|
       format.html

@@ -1,0 +1,95 @@
+<div class="cat-page">
+  <header class="cat-page__header">
+    <div class="cat-page__header-left">
+      <div class="cat-page__breadcrumb">
+        <i class="bi bi-ticket-perforated-fill"></i>
+        <span>Hệ thống ưu đãi</span>
+      </div>
+      <h1 class="cat-page__title">Quản lý Mã giảm giá</h1>
+      <p class="cat-page__subtitle">Tạo và quản lý các chương trình khuyến mãi toàn sàn hoặc riêng biệt.</p>
+    </div>
+
+    <div class="cat-page__header-right">
+      <%= link_to new_admin_coupon_path, class: 'cat-page__cta' do %>
+        <i class="bi bi-plus-lg"></i>
+        <span>Thêm mã mới</span>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="cat-table-card">
+    <table class="cat-table">
+      <thead>
+        <tr>
+          <th class="cat-table__th">Mã Code</th>
+          <th class="cat-table__th">Loại</th>
+          <th class="cat-table__th">Giá trị</th>
+          <th class="cat-table__th">Đối tượng</th>
+          <th class="cat-table__th">Thời hạn</th>
+          <th class="cat-table__th">Trạng thái</th>
+          <th class="cat-table__th">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @coupons.any? %>
+          <% @coupons.each do |coupon| %>
+            <tr class="cat-table__row">
+              <td class="cat-table__td">
+                <span class="fw-bold text-primary"><%= coupon.code %></span>
+              </td>
+              <td class="cat-table__td">
+                <%= coupon.percentage? ? "Phần trăm (%)" : "Số tiền cố định (₫)" %>
+              </td>
+              <td class="cat-table__td">
+                <%= coupon.percentage? ? "#{coupon.discount_value}%" : number_to_currency(coupon.discount_value, unit: "₫", precision: 0, format: "%n %u") %>
+              </td>
+              <td class="cat-table__td">
+                <% if coupon.global? %>
+                  <span class="badge bg-info-subtle text-info border border-info-subtle">Toàn sàn</span>
+                <% else %>
+                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Khóa học riêng</span>
+                  <div class="small text-muted mt-1"><%= coupon.course&.title&.truncate(30) %></div>
+                <% end %>
+              </td>
+              <td class="cat-table__td">
+                <div class="small">Từ: <%= coupon.start_at.strftime("%d/%m/%Y") %></div>
+                <div class="small">Đến: <%= coupon.end_at.strftime("%d/%m/%Y") %></div>
+              </td>
+              <td class="cat-table__td">
+                <% if coupon.active? && coupon.active_and_current? %>
+                  <span class="badge bg-success">Đang hiệu lực</span>
+                <% elsif coupon.inactive? %>
+                  <span class="badge bg-secondary">Ngừng hoạt động</span>
+                <% elsif coupon.expired? %>
+                  <span class="badge bg-danger">Hết hạn</span>
+                <% else %>
+                  <span class="badge bg-primary">Chờ bắt đầu</span>
+                <% end %>
+              </td>
+              <td class="cat-table__td">
+                <div class="cat-table__action-group">
+                  <%= link_to edit_admin_coupon_path(coupon), class: 'cat-btn cat-btn--edit' do %>
+                    <i class="bi bi-pencil-fill"></i>
+                  <% end %>
+                  <%= link_to admin_coupon_path(coupon), data: { turbo_method: :delete, turbo_confirm: "Xác nhận xóa mã này?" }, class: 'cat-btn cat-btn--delete' do %>
+                    <i class="bi bi-trash-fill"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="7">
+              <div class="cat-table__empty">
+                <i class="bi bi-ticket-perforated display-4 opacity-25"></i>
+                <h3>Chưa có mã giảm giá nào</h3>
+                <p>Hãy tạo mã đầu tiên để thu hút người học.</p>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
