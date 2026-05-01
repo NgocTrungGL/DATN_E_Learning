@@ -173,6 +173,33 @@
     &.is-free { font-size: 0.95rem; color: $success; }
   }
 
+  .card-price-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .card-price-original {
+    font-size: 0.8rem;
+    color: $text-muted;
+    text-decoration: line-through;
+    font-weight: 500;
+  }
+
+  .card-badge-discount {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ff4747;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.3rem 0.6rem;
+    border-radius: $radius-sm;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(255, 71, 71, 0.3);
+  }
+
   .card-actions {
     display: flex;
     align-items: center;

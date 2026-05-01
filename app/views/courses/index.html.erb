@@ -3,30 +3,34 @@
 <%# ============================================================ %>
 <% content_for :full_width, true %>
 
-<%# ── Page Header ─────────────────────────────────────────── %>
-<div class="courses-page-header">
-  <div class="courses-inner">
-    <div class="page-header-badge">📚 Course Catalog</div>
-    <h1>Explore Our Courses</h1>
-    <p class="header-subtitle">
-      Browse <%= @courses.size %> expert-crafted courses and start building in-demand skills today.
-    </p>
-    <div class="header-stats">
-      <div class="stat-item">
-        <i class="bi bi-play-btn-fill stat-icon"></i>
-        <strong><%= @courses.size %>+</strong> Courses Available
-      </div>
-      <div class="stat-item">
-        <i class="bi bi-people-fill stat-icon"></i>
-        <strong>10,000+</strong> Active Students
-      </div>
-      <div class="stat-item">
-        <i class="bi bi-award-fill stat-icon"></i>
-        <strong>Certificate</strong> on Completion
+<%# ── Dynamic Header (Flash Sale or Default Banner) ────────── %>
+<% if @active_global_coupon && @sale_courses&.any? %>
+  <%= render 'courses/flash_sales', coupon: @active_global_coupon, courses: @sale_courses %>
+<% else %>
+  <div class="courses-page-header">
+    <div class="courses-inner">
+      <div class="page-header-badge">📚 Course Catalog</div>
+      <h1>Explore Our Courses</h1>
+      <p class="header-subtitle">
+        Browse <%= @courses.size %> expert-crafted courses and start building in-demand skills today.
+      </p>
+      <div class="header-stats">
+        <div class="stat-item">
+          <i class="bi bi-play-btn-fill stat-icon"></i>
+          <strong><%= @courses.size %>+</strong> Courses Available
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-people-fill stat-icon"></i>
+          <strong>10,000+</strong> Active Students
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-award-fill stat-icon"></i>
+          <strong>Certificate</strong> on Completion
+        </div>
       </div>
     </div>
   </div>
-</div>
+<% end %>
 
 <%# ── Filter Bar ──────────────────────────────────────────── %>
 <%#
@@ -36,26 +40,34 @@
   - params[:price_filter] → "free" → Course.where(price: 0); "paid" → where("price > 0")
   - params[:min_rating]  → join reviews + having avg >= min_rating
 %>
+<turbo-frame id="courses-grid-container">
 <div class="courses-filter-bar">
   <div class="courses-inner">
-    <%= form_with url: courses_path, method: :get, local: true do |f| %>
+    <%= search_form_for @q, url: courses_path, method: :get, data: { turbo_action: "advance" } do |f| %>
       <div class="filter-form">
 
         <%# Search %>
         <div class="filter-search">
           <i class="bi bi-search search-icon"></i>
-          <%= f.search_field :query,
-                value: params[:query],
+          <%= f.search_field :title_cont,
                 placeholder: "Search courses...",
                 autocomplete: "off" %>
+          <% if params.dig(:q, :title_cont).present? %>
+            <% q_params = params[:q].to_unsafe_h rescue {} %>
+            <%= link_to courses_path(q: q_params.merge(title_cont: nil)), 
+                  class: "search-clear-icon", 
+                  title: "Clear search" do %>
+              <i class="bi bi-x"></i>
+            <% end %>
+          <% end %>
         </div>
 
-        <%# Category — FUTURE: options_from_collection_for_select(Category.all, :id, :name) %>
-        <%= f.select :category_id,
+        <%# Category %>
+        <%= f.select :category_id_eq,
               options_for_select(
                 [["All Categories", ""]] +
                 Category.all.map { |c| [c.name, c.id] },
-                params[:category_id]
+                @q.category_id_eq
               ),
               {},
               class: "filter-select" %>
@@ -64,42 +76,47 @@
         <%= f.select :price_filter,
               options_for_select(
                 [["Any Price", ""], ["Free", "free"], ["Paid", "paid"]],
-                params[:price_filter]
+                @q.send(:price_filter)
               ),
               {},
               class: "filter-select" %>
 
         <%# Rating filter %>
-        <%= f.select :min_rating,
+        <%= f.select :min_rating_filter,
               options_for_select(
                 [["Any Rating", ""], ["4.5+", "4.5"], ["4.0+", "4.0"], ["3.5+", "3.5"]],
-                params[:min_rating]
+                @q.send(:min_rating_filter)
               ),
               {},
               class: "filter-select" %>
 
-        <button type="submit" class="filter-apply-btn">
-          <i class="bi bi-funnel-fill"></i> Apply
-        </button>
+        <div class="filter-actions">
+          <button type="submit" class="filter-apply-btn">
+            <i class="bi bi-funnel-fill"></i> Apply
+          </button>
 
-        <% if params[:query].present? || params[:category_id].present? || params[:price_filter].present? %>
-          <%= link_to courses_path, class: "filter-clear-link" do %>
-            <i class="bi bi-x-circle"></i> Clear
+          <% if params[:q].present? %>
+            <%= link_to "Clear All", courses_path, class: "filter-clear-btn" %>
           <% end %>
-        <% end %>
+        </div>
 
-        <span class="results-count">
-          Showing <strong><%= @courses.size %></strong> courses
-        </span>
+
 
       </div>
     <% end %>
   </div>
 </div>
 
+<%# Flash Sale moved to header position %>
+
 <%# ── Courses Grid ─────────────────────────────────────────── %>
 <section class="courses-grid-section">
   <div class="courses-inner">
+    <div class="results-meta mb-4">
+      <span class="results-count" id="results-count-container">
+        Showing <strong><%= pluralize(@courses_scope.count, 'course') %></strong>
+      </span>
+    </div>
 
     <% if @courses.any? %>
       <div class="courses-grid" id="courses-grid">
@@ -142,9 +159,7 @@
 
   </div>
 </section>
-
-<%# ── Flash Sales ──────────────────────────────────────────── %>
-<%= render 'courses/flash_sales' %>
+</turbo-frame>
 
 <%# ── Trending Bestsellers ─────────────────────────────────── %>
 <%= render 'courses/trending_bestsellers' %>
@@ -163,12 +178,9 @@
 <script>
   <%# Dynamically load courses_market.js safely using module-like approach %>
   document.addEventListener('turbo:load', function() {
-    // ── CountdownTimer
+    // ── CountdownTimer (Dynamic Format: >24h ? D/H/M : H/M/S)
     (function() {
       var root  = document.getElementById('flash-countdown');
-      var hours = document.getElementById('cd-hours');
-      var mins  = document.getElementById('cd-mins');
-      var secs  = document.getElementById('cd-secs');
       if (!root) return;
 
       var endsAt = new Date(root.dataset.endsAt).getTime();
@@ -176,14 +188,44 @@
 
       function tick() {
         var diff = endsAt - Date.now();
-        if (diff <= 0) { hours.textContent = '00'; mins.textContent = '00'; secs.textContent = '00'; return; }
-        var h = Math.floor(diff / 3600000);
-        var m = Math.floor((diff % 3600000) / 60000);
-        var s = Math.floor((diff % 60000) / 1000);
-        if (hours) hours.textContent = pad(h);
-        if (mins)  mins.textContent  = pad(m);
-        if (secs)  secs.textContent  = pad(s);
+        var units = root.querySelectorAll('.countdown__unit');
+        
+        if (diff <= 0) {
+          units.forEach(u => u.querySelector('.countdown__num').textContent = '00');
+          return;
+        }
+
+        var totalHours = Math.floor(diff / 3600000);
+        
+        if (totalHours >= 24) {
+          // Format: DAYS : HRS : MIN
+          var d = Math.floor(diff / (24 * 3600000));
+          var h = Math.floor((diff % (24 * 3600000)) / 3600000);
+          var m = Math.floor((diff % 3600000) / 60000);
+          
+          updateUnit(0, d, 'DAYS');
+          updateUnit(1, h, 'HRS');
+          updateUnit(2, m, 'MIN');
+        } else {
+          // Format: HRS : MIN : SEC
+          var h = Math.floor(diff / 3600000);
+          var m = Math.floor((diff % 3600000) / 60000);
+          var s = Math.floor((diff % 60000) / 1000);
+          
+          updateUnit(0, h, 'HRS');
+          updateUnit(1, m, 'MIN');
+          updateUnit(2, s, 'SEC');
+        }
       }
+
+      function updateUnit(index, value, label) {
+        var unit = root.querySelectorAll('.countdown__unit')[index];
+        if (unit) {
+          unit.querySelector('.countdown__num').textContent = pad(value);
+          unit.querySelector('.countdown__label').textContent = label;
+        }
+      }
+
       tick();
       setInterval(tick, 1000);
     })();

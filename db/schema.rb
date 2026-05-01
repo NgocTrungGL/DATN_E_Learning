@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
+ActiveRecord::Schema[7.0].define(version: 2026_04_29_154614) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "promo_code"
     t.index ["user_id"], name: "index_carts_on_user_id"
   end
 
@@ -77,6 +78,25 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "coupons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "code", null: false
+    t.integer "discount_type", default: 0
+    t.decimal "discount_value", precision: 10, scale: 2, null: false
+    t.datetime "start_at"
+    t.datetime "end_at"
+    t.integer "target_type", default: 0
+    t.bigint "course_id"
+    t.bigint "creator_id", null: false
+    t.integer "usage_limit", default: 0
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "usage_count", default: 0
+    t.index ["code"], name: "index_coupons_on_code", unique: true
+    t.index ["course_id"], name: "index_coupons_on_course_id"
+    t.index ["creator_id"], name: "index_coupons_on_creator_id"
+  end
+
   create_table "course_modules", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.string "title", limit: 200, null: false
@@ -97,6 +117,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
     t.datetime "updated_at", null: false
     t.decimal "price", precision: 10, scale: 2, default: "0.0"
     t.integer "status", default: 0
+    t.boolean "allow_admin_discounts", default: true
     t.index ["category_id"], name: "index_courses_on_category_id"
     t.index ["created_by"], name: "fk_rails_8984e96f9b"
     t.index ["status"], name: "index_courses_on_status"
@@ -355,6 +376,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
   add_foreign_key "categories", "categories", column: "parent_id"
   add_foreign_key "comments", "lessons"
   add_foreign_key "comments", "users"
+  add_foreign_key "coupons", "courses"
+  add_foreign_key "coupons", "users", column: "creator_id"
   add_foreign_key "course_modules", "courses", on_delete: :cascade
   add_foreign_key "courses", "categories"
   add_foreign_key "courses", "users", column: "created_by", on_delete: :nullify

@@ -39,5 +39,10 @@
         <i class="bi bi-currency-dollar"></i> Doanh thu của tôi
       <% end %>
     </li>
+    <li>
+      <%= link_to instructor_coupons_path, class: "#{'active' if controller_name == 'coupons'}" do %>
+        <i class="bi bi-ticket-perforated"></i> Mã giảm giá của tôi
+      <% end %>
+    </li>
   </ul>
 </nav>

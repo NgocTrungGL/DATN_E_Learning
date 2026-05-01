@@ -44,7 +44,8 @@ dependent: :nullify
   has_many :created_quizzes, class_name: Quiz.name, foreign_key: :created_by,
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
-foreign_key: :created_by, dependent: :nullify
+           foreign_key: :created_by, dependent: :nullify
+  has_many :coupons, foreign_key: :creator_id, dependent: :nullify
   has_one :cart, dependent: :destroy
   after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}

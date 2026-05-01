@@ -31,6 +31,17 @@ class CheckoutsController < ApplicationController
     redirect_to session.url, allow_other_host: true
   end
 
+  def success
+    @session = Stripe::Checkout::Session.retrieve(params[:session_id])
+
+    if @session.metadata["type"] == "cart"
+      current_user.cart.cart_items.destroy_all
+      current_user.cart.update(promo_code: nil)
+    end
+
+    redirect_to success_url
+  end
+
   private
 
   # ================= PURCHASE INFO =================
@@ -121,7 +132,9 @@ class CheckoutsController < ApplicationController
   def cart_checkout_metadata
     {
       user_id: current_user.id,
-      type: "cart"
+      type: "cart",
+      course_ids: current_user.cart.course_ids.join(","),
+      promo_code: current_user.cart.promo_code
     }
   end
 
@@ -138,11 +151,36 @@ class CheckoutsController < ApplicationController
     @cart.present? && @cart.cart_items.any?
   end
 
-  def build_line_items cart
-    cart.cart_items.map{|item| build_cart_line_item(item)}
+  def build_line_items(cart)
+    manual_coupon = Coupon.find_by(code: cart.promo_code) if cart.promo_code.present?
+    manual_coupon = nil unless manual_coupon&.active_and_current?
+
+    cart.cart_items.map do |item|
+      course = item.course
+      total_item_discount = 0
+
+      # 1. Automatic Global Discount
+      if course.has_discount?
+        total_item_discount += (course.price - course.discounted_price)
+      end
+
+      # 2. Manual Coupon (Special)
+      if manual_coupon
+        if manual_coupon.specific_course? && manual_coupon.course_id == course.id
+          manual_item_disc = manual_coupon.percentage? ? (course.price * manual_coupon.discount_value / 100.0) : manual_coupon.discount_value
+          total_item_discount += manual_item_disc
+        elsif manual_coupon.global? && !course.has_discount?
+          manual_item_disc = manual_coupon.percentage? ? (course.price * manual_coupon.discount_value / 100.0) : manual_coupon.discount_value
+          total_item_discount += manual_item_disc
+        end
+      end
+
+      final_unit_amount = [course.price - total_item_discount, 0].max.to_i
+      build_cart_line_item(item, final_unit_amount)
+    end
   end
 
-  def build_cart_line_item item
+  def build_cart_line_item(item, unit_amount)
     {
       price_data: {
         currency: "vnd",
@@ -150,22 +188,23 @@ class CheckoutsController < ApplicationController
           name: item.course.title,
           images: product_images(item)
         },
-        unit_amount: item.course.price.to_i
+        unit_amount: unit_amount
       },
       quantity: 1
     }
   end
 
-  def product_images item
+  def product_images(item)
     return [] if item.course.thumbnail_url.blank?
 
     [item.course.thumbnail_url]
   end
 
-  def create_cart_checkout_session line_items
+  def create_cart_checkout_session(line_items)
     Stripe::Checkout::Session.create(
-      payment_method_types: %w(card),
-      line_items:,
+      locale: "vi",
+      payment_method_types: %w[card],
+      line_items: line_items,
       mode: "payment",
       metadata: cart_checkout_metadata,
       success_url: success_checkout_url,
