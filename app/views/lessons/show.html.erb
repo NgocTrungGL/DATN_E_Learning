@@ -16,7 +16,7 @@
   <header class="lesson-topbar" role="banner">
     <div class="lesson-topbar__left">
       <%= link_to course_path(@lesson.course), class: "lesson-topbar__back" do %>
-        <i class="bi bi-arrow-left"></i> Thoát
+        <i class="bi bi-arrow-left"></i> Exit
       <% end %>
       <span class="lesson-topbar__course-title"><%= @lesson.course.title %></span>
     </div>
@@ -52,10 +52,10 @@
         </div>
         <div class="lesson-attach__text">
           <span class="lesson-attach__label">
-            Tài liệu tham khảo
+            Reference material
             <i class="bi bi-box-arrow-up-right" style="font-size:0.7em; opacity:0.6;"></i>
           </span>
-          <div class="lesson-attach__hint">Nhấn để xem hoặc tải xuống tài liệu</div>
+          <div class="lesson-attach__hint">Click to view or download the material</div>
         </div>
       <% end %>
     <% end %>
@@ -64,14 +64,14 @@
     <% if user_signed_in? %>
     <div class="lesson-status">
       <div class="lesson-status__label">
-        <strong>Trạng thái: </strong>
+        <strong>Status: </strong>
         <% if current_user.lesson_completed?(@lesson) %>
           <span class="lesson-status__badge lesson-status__badge--done">
-            <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
+            <i class="bi bi-check-circle-fill"></i> Completed
           </span>
         <% else %>
           <span class="lesson-status__badge lesson-status__badge--pending">
-            Chưa hoàn thành
+            Not completed
           </span>
         <% end %>
       </div>
@@ -79,9 +79,9 @@
         <%= button_to lesson_complete_path(@lesson), method: :post,
               class: "btn-complete #{current_user.lesson_completed?(@lesson) ? 'btn-complete--done' : 'btn-complete--pending'}" do %>
           <% if current_user.lesson_completed?(@lesson) %>
-            <i class="bi bi-x-circle"></i> Bỏ đánh dấu
+            <i class="bi bi-x-circle"></i> Unmark
           <% else %>
-            <i class="bi bi-check2-circle"></i> Đánh dấu hoàn thành
+            <i class="bi bi-check2-circle"></i> Mark as complete
           <% end %>
         <% end %>
       </div>
@@ -94,17 +94,17 @@
       <div class="lesson-quiz">
         <div class="lesson-quiz__info">
           <h3 class="lesson-quiz__title">
-            <i class="bi bi-lightning-fill"></i> Bài tập thực hành
+            <i class="bi bi-lightning-fill"></i> Practice quiz
           </h3>
-          <p class="lesson-quiz__meta"><%= quiz.title %> (<%= quiz.questions.count %> câu hỏi)</p>
+          <p class="lesson-quiz__meta"><%= quiz.title %> (<%= quiz.questions.count %> questions)</p>
         </div>
         <% if current_user.quiz_completed?(quiz) %>
           <span class="lesson-quiz__btn-done">
-            <i class="bi bi-check-all"></i> Đã đậu
+            <i class="bi bi-check-all"></i> Passed
           </span>
         <% else %>
           <div class="lesson-quiz__btn-start">
-            <%= button_to "Làm bài ngay →", quiz_quiz_attempts_path(quiz), method: :post %>
+            <%= button_to "Start now →", quiz_quiz_attempts_path(quiz), method: :post %>
           </div>
         <% end %>
       </div>
@@ -117,21 +117,21 @@
     <nav class="lesson-nav" aria-label="Lesson navigation">
       <% if prev_lesson %>
         <%= link_to lesson_path(prev_lesson), class: "lesson-nav__btn" do %>
-          <i class="bi bi-chevron-left"></i> Bài trước
+          <i class="bi bi-chevron-left"></i> Previous
         <% end %>
       <% else %>
         <span class="lesson-nav__btn lesson-nav__btn--disabled">
-          <i class="bi bi-chevron-left"></i> Bài trước
+          <i class="bi bi-chevron-left"></i> Previous
         </span>
       <% end %>
 
       <% if next_lesson %>
         <%= link_to lesson_path(next_lesson), class: "lesson-nav__btn lesson-nav__btn--next" do %>
-          Bài tiếp theo <i class="bi bi-chevron-right"></i>
+          Next lesson <i class="bi bi-chevron-right"></i>
         <% end %>
       <% else %>
         <span class="lesson-nav__btn lesson-nav__btn--next lesson-nav__btn--disabled">
-          Hết bài <i class="bi bi-check2-all"></i>
+          End of lesson <i class="bi bi-check2-all"></i>
         </span>
       <% end %>
     </nav>
@@ -146,7 +146,7 @@
 
     <div class="sb-header">
       <div class="sb-header__top">
-        <span class="sb-header__label">Nội dung khóa học</span>
+        <span class="sb-header__label">Course content</span>
         <span class="sb-header__progress-badge"><%= course_progress %>%</span>
       </div>
       <div class="sb-header__bar-track">
@@ -217,15 +217,15 @@
             <div id="sb_quiz_<%= quiz.id %>" class="accordion-collapse collapse">
               <div class="sb-quiz-item__body">
                 <p class="sb-quiz-item__meta">
-                  <%= quiz.total_questions %> câu hỏi • Đạt: <%= quiz.pass_score %>%
+                  <%= quiz.total_questions %> questions • Pass: <%= quiz.pass_score %>%
                 </p>
                 <% if current_user.quiz_completed?(quiz) %>
                   <div class="sb-quiz-item__btn sb-quiz-item__btn--done">
-                    <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
+                    <i class="bi bi-check-circle-fill"></i> Completed
                   </div>
                 <% else %>
                   <div class="sb-quiz-item__btn sb-quiz-item__btn--start">
-                    <%= button_to "Làm bài ngay", quiz_quiz_attempts_path(quiz), method: :post %>
+                    <%= button_to "Start now", quiz_quiz_attempts_path(quiz), method: :post %>
                   </div>
                 <% end %>
               </div>

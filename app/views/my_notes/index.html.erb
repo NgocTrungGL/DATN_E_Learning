@@ -1,14 +1,14 @@
-<% content_for :title, "Ghi chú của tôi" %>
+<% content_for :title, "My notes" %>
 
 <div class="my-notes-page">
   <div class="my-notes-header">
     <div class="my-notes-header__inner">
       <h1 class="my-notes-header__title">
-        <i class="bi bi-journal-text"></i> Ghi chú của tôi
+        <i class="bi bi-journal-text"></i> My notes
       </h1>
       <p class="my-notes-header__subtitle">
-        Tổng cộng <strong><%= pluralize(@notes.count, 'ghi chú') %></strong>
-        trong <strong><%= pluralize(@notes_by_course.keys.count, 'khóa học') %></strong>
+        Total <strong><%= pluralize(@notes.count, 'note') %></strong>
+        across <strong><%= pluralize(@notes_by_course.keys.count, 'course') %></strong>
       </p>
     </div>
   </div>
@@ -23,7 +23,7 @@
                 <%= link_to course.title, course_path(course) %>
               </h2>
               <span class="my-notes-course__meta">
-                <i class="bi bi-sticky"></i> <%= pluralize(notes.count, 'ghi chú') %>
+                <i class="bi bi-sticky"></i> <%= pluralize(notes.count, 'note') %>
               </span>
             </div>
           </div>
@@ -41,17 +41,17 @@
                 <div class="my-note-item__footer">
                   <span class="my-note-item__time">
                     <i class="bi bi-clock"></i>
-                    <%= time_ago_in_words(note.updated_at) %> trước
+                    <%= time_ago_in_words(note.updated_at) %> ago
                   </span>
                   <div class="my-note-item__actions">
                     <%= link_to lesson_path(note.lesson, anchor: "lesson-tab-notes"),
                           class: "my-note-item__link" do %>
-                      <i class="bi bi-pencil-square"></i> Sửa
+                      <i class="bi bi-pencil-square"></i> Edit
                     <% end %>
                     <%= button_to note_path(note), method: :delete,
                           class: "my-note-item__delete",
-                          data: { turbo_confirm: "Xóa ghi chú này?" } do %>
-                      <i class="bi bi-trash"></i> Xóa
+                          data: { turbo_confirm: "Delete this note?" } do %>
+                      <i class="bi bi-trash"></i> Delete
                     <% end %>
                   </div>
                 </div>
@@ -65,11 +65,11 @@
         <div class="my-notes-empty__icon">
           <i class="bi bi-journal-text"></i>
         </div>
-        <h3 class="my-notes-empty__title">Chưa có ghi chú nào</h3>
+        <h3 class="my-notes-empty__title">No notes yet</h3>
         <p class="my-notes-empty__text">
-          Bắt đầu ghi chú khi học bài để lưu lại những điểm quan trọng!
+          Start taking notes while learning to capture key points.
         </p>
-        <%= link_to "Khám phá khóa học", courses_path, class: "my-notes-empty__cta" %>
+        <%= link_to "Explore courses", courses_path, class: "my-notes-empty__cta" %>
       </div>
     <% end %>
   </div>

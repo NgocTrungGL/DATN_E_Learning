@@ -12,7 +12,7 @@
         <h1 class="chatroom__channel-name"><%= @course.title %></h1>
         <span class="chatroom__channel-meta">
           <span class="chatroom__online-dot"></span>
-          <%= @members_count %> thành viên
+          <%= @members_count %> members
         </span>
       </div>
     </div>
@@ -25,11 +25,11 @@
         <div class="chatroom__welcome-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </div>
-        <h2 class="chatroom__welcome-title">Chào mừng đến nhóm trao đổi!</h2>
+        <h2 class="chatroom__welcome-title">Welcome to the discussion group!</h2>
         <p class="chatroom__welcome-text">
-          Đây là nơi bạn và các học viên khác cùng trao đổi về khóa học
+          This is where you and other learners can discuss the course
           <strong><%= @course.title %></strong>.
-          Hãy bắt đầu cuộc trò chuyện!
+          Start the conversation!
         </p>
       </div>
     <% end %>

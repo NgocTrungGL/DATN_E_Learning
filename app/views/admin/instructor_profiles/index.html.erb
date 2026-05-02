@@ -3,8 +3,8 @@
 <div class="admin-page-header">
   <div class="admin-page-header__inner">
     <div>
-      <div class="admin-page-header__badge"><i class="bi bi-person-lines-fill"></i> Hệ thống</div>
-      <h1 class="admin-page-header__title">Duyệt Giảng viên</h1>
+      <div class="admin-page-header__badge"><i class="bi bi-person-lines-fill"></i> System</div>
+      <h1 class="admin-page-header__title">Instructor Approvals</h1>
     </div>
   </div>
 </div>
@@ -14,11 +14,11 @@
     <table class="admin-table">
       <thead>
         <tr>
-          <th>Ứng viên</th>
-          <th>Thông tin liên hệ</th>
+          <th>Applicant</th>
+          <th>Contact</th>
           <th>CV</th>
-          <th>Trạng thái</th>
-          <th style="text-align: right;">Hành động</th>
+          <th>Status</th>
+          <th style="text-align: right;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -29,7 +29,7 @@
               <div class="admin-table__sub"><%= profile.user.email %></div>
             </td>
             <td>
-              <div class="admin-table__sub">SĐT: <%= profile.phone %></div>
+              <div class="admin-table__sub">Phone: <%= profile.phone %></div>
               <% if profile.linkedin_url.present? %>
                 <div class="admin-table__sub">
                   <%= link_to "LinkedIn →", profile.linkedin_url, target: "_blank", style: "color: #2563eb; text-decoration: none; font-size: 0.78rem;" %>
@@ -38,28 +38,28 @@
             </td>
             <td>
               <%= link_to profile.cv_url, target: "_blank", class: "btn-action btn-action--info" do %>
-                <i class="bi bi-file-earmark-person"></i> Xem CV
+                <i class="bi bi-file-earmark-person"></i> View CV
               <% end %>
             </td>
             <td>
               <% if profile.pending? %>
-                <span class="admin-badge admin-badge--warning"><i class="bi bi-hourglass"></i> Chờ duyệt</span>
+                <span class="admin-badge admin-badge--warning"><i class="bi bi-hourglass"></i> Pending</span>
               <% elsif profile.approved? %>
-                <span class="admin-badge admin-badge--success"><i class="bi bi-check-circle"></i> Đã duyệt</span>
+                <span class="admin-badge admin-badge--success"><i class="bi bi-check-circle"></i> Approved</span>
               <% else %>
-                <span class="admin-badge admin-badge--danger"><i class="bi bi-x-circle"></i> Từ chối</span>
+                <span class="admin-badge admin-badge--danger"><i class="bi bi-x-circle"></i> Rejected</span>
               <% end %>
             </td>
             <td>
               <div class="admin-table__actions">
                 <% if profile.pending? %>
-                  <%= button_to "Duyệt", approve_admin_instructor_path(profile), method: :patch,
+                  <%= button_to "Approve", approve_admin_instructor_path(profile), method: :patch,
                         class: "btn-action btn-action--success" do %>
-                    <i class="bi bi-check-lg"></i> Duyệt
+                    <i class="bi bi-check-lg"></i> Approve
                   <% end %>
-                  <%= button_to "Từ chối", reject_admin_instructor_path(profile), method: :patch,
+                  <%= button_to "Reject", reject_admin_instructor_path(profile), method: :patch,
                         class: "btn-action btn-action--danger" do %>
-                    <i class="bi bi-x-lg"></i> Từ chối
+                    <i class="bi bi-x-lg"></i> Reject
                   <% end %>
                 <% end %>
               </div>
@@ -72,7 +72,7 @@
             <td colspan="5">
               <div class="admin-table__empty">
                 <i class="bi bi-person-badge"></i>
-                <p>Chưa có hồ sơ giảng viên nào cần xét duyệt.</p>
+                <p>No instructor applications awaiting review.</p>
               </div>
             </td>
           </tr>

@@ -9,12 +9,12 @@
           <%= reply.author_name %>
           <% if reply.instructor_reply? %>
             <span class="disc-card__badge disc-card__badge--instructor">
-              <i class="bi bi-patch-check-fill"></i> Giảng viên
+              <i class="bi bi-patch-check-fill"></i> Instructor
             </span>
           <% end %>
         </span>
         <span class="disc-reply__time">
-          <%= time_ago_in_words(reply.created_at) %> trước
+          <%= time_ago_in_words(reply.created_at) %> ago
         </span>
       </div>
       <div class="disc-reply__content">
@@ -25,8 +25,8 @@
           <%= button_to course_discussion_post_discussion_reply_path(course, post, reply),
                 method: :delete,
                 class: "disc-reply__delete-btn",
-                data: { turbo_confirm: "Xóa phản hồi này?" } do %>
-            <i class="bi bi-trash"></i> Xóa
+                data: { turbo_confirm: "Delete this reply?" } do %>
+            <i class="bi bi-trash"></i> Delete
           <% end %>
         <% end %>
       </div>

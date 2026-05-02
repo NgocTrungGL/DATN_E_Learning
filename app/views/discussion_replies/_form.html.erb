@@ -8,7 +8,7 @@
       </div>
       <div class="disc-reply-form__input-group">
         <%= f.text_area :content, rows: 3,
-              placeholder: "Viết phản hồi của bạn...",
+            placeholder: "Write your reply...",
               class: "disc-reply-form__textarea",
               required: true %>
         <% if reply.errors[:content].any? %>
@@ -18,7 +18,7 @@
     </div>
     <div class="disc-reply-form__actions">
       <button type="submit" class="disc-reply-form__submit">
-        <i class="bi bi-reply"></i> Gửi phản hồi
+        <i class="bi bi-reply"></i> Submit reply
       </button>
     </div>
   <% end %>

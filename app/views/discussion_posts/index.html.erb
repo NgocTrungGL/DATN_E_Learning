@@ -1,4 +1,4 @@
-<% content_for :title, "Thảo luận — #{@course.title}" %>
+<% content_for :title, "Discussion — #{@course.title}" %>
 
 <div class="disc-page">
   <%# Header %>
@@ -6,15 +6,15 @@
     <div class="disc-page__header-inner">
       <div class="disc-page__breadcrumb">
         <%= link_to course_path(@course), class: "disc-page__back" do %>
-          <i class="bi bi-arrow-left"></i> Về khóa học
+          <i class="bi bi-arrow-left"></i> Back to course
         <% end %>
       </div>
       <h1 class="disc-page__title">
-        <i class="bi bi-chat-dots"></i> Nhóm Trao Đổi
+        <i class="bi bi-chat-dots"></i> Discussion Group
       </h1>
       <p class="disc-page__subtitle">
         <strong><%= @course.title %></strong> •
-        <%= pluralize(@posts.count, 'bài thảo luận') %>
+        <%= pluralize(@posts.count, 'discussion post') %>
       </p>
     </div>
   </div>
@@ -23,12 +23,12 @@
     <%# New Post Form %>
     <section class="disc-new-post">
       <h2 class="disc-new-post__heading">
-        <i class="bi bi-pencil-square"></i> Đặt câu hỏi hoặc chia sẻ ý kiến
+        <i class="bi bi-pencil-square"></i> Ask a question or share your thoughts
       </h2>
       <%= form_with model: @post, url: course_discussion_posts_path(@course), class: "disc-new-post__form" do |f| %>
         <div class="disc-new-post__field">
           <%= f.text_field :title,
-                placeholder: "Tiêu đề bài viết...",
+                placeholder: "Post title...",
                 class: "disc-new-post__title-input",
                 required: true %>
           <% if @post.errors[:title].any? %>
@@ -38,7 +38,7 @@
         <div class="disc-new-post__field">
           <%= f.text_area :content,
                 rows: 4,
-                placeholder: "Nội dung thảo luận...",
+                placeholder: "Discussion content...",
                 class: "disc-new-post__content-input",
                 required: true %>
           <% if @post.errors[:content].any? %>
@@ -47,7 +47,7 @@
         </div>
         <div class="disc-new-post__actions">
           <button type="submit" class="disc-new-post__submit">
-            <i class="bi bi-send"></i> Đăng bài
+            <i class="bi bi-send"></i> Post
           </button>
         </div>
       <% end %>
@@ -64,8 +64,8 @@
           <div class="disc-empty__icon">
             <i class="bi bi-chat-dots"></i>
           </div>
-          <h3 class="disc-empty__title">Chưa có bài thảo luận nào</h3>
-          <p class="disc-empty__text">Hãy là người đầu tiên đặt câu hỏi hoặc chia sẻ kiến thức!</p>
+          <h3 class="disc-empty__title">No discussion posts yet</h3>
+          <p class="disc-empty__text">Be the first to ask a question or share knowledge!</p>
         </div>
       <% end %>
     </section>

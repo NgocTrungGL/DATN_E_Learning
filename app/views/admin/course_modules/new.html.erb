@@ -16,12 +16,12 @@
 
       <div class="admin-course-modules__hero-stats">
         <article class="admin-course-modules__stat-card">
-          <span class="admin-course-modules__stat-label">Tổng chương</span>
+          <span class="admin-course-modules__stat-label">Total modules</span>
           <strong class="admin-course-modules__stat-value"><%= @modules.size %></strong>
         </article>
 
         <article class="admin-course-modules__stat-card">
-          <span class="admin-course-modules__stat-label">Quiz lớn</span>
+          <span class="admin-course-modules__stat-label">Final quizzes</span>
           <strong class="admin-course-modules__stat-value"><%= @big_quizzes.size %></strong>
         </article>
       </div>
@@ -31,8 +31,8 @@
       <section class="admin-course-modules__panel admin-course-modules__panel--form">
         <div class="admin-course-modules__panel-head">
           <div>
-            <h2 class="admin-course-modules__panel-title"><%= t('admin.course_modules.form.panel_title', default: 'Thêm chương mới') %></h2>
-            <p class="admin-course-modules__panel-subtitle"><%= t('admin.course_modules.form.panel_subtitle', default: 'Đặt tên rõ ràng để học viên và admin dễ theo dõi cấu trúc khóa học.') %></p>
+            <h2 class="admin-course-modules__panel-title"><%= t('admin.course_modules.form.panel_title', default: 'Add new module') %></h2>
+            <p class="admin-course-modules__panel-subtitle"><%= t('admin.course_modules.form.panel_subtitle', default: 'Use clear names so learners and admins can follow the course structure.') %></p>
           </div>
 
           <div class="admin-course-modules__panel-badge">
@@ -53,7 +53,7 @@
 
           <span class="admin-course-modules__hint">
             <i class="bi bi-arrows-move"></i>
-            Kéo để sắp xếp
+            Drag to reorder
           </span>
         </div>
 
@@ -77,14 +77,14 @@
                 <div class="admin-course-modules__outline-actions">
                   <%= link_to edit_admin_course_module_path(mod), class: 'admin-course-modules__action admin-course-modules__action--edit' do %>
                     <i class="bi bi-pencil-square"></i>
-                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.edit', default: 'Sửa') %></span>
+                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.edit', default: 'Edit') %></span>
                   <% end %>
 
                   <%= link_to admin_course_module_path(mod),
                               class: 'admin-course-modules__action admin-course-modules__action--delete',
                               data: { turbo_method: :delete, turbo_confirm: t('admin.course_modules.outline.confirm_delete') } do %>
                     <i class="bi bi-trash"></i>
-                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.delete', default: 'Xóa') %></span>
+                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.delete', default: 'Delete') %></span>
                   <% end %>
                 </div>
               </article>

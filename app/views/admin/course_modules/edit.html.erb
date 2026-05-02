@@ -52,14 +52,14 @@
                 <% unless mod == @course_module %>
                   <%= link_to edit_admin_course_module_path(mod), class: 'admin-course-modules__action admin-course-modules__action--edit' do %>
                     <i class="bi bi-pencil-square"></i>
-                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.edit', default: 'Sửa') %></span>
+                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.edit', default: 'Edit') %></span>
                   <% end %>
 
                   <%= link_to admin_course_module_path(mod),
                               class: 'admin-course-modules__action admin-course-modules__action--delete',
                               data: { turbo_method: :delete, turbo_confirm: t('admin.course_modules.outline.confirm_delete') } do %>
                     <i class="bi bi-trash"></i>
-                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.delete', default: 'Xóa') %></span>
+                    <span class="admin-course-modules__action-text"><%= t('admin.course_modules.outline.delete', default: 'Delete') %></span>
                   <% end %>
                 <% end %>
               </div>

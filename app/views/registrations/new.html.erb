@@ -2,11 +2,11 @@
   <div class="col-md-6 col-lg-5">
     <div class="card shadow">
       <div class="card-body">
-        <h3 class="text-center mb-4">Đăng ký tài khoản</h3>
+        <h3 class="text-center mb-4">Create account</h3>
 
         <%= form_with(model: @user, url: signup_path, local: true) do |f| %>
 
-          <%# Hiển thị lỗi nếu có (ví dụ: Email đã tồn tại) %>
+          <%# Show errors if any (e.g., email already exists) %>
           <% if @user.errors.any? %>
             <div class="alert alert-danger">
               <ul class="mb-0">
@@ -18,7 +18,7 @@
           <% end %>
 
           <div class="mb-3">
-            <%= f.label :name, "Họ và tên", class: "form-label" %>
+            <%= f.label :name, "Full name", class: "form-label" %>
             <%= f.text_field :name, class: "form-control", required: true, autofocus: true %>
           </div>
 
@@ -28,23 +28,23 @@
           </div>
 
           <div class="mb-3">
-            <%= f.label :password, "Mật khẩu", class: "form-label" %>
-            <%= f.password_field :password, class: "form-control", required: true, placeholder: "Tối thiểu 6 ký tự" %>
+            <%= f.label :password, "Password", class: "form-label" %>
+            <%= f.password_field :password, class: "form-control", required: true, placeholder: "At least 6 characters" %>
           </div>
 
           <div class="mb-3">
-            <%= f.label :password_confirmation, "Xác nhận mật khẩu", class: "form-label" %>
+            <%= f.label :password_confirmation, "Confirm password", class: "form-label" %>
             <%= f.password_field :password_confirmation, class: "form-control", required: true %>
           </div>
 
           <div class="d-grid gap-2">
-            <%= f.submit "Đăng ký ngay", class: "btn btn-success" %>
+            <%= f.submit "Sign up now", class: "btn btn-success" %>
           </div>
         <% end %>
 
         <hr>
         <div class="text-center">
-          <small>Đã có tài khoản? <%= link_to "Đăng nhập", login_path %></small>
+          <small>Already have an account? <%= link_to "Sign in", login_path %></small>
         </div>
       </div>
     </div>

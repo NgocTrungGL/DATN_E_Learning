@@ -5,7 +5,7 @@
 
     <% unless @quiz_is_finished %>
       <button class="btn btn-danger btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#submitModal">
-        <i class="bi bi-check-circle"></i> Nộp bài
+        <i class="bi bi-check-circle"></i> Submit
       </button>
     <% end %>
   </div>
@@ -30,7 +30,7 @@
             <div class="card-header bg-white py-3 border-bottom">
               <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                  Câu hỏi <%= @all_questions.index(@current_question) + 1 %>
+                  Question <%= @all_questions.index(@current_question) + 1 %>
                   <span class="text-muted fs-6">/ <%= @all_questions.count %></span>
                 </h5>
                 <span class="badge bg-info text-dark"><%= @current_question.difficulty.humanize %></span>
@@ -49,9 +49,9 @@
 
           <div class="alert alert-warning text-center p-5 shadow-sm border-0">
             <h4><i class="bi bi-exclamation-circle-fill text-warning display-4 d-block mb-3"></i></h4>
-            <h5>Không tìm thấy dữ liệu câu hỏi</h5>
-            <p class="text-muted">Có thể câu hỏi đã bị xóa hoặc bài thi chưa được cấu hình đúng.</p>
-            <%= link_to "Quay lại", :back, class: "btn btn-outline-dark mt-3" %>
+            <h5>Question data not found</h5>
+            <p class="text-muted">The question may have been deleted or the quiz is not configured correctly.</p>
+            <%= link_to "Back", :back, class: "btn btn-outline-dark mt-3" %>
           </div>
 
         <% end %>
@@ -62,7 +62,7 @@
 
         <div class="card border-0 shadow-sm mb-3">
           <div class="card-body text-center bg-dark text-white rounded">
-            <small class="text-uppercase text-white-50 fw-bold">Thời gian còn lại</small>
+            <small class="text-uppercase text-white-50 fw-bold">Time remaining</small>
             <div id="quiz-timer" class="display-4 fw-bold my-2">--:--</div>
             <% end_time = @quiz_attempt.started_at + (@quiz.time_limit || 60).minutes %>
             <div id="timer-data" data-end-time="<%= end_time.iso8601 %>"></div>
@@ -70,7 +70,7 @@
         </div>
 
         <div class="card border-0 shadow-sm">
-          <div class="card-header bg-white fw-bold">Danh sách câu hỏi</div>
+          <div class="card-header bg-white fw-bold">Question list</div>
           <div class="card-body">
             <div class="row g-2">
               <% @all_questions.each_with_index do |q, index| %>
@@ -94,9 +94,9 @@
             </div>
 
             <div class="mt-3 pt-3 border-top small text-muted d-flex justify-content-between">
-              <span><i class="bi bi-square-fill text-success"></i> Đã làm</span>
-              <span><i class="bi bi-square-fill text-primary"></i> Đang làm</span>
-              <span><i class="bi bi-square text-secondary"></i> Chưa làm</span>
+              <span><i class="bi bi-square-fill text-success"></i> Answered</span>
+              <span><i class="bi bi-square-fill text-primary"></i> In progress</span>
+              <span><i class="bi bi-square text-secondary"></i> Unanswered</span>
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@
       <div class="modal-content">
         <div class="modal-header bg-light">
           <h5 class="modal-title fw-bold text-danger">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> Xác nhận nộp bài
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm submission
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
@@ -124,22 +124,22 @@
           <% if count > 0 %>
             <div class="text-center">
               <h3 class="text-warning fw-bold display-6 mb-3"><%= count %></h3>
-              <p class="fs-5">Câu hỏi vẫn <strong>chưa được trả lời</strong>.</p>
-              <p class="text-muted small">Nếu nộp ngay bây giờ, những câu này sẽ bị tính 0 điểm.</p>
+              <p class="fs-5">Some questions are still <strong>unanswered</strong>.</p>
+              <p class="text-muted small">If you submit now, these questions will be scored as 0.</p>
             </div>
           <% else %>
             <div class="text-center text-success">
               <i class="bi bi-check-circle-fill display-1 mb-3"></i>
-              <p class="fs-5 fw-bold">Bạn đã hoàn thành tất cả câu hỏi!</p>
-              <p class="text-muted">Bạn có chắc chắn muốn nộp bài và xem kết quả không?</p>
+              <p class="fs-5 fw-bold">You have completed all questions!</p>
+              <p class="text-muted">Are you sure you want to submit and view the results?</p>
             </div>
           <% end %>
         </div>
 
         <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Kiểm tra lại</button>
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Review</button>
           <%= button_to finish_quiz_attempt_path(@quiz_attempt), method: :patch, class: "btn btn-danger px-4 fw-bold" do %>
-            <i class="bi bi-send-check-fill"></i> Nộp bài ngay
+            <i class="bi bi-send-check-fill"></i> Submit now
           <% end %>
         </div>
       </div>
@@ -168,7 +168,7 @@
 
             const autoForm = document.getElementById("auto-submit-form");
             if (autoForm) {
-               alert("Đã hết thời gian làm bài! Hệ thống sẽ tự động nộp bài.");
+               alert("Time is up! The system will submit automatically.");
                autoForm.requestSubmit();
             }
             return;

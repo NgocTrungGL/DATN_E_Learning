@@ -2,7 +2,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg"> <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-primary text-white">
         <h5 class="modal-title fw-bold" id="questionModalLabel">
-          <i class="bi bi-chat-square-text-fill me-2"></i> Đặt câu hỏi thảo luận
+          <i class="bi bi-chat-square-text-fill me-2"></i> Ask a discussion question
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -14,26 +14,26 @@
           </div>
           <div>
             <h6 class="fw-bold mb-0"><%= current_user&.name %></h6>
-            <small class="text-muted">Đang đặt câu hỏi cho bài: <strong><%= @lesson.title %></strong></small>
+            <small class="text-muted">Asking a question about lesson: <strong><%= @lesson.title %></strong></small>
           </div>
         </div>
 
         <%= form_with(model: [@lesson, Comment.new], local: true) do |f| %>
           <div class="mb-3">
-            <%= f.label :body, "Nội dung câu hỏi", class: "form-label fw-bold text-secondary" %>
-            <%= f.text_area :body, class: "form-control shadow-sm border-0 p-3", placeholder: "Hãy mô tả chi tiết thắc mắc của bạn để giảng viên và mọi người dễ dàng hỗ trợ...", rows: 5, style: "resize: none;" %>
+            <%= f.label :body, "Question details", class: "form-label fw-bold text-secondary" %>
+            <%= f.text_area :body, class: "form-control shadow-sm border-0 p-3", placeholder: "Describe your question in detail so the instructor and others can help...", rows: 5, style: "resize: none;" %>
           </div>
 
           <div class="alert alert-info d-flex align-items-center small py-2" role="alert">
             <i class="bi bi-info-circle-fill flex-shrink-0 me-2"></i>
             <div>
-              Hãy sử dụng ngôn từ lịch sự và tôn trọng cộng đồng.
+              Please use polite and respectful language.
             </div>
           </div>
 
           <div class="d-flex justify-content-end gap-2 mt-4">
-            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Hủy bỏ</button>
-            <%= f.submit "Gửi câu hỏi ngay", class: "btn btn-primary px-4 fw-bold shadow-sm" %>
+            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+            <%= f.submit "Submit question", class: "btn btn-primary px-4 fw-bold shadow-sm" %>
           </div>
         <% end %>
       </div>

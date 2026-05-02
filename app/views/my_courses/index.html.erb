@@ -3,14 +3,14 @@
 <%# ============================================================ %>
 
 <div class="my-courses">
-  
+
   <%# ── Header ─────────────────────────────────────────────── %>
   <div class="my-courses__header">
     <div class="my-courses__inner">
-      <div class="my-courses__badge">Khám phá tri thức</div>
-      <h1 class="my-courses__title">Học tập của tôi</h1>
+      <div class="my-courses__badge">Explore knowledge</div>
+      <h1 class="my-courses__title">My learning</h1>
       <p class="my-courses__subtitle">
-        Chào mừng bạn quay trở lại! Bạn đang tham gia <strong><%= @enrollments.count %></strong> khóa học.
+        Welcome back! You are enrolled in <strong><%= @enrollments.count %></strong> courses.
       </p>
     </div>
   </div>
@@ -19,12 +19,12 @@
     <% if @enrollments.empty? %>
       <div class="my-courses__empty">
         <i class="bi bi-journal-x empty-icon"></i>
-        <h3>Chưa có khóa học nào</h3>
-        <p>Bắt đầu hành trình học tập của bạn bằng cách khám phá các khóa học mới nhất.</p>
-        <%= link_to "Khám phá ngay", courses_path, class: "btn-primary" %>
+        <h3>No courses yet</h3>
+        <p>Start your learning journey by exploring the latest courses.</p>
+        <%= link_to "Explore now", courses_path, class: "btn-primary" %>
       </div>
     <% else %>
-      
+
       <div class="my-courses__grid">
         <% @enrollments.each do |enrollment| %>
           <% course = enrollment.course %>
@@ -32,15 +32,15 @@
           <% first_lesson = course.course_modules.first&.lessons&.first %>
 
           <article class="my-course-card <%= 'my-course-card--new' if progress == 0 %>">
-            
+
             <%# Thumbnail with Play Hover %>
             <div class="my-course-card__thumb">
-              <img src="<%= course.thumbnail_url.presence || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=400&fit=crop' %>" 
+              <img src="<%= course.thumbnail_url.presence || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=400&fit=crop' %>"
                    alt="<%= course.title %>" loading="lazy">
-              
+
               <% if first_lesson %>
                 <div class="play-overlay">
-                  <%= link_to lesson_path(first_lesson), class: "btn-play", title: "Vào học ngay" do %>
+                  <%= link_to lesson_path(first_lesson), class: "btn-play", title: "Start learning" do %>
                     <i class="bi bi-play-fill"></i>
                   <% end %>
                 </div>
@@ -56,7 +56,7 @@
               <div class="my-course-card__progress">
                 <div class="my-course-card__progress-info">
                   <span class="my-course-card__progress-label">
-                    <%= progress == 100 ? "Hoàn thành" : "Tiến độ" %>
+                    <%= progress == 100 ? "Completed" : "Progress" %>
                   </span>
                   <span class="my-course-card__progress-value"><%= progress %>%</span>
                 </div>
@@ -70,16 +70,16 @@
               <% if first_lesson %>
                 <%= link_to lesson_path(first_lesson), class: "btn-resume" do %>
                   <% if progress == 0 %>
-                    Bắt đầu học
+                    Start learning
                   <% elsif progress == 100 %>
-                    Xem lại bài học
+                    Review lesson
                   <% else %>
-                    Tiếp tục học <i class="bi bi-arrow-right-short"></i>
+                    Continue learning <i class="bi bi-arrow-right-short"></i>
                   <% end %>
                 <% end %>
               <% else %>
                 <button class="btn-resume" disabled style="opacity: 0.5; cursor: not-allowed;">
-                  Chưa có bài học
+                  No lessons yet
                 </button>
               <% end %>
             </div>

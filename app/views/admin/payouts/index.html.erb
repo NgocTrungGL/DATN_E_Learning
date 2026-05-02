@@ -3,8 +3,8 @@
 <div class="admin-page-header">
   <div class="admin-page-header__inner">
     <div>
-      <div class="admin-page-header__badge"><i class="bi bi-bank2"></i> Tài chính</div>
-      <h1 class="admin-page-header__title">Yêu cầu Rút tiền</h1>
+      <div class="admin-page-header__badge"><i class="bi bi-bank2"></i> Finance</div>
+      <h1 class="admin-page-header__title">Payout Requests</h1>
     </div>
   </div>
 </div>
@@ -14,11 +14,11 @@
     <table class="admin-table">
       <thead>
         <tr>
-          <th>Giảng viên</th>
-          <th>Số tiền</th>
-          <th>Thông tin ngân hàng</th>
-          <th>Trạng thái</th>
-          <th style="text-align: right;">Hành động</th>
+          <th>Instructor</th>
+          <th>Amount</th>
+          <th>Bank details</th>
+          <th>Status</th>
+          <th style="text-align: right;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -26,10 +26,10 @@
           <tr>
             <td>
               <div class="admin-table__title"><%= payout.user.name %></div>
-              <div class="admin-table__sub">Ví: <%= number_to_currency(payout.user.wallet.balance, unit: "₫", precision: 0) %></div>
+              <div class="admin-table__sub">Wallet: <%= number_to_currency(payout.user.wallet.balance, unit: "VND", precision: 0) %></div>
             </td>
             <td style="font-weight:800; color:#ef4444; font-size:1.05rem;">
-              -<%= number_to_currency(payout.amount, unit: "₫", precision: 0) %>
+              -<%= number_to_currency(payout.amount, unit: "VND", precision: 0) %>
             </td>
             <td>
               <div class="admin-table__title"><%= payout.bank_name %></div>
@@ -39,11 +39,11 @@
             <td>
               <% case payout.status %>
               <% when 'pending' %>
-                <span class="admin-badge admin-badge--warning"><i class="bi bi-hourglass"></i> Chờ duyệt</span>
+                <span class="admin-badge admin-badge--warning"><i class="bi bi-hourglass"></i> Pending</span>
               <% when 'approved' %>
-                <span class="admin-badge admin-badge--success"><i class="bi bi-check-circle"></i> Đã chuyển</span>
+                <span class="admin-badge admin-badge--success"><i class="bi bi-check-circle"></i> Transferred</span>
               <% when 'rejected' %>
-                <span class="admin-badge admin-badge--neutral"><i class="bi bi-x-circle"></i> Đã từ chối</span>
+                <span class="admin-badge admin-badge--neutral"><i class="bi bi-x-circle"></i> Rejected</span>
               <% end %>
               <div class="admin-table__sub" style="margin-top:4px;"><%= payout.created_at.strftime("%d/%m %H:%M") %></div>
             </td>
@@ -51,17 +51,17 @@
               <div class="admin-table__actions">
                 <% if payout.pending? %>
                   <%= link_to approve_admin_payout_path(payout),
-                        data: { turbo_method: :patch, turbo_confirm: "Xác nhận ĐÃ CHUYỂN KHOẢN ngân hàng cho giảng viên này?" },
+                        data: { turbo_method: :patch, turbo_confirm: "Confirm bank transfer completed for this instructor?" },
                         class: "btn-action btn-action--success" do %>
-                    <i class="bi bi-check-lg"></i> Duyệt
+                    <i class="bi bi-check-lg"></i> Approve
                   <% end %>
                   <%= link_to reject_admin_payout_path(payout),
-                        data: { turbo_method: :patch, turbo_confirm: "Từ chối yêu cầu này?" },
+                        data: { turbo_method: :patch, turbo_confirm: "Reject this request?" },
                         class: "btn-action btn-action--danger" do %>
                     <i class="bi bi-x-lg"></i>
                   <% end %>
                 <% else %>
-                  <span style="font-size:0.8rem; color:#94a3b8;"><i class="bi bi-lock-fill"></i> Đã xử lý</span>
+                  <span style="font-size:0.8rem; color:#94a3b8;"><i class="bi bi-lock-fill"></i> Processed</span>
                 <% end %>
               </div>
             </td>
@@ -73,7 +73,7 @@
             <td colspan="5">
               <div class="admin-table__empty">
                 <i class="bi bi-bank2"></i>
-                <p>Chưa có yêu cầu rút tiền nào.</p>
+                <p>No payout requests yet.</p>
               </div>
             </td>
           </tr>

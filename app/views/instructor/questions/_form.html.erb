@@ -8,20 +8,20 @@
   <div class="row">
     <div class="col-md-8">
       <div class="card shadow-sm mb-4">
-        <div class="card-header bg-white fw-bold">Nội dung câu hỏi</div>
+        <div class="card-header bg-white fw-bold">Question content</div>
         <div class="card-body">
           <div class="mb-3">
-            <%= f.label :question_text, "Câu hỏi", class: "form-label" %>
+            <%= f.label :question_text, "Question", class: "form-label" %>
             <%= f.text_area :question_text, rows: 3, class: "form-control", required: true %>
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
-              <%= f.label :question_type, "Loại", class: "form-label" %>
+              <%= f.label :question_type, "Type", class: "form-label" %>
               <%= f.select :question_type, Question.question_types.keys, {}, class: "form-select" %>
             </div>
             <div class="col-md-6 mb-3">
-              <%= f.label :difficulty, "Độ khó", class: "form-label" %>
+              <%= f.label :difficulty, "Difficulty", class: "form-label" %>
               <%= f.select :difficulty, Question.difficulties.keys, {}, class: "form-select" %>
             </div>
           </div>
@@ -30,12 +30,12 @@
 
           <div class="row">
              <div class="col-md-6 mb-3">
-                <%= f.label :course_id, "Gắn vào Khóa học (Của tôi)", class: "form-label" %>
-                <%= f.collection_select :course_id, @courses, :id, :title, { prompt: "Chọn khóa học" }, { class: "form-select", required: true } %>
+               <%= f.label :course_id, "Attach to course (mine)", class: "form-label" %>
+               <%= f.collection_select :course_id, @courses, :id, :title, { prompt: "Select course" }, { class: "form-select", required: true } %>
              </div>
              <div class="col-md-6 mb-3">
-                <%= f.label :lesson_id, "Gắn vào Bài học (Tùy chọn)", class: "form-label" %>
-                <%= f.number_field :lesson_id, class: "form-control", placeholder: "Nhập ID bài học" %>
+               <%= f.label :lesson_id, "Attach to lesson (optional)", class: "form-label" %>
+               <%= f.number_field :lesson_id, class: "form-control", placeholder: "Enter lesson ID" %>
              </div>
           </div>
         </div>
@@ -44,7 +44,7 @@
 
     <div class="col-md-4">
       <div class="card shadow-sm">
-        <div class="card-header bg-white fw-bold">Các lựa chọn</div>
+        <div class="card-header bg-white fw-bold">Options</div>
         <div class="card-body p-0">
           <div class="list-group list-group-flush">
             <%= f.fields_for :question_options do |o_form| %>
@@ -53,20 +53,20 @@
                   <div class="input-group-text">
                     <%= o_form.check_box :is_correct, class: "form-check-input mt-0" %>
                   </div>
-                  <%= o_form.text_field :option_text, class: "form-control", placeholder: "Nhập đáp án..." %>
+                  <%= o_form.text_field :option_text, class: "form-control", placeholder: "Enter answer..." %>
                 </div>
               </div>
             <% end %>
           </div>
           <div class="p-3 text-muted small">
-            * Tích vào ô vuông để chọn đáp án đúng.
+            * Check the box to mark the correct answer.
           </div>
         </div>
       </div>
 
       <div class="d-grid gap-2 mt-3">
-        <%= f.submit "Lưu câu hỏi", class: "btn btn-primary fw-bold" %>
-        <%= link_to "Hủy", instructor_questions_path, class: "btn btn-outline-secondary" %>
+        <%= f.submit "Save question", class: "btn btn-primary fw-bold" %>
+        <%= link_to "Cancel", instructor_questions_path, class: "btn btn-outline-secondary" %>
       </div>
     </div>
   </div>

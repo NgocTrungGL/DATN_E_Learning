@@ -10,12 +10,12 @@
         <%= post.author_name %>
         <% if post.instructor_post? %>
           <span class="disc-card__badge disc-card__badge--instructor">
-            <i class="bi bi-patch-check-fill"></i> Giảng viên
+            <i class="bi bi-patch-check-fill"></i> Instructor
           </span>
         <% end %>
       </span>
       <span class="disc-card__time">
-        <i class="bi bi-clock"></i> <%= time_ago_in_words(post.created_at) %> trước
+        <i class="bi bi-clock"></i> <%= time_ago_in_words(post.created_at) %> ago
       </span>
     </div>
     <h3 class="disc-card__title">

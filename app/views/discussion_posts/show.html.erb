@@ -6,7 +6,7 @@
     <div class="disc-page__header-inner">
       <div class="disc-page__breadcrumb">
         <%= link_to course_discussion_posts_path(@course), class: "disc-page__back" do %>
-          <i class="bi bi-arrow-left"></i> Về nhóm thảo luận
+          <i class="bi bi-arrow-left"></i> Back to discussion
         <% end %>
       </div>
     </div>
@@ -24,12 +24,12 @@
             <%= @post.author_name %>
             <% if @post.instructor_post? %>
               <span class="disc-card__badge disc-card__badge--instructor">
-                <i class="bi bi-patch-check-fill"></i> Giảng viên
+                <i class="bi bi-patch-check-fill"></i> Instructor
               </span>
             <% end %>
           </span>
           <span class="disc-detail__time">
-            <i class="bi bi-clock"></i> <%= time_ago_in_words(@post.created_at) %> trước
+            <i class="bi bi-clock"></i> <%= time_ago_in_words(@post.created_at) %> ago
           </span>
         </div>
       </div>
@@ -57,12 +57,12 @@
           <%= button_to toggle_pin_course_discussion_post_path(@course, @post),
                 method: :patch, class: "disc-detail__action-btn" do %>
             <i class="bi bi-pin-angle<%= @post.pinned? ? '-fill' : '' %>"></i>
-            <%= @post.pinned? ? "Bỏ ghim" : "Ghim" %>
+            <%= @post.pinned? ? "Unpin" : "Pin" %>
           <% end %>
           <%= button_to toggle_lock_course_discussion_post_path(@course, @post),
                 method: :patch, class: "disc-detail__action-btn" do %>
             <i class="bi bi-<%= @post.locked? ? 'unlock' : 'lock' %>"></i>
-            <%= @post.locked? ? "Mở khóa" : "Khóa" %>
+            <%= @post.locked? ? "Unlock" : "Lock" %>
           <% end %>
         <% end %>
 
@@ -70,8 +70,8 @@
           <%= button_to course_discussion_post_path(@course, @post),
                 method: :delete,
                 class: "disc-detail__action-btn disc-detail__action-btn--danger",
-                data: { turbo_confirm: "Bạn có chắc muốn xóa bài viết này?" } do %>
-            <i class="bi bi-trash"></i> Xóa
+                data: { turbo_confirm: "Are you sure you want to delete this post?" } do %>
+            <i class="bi bi-trash"></i> Delete
           <% end %>
         <% end %>
       </div>
@@ -81,7 +81,7 @@
     <section class="disc-replies">
       <h2 class="disc-replies__heading">
         <i class="bi bi-chat-left-text"></i>
-        Phản hồi
+        Replies
         <span id="replies-count">
           <%= render "discussion_replies/count", count: @post.replies_count %>
         </span>
@@ -93,7 +93,7 @@
               course: @course, post: @post, reply: @reply %>
       <% else %>
         <div class="disc-replies__locked">
-          <i class="bi bi-lock-fill"></i> Bài thảo luận này đã bị khóa. Không thể phản hồi.
+          <i class="bi bi-lock-fill"></i> This discussion is locked. Replies are disabled.
         </div>
       <% end %>
 
@@ -106,7 +106,7 @@
           <% end %>
         <% else %>
           <div class="disc-replies__empty">
-            <p>Chưa có phản hồi nào. Hãy là người đầu tiên!</p>
+            <p>No replies yet. Be the first!</p>
           </div>
         <% end %>
       </div>

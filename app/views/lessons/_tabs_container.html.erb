@@ -20,7 +20,7 @@
             <path d="M8.5 13H15.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
           </svg>
         </span>
-        <span class="lesson-tabs__nav-label">Tổng quan</span>
+        <span class="lesson-tabs__nav-label">Overview</span>
       </button>
 
       <button
@@ -40,7 +40,7 @@
             <path d="M6.5 6H17.5C18.88 6 20 7.12 20 8.5V13.2C20 14.58 18.88 15.7 17.5 15.7H12.3L8.2 18.8V15.7H6.5C5.12 15.7 4 14.58 4 13.2V8.5C4 7.12 5.12 6 6.5 6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
           </svg>
         </span>
-        <span class="lesson-tabs__nav-label">Hỏi đáp</span>
+        <span class="lesson-tabs__nav-label">Q&A</span>
         <span class="lesson-tabs__nav-badge"><%= local_assigns[:qa_badge_count] || 1 %></span>
       </button>
 
@@ -62,7 +62,7 @@
             <path d="M15.2 3.8V7.8H19.2" stroke="currentColor" stroke-width="1.7"/>
           </svg>
         </span>
-        <span class="lesson-tabs__nav-label">Ghi chú</span>
+        <span class="lesson-tabs__nav-label">Notes</span>
         <% if user_signed_in? %>
           <%= render "notes/count_badge", count: current_user.notes.where(lesson: @lesson).count %>
         <% end %>
