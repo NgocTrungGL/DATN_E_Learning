@@ -1,0 +1,31 @@
+<div id="chat-form">
+  <%= form_with model: message,
+        url: course_discussion_messages_path(course),
+        class: "lumina__input-bar",
+        data: {
+          controller: "chat-form",
+          action: "turbo:submit-end->chat-form#reset"
+        } do |f| %>
+
+    <div class="lumina__input-container">
+      <div class="input-actions" style="display: flex; gap: 0.25rem; padding-bottom: 4px;">
+        <button type="button" class="tool-btn" title="Đính kèm"><i class="bi bi-plus-circle"></i></button>
+        <button type="button" class="tool-btn" title="Chèn code"><i class="bi bi-code-slash"></i></button>
+      </div>
+
+      <%= f.text_area :content,
+            placeholder: "Nhắn tin tới nhóm thảo luận # #{course.title}",
+            rows: 1,
+            data: {
+              chat_form_target: "input",
+              action: "keydown->chat-form#submitOnEnter input->chat-form#resizeInput"
+            } %>
+
+      <div class="input-submit" style="padding-bottom: 4px;">
+        <button type="submit" class="send-btn">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,63 @@
+<article class="lumina__msg <%= 'lumina__msg--instructor' if post.instructor_post? %> <%= 'lumina__msg--resolved' if post.locked? %>" id="<%= dom_id(post) %>">
+  <div class="lumina__msg-avatar">
+    <%= post.author_name[0].upcase %>
+  </div>
+
+  <div class="lumina__msg-body">
+    <div class="lumina__msg-meta">
+      <span class="lumina__msg-author"><%= post.author_name %></span>
+      <% if post.instructor_post? %>
+        <span class="lumina__msg-badge lumina__msg-badge--instructor">GIẢNG VIÊN</span>
+      <% end %>
+      <% if post.locked? %>
+        <span class="lumina__msg-badge" style="background: #22c55e; color: white;">ĐÃ GIẢI QUYẾT</span>
+      <% end %>
+      <span class="lumina__msg-time"><%= time_ago_in_words(post.created_at) %> trước</span>
+    </div>
+
+    <h3 class="lumina__msg-subject">
+      <% if post.pinned? %>
+        <i class="bi bi-pin-angle-fill" style="color: var(--lumina-primary); font-size: 0.9rem;"></i>
+      <% end %>
+      <%= post.title %>
+    </h3>
+
+    <div class="lumina__msg-text">
+      <%= simple_format(post.content) %>
+    </div>
+
+    <% if post.replies_count > 0 %>
+      <button class="lumina__msg-thread-btn" 
+              data-action="click->lumina-layout#openThread"
+              data-thread-id="<%= post.id %>"
+              data-thread-title="<%= post.title %>">
+        <i class="bi bi-chat-right-text"></i>
+        <%= post.replies_count %> phản hồi
+      </button>
+    <% end %>
+  </div>
+
+  <%# Floating Actions %>
+  <div class="lumina__msg-actions">
+    <button class="action-btn" title="Trả lời" data-action="click->lumina-layout#openThread" data-thread-id="<%= post.id %>" data-thread-title="<%= post.title %>">
+      <i class="bi bi-reply"></i>
+    </button>
+    
+    <% is_instructor = current_user.admin? || course.created_by == current_user.id %>
+    <% if is_instructor %>
+      <%= button_to toggle_pin_course_discussion_post_path(course, post), method: :patch, class: "action-btn", title: post.pinned? ? "Bỏ ghim" : "Ghim" do %>
+        <i class="bi bi-pin-angle<%= post.pinned? ? '-fill' : '' %>"></i>
+      <% end %>
+      
+      <%= button_to toggle_lock_course_discussion_post_path(course, post), method: :patch, class: "action-btn", title: post.locked? ? "Mở lại" : "Giải quyết" do %>
+        <i class="bi bi-check2-circle"></i>
+      <% end %>
+    <% end %>
+
+    <% if current_user == post.user || is_instructor %>
+      <%= button_to course_discussion_post_path(course, post), method: :delete, class: "action-btn", title: "Xóa", data: { turbo_confirm: "Xóa bài viết này?" } do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    <% end %>
+  </div>
+</article>

@@ -52,10 +52,18 @@ All system modifications must adhere to SOLID principles to avoid "fat models" a
 - **Frontend**: `turbo-rails` + `stimulus-rails` for SPA-like experience without heavy JS frameworks.
 - **Safe Rendering**: Always guard `current_user` calls with `user_signed_in?`.
 
-## 5. ERB & View Integrity
+## 6. Coding Standards & RuboCop (STRICT)
 
-- Use **Strict BEM** for all custom CSS classes.
-- Follow English i18n for all interface strings.
-- Prefer **Partials** for repeated UI logic.
+All code must pass RuboCop checks using the project's custom configuration. Key enforcements:
 
-- Use **English i18n** for all user-facing interface labels (buttons, links, error messages) in `config/locales/en.yml`, and keep all i18n keys and code comments in English.
+| Rule | Requirement |
+|---|---|
+| **Line Length** | Maximum **120 characters** per line for modern readability. |
+| **Hash Syntax** | Use **Ruby 1.9 syntax** `{ key: value }` with **spaces** inside braces. |
+| **String Literals** | Prefer **double quotes** `"string"` unless single quotes are necessary. |
+| **Find Each** | Use `.find_each` instead of `.all.each` for large datasets to ensure memory efficiency. |
+| **Trailing Comma** | No trailing commas in multi-line argument or hash lists. |
+| **Naming** | Strict `snake_case` for methods/variables, `CamelCase` for classes/modules. |
+
+---
+*Follow these rules to ensure the E-learning system remains scalable, maintainable, and high-performing.*

@@ -1,55 +1,134 @@
-<div class="chatroom">
-  <%# ── HEADER ──────────────────────────────────────────────── %>
-  <header class="chatroom__header">
-    <%= link_to course_path(@course), class: "chatroom__back" do %>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 5l-7 7 7 7"/></svg>
-    <% end %>
-    <div class="chatroom__channel">
-      <div class="chatroom__channel-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <div class="chatroom__channel-info">
-        <h1 class="chatroom__channel-name"><%= @course.title %></h1>
-        <span class="chatroom__channel-meta">
-          <span class="chatroom__online-dot"></span>
-          <%= @members_count %> members
-        </span>
+<% content_for :full_width, true %>
+<% content_for :body_class, "chat-page-body" %>
+
+<div class="lumina" data-controller="lumina-layout" data-lumina-layout-target="container">
+  
+  <%# ── LEFT SIDEBAR ────────────────────────────────────────── %>
+  <aside class="lumina__sidebar">
+    <div class="lumina__course-info">
+      <div class="course-mini">
+        <div class="course-mini__icon">
+          <i class="bi bi-journal-bookmark-fill"></i>
+        </div>
+        <div class="course-mini__details">
+          <h3 class="course-mini__title"><%= @course.title %></h3>
+          <span class="course-mini__tag">Nhóm Thảo Luận</span>
+        </div>
       </div>
     </div>
-  </header>
 
-  <%# ── MESSAGES AREA ───────────────────────────────────────── %>
-  <div class="chatroom__messages" id="chat-scroll-area" data-controller="chat-scroll">
-    <% if @messages.empty? %>
-      <div class="chatroom__welcome">
-        <div class="chatroom__welcome-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <div class="lumina__search">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Tìm kiếm tin nhắn...">
+    </div>
+
+    <nav class="lumina__nav-section">
+      <h4 class="lumina__nav-section-title">Thành viên</h4>
+      <div class="lumina__member-list">
+        <%# Mocked online members for visual fidelity %>
+        <div class="lumina__member lumina__member--instructor">
+          <div class="lumina__member-avatar">
+            <%= @course.creator&.name&.first&.upcase %>
+            <span class="lumina__member-status lumina__member-status--online"></span>
+          </div>
+          <span class="lumina__member-name"><%= @course.creator&.name %> (Giảng viên)</span>
         </div>
-        <h2 class="chatroom__welcome-title">Welcome to the discussion group!</h2>
-        <p class="chatroom__welcome-text">
-          This is where you and other learners can discuss the course
-          <strong><%= @course.title %></strong>.
-          Start the conversation!
-        </p>
-      </div>
-    <% end %>
+        
+        <%# Current User %>
+        <div class="lumina__member">
+          <div class="lumina__member-avatar">
+            <%= current_user.name.first.upcase %>
+            <span class="lumina__member-status lumina__member-status--online"></span>
+          </div>
+          <span class="lumina__member-name"><%= current_user.name %> (Bạn)</span>
+        </div>
 
-    <div id="chat-messages">
-      <% previous_message = nil %>
-      <% @messages.each do |msg| %>
-        <%= render "discussion_messages/message",
-              message: msg,
-              previous_message: previous_message,
-              course: @course %>
-        <% previous_message = msg %>
+        <%# More members from enrollment if needed, but let's keep it clean %>
+      </div>
+    </nav>
+
+    <div class="lumina__sidebar-footer" style="margin-top:auto;">
+      <%= link_to course_path(@course), class: "cd-btn cd-btn--outline", style: "width:100%; font-size: 0.8rem;" do %>
+        <i class="bi bi-arrow-left"></i> Về khóa học
       <% end %>
     </div>
-  </div>
+  </aside>
 
-  <%# ── INPUT AREA ──────────────────────────────────────────── %>
-  <div class="chatroom__input-area">
-    <%= render "discussion_messages/form",
-          course: @course,
-          message: @message %>
-  </div>
+  <%# ── MAIN CHAT AREA (CENTER) ───────────────────────────────── %>
+  <main class="lumina__main">
+    <header class="lumina__header">
+      <div class="channel-head">
+        <i class="bi bi-chat-right-text"></i>
+        <h2>Thảo luận chung</h2>
+      </div>
+      <div class="header-tools">
+        <button class="tool-btn" data-action="click->lumina-layout#togglePanel" title="Thông tin nhóm">
+          <i class="bi bi-info-circle"></i>
+        </button>
+        <button class="tool-btn" title="Tin nhắn đã ghim">
+          <i class="bi bi-pin-angle"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="lumina__messages" id="chat-scroll-area" data-controller="chat-scroll">
+      <% if @messages.empty? && @course.discussion_posts.empty? %>
+        <div class="chatroom__welcome" style="max-width: 500px; margin: 4rem auto; text-align: center;">
+          <div class="chatroom__welcome-icon" style="margin: 0 auto 1.5rem;">
+            <i class="bi bi-chat-quote" style="font-size: 3rem;"></i>
+          </div>
+          <h2 class="chatroom__welcome-title" style="font-size: 1.5rem;">Bắt đầu thảo luận thôi!</h2>
+          <p class="chatroom__welcome-text">Đặt câu hỏi cho giảng viên hoặc chia sẻ kiến thức với các bạn học viên khác.</p>
+        </div>
+      <% end %>
+
+      <div id="chat-messages">
+        <%# Legacy Discussion Posts (Forum-style) converted to Lumina messages %>
+        <% @course.discussion_posts.pinned_first.each do |post| %>
+          <%= render "discussion_messages/lumina_post", post: post, course: @course %>
+        <% end %>
+
+        <%# Direct Chat Messages %>
+        <% previous_message = nil %>
+        <% @messages.each do |msg| %>
+          <%= render "discussion_messages/lumina_message",
+                message: msg,
+                previous_message: previous_message,
+                course: @course %>
+          <% previous_message = msg %>
+        <% end %>
+      </div>
+    </div>
+
+    <footer class="lumina__footer">
+      <%= render "discussion_messages/lumina_form", course: @course, message: @message %>
+    </footer>
+  </main>
+
+  <%# ── INFO PANEL (RIGHT) ────────────────────────────────────── %>
+  <aside class="lumina__info-panel" data-lumina-layout-target="infoPanel">
+    <header class="lumina__panel-header">
+      <h3 data-lumina-layout-target="panelTitle">Thông tin nhóm</h3>
+      <button class="tool-btn" data-action="click->lumina-layout#closePanel">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+    <div class="lumina__panel-body" data-lumina-layout-target="panelContent">
+      <div class="pinned-section">
+        <h4 style="font-size: 0.7rem; font-weight: 700; color: var(--lumina-text-muted); text-transform: uppercase; margin-bottom: 1rem;">Tin nhắn đã ghim</h4>
+        <% pinned_posts = @course.discussion_posts.where(pinned: true) %>
+        <% if pinned_posts.any? %>
+          <% pinned_posts.each do |pp| %>
+            <div class="lumina__pinned-card">
+              <p><strong><%= pp.title %></strong></p>
+              <p style="margin-top: 0.25rem;"><%= truncate(pp.content, length: 100) %></p>
+            </div>
+          <% end %>
+        <% else %>
+          <p style="font-size: 0.85rem; color: var(--lumina-text-muted); text-align: center; padding: 2rem 0;">Chưa có tin nhắn nào được ghim.</p>
+        <% end %>
+      </div>
+    </div>
+  </aside>
+
 </div>
