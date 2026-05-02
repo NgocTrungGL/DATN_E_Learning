@@ -122,9 +122,7 @@ class CheckoutsController < ApplicationController
       quantity:
     }
 
-    if purchase_type == "license" && current_user.organization
-      data[:organization_id] = current_user.organization.id
-    end
+    data[:organization_id] = current_user.organization.id if purchase_type == "license" && current_user.organization
 
     data
   end
@@ -152,34 +150,42 @@ class CheckoutsController < ApplicationController
   end
 
   def build_line_items cart
-    if cart.promo_code.present?
-      manual_coupon = Coupon.find_by(code: cart.promo_code)
-    end
-    manual_coupon = nil unless manual_coupon&.active_and_current?
-
+    manual_coupon = active_manual_coupon(cart.promo_code)
     cart.cart_items.map do |item|
-      course = item.course
-      total_item_discount = 0
-
-      # 1. Automatic Global Discount
-      if course.has_discount?
-        total_item_discount += (course.price - course.discounted_price)
-      end
-
-      # 2. Manual Coupon (Special)
-      if manual_coupon
-        if manual_coupon.specific_course? && manual_coupon.course_id == course.id
-          manual_item_disc = manual_coupon.percentage? ? (course.price * manual_coupon.discount_value / 100.0) : manual_coupon.discount_value
-          total_item_discount += manual_item_disc
-        elsif manual_coupon.global? && !course.has_discount?
-          manual_item_disc = manual_coupon.percentage? ? (course.price * manual_coupon.discount_value / 100.0) : manual_coupon.discount_value
-          total_item_discount += manual_item_disc
-        end
-      end
-
-      final_unit_amount = [course.price - total_item_discount, 0].max.to_i
-      build_cart_line_item(item, final_unit_amount)
+      build_cart_line_item(item, discounted_unit_amount(item.course, manual_coupon))
     end
+  end
+
+  def active_manual_coupon promo_code
+    return if promo_code.blank?
+
+    coupon = Coupon.find_by(code: promo_code)
+    coupon if coupon&.active_and_current?
+  end
+
+  def discounted_unit_amount course, coupon
+    [course.price - cart_item_discount(course, coupon), 0].max.to_i
+  end
+
+  def cart_item_discount course, coupon
+    discount = automatic_discount(course)
+    discount += manual_discount(course, coupon) if coupon
+    discount
+  end
+
+  def automatic_discount course
+    course.has_discount? ? course.price - course.discounted_price : 0
+  end
+
+  def manual_discount course, coupon
+    return 0 unless manual_coupon_applies?(course, coupon)
+
+    coupon.percentage? ? course.price * coupon.discount_value / 100.0 : coupon.discount_value
+  end
+
+  def manual_coupon_applies? course, coupon
+    (coupon.specific_course? && coupon.course_id == course.id) ||
+      (coupon.global? && !course.has_discount?)
   end
 
   def build_cart_line_item item, unit_amount

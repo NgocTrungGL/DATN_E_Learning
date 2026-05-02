@@ -7,7 +7,7 @@ class Note < ApplicationRecord
 
   before_validation :set_course_from_lesson
 
-  scope :recent, ->{ order(updated_at: :desc) }
+  scope :recent, ->{order(updated_at: :desc)}
 
   private
 

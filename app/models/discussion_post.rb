@@ -8,8 +8,8 @@ class DiscussionPost < ApplicationRecord
   validates :title, presence: true, length: { maximum: 200 }
   validates :content, presence: true
 
-  scope :pinned_first, -> { order(pinned: :desc, updated_at: :desc) }
-  scope :recent, -> { order(updated_at: :desc) }
+  scope :pinned_first, ->{order(pinned: :desc, updated_at: :desc)}
+  scope :recent, ->{order(updated_at: :desc)}
 
   def author_name
     user&.name || "Ẩn danh"

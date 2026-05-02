@@ -2,7 +2,7 @@ class PayoutRequest < ApplicationRecord
   belongs_to :user
   has_many :wallet_transactions, as: :source, dependent: :nullify
 
-  enum status: {pending: 0, approved: 1, rejected: 2}
+  enum status: { pending: 0, approved: 1, rejected: 2 }
 
   validate :must_have_enough_balance, on: :create
   validates :bank_name, :bank_account_num, :bank_account_name, presence: true

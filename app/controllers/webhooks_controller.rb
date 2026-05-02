@@ -22,7 +22,7 @@ class WebhooksController < ApplicationController
       handle_checkout_session(session)
     end
 
-    render json: {message: "success"}
+    render json: { message: "success" }
   end
 
   private
@@ -32,25 +32,30 @@ class WebhooksController < ApplicationController
     user = User.find_by(id: user_id)
     return unless user
 
-    if session.metadata["type"] == "cart"
-      course_ids = session.metadata["course_ids"].split(",")
-      courses = Course.where(id: course_ids)
+    cart_checkout?(session) ? handle_cart_checkout(user, session) : handle_course_checkout(user, session)
+  end
 
-      courses.each do |course|
-        enroll_user(user, course, session.amount_total / courses.count)
-      end
+  def cart_checkout? session
+    session.metadata["type"] == "cart"
+  end
 
-      # Increment coupon usage
-      promo_code = session.metadata["promo_code"]
-      if promo_code.present?
-        coupon = Coupon.find_by(code: promo_code)
-        coupon.use! if coupon
-      end
-    else
-      course_id = session.metadata["course_id"]
-      course = Course.find_by(id: course_id)
-      enroll_user(user, course, session.amount_total) if course
+  def handle_cart_checkout user, session
+    courses = Course.where(id: session.metadata["course_ids"].split(","))
+    courses.each do |course|
+      enroll_user(user, course, session.amount_total / courses.count)
     end
+    use_coupon(session.metadata["promo_code"])
+  end
+
+  def handle_course_checkout user, session
+    course = Course.find_by(id: session.metadata["course_id"])
+    enroll_user(user, course, session.amount_total) if course
+  end
+
+  def use_coupon promo_code
+    return if promo_code.blank?
+
+    Coupon.find_by(code: promo_code)&.use!
   end
 
   def enroll_user user, course, amount

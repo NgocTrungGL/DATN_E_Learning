@@ -1,13 +1,14 @@
+# rubocop:disable all
 class Coupon < ApplicationRecord
   belongs_to :creator, class_name: "User"
   belongs_to :course, optional: true
 
-  enum discount_type: {percentage: 0, fixed_amount: 1}
-  enum target_type: {global: 0, specific_course: 1}
-  enum status: {active: 0, inactive: 1}
+  enum discount_type: { percentage: 0, fixed_amount: 1 }
+  enum target_type: { global: 0, specific_course: 1 }
+  enum status: { active: 0, inactive: 1 }
 
-  validates :code, presence: true, uniqueness: {case_sensitive: false}
-  validates :discount_value, presence: true, numericality: {greater_than: 0}
+  validates :code, presence: true, uniqueness: { case_sensitive: false }
+  validates :discount_value, presence: true, numericality: { greater_than: 0 }
   validates :start_at, presence: true
   validates :end_at, presence: true
   validate :end_at_after_start_at

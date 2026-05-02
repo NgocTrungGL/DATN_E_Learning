@@ -9,8 +9,8 @@ class DiscussionReply < ApplicationRecord
 
   validates :content, presence: true
 
-  scope :recent, -> { order(created_at: :asc) }
-  scope :top_level, -> { where(parent_id: nil) }
+  scope :recent, ->{order(created_at: :asc)}
+  scope :top_level, ->{where(parent_id: nil)}
 
   # Touch the parent post so it "bumps" to the top
   after_create :touch_discussion_post

@@ -18,36 +18,10 @@ class DiscussionMessagesController < ApplicationController
     @message.user = current_user
 
     if @message.save
-      @previous_message = @course.discussion_messages
-                                 .where("id < ?", @message.id)
-                                 .order(created_at: :desc)
-                                 .first
-
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.append("chat-messages",
-                                partial: "discussion_messages/message",
-                                locals: {message: @message, previous_message: @previous_message,
-                                         course: @course}),
-            turbo_stream.replace("chat-form",
-                                 partial: "discussion_messages/form",
-                                 locals: {course: @course,
-                                          message: DiscussionMessage.new})
-          ]
-        end
-        format.html{redirect_to course_discussion_messages_path(@course)}
-      end
+      @previous_message = previous_message
+      respond_to_message_created
     else
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("chat-form",
-                                                    partial: "discussion_messages/form",
-                                                    locals: {course: @course,
-                                                             message: @message})
-        end
-        format.html{redirect_to course_discussion_messages_path(@course)}
-      end
+      respond_to_message_invalid
     end
   end
 
@@ -81,5 +55,53 @@ class DiscussionMessagesController < ApplicationController
 
     redirect_to course_path(@course),
                 alert: "Bạn cần đăng ký khóa học để tham gia nhóm trao đổi."
+  end
+
+  def previous_message
+    @course.discussion_messages
+           .where("id < ?", @message.id)
+           .order(created_at: :desc)
+           .first
+  end
+
+  def respond_to_message_created
+    respond_to do |format|
+      format.turbo_stream{render turbo_stream: message_created_streams}
+      format.html{redirect_to course_discussion_messages_path(@course)}
+    end
+  end
+
+  def message_created_streams
+    [
+      turbo_stream.append("chat-messages",
+                          partial: "discussion_messages/message",
+                          locals: message_locals),
+      turbo_stream.replace("chat-form",
+                           partial: "discussion_messages/form",
+                           locals: new_message_form_locals)
+    ]
+  end
+
+  def respond_to_message_invalid
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace("chat-form",
+                                                  partial: "discussion_messages/form",
+                                                  locals: message_form_locals)
+      end
+      format.html{redirect_to course_discussion_messages_path(@course)}
+    end
+  end
+
+  def message_locals
+    { message: @message, previous_message: @previous_message, course: @course }
+  end
+
+  def new_message_form_locals
+    { course: @course, message: DiscussionMessage.new }
+  end
+
+  def message_form_locals
+    { course: @course, message: @message }
   end
 end

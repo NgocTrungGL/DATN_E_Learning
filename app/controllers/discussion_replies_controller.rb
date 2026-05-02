@@ -12,40 +12,9 @@ class DiscussionRepliesController < ApplicationController
     @reply.user = current_user
 
     if @reply.save
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.append("replies-list",
-                                partial: "discussion_replies/reply",
-                                locals: {reply: @reply, course: @course,
-                                         post: @post}),
-            turbo_stream.replace("reply-form",
-                                 partial: "discussion_replies/form",
-                                 locals: {course: @course, post: @post,
-                                          reply: DiscussionReply.new}),
-            turbo_stream.replace("replies-count",
-                                 partial: "discussion_replies/count",
-                                 locals: {count: @post.reload.replies_count})
-          ]
-        end
-        format.html do
-          redirect_to course_discussion_post_path(@course, @post),
-                      notice: "Đã gửi phản hồi!"
-        end
-      end
+      respond_to_reply_created
     else
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("reply-form",
-                                                    partial: "discussion_replies/form",
-                                                    locals: {course: @course,
-                                                             post: @post, reply: @reply})
-        end
-        format.html do
-          redirect_to course_discussion_post_path(@course, @post),
-                      alert: "Không thể gửi phản hồi."
-        end
-      end
+      respond_to_reply_invalid
     end
   end
 
@@ -57,8 +26,8 @@ class DiscussionRepliesController < ApplicationController
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(@reply,
                                                     partial: "discussion_replies/reply",
-                                                    locals: {reply: @reply,
-                                                             course: @course, post: @post})
+                                                    locals: { reply: @reply,
+                                                              course: @course, post: @post })
         end
         format.html do
           redirect_to course_discussion_post_path(@course, @post),
@@ -86,7 +55,7 @@ class DiscussionRepliesController < ApplicationController
           turbo_stream.remove(@reply),
           turbo_stream.replace("replies-count",
                                partial: "discussion_replies/count",
-                               locals: {count: @post.reload.replies_count})
+                               locals: { count: @post.reload.replies_count })
         ]
       end
       format.html do
@@ -129,5 +98,51 @@ class DiscussionRepliesController < ApplicationController
 
     redirect_to course_discussion_post_path(@course, @post),
                 alert: "Bài thảo luận này đã bị khóa."
+  end
+
+  def respond_to_reply_created
+    respond_to do |format|
+      format.turbo_stream{render turbo_stream: reply_created_streams}
+      format.html do
+        redirect_to course_discussion_post_path(@course, @post),
+                    notice: "Đã gửi phản hồi!"
+      end
+    end
+  end
+
+  def reply_created_streams
+    [
+      turbo_stream.append("replies-list",
+                          partial: "discussion_replies/reply",
+                          locals: reply_locals),
+      turbo_stream.replace("reply-form",
+                           partial: "discussion_replies/form",
+                           locals: new_reply_locals),
+      turbo_stream.replace("replies-count",
+                           partial: "discussion_replies/count",
+                           locals: { count: @post.reload.replies_count })
+    ]
+  end
+
+  def respond_to_reply_invalid
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace("reply-form",
+                                                  partial: "discussion_replies/form",
+                                                  locals: reply_locals)
+      end
+      format.html do
+        redirect_to course_discussion_post_path(@course, @post),
+                    alert: "Không thể gửi phản hồi."
+      end
+    end
+  end
+
+  def reply_locals
+    { reply: @reply, course: @course, post: @post }
+  end
+
+  def new_reply_locals
+    { course: @course, post: @post, reply: DiscussionReply.new }
   end
 end

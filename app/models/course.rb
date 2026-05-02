@@ -27,13 +27,14 @@ optional: true
   scope :available, ->{where(status: :published)}
   # Validation
   validates :title, presence: true
-  validates :price, numericality: {greater_than_or_equal_to: 0}
+  validates :price, numericality: { greater_than_or_equal_to: 0 }
   scope :recent, ->{order(created_at: :desc)}
-  scope :min_rating_filter, ->(rating) {
+  scope :min_rating_filter, lambda {|rating|
     return all if rating.blank?
+
     where(id: Review.group(:course_id).having("AVG(rating) >= ?", rating).select(:course_id))
   }
-  scope :price_filter, ->(type) {
+  scope :price_filter, lambda {|type|
     case type
     when "free" then where(price: 0)
     when "paid" then where("price > 0")
@@ -41,15 +42,15 @@ optional: true
     end
   }
 
-  def self.ransackable_attributes(auth_object = nil)
-    ["title", "description", "price", "category_id", "created_at"]
+  def self.ransackable_attributes _auth_object = nil
+    %w(title description price category_id created_at)
   end
 
-  def self.ransackable_associations(auth_object = nil)
-    ["category", "creator"]
+  def self.ransackable_associations _auth_object = nil
+    %w(category creator)
   end
 
-  def self.ransackable_scopes(auth_object = nil)
+  def self.ransackable_scopes _auth_object = nil
     [:min_rating_filter, :price_filter]
   end
 
@@ -83,6 +84,12 @@ optional: true
     coupon = current_global_coupon
     return nil if coupon.nil?
 
-    coupon.percentage? ? "-#{coupon.discount_value.to_i}%" : "-#{ActionController::Base.helpers.number_to_currency(coupon.discount_value, unit: "₫", precision: 0)}"
+    if coupon.percentage?
+      "-#{coupon.discount_value.to_i}%"
+    else
+      "-#{ActionController::Base.helpers.number_to_currency(
+        coupon.discount_value, unit: '₫', precision: 0
+      )}"
+    end
   end
 end

@@ -3,10 +3,10 @@ class MyNotesController < ApplicationController
 
   def index
     @notes = current_user.notes
-                         .includes(lesson: {course_module: :course})
+                         .includes(lesson: { course_module: :course })
                          .recent
 
     # Group notes by course for organized display
-    @notes_by_course = @notes.group_by{|n| n.course}
+    @notes_by_course = @notes.group_by(&:course)
   end
 end

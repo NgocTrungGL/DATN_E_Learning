@@ -8,39 +8,11 @@ class Cart < ApplicationRecord
   end
 
   def discount_amount
-    total_disc = 0
-    manual_coupon = Coupon.find_by(code: promo_code) if promo_code.present?
-    manual_coupon = nil unless manual_coupon&.active_and_current?
-
-    cart_items.each do |item|
-      item_disc = 0
+    manual_coupon = active_manual_coupon
+    cart_items.sum do |item|
       course = item.course
-
-      # 1. Automatic Global Discount
-      if course.has_discount?
-        item_disc += (course.price - course.discounted_price)
-      end
-
-      # 2. Manual Coupon (Special)
-      if manual_coupon
-        if manual_coupon.specific_course? && manual_coupon.course_id == course.id
-          # Applies to specific course
-          manual_item_disc = manual_coupon.percentage? ? (course.price * manual_coupon.discount_value / 100.0) : manual_coupon.discount_value
-          item_disc += manual_item_disc
-        elsif manual_coupon.global? && !course.has_discount?
-          # If it's a manual global code and course doesn't have an auto one
-          # Or if it's BETTER than the auto one?
-          # For now, let's say manual global only applies if no auto global exists
-          # Actually, let's just apply it if it's global and creator is Admin.
-          manual_item_disc = manual_coupon.percentage? ? (course.price * manual_coupon.discount_value / 100.0) : manual_coupon.discount_value
-          item_disc += manual_item_disc
-        end
-      end
-
-      total_disc += [item_disc, course.price].min
+      [item_discount(course, manual_coupon), course.price].min
     end
-
-    total_disc
   end
 
   def final_total
@@ -50,6 +22,34 @@ class Cart < ApplicationRecord
   delegate :empty?, to: :cart_items
 
   private
+
+  def active_manual_coupon
+    return if promo_code.blank?
+
+    coupon = Coupon.find_by(code: promo_code)
+    coupon if coupon&.active_and_current?
+  end
+
+  def item_discount course, coupon
+    discount = automatic_discount(course)
+    discount += manual_discount(course, coupon) if coupon
+    discount
+  end
+
+  def automatic_discount course
+    course.has_discount? ? course.price - course.discounted_price : 0
+  end
+
+  def manual_discount course, coupon
+    return 0 unless manual_discount_applies?(course, coupon)
+
+    coupon.percentage? ? course.price * coupon.discount_value / 100.0 : coupon.discount_value
+  end
+
+  def manual_discount_applies? course, coupon
+    (coupon.specific_course? && coupon.course_id == course.id) ||
+      (coupon.global? && !course.has_discount?)
+  end
 
   def coupon_applies_to? coupon, course
     if coupon.global?

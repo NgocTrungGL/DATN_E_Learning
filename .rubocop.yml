@@ -282,7 +282,7 @@ Style/LambdaCall:
     - call
     - braces
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
   AllowURI: true
   Exclude:

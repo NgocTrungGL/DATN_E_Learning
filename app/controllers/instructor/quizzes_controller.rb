@@ -53,7 +53,7 @@ class Instructor::QuizzesController < Instructor::BaseController
   def load_form_data
     @courses = current_user.created_courses.select(:id, :title)
     @lessons = Lesson.joins(:course_module)
-                     .where(course_modules: {course_id: @courses.pluck(:id)})
+                     .where(course_modules: { course_id: @courses.pluck(:id) })
                      .select(:id, :title)
   end
 

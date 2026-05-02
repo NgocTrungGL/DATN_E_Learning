@@ -1,5 +1,5 @@
 class QuizScoringService
-  WEIGHTS = {"easy" => 1, "medium" => 2, "hard" => 3}.freeze
+  WEIGHTS = { "easy" => 1, "medium" => 2, "hard" => 3 }.freeze
 
   def initialize quiz_attempt
     @attempt = quiz_attempt

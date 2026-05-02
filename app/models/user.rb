@@ -26,7 +26,7 @@ class User < ApplicationRecord
   validates :email,
             presence: true,
             uniqueness: true,
-            format: {with: VALID_EMAIL_REGEX}
+            format: { with: VALID_EMAIL_REGEX }
 
   accepts_nested_attributes_for :profile
   after_create :build_default_profile
