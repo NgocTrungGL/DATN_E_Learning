@@ -151,8 +151,10 @@ class CheckoutsController < ApplicationController
     @cart.present? && @cart.cart_items.any?
   end
 
-  def build_line_items(cart)
-    manual_coupon = Coupon.find_by(code: cart.promo_code) if cart.promo_code.present?
+  def build_line_items cart
+    if cart.promo_code.present?
+      manual_coupon = Coupon.find_by(code: cart.promo_code)
+    end
     manual_coupon = nil unless manual_coupon&.active_and_current?
 
     cart.cart_items.map do |item|
@@ -180,7 +182,7 @@ class CheckoutsController < ApplicationController
     end
   end
 
-  def build_cart_line_item(item, unit_amount)
+  def build_cart_line_item item, unit_amount
     {
       price_data: {
         currency: "vnd",
@@ -188,23 +190,23 @@ class CheckoutsController < ApplicationController
           name: item.course.title,
           images: product_images(item)
         },
-        unit_amount: unit_amount
+        unit_amount:
       },
       quantity: 1
     }
   end
 
-  def product_images(item)
+  def product_images item
     return [] if item.course.thumbnail_url.blank?
 
     [item.course.thumbnail_url]
   end
 
-  def create_cart_checkout_session(line_items)
+  def create_cart_checkout_session line_items
     Stripe::Checkout::Session.create(
       locale: "vi",
-      payment_method_types: %w[card],
-      line_items: line_items,
+      payment_method_types: %w(card),
+      line_items:,
       mode: "payment",
       metadata: cart_checkout_metadata,
       success_url: success_checkout_url,

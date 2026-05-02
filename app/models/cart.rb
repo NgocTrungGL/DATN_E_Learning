@@ -4,7 +4,7 @@ class Cart < ApplicationRecord
   has_many :courses, through: :cart_items
 
   def total_price
-    courses.sum { |course| course.price || 0 }
+    courses.sum{|course| course.price || 0}
   end
 
   def discount_amount
@@ -51,7 +51,7 @@ class Cart < ApplicationRecord
 
   private
 
-  def coupon_applies_to?(coupon, course)
+  def coupon_applies_to? coupon, course
     if coupon.global?
       # Global admin coupons apply to admin courses or instructor courses that allow it
       coupon.creator.admin? && (course.creator&.admin? || course.allow_admin_discounts?)

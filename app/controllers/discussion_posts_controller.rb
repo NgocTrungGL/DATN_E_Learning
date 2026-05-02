@@ -2,7 +2,8 @@ class DiscussionPostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_course
   before_action :ensure_course_member
-  before_action :set_post, only: [:show, :update, :destroy, :toggle_pin, :toggle_lock]
+  before_action :set_post,
+                only: [:show, :update, :destroy, :toggle_pin, :toggle_lock]
 
   # GET /courses/:course_id/discussions
   def index
@@ -42,7 +43,8 @@ class DiscussionPostsController < ApplicationController
       redirect_to course_discussion_post_path(@course, @post),
                   notice: "Đã cập nhật bài viết!"
     else
-      @replies = @post.discussion_replies.top_level.includes(:user, children: :user).recent
+      @replies = @post.discussion_replies.top_level.includes(:user,
+                                                             children: :user).recent
       @reply = DiscussionReply.new
       render :show, status: :unprocessable_entity
     end
@@ -97,9 +99,9 @@ class DiscussionPostsController < ApplicationController
   end
 
   def authorize_instructor!
-    unless current_user.admin? || @course.created_by == current_user.id
-      redirect_to course_discussion_posts_path(@course),
-                  alert: "Chỉ giảng viên mới có quyền thực hiện thao tác này."
-    end
+    return if current_user.admin? || @course.created_by == current_user.id
+
+    redirect_to course_discussion_posts_path(@course),
+                alert: "Chỉ giảng viên mới có quyền thực hiện thao tác này."
   end
 end

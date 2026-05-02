@@ -16,14 +16,16 @@ class DiscussionRepliesController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.append("replies-list",
-              partial: "discussion_replies/reply",
-              locals: { reply: @reply, course: @course, post: @post }),
+                                partial: "discussion_replies/reply",
+                                locals: {reply: @reply, course: @course,
+                                         post: @post}),
             turbo_stream.replace("reply-form",
-              partial: "discussion_replies/form",
-              locals: { course: @course, post: @post, reply: DiscussionReply.new }),
+                                 partial: "discussion_replies/form",
+                                 locals: {course: @course, post: @post,
+                                          reply: DiscussionReply.new}),
             turbo_stream.replace("replies-count",
-              partial: "discussion_replies/count",
-              locals: { count: @post.reload.replies_count })
+                                 partial: "discussion_replies/count",
+                                 locals: {count: @post.reload.replies_count})
           ]
         end
         format.html do
@@ -35,8 +37,9 @@ class DiscussionRepliesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace("reply-form",
-            partial: "discussion_replies/form",
-            locals: { course: @course, post: @post, reply: @reply })
+                                                    partial: "discussion_replies/form",
+                                                    locals: {course: @course,
+                                                             post: @post, reply: @reply})
         end
         format.html do
           redirect_to course_discussion_post_path(@course, @post),
@@ -53,8 +56,9 @@ class DiscussionRepliesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(@reply,
-            partial: "discussion_replies/reply",
-            locals: { reply: @reply, course: @course, post: @post })
+                                                    partial: "discussion_replies/reply",
+                                                    locals: {reply: @reply,
+                                                             course: @course, post: @post})
         end
         format.html do
           redirect_to course_discussion_post_path(@course, @post),
@@ -81,8 +85,8 @@ class DiscussionRepliesController < ApplicationController
         render turbo_stream: [
           turbo_stream.remove(@reply),
           turbo_stream.replace("replies-count",
-            partial: "discussion_replies/count",
-            locals: { count: @post.reload.replies_count })
+                               partial: "discussion_replies/count",
+                               locals: {count: @post.reload.replies_count})
         ]
       end
       format.html do

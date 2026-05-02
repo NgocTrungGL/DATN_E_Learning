@@ -21,7 +21,8 @@ class Instructor::CouponsController < Instructor::BaseController
     @coupon.target_type = :specific_course # Instructors can only create specific course coupons
 
     if @coupon.save
-      redirect_to instructor_coupons_path, notice: "Mã giảm giá đã được tạo thành công."
+      redirect_to instructor_coupons_path,
+                  notice: "Mã giảm giá đã được tạo thành công."
     else
       @courses = current_user.created_courses
       render :new, status: :unprocessable_entity
@@ -30,7 +31,8 @@ class Instructor::CouponsController < Instructor::BaseController
 
   def update
     if @coupon.update(coupon_params)
-      redirect_to instructor_coupons_path, notice: "Mã giảm giá đã được cập nhật."
+      redirect_to instructor_coupons_path,
+                  notice: "Mã giảm giá đã được cập nhật."
     else
       @courses = current_user.created_courses
       render :edit, status: :unprocessable_entity

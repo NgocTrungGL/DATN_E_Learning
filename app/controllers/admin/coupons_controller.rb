@@ -20,7 +20,8 @@ class Admin::CouponsController < Admin::BaseController
     @coupon = current_user.coupons.new(coupon_params)
 
     if @coupon.save
-      redirect_to admin_coupons_path, notice: "Mã giảm giá đã được tạo thành công."
+      redirect_to admin_coupons_path,
+                  notice: "Mã giảm giá đã được tạo thành công."
     else
       @courses = Course.all
       render :new, status: :unprocessable_entity

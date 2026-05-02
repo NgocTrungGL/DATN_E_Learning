@@ -16,7 +16,7 @@ class CartsController < ApplicationController
       return
     end
 
-    coupon = Coupon.find_by(code: code)
+    coupon = Coupon.find_by(code:)
 
     if coupon&.active_and_current?
       @cart.update(promo_code: code)

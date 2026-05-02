@@ -15,24 +15,30 @@ class NotesController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.prepend("notes-list",
-              partial: "notes/note", locals: { note: @note }),
+                                 partial: "notes/note", locals: {note: @note}),
             turbo_stream.replace("note-form",
-              partial: "notes/form", locals: { lesson: @lesson, note: Note.new }),
-            turbo_stream.replace("notes-empty-state", "<div id='notes-empty-state'></div>"),
+                                 partial: "notes/form", locals: {lesson: @lesson, note: Note.new}),
+            turbo_stream.replace("notes-empty-state",
+                                 "<div id='notes-empty-state'></div>"),
             turbo_stream.replace("notes-count-badge",
-              partial: "notes/count_badge",
-              locals: { count: current_user.notes.where(lesson: @lesson).count })
+                                 partial: "notes/count_badge",
+                                 locals: {count: current_user.notes.where(lesson: @lesson).count})
           ]
         end
-        format.html { redirect_to lesson_path(@lesson), notice: "Đã lưu ghi chú!" }
+        format.html do
+          redirect_to lesson_path(@lesson), notice: "Đã lưu ghi chú!"
+        end
       end
     else
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace("note-form",
-            partial: "notes/form", locals: { lesson: @lesson, note: @note })
+                                                    partial: "notes/form", locals: {lesson: @lesson, note: @note})
         end
-        format.html { redirect_to lesson_path(@lesson), alert: "Không thể lưu ghi chú." }
+        format.html do
+          redirect_to lesson_path(@lesson),
+                      alert: "Không thể lưu ghi chú."
+        end
       end
     end
   end
@@ -43,17 +49,23 @@ class NotesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(@note,
-            partial: "notes/note", locals: { note: @note })
+                                                    partial: "notes/note", locals: {note: @note})
         end
-        format.html { redirect_to lesson_path(@note.lesson), notice: "Đã cập nhật ghi chú!" }
+        format.html do
+          redirect_to lesson_path(@note.lesson),
+                      notice: "Đã cập nhật ghi chú!"
+        end
       end
     else
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(@note,
-            partial: "notes/edit_form", locals: { note: @note })
+                                                    partial: "notes/edit_form", locals: {note: @note})
         end
-        format.html { redirect_to lesson_path(@note.lesson), alert: "Không thể cập nhật." }
+        format.html do
+          redirect_to lesson_path(@note.lesson),
+                      alert: "Không thể cập nhật."
+        end
       end
     end
   end
@@ -65,20 +77,20 @@ class NotesController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream do
-        remaining = current_user.notes.where(lesson: lesson).count
+        remaining = current_user.notes.where(lesson:).count
         streams = [
           turbo_stream.remove(@note),
           turbo_stream.replace("notes-count-badge",
-            partial: "notes/count_badge",
-            locals: { count: remaining })
+                               partial: "notes/count_badge",
+                               locals: {count: remaining})
         ]
         if remaining.zero?
           streams << turbo_stream.replace("notes-list",
-            partial: "notes/empty_state")
+                                          partial: "notes/empty_state")
         end
         render turbo_stream: streams
       end
-      format.html { redirect_to lesson_path(lesson), notice: "Đã xóa ghi chú." }
+      format.html{redirect_to lesson_path(lesson), notice: "Đã xóa ghi chú."}
     end
   end
 

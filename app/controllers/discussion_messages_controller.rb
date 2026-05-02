@@ -27,23 +27,26 @@ class DiscussionMessagesController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.append("chat-messages",
-              partial: "discussion_messages/message",
-              locals: { message: @message, previous_message: @previous_message, course: @course }),
+                                partial: "discussion_messages/message",
+                                locals: {message: @message, previous_message: @previous_message,
+                                         course: @course}),
             turbo_stream.replace("chat-form",
-              partial: "discussion_messages/form",
-              locals: { course: @course, message: DiscussionMessage.new })
+                                 partial: "discussion_messages/form",
+                                 locals: {course: @course,
+                                          message: DiscussionMessage.new})
           ]
         end
-        format.html { redirect_to course_discussion_messages_path(@course) }
+        format.html{redirect_to course_discussion_messages_path(@course)}
       end
     else
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace("chat-form",
-            partial: "discussion_messages/form",
-            locals: { course: @course, message: @message })
+                                                    partial: "discussion_messages/form",
+                                                    locals: {course: @course,
+                                                             message: @message})
         end
-        format.html { redirect_to course_discussion_messages_path(@course) }
+        format.html{redirect_to course_discussion_messages_path(@course)}
       end
     end
   end
@@ -55,8 +58,8 @@ class DiscussionMessagesController < ApplicationController
     @message.destroy
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.remove(@message) }
-      format.html { redirect_to course_discussion_messages_path(@course) }
+      format.turbo_stream{render turbo_stream: turbo_stream.remove(@message)}
+      format.html{redirect_to course_discussion_messages_path(@course)}
     end
   end
 

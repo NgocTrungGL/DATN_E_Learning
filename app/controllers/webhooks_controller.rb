@@ -27,7 +27,7 @@ class WebhooksController < ApplicationController
 
   private
 
-  def handle_checkout_session(session)
+  def handle_checkout_session session
     user_id = session.metadata["user_id"]
     user = User.find_by(id: user_id)
     return unless user
@@ -53,8 +53,8 @@ class WebhooksController < ApplicationController
     end
   end
 
-  def enroll_user(user, course, amount)
-    enrollment = Enrollment.find_or_initialize_by(user: user, course: course)
+  def enroll_user user, course, amount
+    enrollment = Enrollment.find_or_initialize_by(user:, course:)
     enrollment.update(
       price: amount,
       status: :active
