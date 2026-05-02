@@ -5,6 +5,19 @@
 
 # Rails Architecture & SOLID Principles
 
+## 🔹 CODE LANGUAGE REQUIREMENT
+
+**ALL Ruby, JavaScript, and ERB code must be written in ENGLISH ONLY:**
+- ❌ **Forbidden**: Vietnamese variable names, method names, class names, file names, and code comments
+- ✅ **Required**:
+	- Method names: `def fetch_user_courses` (not `def lay_khoa_hoc_nguoi_dung`)
+	- Variable names: `@enrolled_courses` (not `@khoaHocDangKy`)
+	- Class names: `StudentEnrollmentService` (not `DichVuDangKyHocVien`)
+	- File names: `student_enrollment_service.rb` (not `dich_vu_dang_ky_hoc_vien.rb`)
+	- Comments: `# Handle course enrollment` (not `# Xử lý đăng ký khóa học`)
+
+**EXCEPTION**: UI text labels (link text, button labels, error messages) should use Vietnamese via `i18n` locales (`config/locales/vi.yml`), but all code structure, identifiers, and comments must be English.
+
 ## 1. SOLID Principles (MANDATORY)
 
 All system modifications must adhere to SOLID principles to avoid "fat models" and "callback hell".
@@ -39,8 +52,18 @@ All system modifications must adhere to SOLID principles to avoid "fat models" a
 - **Frontend**: `turbo-rails` + `stimulus-rails` for SPA-like experience without heavy JS frameworks.
 - **Safe Rendering**: Always guard `current_user` calls with `user_signed_in?`.
 
-## 5. ERB & View Integrity
+## 6. Coding Standards & RuboCop (STRICT)
 
-- Use **Strict BEM** for all custom CSS classes.
-- Follow Vietnamese (vi) i18n for all interface strings.
-- Prefer **Partials** for repeated UI logic.
+All code must pass RuboCop checks using the project's custom configuration. Key enforcements:
+
+| Rule | Requirement |
+|---|---|
+| **Line Length** | Maximum **120 characters** per line for modern readability. |
+| **Hash Syntax** | Use **Ruby 1.9 syntax** `{ key: value }` with **spaces** inside braces. |
+| **String Literals** | Prefer **double quotes** `"string"` unless single quotes are necessary. |
+| **Find Each** | Use `.find_each` instead of `.all.each` for large datasets to ensure memory efficiency. |
+| **Trailing Comma** | No trailing commas in multi-line argument or hash lists. |
+| **Naming** | Strict `snake_case` for methods/variables, `CamelCase` for classes/modules. |
+
+---
+*Follow these rules to ensure the E-learning system remains scalable, maintainable, and high-performing.*

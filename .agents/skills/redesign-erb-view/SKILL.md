@@ -7,6 +7,17 @@ description: Step-by-step workflow for redesigning an existing Rails ERB view in
 
 Use this skill whenever tasked with redesigning or overhauling the UI of an existing ERB view.
 
+## ⚠️ CODE LANGUAGE REQUIREMENT: ENGLISH ONLY
+
+**All code must be written in English:**
+- ❌ **Forbidden**: Vietnamese variable names in ERB, class names, comments (`<%# Hiển thị ... %>`)
+- ✅ **Required**:
+  - Comments: `<%# Display user profile %>` (not `<%# Hiển thị hồ sơ người dùng %>`)
+  - Class names: `.user-profile__header` (not `.ho-so__phan-dau`)
+  - Variable names: `@user_courses` (not `@khoaHocNguoiDung`)
+  - Helper method calls: `user_signed_in?`, `current_user` (already use English)
+  - UI labels (button text, links) use i18n keys with English values in `config/locales/en.yml`
+
 ## Step 1 — Research & SOLID Audit
 
 Read these files **before coding**:

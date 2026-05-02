@@ -1,11 +1,11 @@
 <% flash.each do |type, message| %>
   <%
-    # Chuyển đổi loại thông báo của Rails sang class màu của Bootstrap
+    # Map Rails flash type to Bootstrap color class
     alert_class = case type.to_s
-      when 'notice' then 'success'  # Màu xanh
-      when 'alert'  then 'danger'   # Màu đỏ
-      when 'error'  then 'danger'   # Màu đỏ
-      else 'info'                   # Màu xanh dương
+      when 'notice' then 'success'  # Green
+      when 'alert'  then 'danger'   # Red
+      when 'error'  then 'danger'   # Red
+      else 'info'                   # Blue
     end
   %>
 

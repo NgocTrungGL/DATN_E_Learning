@@ -32,6 +32,14 @@
       <div class="form-text">Nhập 0 để miễn phí.</div>
     </div>
   </div>
+
+  <div class="mb-3">
+    <div class="form-check form-switch">
+      <%= f.check_box :allow_admin_discounts, class: "form-check-input", id: "allowAdminDiscounts" %>
+      <%= f.label :allow_admin_discounts, "Đồng ý tham gia các chương trình giảm giá toàn sàn của Admin", class: "form-check-label fw-bold", for: "allowAdminDiscounts" %>
+    </div>
+    <div class="form-text">Nếu bật, các mã giảm giá hệ thống do Admin tạo có thể được áp dụng cho khóa học này.</div>
+  </div>
   <div class="mt-4">
     <%= f.submit "Lưu Khóa Học", class: "btn btn-primary fw-bold" %>
     <%= link_to "Hủy", instructor_courses_path, class: "btn btn-outline-secondary" %>

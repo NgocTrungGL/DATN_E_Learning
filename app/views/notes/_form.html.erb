@@ -1,0 +1,17 @@
+<div id="note-form">
+  <%= form_with model: note, url: lesson_notes_path(lesson), class: "notes-form" do |f| %>
+    <div class="notes-form__input-wrap">
+      <%= f.text_area :content, rows: 3,
+        placeholder: "Write your notes for this lesson...",
+            class: "notes-form__textarea" %>
+      <% if note.errors[:content].any? %>
+        <span class="notes-form__error"><%= note.errors[:content].first %></span>
+      <% end %>
+    </div>
+    <div class="notes-form__actions">
+      <button type="submit" class="notes-form__submit">
+        <i class="bi bi-plus-lg"></i> Add note
+      </button>
+    </div>
+  <% end %>
+</div>

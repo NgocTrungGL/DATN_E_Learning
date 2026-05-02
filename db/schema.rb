@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_02_064747) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "promo_code"
     t.index ["user_id"], name: "index_carts_on_user_id"
   end
 
@@ -77,6 +78,25 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "coupons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "code", null: false
+    t.integer "discount_type", default: 0
+    t.decimal "discount_value", precision: 10, scale: 2, null: false
+    t.datetime "start_at"
+    t.datetime "end_at"
+    t.integer "target_type", default: 0
+    t.bigint "course_id"
+    t.bigint "creator_id", null: false
+    t.integer "usage_limit", default: 0
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "usage_count", default: 0
+    t.index ["code"], name: "index_coupons_on_code", unique: true
+    t.index ["course_id"], name: "index_coupons_on_course_id"
+    t.index ["creator_id"], name: "index_coupons_on_creator_id"
+  end
+
   create_table "course_modules", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.string "title", limit: 200, null: false
@@ -97,9 +117,48 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
     t.datetime "updated_at", null: false
     t.decimal "price", precision: 10, scale: 2, default: "0.0"
     t.integer "status", default: 0
+    t.boolean "allow_admin_discounts", default: true
     t.index ["category_id"], name: "index_courses_on_category_id"
     t.index ["created_by"], name: "fk_rails_8984e96f9b"
     t.index ["status"], name: "index_courses_on_status"
+  end
+
+  create_table "discussion_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "course_id", null: false
+    t.bigint "user_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id", "created_at"], name: "index_discussion_messages_on_course_id_and_created_at"
+    t.index ["course_id"], name: "index_discussion_messages_on_course_id"
+    t.index ["user_id"], name: "index_discussion_messages_on_user_id"
+  end
+
+  create_table "discussion_posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "course_id", null: false
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.text "content", null: false
+    t.boolean "pinned", default: false, null: false
+    t.boolean "locked", default: false, null: false
+    t.integer "replies_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id", "pinned", "updated_at"], name: "idx_discussion_posts_course_pinned_updated"
+    t.index ["course_id"], name: "index_discussion_posts_on_course_id"
+    t.index ["user_id"], name: "index_discussion_posts_on_user_id"
+  end
+
+  create_table "discussion_replies", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "discussion_post_id", null: false
+    t.bigint "user_id", null: false
+    t.text "content", null: false
+    t.bigint "parent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discussion_post_id"], name: "index_discussion_replies_on_discussion_post_id"
+    t.index ["parent_id"], name: "index_discussion_replies_on_parent_id"
+    t.index ["user_id"], name: "index_discussion_replies_on_user_id"
   end
 
   create_table "enrollments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -158,6 +217,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
     t.index ["organization_id", "course_id", "status"], name: "index_licenses_on_organization_id_and_course_id_and_status"
     t.index ["organization_id"], name: "index_licenses_on_organization_id"
     t.index ["user_id"], name: "index_licenses_on_user_id"
+  end
+
+  create_table "notes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "lesson_id", null: false
+    t.bigint "course_id", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_notes_on_course_id"
+    t.index ["lesson_id"], name: "index_notes_on_lesson_id"
+    t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
   create_table "organizations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -355,9 +426,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
   add_foreign_key "categories", "categories", column: "parent_id"
   add_foreign_key "comments", "lessons"
   add_foreign_key "comments", "users"
+  add_foreign_key "coupons", "courses"
+  add_foreign_key "coupons", "users", column: "creator_id"
   add_foreign_key "course_modules", "courses", on_delete: :cascade
   add_foreign_key "courses", "categories"
   add_foreign_key "courses", "users", column: "created_by", on_delete: :nullify
+  add_foreign_key "discussion_messages", "courses"
+  add_foreign_key "discussion_messages", "users"
+  add_foreign_key "discussion_posts", "courses"
+  add_foreign_key "discussion_posts", "users"
+  add_foreign_key "discussion_replies", "discussion_posts"
+  add_foreign_key "discussion_replies", "discussion_replies", column: "parent_id"
+  add_foreign_key "discussion_replies", "users"
   add_foreign_key "enrollments", "courses"
   add_foreign_key "enrollments", "users"
   add_foreign_key "instructor_profiles", "users"
@@ -365,6 +445,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_23_092315) do
   add_foreign_key "licenses", "courses"
   add_foreign_key "licenses", "organizations"
   add_foreign_key "licenses", "users"
+  add_foreign_key "notes", "courses"
+  add_foreign_key "notes", "lessons"
+  add_foreign_key "notes", "users"
   add_foreign_key "payout_requests", "users"
   add_foreign_key "profiles", "users", on_delete: :cascade
   add_foreign_key "progress_trackings", "courses"

@@ -31,6 +31,17 @@ class CheckoutsController < ApplicationController
     redirect_to session.url, allow_other_host: true
   end
 
+  def success
+    @session = Stripe::Checkout::Session.retrieve(params[:session_id])
+
+    if @session.metadata["type"] == "cart"
+      current_user.cart.cart_items.destroy_all
+      current_user.cart.update(promo_code: nil)
+    end
+
+    redirect_to success_url
+  end
+
   private
 
   # ================= PURCHASE INFO =================
@@ -111,9 +122,7 @@ class CheckoutsController < ApplicationController
       quantity:
     }
 
-    if purchase_type == "license" && current_user.organization
-      data[:organization_id] = current_user.organization.id
-    end
+    data[:organization_id] = current_user.organization.id if purchase_type == "license" && current_user.organization
 
     data
   end
@@ -121,7 +130,9 @@ class CheckoutsController < ApplicationController
   def cart_checkout_metadata
     {
       user_id: current_user.id,
-      type: "cart"
+      type: "cart",
+      course_ids: current_user.cart.course_ids.join(","),
+      promo_code: current_user.cart.promo_code
     }
   end
 
@@ -139,10 +150,45 @@ class CheckoutsController < ApplicationController
   end
 
   def build_line_items cart
-    cart.cart_items.map{|item| build_cart_line_item(item)}
+    manual_coupon = active_manual_coupon(cart.promo_code)
+    cart.cart_items.map do |item|
+      build_cart_line_item(item, discounted_unit_amount(item.course, manual_coupon))
+    end
   end
 
-  def build_cart_line_item item
+  def active_manual_coupon promo_code
+    return if promo_code.blank?
+
+    coupon = Coupon.find_by(code: promo_code)
+    coupon if coupon&.active_and_current?
+  end
+
+  def discounted_unit_amount course, coupon
+    [course.price - cart_item_discount(course, coupon), 0].max.to_i
+  end
+
+  def cart_item_discount course, coupon
+    discount = automatic_discount(course)
+    discount += manual_discount(course, coupon) if coupon
+    discount
+  end
+
+  def automatic_discount course
+    course.has_discount? ? course.price - course.discounted_price : 0
+  end
+
+  def manual_discount course, coupon
+    return 0 unless manual_coupon_applies?(course, coupon)
+
+    coupon.percentage? ? course.price * coupon.discount_value / 100.0 : coupon.discount_value
+  end
+
+  def manual_coupon_applies? course, coupon
+    (coupon.specific_course? && coupon.course_id == course.id) ||
+      (coupon.global? && !course.has_discount?)
+  end
+
+  def build_cart_line_item item, unit_amount
     {
       price_data: {
         currency: "vnd",
@@ -150,7 +196,7 @@ class CheckoutsController < ApplicationController
           name: item.course.title,
           images: product_images(item)
         },
-        unit_amount: item.course.price.to_i
+        unit_amount:
       },
       quantity: 1
     }
@@ -164,6 +210,7 @@ class CheckoutsController < ApplicationController
 
   def create_cart_checkout_session line_items
     Stripe::Checkout::Session.create(
+      locale: "vi",
       payment_method_types: %w(card),
       line_items:,
       mode: "payment",

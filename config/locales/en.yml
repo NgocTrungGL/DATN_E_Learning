@@ -3,14 +3,14 @@ en:
   hello: "Hello world"
 
   # ==================================================
-  # ADMIN (Quản trị)
+  # ADMIN
   # ==================================================
   admin:
     authorization:
       denied: "You are not authorized to access this area!"
 
     categories:
-      # Thông báo Flash
+      # Flash messages
       create:
         success: "Category created successfully."
       update:
@@ -46,12 +46,12 @@ en:
         description: "Description"
         parent_category: "Parent Category"
         none: "None"
-        submit: "Save Category" # Đã sửa
+        submit: "Save Category" # Updated
         back: "Back"
 
 
     courses:
-      # Thông báo Flash
+      # Flash messages
       create:
         success: "Course created successfully!"
       update:
@@ -107,7 +107,7 @@ en:
         confirm_delete_lesson: "Are you sure you want to delete the lesson '%{title}'?"
         empty_modules_title: "No modules yet"
 
-      # === ĐÂY LÀ PHẦN ĐÃ SỬA LỖI CHO BẠN ===
+      # Form
       form:
         errors_title: "%{count} error(s) occurred:"
         title: "Title"
@@ -119,11 +119,11 @@ en:
         price_label: "Course Price (VND)"
         price_placeholder: "Enter 0 for a free course"
         price_hint: "Enter 0 if this is a free course."
-        submit: "Save Course" # Đã sửa
+        submit: "Save Course" # Updated
         back: "Back"
 
     course_modules:
-      # Thông báo Flash
+      # Flash messages
       create:
         success: "New module was successfully added."
       update:
@@ -165,7 +165,7 @@ en:
         quiz_detail: "Details"
 
     lessons:
-      # Thông báo Flash
+      # Flash messages
       create:
         success: "New lesson has been added successfully."
       update:
@@ -213,7 +213,7 @@ en:
         success: "Quiz has been deleted successfully."
       not_found: "Quiz does not exist."
   # ==================================================
-  # USER (Người dùng)
+  # USER
   # ==================================================
   categories:
     index:
@@ -247,22 +247,22 @@ en:
   lessons:
     not_found: "Lesson not found."
   sessions:
-    login_success: "Đăng nhập thành công! Xin chào %{name}."
-    login_failed: "Email hoặc mật khẩu không đúng."
-    logout_success: "Đã đăng xuất."
-    require_login: "Vui lòng đăng nhập để tiếp tục."
-    login_success: "Đăng nhập thành công!"
-    account_not_activated: "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email."
+    login_success: "Signed in successfully! Hello %{name}."
+    login_failed: "Invalid email or password."
+    logout_success: "Signed out successfully."
+    require_login: "Please sign in to continue."
+    login_success: "Signed in successfully!"
+    account_not_activated: "Your account is not activated yet. Please check your email."
   auth:
-    please_login: "Vui lòng đăng nhập để tiếp tục."
+    please_login: "Please sign in to continue."
   email_confirmation:
-    success: "Tài khoản đã được kích hoạt thành công!"
-    invalid_link: "Liên kết xác nhận không hợp lệ hoặc đã hết hạn."
+    success: "Your account has been activated successfully!"
+    invalid_link: "The confirmation link is invalid or has expired."
   number:
     currency:
       format:
-        unit: "đ"           # Đổi $ thành đ
-        precision: 0        # Tiền Việt không dùng số lẻ (bỏ .00)
-        delimiter: "."      # Dùng dấu chấm phân cách hàng nghìn (1.000.000)
-        separator: ","      # Dấu phẩy ngăn cách thập phân (nếu có)
-        format: "%n %u"     # Hiển thị: Số trước - Đơn vị sau (Ví dụ: 500.000 đ)
+        unit: "VND"         # Use VND currency unit
+        precision: 0        # No decimal places for VND
+        delimiter: "."      # Thousand separator (1.000.000)
+        separator: ","      # Decimal separator (if any)
+        format: "%n %u"     # Format: number then unit (e.g., 500.000 VND)

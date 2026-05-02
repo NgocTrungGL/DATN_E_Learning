@@ -1,7 +1,7 @@
 <div class="container mt-5">
   <div class="card shadow-sm mx-auto" style="max-width: 700px;">
     <div class="card-header bg-primary text-white">
-      <h3 class="mb-0">Đăng ký trở thành Giảng viên</h3>
+      <h3 class="mb-0">Apply to Become an Instructor</h3>
     </div>
     <div class="card-body">
       <%= form_with(model: @profile, url: instructor_registration_path, local: true) do |f| %>
@@ -17,13 +17,13 @@
         <% end %>
 
         <div class="mb-3">
-          <%= f.label :bio_detailed, "Giới thiệu kinh nghiệm giảng dạy", class: "form-label fw-bold" %>
-          <%= f.text_area :bio_detailed, rows: 5, class: "form-control", required: true, placeholder: "Hãy kể về kinh nghiệm và chuyên môn của bạn..." %>
+          <%= f.label :bio_detailed, "Teaching experience", class: "form-label fw-bold" %>
+          <%= f.text_area :bio_detailed, rows: 5, class: "form-control", required: true, placeholder: "Tell us about your experience and expertise..." %>
         </div>
 
         <div class="row">
           <div class="col-md-6 mb-3">
-            <%= f.label :phone, "Số điện thoại", class: "form-label fw-bold" %>
+            <%= f.label :phone, "Phone number", class: "form-label fw-bold" %>
             <%= f.text_field :phone, class: "form-control", required: true %>
           </div>
           <div class="col-md-6 mb-3">
@@ -35,12 +35,12 @@
         <div class="mb-3">
           <%= f.label :cv_url, "Link CV (Google Drive/Dropbox)", class: "form-label fw-bold" %>
           <%= f.text_field :cv_url, class: "form-control", required: true, placeholder: "https://..." %>
-          <div class="form-text text-muted">Vui lòng đảm bảo link ở chế độ công khai (Public).</div>
+          <div class="form-text text-muted">Please ensure the link is public.</div>
         </div>
 
         <div class="d-grid mt-4">
           <button type="submit" class="btn btn-success btn-lg fw-bold">
-            <i class="bi bi-send-check-fill me-2"></i> Gửi đơn đăng ký
+            <i class="bi bi-send-check-fill me-2"></i> Submit application
           </button>
         </div>
       <% end %>

@@ -3,8 +3,8 @@
     <div class="col-md-8 col-lg-6">
       <div class="card shadow-lg border-0 rounded-3">
         <div class="card-header bg-primary text-white text-center py-4">
-          <h3 class="fw-bold mb-0"><i class="bi bi-building me-2"></i>Đăng ký Doanh nghiệp</h3>
-          <p class="mb-0 opacity-75 mt-2">Tạo tài khoản đào tạo cho tổ chức của bạn</p>
+          <h3 class="fw-bold mb-0"><i class="bi bi-building me-2"></i>Business registration</h3>
+          <p class="mb-0 opacity-75 mt-2">Create a training account for your organization</p>
         </div>
 
         <div class="card-body p-4 p-md-5">
@@ -20,42 +20,42 @@
               </div>
             <% end %>
 
-            <h6 class="text-primary fw-bold text-uppercase mb-3 small border-bottom pb-2">1. Thông tin Tổ chức</h6>
+            <h6 class="text-primary fw-bold text-uppercase mb-3 small border-bottom pb-2">1. Organization information</h6>
 
             <div class="form-floating mb-3">
-              <%= f.text_field :name, class: "form-control", placeholder: "Tên công ty", required: true %>
-              <%= f.label :name, "Tên Doanh nghiệp / Tổ chức" %>
+              <%= f.text_field :name, class: "form-control", placeholder: "Company name", required: true %>
+              <%= f.label :name, "Organization name" %>
             </div>
 
             <div class="form-floating mb-4">
               <%= f.text_field :domain, class: "form-control", placeholder: "Domain", required: true %>
-              <%= f.label :domain, "Website / Domain (VD: fpt.com)" %>
+              <%= f.label :domain, "Website / Domain (e.g., fpt.com)" %>
             </div>
 
-            <h6 class="text-primary fw-bold text-uppercase mb-3 mt-4 small border-bottom pb-2">2. Thông tin Quản trị viên (Admin)</h6>
+            <h6 class="text-primary fw-bold text-uppercase mb-3 mt-4 small border-bottom pb-2">2. Admin information</h6>
 
             <%= f.fields_for :users do |u| %>
               <div class="form-floating mb-3">
-                <%= u.text_field :name, class: "form-control", placeholder: "Họ tên", required: true %>
-                <%= u.label :name, "Họ và tên Admin" %>
+                <%= u.text_field :name, class: "form-control", placeholder: "Full name", required: true %>
+                <%= u.label :name, "Admin full name" %>
               </div>
 
               <div class="form-floating mb-3">
                 <%= u.email_field :email, class: "form-control", placeholder: "Email", required: true %>
-                <%= u.label :email, "Email công việc" %>
+                <%= u.label :email, "Work email" %>
               </div>
 
               <div class="row g-2 mb-3">
                 <div class="col-md-6">
                   <div class="form-floating">
-                    <%= u.password_field :password, class: "form-control", placeholder: "Mật khẩu", required: true %>
-                    <%= u.label :password, "Mật khẩu" %>
+                    <%= u.password_field :password, class: "form-control", placeholder: "Password", required: true %>
+                    <%= u.label :password, "Password" %>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-floating">
-                    <%= u.password_field :password_confirmation, class: "form-control", placeholder: "Nhập lại", required: true %>
-                    <%= u.label :password_confirmation, "Xác nhận mật khẩu" %>
+                    <%= u.password_field :password_confirmation, class: "form-control", placeholder: "Re-enter", required: true %>
+                    <%= u.label :password_confirmation, "Confirm password" %>
                   </div>
                 </div>
               </div>
@@ -63,7 +63,7 @@
 
             <div class="d-grid gap-2 mt-4">
               <%= f.button type: "submit", class: "btn btn-primary btn-lg fw-bold shadow-sm" do %>
-                <i class="bi bi-rocket-takeoff me-2"></i> Khởi tạo Hệ thống
+                <i class="bi bi-rocket-takeoff me-2"></i> Initialize system
               <% end %>
             </div>
 
@@ -71,7 +71,7 @@
         </div>
 
         <div class="card-footer bg-light text-center py-3 small">
-          Đã có tài khoản? <%= link_to "Đăng nhập tại đây", new_user_session_path, class: "text-decoration-none fw-bold" %>
+          Already have an account? <%= link_to "Sign in here", new_user_session_path, class: "text-decoration-none fw-bold" %>
         </div>
       </div>
     </div>

@@ -66,7 +66,7 @@ class Instructor::CourseModulesController < Instructor::BaseController
         .joins(:course)
         .where(
           id:,
-          courses: {created_by: current_user.id}
+          courses: { created_by: current_user.id }
         )
         .update_all(order_index: index + 1)
     end

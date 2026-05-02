@@ -8,7 +8,7 @@ optional: true
   has_many :questions, through: :quiz_questions
   has_many :quiz_attempts, dependent: :destroy
   scope :big, ->{where(lesson_id: nil).order(:created_at)}
-  enum scoring_type: {equal: 0, weighted: 1}
+  enum scoring_type: { equal: 0, weighted: 1 }
 
   validates :title, presence: true
   validate :validate_question_counts

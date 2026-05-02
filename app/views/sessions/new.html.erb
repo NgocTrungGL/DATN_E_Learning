@@ -2,7 +2,7 @@
   <div class="col-md-4">
     <div class="card shadow">
       <div class="card-body">
-        <h3 class="text-center mb-4">Đăng nhập</h3>
+        <h3 class="text-center mb-4">Sign in</h3>
 
         <%= form_with(url: login_path, local: true) do |f| %>
           <div class="mb-3">
@@ -11,18 +11,18 @@
           </div>
 
           <div class="mb-3">
-            <%= f.label :password, "Mật khẩu", class: "form-label" %>
+            <%= f.label :password, "Password", class: "form-label" %>
             <%= f.password_field :password, class: "form-control", required: true %>
           </div>
 
           <div class="d-grid">
-            <%= f.submit "Đăng nhập", class: "btn btn-primary" %>
+            <%= f.submit "Sign in", class: "btn btn-primary" %>
           </div>
         <% end %>
 
         <hr>
         <div class="text-center">
-          <small>Chưa có tài khoản? <%= link_to "Đăng ký ngay", signup_path %></small>
+          <small>No account yet? <%= link_to "Sign up now", signup_path %></small>
         </div>
       </div>
     </div>

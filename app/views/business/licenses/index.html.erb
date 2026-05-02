@@ -1,4 +1,4 @@
-<h2 class="fw-bold text-primary mb-4"><i class="bi bi-ticket-perforated me-2"></i>Kho License Khóa học</h2>
+<h2 class="fw-bold text-primary mb-4"><i class="bi bi-ticket-perforated me-2"></i>Course license inventory</h2>
 
 <% if @licenses_by_course.any? %>
   <div class="row">
@@ -16,19 +16,19 @@
             <div class="d-flex align-items-start justify-content-between mb-3">
               <div>
                 <h5 class="fw-bold mb-1"><%= course.title %></h5>
-                <span class="badge bg-light text-dark border">Giá trị: <%= number_to_currency(licenses.first.price) %>/vé</span>
+                <span class="badge bg-light text-dark border">Value: <%= number_to_currency(licenses.first.price) %>/seat</span>
               </div>
               <% if available_count > 0 %>
-                <span class="badge bg-success">Còn <%= available_count %> vé</span>
+                <span class="badge bg-success"><%= available_count %> seats available</span>
               <% else %>
-                <span class="badge bg-secondary">Hết vé</span>
+                <span class="badge bg-secondary">Sold out</span>
               <% end %>
             </div>
 
             <div class="mb-3">
               <div class="d-flex justify-content-between small text-muted mb-1">
-                <span>Đã dùng: <%= assigned_count %></span>
-                <span>Tổng: <%= total_count %></span>
+                <span>Used: <%= assigned_count %></span>
+                <span>Total: <%= total_count %></span>
               </div>
               <div class="progress" style="height: 6px;">
                 <div class="progress-bar" role="progressbar" style="width: <%= progress_percent %>%"></div>
@@ -39,27 +39,27 @@
 
             <% if available_count > 0 %>
               <div class="mt-3">
-                <label class="small fw-bold text-muted mb-2">Cấp quyền cho nhân viên:</label>
+                <label class="small fw-bold text-muted mb-2">Assign to employee:</label>
 
                 <%= form_with url: assign_business_licenses_path, method: :post, class: "d-flex gap-2" do |f| %>
                   <%= f.hidden_field :course_id, value: course.id %>
 
-                  <%= f.collection_select :user_id, current_user.organization.users.where(role: :employee), :id, :name, { prompt: "Chọn nhân viên..." }, { class: "form-select form-select-sm", required: true } %>
+                  <%= f.collection_select :user_id, current_user.organization.users.where(role: :employee), :id, :name, { prompt: "Select employee..." }, { class: "form-select form-select-sm", required: true } %>
 
                   <%= f.button type: "submit", class: "btn btn-sm btn-primary text-nowrap" do %>
-                    <i class="bi bi-check-lg"></i> Cấp ngay
+                    <i class="bi bi-check-lg"></i> Assign now
                   <% end %>
                 <% end %>
               </div>
             <% else %>
               <div class="alert alert-warning small mb-0">
-                <i class="bi bi-exclamation-circle me-1"></i> Bạn đã dùng hết License của khóa này. Vui lòng mua thêm.
+                <i class="bi bi-exclamation-circle me-1"></i> You have used all licenses for this course. Please purchase more.
               </div>
             <% end %>
 
             <div class="mt-3">
                 <a class="btn btn-link btn-sm text-decoration-none p-0" data-bs-toggle="collapse" href="#list-<%= course.id %>">
-                  Xem danh sách đã cấp <i class="bi bi-chevron-down"></i>
+                  View assigned list <i class="bi bi-chevron-down"></i>
                 </a>
                 <div class="collapse mt-2" id="list-<%= course.id %>">
                   <ul class="list-group list-group-flush small">
@@ -81,7 +81,7 @@
 <% else %>
   <div class="text-center py-5">
     <div class="display-1 text-muted mb-3"><i class="bi bi-cart-x"></i></div>
-    <h4>Bạn chưa mua License nào cả.</h4>
-    <p class="text-muted">Hãy liên hệ Admin hệ thống để mua gói đào tạo.</p>
+    <h4>You have not purchased any licenses yet.</h4>
+    <p class="text-muted">Contact the system admin to purchase a training package.</p>
   </div>
 <% end %>

@@ -2,41 +2,46 @@
   <div class="sidebar-header">
     <%= link_to instructor_root_path, class: "text-white text-decoration-none fs-5 fw-bold d-flex align-items-center" do %>
       <i class="bi bi-person-video3 fs-3 me-2"></i>
-      <span>GIẢNG VIÊN</span>
+      <span>INSTRUCTOR</span>
     <% end %>
   </div>
 
   <ul class="list-unstyled components">
     <li>
       <%= link_to instructor_root_path, class: "#{'active' if controller_name == 'dashboard'}" do %>
-        <i class="bi bi-speedometer2"></i> Tổng quan
+        <i class="bi bi-speedometer2"></i> Overview
       <% end %>
     </li>
 
-    <li class="header-text">Quản lý đào tạo</li>
+    <li class="header-text">Training management</li>
 
     <li>
       <%= link_to instructor_courses_path, class: "#{'active' if controller_name == 'courses' || controller_name == 'lessons'}" do %>
-        <i class="bi bi-collection-play"></i> Khóa học của tôi
+        <i class="bi bi-collection-play"></i> My courses
       <% end %>
     </li>
 
-    <li class="header-text">Kiểm tra & Đánh giá</li>
+    <li class="header-text">Assessment & reviews</li>
 
     <li>
       <%= link_to instructor_questions_path, class: "#{'active' if controller_name == 'questions'}" do %>
-        <i class="bi bi-question-square"></i> Ngân hàng câu hỏi
+        <i class="bi bi-question-square"></i> Question bank
       <% end %>
     </li>
 
     <li>
       <%= link_to instructor_quizzes_path, class: "#{'active' if controller_name == 'quizzes'}" do %>
-        <i class="bi bi-card-checklist"></i> Bài kiểm tra
+        <i class="bi bi-card-checklist"></i> Quizzes
       <% end %>
     </li>
     <li>
       <%= link_to instructor_revenues_path, class: "#{'active' if controller_name == 'revenues'}" do %>
-        <i class="bi bi-currency-dollar"></i> Doanh thu của tôi
+        <i class="bi bi-currency-dollar"></i> My revenue
+      <% end %>
+    </li>
+    <li>
+      <%= link_to instructor_coupons_path, class: "#{'active' if controller_name == 'coupons'}" do %>
+        <i class="bi bi-ticket-perforated"></i> My coupons
       <% end %>
     </li>
   </ul>

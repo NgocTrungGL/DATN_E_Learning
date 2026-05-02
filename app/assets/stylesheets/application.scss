@@ -21,6 +21,7 @@
 @import "components/buttons";
 @import "components/course_card";
 @import "components/my_course_card";
+@import "components/lesson_tabs";
 @import "pages/navbar"; // Navbar is a global component
 
 // 5. Layouts (scoped inline styles extracted from views)
@@ -39,6 +40,8 @@
 @import "pages/course_detail";
 @import "pages/preview_modal";
 @import "pages/lesson";
+@import "pages/notes";
+@import "pages/discussion";
 @import "pages/admin/admin_layout";
 @import "pages/admin/admin_components";
 @import "pages/admin/admin_categories";

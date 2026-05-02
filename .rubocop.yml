@@ -282,8 +282,8 @@ Style/LambdaCall:
     - call
     - braces
 
-Metrics/LineLength:
-  Max: 80
+Layout/LineLength:
+  Max: 120
   AllowURI: true
   Exclude:
     - config/routes.rb
@@ -419,7 +419,7 @@ Layout/SpaceInsideBlockBraces:
   SpaceBeforeBlockParameters: false
 
 Layout/SpaceInsideHashLiteralBraces:
-  EnforcedStyle: no_space
+  EnforcedStyle: space
   EnforcedStyleForEmptyBraces: no_space
   SupportedStyles:
     - space

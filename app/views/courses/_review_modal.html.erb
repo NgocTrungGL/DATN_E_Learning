@@ -3,7 +3,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title fw-bold" id="reviewModalLabel">
-          <i class="bi bi-pencil-square me-2 text-primary"></i>Đánh giá khóa học
+          <i class="bi bi-pencil-square me-2 text-primary"></i>Course review
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -12,12 +12,12 @@
         <%= form_with(model: [course, Review.new], local: true) do |f| %>
 
           <div class="mb-3 text-center">
-            <label class="form-label fw-bold mb-2">Bạn chấm mấy điểm?</label>
+            <label class="form-label fw-bold mb-2">How many stars?</label>
 
             <div class="rating-box d-flex justify-content-center">
               <% 5.downto(1) do |i| %>
                 <%= f.radio_button :rating, i, id: "rating#{i}", class: "d-none rating-input" %>
-                <label for="rating<%= i %>" class="bi bi-star-fill fs-1 mx-1 rating-label" title="<%= i %> sao"></label>
+                <label for="rating<%= i %>" class="bi bi-star-fill fs-1 mx-1 rating-label" title="<%= i %> stars"></label>
               <% end %>
             </div>
 
@@ -30,13 +30,13 @@
           </div>
 
           <div class="mb-4">
-            <%= f.label :content, "Nhận xét của bạn", class: "form-label fw-bold" %>
-            <%= f.text_area :content, class: "form-control bg-light", rows: 4, placeholder: "Chia sẻ cảm nhận chân thực...", required: true %>
+            <%= f.label :content, "Your feedback", class: "form-label fw-bold" %>
+            <%= f.text_area :content, class: "form-control bg-light", rows: 4, placeholder: "Share your honest thoughts...", required: true %>
           </div>
 
           <div class="d-grid gap-2">
             <%= f.button type: "submit", class: "btn btn-primary fw-bold" do %>
-              <i class="bi bi-send-fill me-2"></i> Gửi đánh giá
+              <i class="bi bi-send-fill me-2"></i> Submit review
             <% end %>
           </div>
         <% end %>

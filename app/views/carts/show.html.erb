@@ -1,5 +1,5 @@
 <div class="container py-5">
-  <h3 class="mb-4 fw-bold"><i class="bi bi-cart3"></i> Giỏ hàng của bạn</h3>
+  <h3 class="mb-4 fw-bold"><i class="bi bi-cart3"></i> Your cart</h3>
 
   <% if @items.any? %>
     <div class="row">
@@ -23,15 +23,15 @@
                   <h5 class="mb-1 fw-bold">
                     <%= link_to item.course.title, course_path(item.course), class: "text-decoration-none text-dark" %>
                   </h5>
-                  <p class="mb-0 text-muted small">Giảng viên: <%= item.course.creator&.name || "Admin" %></p>
+                  <p class="mb-0 text-muted small">Instructor: <%= item.course.creator&.name || "Admin" %></p>
                 </div>
 
                 <div class="text-end ms-4">
                   <div class="fw-bold fs-5 text-primary mb-2">
-                    <%= number_to_currency(item.course.price, unit: "₫", precision: 0, format: "%n %u") %>
+                    <%= number_to_currency(item.course.price, unit: "VND", precision: 0, format: "%n %u") %>
                   </div>
-                  <%= button_to cart_item_path(item), method: :delete, class: "btn btn-sm btn-outline-danger border-0 p-2", title: "Xóa khóa học này" do %>
-                    <i class="bi bi-trash"></i> Xóa
+                  <%= button_to cart_item_path(item), method: :delete, class: "btn btn-sm btn-outline-danger border-0 p-2", title: "Remove this course" do %>
+                    <i class="bi bi-trash"></i> Remove
                   <% end %>
                 </div>
               </li>
@@ -43,22 +43,49 @@
       <div class="col-lg-4">
         <div class="card shadow-sm border-0 bg-light">
           <div class="card-body p-4">
-            <h5 class="fw-bold mb-3">Tổng cộng</h5>
+            <h5 class="fw-bold mb-3">Order summary</h5>
+
+            <div class="mb-4">
+              <label class="form-label small fw-bold">Promo code</label>
+              <%= form_with(url: apply_coupon_cart_path, method: :post, class: "input-group input-group-sm") do |f| %>
+                <%= f.text_field :promo_code, value: @cart.promo_code, class: "form-control", placeholder: "Enter code..." %>
+                <%= f.submit "Apply", class: "btn btn-outline-primary" %>
+              <% end %>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted small">Subtotal:</span>
+              <span class="fw-bold">
+                <%= number_to_currency(@cart.total_price, unit: "VND", precision: 0, format: "%n %u") %>
+              </span>
+            </div>
+
+            <% if @cart.discount_amount > 0 %>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small">Discount:</span>
+                <span class="text-danger fw-bold">
+                  - <%= number_to_currency(@cart.discount_amount, unit: "VND", precision: 0, format: "%n %u") %>
+                </span>
+              </div>
+            <% end %>
+
+            <hr class="my-3 opacity-10">
+
             <div class="d-flex justify-content-between align-items-center mb-4">
-              <span class="text-muted">Tạm tính:</span>
+              <span class="fw-bold">Total:</span>
               <span class="fw-bold fs-4 text-primary">
-                <%= number_to_currency(@cart.total_price, unit: "₫", precision: 0, format: "%n %u") %>
+                <%= number_to_currency(@cart.final_total, unit: "VND", precision: 0, format: "%n %u") %>
               </span>
             </div>
 
             <div class="d-grid">
               <%= button_to checkout_cart_path, method: :post, data: { turbo: false }, class: "btn btn-primary btn-lg fw-bold py-3" do %>
-                Thanh toán ngay
+                Checkout now
               <% end %>
             </div>
 
             <p class="text-center mt-3 small text-muted">
-              <i class="bi bi-shield-lock"></i> Thanh toán bảo mật qua Stripe
+              <i class="bi bi-shield-lock"></i> Secure checkout via Stripe
             </p>
           </div>
         </div>
@@ -69,9 +96,9 @@
       <div class="mb-3">
         <i class="bi bi-cart-x display-1 text-muted opacity-25"></i>
       </div>
-      <h4 class="text-muted">Giỏ hàng của bạn đang trống</h4>
-      <p class="mb-4">Hãy tìm khóa học phù hợp để nâng cao kiến thức ngay hôm nay!</p>
-      <%= link_to "Khám phá khóa học", courses_path, class: "btn btn-primary px-4 py-2" %>
+      <h4 class="text-muted">Your cart is empty</h4>
+      <p class="mb-4">Find the right course to level up your skills today.</p>
+      <%= link_to "Explore courses", courses_path, class: "btn btn-primary px-4 py-2" %>
     </div>
   <% end %>
 </div>

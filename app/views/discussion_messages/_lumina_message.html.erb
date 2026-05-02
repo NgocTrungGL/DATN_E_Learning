@@ -1,0 +1,42 @@
+<%# Grouping logic logic %>
+<% is_grouped = message.same_group_as?(previous_message) %>
+
+<article class="lumina__msg <%= 'lumina__msg--instructor' if message.instructor_message? %>" id="<%= dom_id(message) %>">
+  <% unless is_grouped %>
+    <div class="lumina__msg-avatar">
+      <%= message.author_initial %>
+    </div>
+  <% else %>
+    <div style="width: 44px; flex-shrink: 0;"></div> <%# Spacer for grouped messages %>
+  <% end %>
+
+  <div class="lumina__msg-body">
+    <% unless is_grouped %>
+      <div class="lumina__msg-meta">
+        <span class="lumina__msg-author"><%= message.author_name %></span>
+        <% if message.instructor_message? %>
+          <span class="lumina__msg-badge lumina__msg-badge--instructor">GIẢNG VIÊN</span>
+        <% end %>
+        <span class="lumina__msg-time"><%= message.created_at.strftime("%H:%M") %></span>
+      </div>
+    <% end %>
+
+    <div class="lumina__msg-text">
+      <%= simple_format(message.content) %>
+    </div>
+  </div>
+
+  <%# Floating Actions %>
+  <div class="lumina__msg-actions">
+    <button class="action-btn" title="Phản hồi"><i class="bi bi-reply"></i></button>
+    <% if current_user == message.user || current_user.admin? || course.created_by == current_user.id %>
+      <%= button_to course_discussion_message_path(course, message),
+            method: :delete,
+            class: "action-btn",
+            title: "Xóa",
+            data: { turbo_confirm: "Xóa tin nhắn này?" } do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    <% end %>
+  </div>
+</article>

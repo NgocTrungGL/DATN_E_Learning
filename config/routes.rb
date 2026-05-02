@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   # --- THANH TOÁN ---
   post 'create-checkout-session', to: 'checkouts#create'
   post 'webhooks', to: 'webhooks#create'
-  resource :cart, only: [:show]
+  resource :cart, only: [:show] do
+    post :apply_coupon, on: :member
+  end
   post 'checkout-cart', to: 'checkouts#create_from_cart', as: 'checkout_cart'
 
   # Route trang thành công
@@ -19,6 +21,7 @@ Rails.application.routes.draw do
   resources :email_confirmations, only: [:edit]
   resource :instructor_registration, only: [:new, :create, :show]
   resources :my_courses, only: [:index]
+  resources :my_notes, only: [:index]
 
   # --- HỌC VIÊN (PUBLIC) ---
   resources :categories, only: [:index, :show]
@@ -27,12 +30,22 @@ Rails.application.routes.draw do
   resources :courses, only: [:index, :show] do
     resources :reviews, only: [:create, :destroy]
     resources :enrollments, only: [:create]
+    resources :discussion_messages, path: "chat", only: [:index, :create, :destroy]
+    resources :discussion_posts, path: "discussions", only: [:index, :show, :create, :update, :destroy] do
+      member do
+        patch :toggle_pin
+        patch :toggle_lock
+      end
+      resources :discussion_replies, path: "replies", only: [:create, :update, :destroy]
+    end
   end
 
   resources :lessons, only: [:show] do
     resources :comments, only: [:create, :destroy]
+    resources :notes, only: [:create]
     post :complete, to: "progress_trackings#mark_lesson_complete"
   end
+  resources :notes, only: [:update, :destroy]
 
   resources :quizzes, only: [] do
     resources :quiz_attempts, only: [:create], shallow: false
@@ -98,6 +111,7 @@ Rails.application.routes.draw do
       resources :quiz_questions, only: [:create], shallow: false
     end
     resources :quiz_questions, only: [:destroy]
+    resources :coupons
   end
 
   # --- INSTRUCTOR NAMESPACE (GIẢNG VIÊN) ---
@@ -131,6 +145,7 @@ Rails.application.routes.draw do
       resources :quiz_questions, only: [:create], shallow: false
     end
     resources :quiz_questions, only: [:destroy]
+    resources :coupons
   end
 
   # --- B2B: ĐĂNG KÝ DOANH NGHIỆP ---

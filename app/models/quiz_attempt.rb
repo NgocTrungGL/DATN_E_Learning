@@ -1,5 +1,5 @@
 class QuizAttempt < ApplicationRecord
-  enum status: {in_progress: "in_progress", completed: "completed"}
+  enum status: { in_progress: "in_progress", completed: "completed" }
 
   belongs_to :quiz
   belongs_to :user

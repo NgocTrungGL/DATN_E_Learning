@@ -1,0 +1,115 @@
+<% content_for :title, @post.title %>
+
+<div class="disc-page">
+  <%# Header %>
+  <div class="disc-page__header">
+    <div class="disc-page__header-inner">
+      <div class="disc-page__breadcrumb">
+        <%= link_to course_discussion_posts_path(@course), class: "disc-page__back" do %>
+          <i class="bi bi-arrow-left"></i> Back to discussion
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="disc-page__body">
+    <%# Post Detail %>
+    <article class="disc-detail">
+      <div class="disc-detail__header">
+        <div class="disc-detail__avatar">
+          <%= @post.author_name[0].upcase %>
+        </div>
+        <div class="disc-detail__author-info">
+          <span class="disc-detail__author-name">
+            <%= @post.author_name %>
+            <% if @post.instructor_post? %>
+              <span class="disc-card__badge disc-card__badge--instructor">
+                <i class="bi bi-patch-check-fill"></i> Instructor
+              </span>
+            <% end %>
+          </span>
+          <span class="disc-detail__time">
+            <i class="bi bi-clock"></i> <%= time_ago_in_words(@post.created_at) %> ago
+          </span>
+        </div>
+      </div>
+
+      <h1 class="disc-detail__title">
+        <% if @post.pinned? %>
+          <i class="bi bi-pin-angle-fill disc-card__pin-icon"></i>
+        <% end %>
+        <% if @post.locked? %>
+          <i class="bi bi-lock-fill disc-card__lock-icon"></i>
+        <% end %>
+        <%= @post.title %>
+      </h1>
+
+      <div class="disc-detail__content">
+        <%= simple_format(@post.content) %>
+      </div>
+
+      <%# Post Actions %>
+      <div class="disc-detail__actions">
+        <% is_author = current_user == @post.user %>
+        <% is_instructor = current_user.admin? || @course.created_by == current_user.id %>
+
+        <% if is_instructor %>
+          <%= button_to toggle_pin_course_discussion_post_path(@course, @post),
+                method: :patch, class: "disc-detail__action-btn" do %>
+            <i class="bi bi-pin-angle<%= @post.pinned? ? '-fill' : '' %>"></i>
+            <%= @post.pinned? ? "Unpin" : "Pin" %>
+          <% end %>
+          <%= button_to toggle_lock_course_discussion_post_path(@course, @post),
+                method: :patch, class: "disc-detail__action-btn" do %>
+            <i class="bi bi-<%= @post.locked? ? 'unlock' : 'lock' %>"></i>
+            <%= @post.locked? ? "Unlock" : "Lock" %>
+          <% end %>
+        <% end %>
+
+        <% if is_author || is_instructor %>
+          <%= button_to course_discussion_post_path(@course, @post),
+                method: :delete,
+                class: "disc-detail__action-btn disc-detail__action-btn--danger",
+                data: { turbo_confirm: "Are you sure you want to delete this post?" } do %>
+            <i class="bi bi-trash"></i> Delete
+          <% end %>
+        <% end %>
+      </div>
+    </article>
+
+    <%# Replies Section %>
+    <section class="disc-replies">
+      <h2 class="disc-replies__heading">
+        <i class="bi bi-chat-left-text"></i>
+        Replies
+        <span id="replies-count">
+          <%= render "discussion_replies/count", count: @post.replies_count %>
+        </span>
+      </h2>
+
+      <%# Reply Form %>
+      <% unless @post.locked? %>
+        <%= render "discussion_replies/form",
+              course: @course, post: @post, reply: @reply %>
+      <% else %>
+        <div class="disc-replies__locked">
+          <i class="bi bi-lock-fill"></i> This discussion is locked. Replies are disabled.
+        </div>
+      <% end %>
+
+      <%# Replies List %>
+      <div id="replies-list">
+        <% if @replies.any? %>
+          <% @replies.each do |reply| %>
+            <%= render "discussion_replies/reply",
+                  reply: reply, course: @course, post: @post %>
+          <% end %>
+        <% else %>
+          <div class="disc-replies__empty">
+            <p>No replies yet. Be the first!</p>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</div>
