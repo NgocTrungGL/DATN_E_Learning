@@ -1,0 +1,76 @@
+<% content_for :title, "Ghi chú của tôi" %>
+
+<div class="my-notes-page">
+  <div class="my-notes-header">
+    <div class="my-notes-header__inner">
+      <h1 class="my-notes-header__title">
+        <i class="bi bi-journal-text"></i> Ghi chú của tôi
+      </h1>
+      <p class="my-notes-header__subtitle">
+        Tổng cộng <strong><%= pluralize(@notes.count, 'ghi chú') %></strong>
+        trong <strong><%= pluralize(@notes_by_course.keys.count, 'khóa học') %></strong>
+      </p>
+    </div>
+  </div>
+
+  <div class="my-notes-body">
+    <% if @notes_by_course.any? %>
+      <% @notes_by_course.each do |course, notes| %>
+        <section class="my-notes-course">
+          <div class="my-notes-course__header">
+            <div class="my-notes-course__info">
+              <h2 class="my-notes-course__title">
+                <%= link_to course.title, course_path(course) %>
+              </h2>
+              <span class="my-notes-course__meta">
+                <i class="bi bi-sticky"></i> <%= pluralize(notes.count, 'ghi chú') %>
+              </span>
+            </div>
+          </div>
+
+          <div class="my-notes-course__notes">
+            <% notes.each do |note| %>
+              <article class="my-note-item">
+                <div class="my-note-item__lesson">
+                  <i class="bi bi-play-circle"></i>
+                  <%= link_to note.lesson.title, lesson_path(note.lesson) %>
+                </div>
+                <div class="my-note-item__content">
+                  <%= simple_format(note.content) %>
+                </div>
+                <div class="my-note-item__footer">
+                  <span class="my-note-item__time">
+                    <i class="bi bi-clock"></i>
+                    <%= time_ago_in_words(note.updated_at) %> trước
+                  </span>
+                  <div class="my-note-item__actions">
+                    <%= link_to lesson_path(note.lesson, anchor: "lesson-tab-notes"),
+                          class: "my-note-item__link" do %>
+                      <i class="bi bi-pencil-square"></i> Sửa
+                    <% end %>
+                    <%= button_to note_path(note), method: :delete,
+                          class: "my-note-item__delete",
+                          data: { turbo_confirm: "Xóa ghi chú này?" } do %>
+                      <i class="bi bi-trash"></i> Xóa
+                    <% end %>
+                  </div>
+                </div>
+              </article>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+    <% else %>
+      <div class="my-notes-empty">
+        <div class="my-notes-empty__icon">
+          <i class="bi bi-journal-text"></i>
+        </div>
+        <h3 class="my-notes-empty__title">Chưa có ghi chú nào</h3>
+        <p class="my-notes-empty__text">
+          Bắt đầu ghi chú khi học bài để lưu lại những điểm quan trọng!
+        </p>
+        <%= link_to "Khám phá khóa học", courses_path, class: "my-notes-empty__cta" %>
+      </div>
+    <% end %>
+  </div>
+</div>

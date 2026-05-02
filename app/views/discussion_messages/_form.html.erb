@@ -1,0 +1,35 @@
+<div id="chat-form" class="chat-form-wrap">
+  <%= form_with model: message,
+        url: course_discussion_messages_path(course),
+        class: "chat-form",
+        data: {
+          controller: "chat-form",
+          action: "turbo:submit-end->chat-form#reset"
+        } do |f| %>
+
+    <div class="chat-form__inner">
+      <div class="chat-form__plus">
+        <button type="button" class="chat-form__plus-btn" title="Thêm tệp">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+      </div>
+
+      <div class="chat-form__input-container">
+        <%= f.text_area :content,
+              placeholder: "Nhắn tin # #{course.title}",
+              class: "chat-form__input",
+              rows: 1,
+              data: {
+                chat_form_target: "input",
+                action: "keydown->chat-form#submitOnEnter input->chat-form#resizeInput"
+              } %>
+      </div>
+
+      <div class="chat-form__submit">
+        <button type="submit" class="chat-form__submit-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>

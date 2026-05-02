@@ -5,6 +5,19 @@
 
 # Rails Architecture & SOLID Principles
 
+## 🔹 CODE LANGUAGE REQUIREMENT
+
+**ALL Ruby, JavaScript, and ERB code must be written in ENGLISH ONLY:**
+- ❌ **Forbidden**: Vietnamese variable names, method names, class names, file names, and code comments
+- ✅ **Required**:
+	- Method names: `def fetch_user_courses` (not `def lay_khoa_hoc_nguoi_dung`)
+	- Variable names: `@enrolled_courses` (not `@khoaHocDangKy`)
+	- Class names: `StudentEnrollmentService` (not `DichVuDangKyHocVien`)
+	- File names: `student_enrollment_service.rb` (not `dich_vu_dang_ky_hoc_vien.rb`)
+	- Comments: `# Handle course enrollment` (not `# Xử lý đăng ký khóa học`)
+
+**EXCEPTION**: UI text labels (link text, button labels, error messages) should use Vietnamese via `i18n` locales (`config/locales/vi.yml`), but all code structure, identifiers, and comments must be English.
+
 ## 1. SOLID Principles (MANDATORY)
 
 All system modifications must adhere to SOLID principles to avoid "fat models" and "callback hell".
@@ -42,5 +55,7 @@ All system modifications must adhere to SOLID principles to avoid "fat models" a
 ## 5. ERB & View Integrity
 
 - Use **Strict BEM** for all custom CSS classes.
-- Follow Vietnamese (vi) i18n for all interface strings.
+- Follow English i18n for all interface strings.
 - Prefer **Partials** for repeated UI logic.
+
+- Use **English i18n** for all user-facing interface labels (buttons, links, error messages) in `config/locales/en.yml`, and keep all i18n keys and code comments in English.

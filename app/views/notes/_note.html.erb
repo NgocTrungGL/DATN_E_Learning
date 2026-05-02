@@ -1,0 +1,43 @@
+<%= turbo_frame_tag note do %>
+  <article class="note-card">
+    <div class="note-card__header">
+      <span class="note-card__date">
+        <i class="bi bi-clock"></i>
+        <%= time_ago_in_words(note.updated_at) %> trước
+      </span>
+      <div class="note-card__actions">
+        <button class="note-card__btn note-card__btn--edit"
+                type="button"
+                onclick="this.closest('.note-card').querySelector('.note-card__view').hidden = true;
+                         this.closest('.note-card').querySelector('.note-card__edit').hidden = false;">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <%= button_to note_path(note), method: :delete,
+              class: "note-card__btn note-card__btn--delete",
+              data: { turbo_confirm: "Xóa ghi chú này?" } do %>
+          <i class="bi bi-trash"></i>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="note-card__view">
+      <p class="note-card__content"><%= simple_format(note.content) %></p>
+    </div>
+
+    <div class="note-card__edit" hidden>
+      <%= form_with model: note, url: note_path(note), method: :patch, class: "note-card__edit-form" do |f| %>
+        <%= f.text_area :content, rows: 3, class: "note-card__textarea" %>
+        <div class="note-card__edit-actions">
+          <button type="submit" class="note-card__save-btn">
+            <i class="bi bi-check-lg"></i> Lưu
+          </button>
+          <button type="button" class="note-card__cancel-btn"
+                  onclick="this.closest('.note-card').querySelector('.note-card__view').hidden = false;
+                           this.closest('.note-card').querySelector('.note-card__edit').hidden = true;">
+            Hủy
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </article>
+<% end %>

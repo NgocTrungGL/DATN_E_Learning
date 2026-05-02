@@ -12,6 +12,8 @@ optional: true
   has_many :progress_trackings, dependent: :destroy
   has_many :licenses, dependent: :destroy
   has_many :coupons, dependent: :destroy
+  has_many :discussion_posts, dependent: :destroy
+  has_many :discussion_messages, dependent: :destroy
   has_one_attached :image
   enum status: {
     draft: 0,

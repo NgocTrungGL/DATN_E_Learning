@@ -38,6 +38,10 @@ class User < ApplicationRecord
   has_one :wallet, dependent: :destroy
   has_many :quiz_attempts, dependent: :destroy
   has_many :progress_trackings, dependent: :destroy
+  has_many :notes, dependent: :destroy
+  has_many :discussion_posts, dependent: :destroy
+  has_many :discussion_replies, dependent: :destroy
+  has_many :discussion_messages, dependent: :destroy
   has_many :payout_requests, dependent: :destroy
   has_many :created_courses, class_name: Course.name, foreign_key: :created_by,
 dependent: :nullify

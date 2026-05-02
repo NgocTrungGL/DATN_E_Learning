@@ -1,0 +1,73 @@
+<% content_for :title, "Thảo luận — #{@course.title}" %>
+
+<div class="disc-page">
+  <%# Header %>
+  <div class="disc-page__header">
+    <div class="disc-page__header-inner">
+      <div class="disc-page__breadcrumb">
+        <%= link_to course_path(@course), class: "disc-page__back" do %>
+          <i class="bi bi-arrow-left"></i> Về khóa học
+        <% end %>
+      </div>
+      <h1 class="disc-page__title">
+        <i class="bi bi-chat-dots"></i> Nhóm Trao Đổi
+      </h1>
+      <p class="disc-page__subtitle">
+        <strong><%= @course.title %></strong> •
+        <%= pluralize(@posts.count, 'bài thảo luận') %>
+      </p>
+    </div>
+  </div>
+
+  <div class="disc-page__body">
+    <%# New Post Form %>
+    <section class="disc-new-post">
+      <h2 class="disc-new-post__heading">
+        <i class="bi bi-pencil-square"></i> Đặt câu hỏi hoặc chia sẻ ý kiến
+      </h2>
+      <%= form_with model: @post, url: course_discussion_posts_path(@course), class: "disc-new-post__form" do |f| %>
+        <div class="disc-new-post__field">
+          <%= f.text_field :title,
+                placeholder: "Tiêu đề bài viết...",
+                class: "disc-new-post__title-input",
+                required: true %>
+          <% if @post.errors[:title].any? %>
+            <span class="disc-new-post__error"><%= @post.errors[:title].first %></span>
+          <% end %>
+        </div>
+        <div class="disc-new-post__field">
+          <%= f.text_area :content,
+                rows: 4,
+                placeholder: "Nội dung thảo luận...",
+                class: "disc-new-post__content-input",
+                required: true %>
+          <% if @post.errors[:content].any? %>
+            <span class="disc-new-post__error"><%= @post.errors[:content].first %></span>
+          <% end %>
+        </div>
+        <div class="disc-new-post__actions">
+          <button type="submit" class="disc-new-post__submit">
+            <i class="bi bi-send"></i> Đăng bài
+          </button>
+        </div>
+      <% end %>
+    </section>
+
+    <%# Posts List %>
+    <section class="disc-list">
+      <% if @posts.any? %>
+        <% @posts.each do |post| %>
+          <%= render "discussion_posts/post_card", post: post, course: @course %>
+        <% end %>
+      <% else %>
+        <div class="disc-empty">
+          <div class="disc-empty__icon">
+            <i class="bi bi-chat-dots"></i>
+          </div>
+          <h3 class="disc-empty__title">Chưa có bài thảo luận nào</h3>
+          <p class="disc-empty__text">Hãy là người đầu tiên đặt câu hỏi hoặc chia sẻ kiến thức!</p>
+        </div>
+      <% end %>
+    </section>
+  </div>
+</div>

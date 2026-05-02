@@ -114,6 +114,7 @@
               </li>
               
               <li><%= link_to "My Courses", my_courses_path, class: "dropdown-item mt-2" %></li>
+              <li><%= link_to "My Notes", my_notes_path, class: "dropdown-item" %></li>
               <li><%= link_to "Edit Profile", edit_user_registration_path, class: "dropdown-item" %></li>
 
               <% if current_user.admin? %>

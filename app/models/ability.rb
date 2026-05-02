@@ -51,6 +51,19 @@ class Ability
     can :create, [Review, Comment]
     can :destroy, Review, user_id: @user.id
     can :destroy, Comment, user_id: @user.id
+    can :manage, Note, user_id: @user.id
+
+    # Discussion permissions
+    can :read, DiscussionPost
+    can :create, DiscussionPost
+    can [:update, :destroy], DiscussionPost, user_id: @user.id
+    can :create, DiscussionReply
+    can [:update, :destroy], DiscussionReply, user_id: @user.id
+
+    # Chat permissions
+    can :read, DiscussionMessage
+    can :create, DiscussionMessage
+    can :destroy, DiscussionMessage, user_id: @user.id
   end
 
   #############################################################

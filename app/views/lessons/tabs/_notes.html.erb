@@ -1,50 +1,44 @@
 <article class="lesson-tabs__notes">
-  <section class="lesson-tabs__coming" aria-label="Notes feature coming soon">
-    <span class="lesson-tabs__coming-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M13.5 3.5L12.9 5.7C12.7 6.3 12.1 6.8 11.5 6.9L9.3 7.4L11 8.8C11.4 9.2 11.7 9.9 11.6 10.5L11.3 12.7L13.2 11.6C13.8 11.3 14.5 11.3 15.1 11.6L17 12.7L16.7 10.5C16.6 9.9 16.9 9.2 17.3 8.8L19 7.4L16.8 6.9C16.2 6.8 15.6 6.3 15.4 5.7L14.8 3.5C14.6 2.9 13.7 2.9 13.5 3.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-        <path d="M7 13.6L6.6 15C6.4 15.4 6.1 15.7 5.6 15.8L4.2 16.1L5.3 17C5.6 17.2 5.7 17.7 5.6 18.1L5.4 19.5L6.6 18.8C7 18.6 7.5 18.6 7.8 18.8L9 19.5L8.8 18.1C8.7 17.7 8.8 17.2 9.1 17L10.2 16.1L8.8 15.8C8.3 15.7 8 15.4 7.8 15L7.4 13.6C7.3 13.2 7.1 13.2 7 13.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-      </svg>
-    </span>
+  <% if user_signed_in? %>
+    <%
+      lesson_notes = current_user.notes.where(lesson: @lesson).recent
+      notes_count = lesson_notes.count
+    %>
 
-    <div class="lesson-tabs__coming-content">
-      <h3 class="lesson-tabs__coming-title">Tính năng Ghi chú cá nhân đang được phát triển</h3>
-      <p class="lesson-tabs__coming-subtitle">Chúng tôi đang nỗ lực mang đến trải nghiệm tuyệt vời nhất. Hãy quay lại sau!</p>
-    </div>
-  </section>
+    <%# Note creation form %>
+    <%= render "notes/form", lesson: @lesson, note: Note.new %>
 
-  <form class="lesson-tabs__notes-form" action="#" method="post" onsubmit="return false;">
-    <label class="lesson-tabs__notes-label" for="lesson-note-input">Bản xem trước giao diện ghi chú tương lai</label>
-    <textarea
-      id="lesson-note-input"
-      class="lesson-tabs__notes-input"
-      rows="4"
-      placeholder="Viết nhanh insight quan trọng của bạn trong bài học này..."
-    ></textarea>
+    <%# Saved notes list %>
+    <section class="lesson-tabs__saved-notes" aria-label="Saved notes">
+      <div class="lesson-tabs__resources-header">
+        <h3 class="lesson-tabs__subheading">
+          Ghi chú của bạn
+          <%= render "notes/count_badge", count: notes_count %>
+        </h3>
+      </div>
 
-    <div class="lesson-tabs__notes-actions">
-      <button class="lesson-tabs__save-note-btn" type="submit">⏱ Capture Timestamp</button>
-    </div>
-  </form>
+      <div id="notes-list">
+        <% if lesson_notes.any? %>
+          <% lesson_notes.each do |note| %>
+            <%= render "notes/note", note: note %>
+          <% end %>
+        <% else %>
+          <%= render "notes/empty_state" %>
+        <% end %>
+      </div>
+    </section>
 
-  <section class="lesson-tabs__saved-notes" aria-label="Saved notes">
-    <div class="lesson-tabs__resources-header">
-      <h3 class="lesson-tabs__subheading">Saved Notes</h3>
-      <span class="lesson-tabs__subcaption">Gắn theo mốc thời gian video</span>
-    </div>
-
-    <article class="lesson-tabs__saved-note">
-      <span class="lesson-tabs__timestamp" role="button" tabindex="0" aria-label="Jump to timestamp 02:45">⏱ 02:45</span>
-      <p class="lesson-tabs__saved-note-text">
-        Nên giữ mỗi service object xử lý duy nhất một tác vụ nghiệp vụ để test dễ hơn và debug nhanh hơn.
-      </p>
-    </article>
-
-    <article class="lesson-tabs__saved-note">
-      <span class="lesson-tabs__timestamp" role="button" tabindex="0" aria-label="Jump to timestamp 12:10">⏱ 12:10</span>
-      <p class="lesson-tabs__saved-note-text">
-        Ưu tiên orchestration rõ ràng thay vì callback rải rác khi có nhiều side effects như notifications và analytics.
-      </p>
-    </article>
-  </section>
+  <% else %>
+    <section class="lesson-tabs__coming" aria-label="Notes require sign in">
+      <span class="lesson-tabs__coming-icon" aria-hidden="true">
+        <i class="bi bi-journal-text" style="font-size: 1.4rem;"></i>
+      </span>
+      <div class="lesson-tabs__coming-content">
+        <h3 class="lesson-tabs__coming-title">Đăng nhập để sử dụng Ghi chú</h3>
+        <p class="lesson-tabs__coming-subtitle">
+          Tính năng ghi chú cá nhân chỉ dành cho học viên đã đăng nhập.
+        </p>
+      </div>
+    </section>
+  <% end %>
 </article>

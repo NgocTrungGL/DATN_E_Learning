@@ -1,0 +1,367 @@
+// ============================================================
+// CHATROOM — Course Discussion Group (Discord Style)
+// Part of the 7-1 Architectural Pattern — Strict BEM
+// ============================================================
+
+.chatroom {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: $bg;
+  color: $text-dark;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+
+  // ── HEADER ────────────────────────────────────────────────
+  &__header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid $border;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    z-index: 100;
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: $text-muted;
+    transition: all 0.2s;
+    margin-right: 0.75rem;
+
+    &:hover {
+      background: $bg;
+      color: $primary;
+    }
+  }
+
+  &__channel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__channel-icon {
+    color: $text-muted;
+    opacity: 0.6;
+  }
+
+  &__channel-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__channel-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    color: $text-dark;
+    line-height: 1.2;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__channel-meta {
+    font-size: 0.75rem;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  &__online-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+  }
+
+  // ── MESSAGES AREA ─────────────────────────────────────────
+  &__messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: $border transparent;
+
+    &::-webkit-scrollbar { width: 8px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: $border; border-radius: 4px; }
+  }
+
+  &__welcome {
+    padding: 3rem 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+
+    &-icon {
+      width: 64px;
+      height: 64px;
+      background: $primary-light;
+      color: $primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-bottom: 1.5rem;
+    }
+
+    &-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      color: $text-dark;
+    }
+
+    &-text {
+      font-size: 1rem;
+      color: $text-mid;
+      line-height: 1.6;
+      
+      strong { color: $text-dark; }
+    }
+  }
+
+  // ── INPUT AREA ────────────────────────────────────────────
+  &__input-area {
+    padding: 0 1rem 1.5rem;
+    background: transparent;
+  }
+}
+
+// ── MESSAGE COMPONENT ─────────────────────────────────────────
+
+.chat-msg {
+  position: relative;
+  display: flex;
+  padding: 0.25rem 1rem;
+  margin-top: 1rem;
+  transition: background 0.1s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
+    
+    .chat-msg__actions { opacity: 1; }
+    .chat-msg__tiny-time { opacity: 1; }
+  }
+
+  &--grouped {
+    margin-top: 0;
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+  }
+
+  &__gutter {
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    padding-left: 0.75rem;
+  }
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.125rem;
+  }
+
+  &__author-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: $text-dark;
+    
+    &:hover { text-decoration: underline; cursor: pointer; }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: $primary;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.25rem;
+    vertical-align: middle;
+  }
+
+  &__timestamp {
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__tiny-time {
+    position: absolute;
+    left: 0;
+    width: 48px;
+    text-align: center;
+    font-size: 0.65rem;
+    color: $text-muted;
+    opacity: 0;
+    line-height: 1.5;
+  }
+
+  &__content {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: $text-mid;
+    word-wrap: break-word;
+
+    p { margin: 0; }
+  }
+
+  &__actions {
+    position: absolute;
+    top: -16px;
+    right: 1rem;
+    background: #fff;
+    border: 1px solid $border;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 10;
+  }
+
+  &__action-btn {
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    
+    &:hover {
+      background: $bg;
+      color: $danger;
+    }
+  }
+}
+
+// ── FORM COMPONENT ────────────────────────────────────────────
+
+.chat-form-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.chat-form {
+  &__inner {
+    display: flex;
+    align-items: flex-end;
+    background: #ebedef;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    gap: 0.75rem;
+  }
+
+  &__plus {
+    padding-bottom: 4px;
+  }
+
+  &__plus-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: $text-muted;
+    color: #ebedef;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background: $text-mid; }
+  }
+
+  &__input-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: $text-dark;
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.35rem 0;
+    resize: none;
+    max-height: 400px;
+    outline: none;
+
+    &::placeholder { color: $text-muted; }
+  }
+
+  &__submit {
+    padding-bottom: 4px;
+  }
+
+  &__submit-btn {
+    background: transparent;
+    border: none;
+    color: $primary;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(0,0,0,0.05); }
+  }
+}
+
+// ── RESPONSIVE ──────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .chatroom {
+    &__header { padding: 0 0.75rem; }
+    &__channel-name { max-width: 200px; }
+  }
+  
+  .chat-msg {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    
+    &__gutter { width: 36px; }
+    &__avatar { width: 32px; height: 32px; font-size: 0.875rem; }
+    &__tiny-time { width: 36px; }
+  }
+}

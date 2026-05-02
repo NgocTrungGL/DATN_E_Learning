@@ -132,6 +132,19 @@
       </div>
     <% end %>
 
+    <%# ── Discussion Group link (enrolled users) ────────────── %>
+    <% if has_access %>
+      <div class="cd-card" style="margin-bottom: 1.2rem;">
+        <%= link_to course_discussion_messages_path(@course), class: "cd-btn cd-btn--outline", style: "width:100%;justify-content:center;" do %>
+          <i class="bi bi-chat-dots-fill"></i> Nhóm Trao Đổi Khóa Học (Chat)
+          <% msg_count = @course.discussion_messages.count %>
+          <% if msg_count > 0 %>
+            <span style="background:#eff6ff;color:#2563eb;padding:0.1rem 0.5rem;border-radius:50px;font-size:0.75rem;font-weight:700;margin-left:0.3rem;"><%= msg_count %></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
     <%# ── What you'll learn ─────────────────────────────────── %>
     <div class="cd-card">
       <h2 class="cd-section-heading"><i class="bi bi-lightbulb-fill"></i> What You'll Learn</h2>

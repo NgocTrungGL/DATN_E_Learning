@@ -1,0 +1,55 @@
+<div class="chatroom">
+  <%# ── HEADER ──────────────────────────────────────────────── %>
+  <header class="chatroom__header">
+    <%= link_to course_path(@course), class: "chatroom__back" do %>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 5l-7 7 7 7"/></svg>
+    <% end %>
+    <div class="chatroom__channel">
+      <div class="chatroom__channel-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="chatroom__channel-info">
+        <h1 class="chatroom__channel-name"><%= @course.title %></h1>
+        <span class="chatroom__channel-meta">
+          <span class="chatroom__online-dot"></span>
+          <%= @members_count %> thành viên
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <%# ── MESSAGES AREA ───────────────────────────────────────── %>
+  <div class="chatroom__messages" id="chat-scroll-area" data-controller="chat-scroll">
+    <% if @messages.empty? %>
+      <div class="chatroom__welcome">
+        <div class="chatroom__welcome-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h2 class="chatroom__welcome-title">Chào mừng đến nhóm trao đổi!</h2>
+        <p class="chatroom__welcome-text">
+          Đây là nơi bạn và các học viên khác cùng trao đổi về khóa học
+          <strong><%= @course.title %></strong>.
+          Hãy bắt đầu cuộc trò chuyện!
+        </p>
+      </div>
+    <% end %>
+
+    <div id="chat-messages">
+      <% previous_message = nil %>
+      <% @messages.each do |msg| %>
+        <%= render "discussion_messages/message",
+              message: msg,
+              previous_message: previous_message,
+              course: @course %>
+        <% previous_message = msg %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── INPUT AREA ──────────────────────────────────────────── %>
+  <div class="chatroom__input-area">
+    <%= render "discussion_messages/form",
+          course: @course,
+          message: @message %>
+  </div>
+</div>
