@@ -1,0 +1,40 @@
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><%= t('certificates.index.title', default: 'My Certificates') %></h2>
+  </div>
+
+  <% if @certificates.empty? %>
+    <div class="empty-state text-center py-5">
+      <div class="empty-state__icon mb-3">
+        <i class="icon-award" style="font-size: 3rem; color: #ccc;"></i>
+      </div>
+      <h4 class="empty-state__title"><%= t('certificates.index.empty_title', default: 'No certificates yet') %></h4>
+      <p class="empty-state__desc text-muted"><%= t('certificates.index.empty_desc', default: 'Complete a course to earn your first certificate.') %></p>
+      <%= link_to t('shared.explore_courses', default: 'Explore Courses'), courses_path, class: "btn btn--primary mt-3" %>
+    </div>
+  <% else %>
+    <div class="row g-4">
+      <% @certificates.each do |certificate| %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+            <div class="card-body p-4 d-flex flex-column align-items-center text-center">
+              <div class="mb-3" style="width: 80px; height: 80px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--lp-accent);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 40px; height: 40px;">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <h5 class="card-title mb-2" style="font-weight: 600;"><%= certificate.course.title %></h5>
+              <p class="text-muted small mb-3">
+                <%= t('certificates.index.issued_on', default: 'Issued on') %> <%= certificate.issued_at.strftime('%b %d, %Y') %>
+              </p>
+              
+              <div class="mt-auto w-100">
+                <%= link_to t('certificates.index.view', default: 'View Certificate'), certificate_path(certificate.certificate_code), class: "btn btn--outline-primary w-100 mb-2", target: "_blank" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -181,6 +181,9 @@ en:
       rejected:
         title: "Course Rejected ⚠️"
         body: "Unfortunately, your course '%{course_title}' was not approved. Please review the requirements."
+    certificate:
+      title: "New Certificate Unlocked! 🎓"
+      body: "Congratulations! You have earned a certificate for completing '%{course_title}'."
     index:
       title: "Notifications"
       mark_all_as_read: "Mark all as read"
@@ -202,3 +205,21 @@ en:
       empty_title: "Your wishlist is empty"
       empty_body: "You haven't saved any courses yet. Browse our catalog and save your favorites!"
       browse_courses: "Browse Courses"
+
+  certificates:
+    index:
+      title: "My Certificates"
+      empty_title: "No certificates yet"
+      empty_desc: "Complete a course to earn your first certificate."
+      issued_on: "Issued on"
+      view: "View Certificate"
+    show:
+      certificate_id: "Certificate ID"
+      title: "Certificate of Completion"
+      presented_to: "This is to certify that"
+      description_html: "has successfully completed the course <strong>%{course}</strong> on %{platform}."
+      issued_date: "Date of Issue"
+      instructor: "Course Instructor"
+      platform: "Platform Representative"
+      download_pdf: "Download PDF"
+      add_to_linkedin: "Add to LinkedIn"

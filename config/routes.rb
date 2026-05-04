@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   resources :my_courses, only: [:index]
   resources :my_notes, only: [:index]
   resources :wishlists, only: [:index]
+  resources :certificates, only: [:index, :show], param: :code
 
   # --- HỌC VIÊN (PUBLIC) ---
   resources :categories, only: [:index, :show]
