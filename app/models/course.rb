@@ -16,6 +16,7 @@ optional: true
   has_many :discussion_messages, dependent: :destroy
   has_many :wishlists, dependent: :destroy
   has_many :wishlisting_users, through: :wishlists, source: :user
+  has_many :certificates, dependent: :destroy
   has_one_attached :image
   enum status: {
     draft: 0,

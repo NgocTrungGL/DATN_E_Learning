@@ -12,6 +12,8 @@ class ProgressTracking < ApplicationRecord
   validates :lesson_id, uniqueness: { scope: :user_id }, allow_nil: true
   validates :quiz_id, uniqueness: { scope: :user_id }, allow_nil: true
 
+  after_commit :check_certificate_issuance, on: [:create, :update]
+
   private
 
   def set_course_from_parent
@@ -19,5 +21,11 @@ class ProgressTracking < ApplicationRecord
     return unless quiz
 
     self.course_id ||= quiz.course_id
+  end
+
+  def check_certificate_issuance
+    return unless status == "completed"
+
+    Certificate.issue_for(user, course)
   end
 end

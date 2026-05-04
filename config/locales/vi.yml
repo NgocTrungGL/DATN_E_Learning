@@ -159,6 +159,30 @@ vi:
         quiz_detail: "Chi tiết"
 
   notifications:
+    enrollment:
+      student:
+        title: "Đăng ký thành công! 🎓"
+        body: "Chúc mừng! Bạn đã đăng ký thành công khóa học '%{course_title}'. Bắt đầu bài học đầu tiên ngay!"
+      instructor:
+        title: "Học viên mới! 👤"
+        body: "%{user_name} đã đăng ký khóa học '%{course_title}' của bạn."
+    reply:
+      post_author:
+        title: "Phản hồi mới! 💬"
+        body: "%{user_name} đã phản hồi bài viết '%{post_title}' của bạn."
+      comment_author:
+        title: "Phản hồi mới! 💬"
+        body: "%{user_name} đã phản hồi bình luận của bạn."
+    course_status:
+      published:
+        title: "Khóa học đã được duyệt! 🎉"
+        body: "Chúc mừng! Khóa học '%{course_title}' của bạn hiện đã hiển thị cho học viên."
+      rejected:
+        title: "Khóa học bị từ chối ⚠️"
+        body: "Rất tiếc, khóa học '%{course_title}' của bạn chưa được duyệt. Vui lòng xem lại các yêu cầu."
+    certificate:
+      title: "Đã nhận chứng chỉ mới! 🎓"
+      body: "Chúc mừng! Bạn đã nhận được chứng chỉ hoàn thành khóa học '%{course_title}'."
     index:
       title: "Thông báo"
       mark_all_as_read: "Đánh dấu tất cả đã đọc"
@@ -176,7 +200,25 @@ vi:
     remove: "Xóa khỏi yêu thích"
     index:
       title: "Khóa học yêu thích"
-      count: "Bạn có %{count} khóa học đã lưu"
+      count: "Bạn đã lưu %{count} khóa học"
       empty_title: "Danh sách yêu thích trống"
-      empty_body: "Bạn chưa lưu khóa học nào. Hãy khám phá và lưu lại những khóa học bạn quan tâm!"
-      browse_courses: "Khám phá ngay"
+      empty_body: "Bạn chưa lưu khóa học nào. Hãy khám phá và lưu lại những khóa học bạn yêu thích!"
+      browse_courses: "Khám phá khóa học"
+
+  certificates:
+    index:
+      title: "Chứng chỉ của tôi"
+      empty_title: "Chưa có chứng chỉ nào"
+      empty_desc: "Hoàn thành một khóa học để nhận chứng chỉ đầu tiên của bạn."
+      issued_on: "Ngày cấp"
+      view: "Xem Chứng chỉ"
+    show:
+      certificate_id: "Mã chứng chỉ"
+      title: "Chứng Nhận Hoàn Thành Khóa Học"
+      presented_to: "Chứng nhận cấp cho"
+      description_html: "đã hoàn thành xuất sắc khóa học <strong>%{course}</strong> trên nền tảng %{platform}."
+      issued_date: "Ngày cấp"
+      instructor: "Giảng viên"
+      platform: "Đại diện nền tảng"
+      download_pdf: "Tải PDF"
+      add_to_linkedin: "Thêm vào LinkedIn"

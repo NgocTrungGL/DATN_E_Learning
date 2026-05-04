@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_04_132223) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_04_133934) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -65,6 +65,20 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_04_132223) do
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
     t.index ["parent_id"], name: "index_categories_on_parent_id"
+  end
+
+  create_table "certificates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "course_id", null: false
+    t.string "certificate_code", null: false
+    t.datetime "issued_at", null: false
+    t.string "template_type", default: "classic"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["certificate_code"], name: "index_certificates_on_certificate_code", unique: true
+    t.index ["course_id"], name: "index_certificates_on_course_id"
+    t.index ["user_id", "course_id"], name: "index_certificates_on_user_id_and_course_id", unique: true
+    t.index ["user_id"], name: "index_certificates_on_user_id"
   end
 
   create_table "comments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -448,6 +462,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_04_132223) do
   add_foreign_key "cart_items", "courses"
   add_foreign_key "carts", "users"
   add_foreign_key "categories", "categories", column: "parent_id"
+  add_foreign_key "certificates", "courses"
+  add_foreign_key "certificates", "users"
   add_foreign_key "comments", "lessons"
   add_foreign_key "comments", "users"
   add_foreign_key "coupons", "courses"
