@@ -2,11 +2,11 @@
   <div class="col-md-4">
     <div class="card border-0 shadow-sm h-100 bg-primary text-white">
       <div class="card-body">
-        <h6 class="text-uppercase opacity-75 mb-2">Tổng nhân viên</h6>
+        <h6 class="text-uppercase opacity-75 mb-2">Total employees</h6>
         <h2 class="display-4 fw-bold mb-0"><%= @total_employees %></h2>
         <p class="mt-3 mb-0 small">
           <i class="bi bi-arrow-right-circle"></i>
-          <%= link_to "Quản lý nhân sự", business_employees_path, class: "text-white text-decoration-none fw-bold" %>
+          <%= link_to "Manage employees", business_employees_path, class: "text-white text-decoration-none fw-bold" %>
         </p>
       </div>
     </div>
@@ -15,17 +15,17 @@
   <div class="col-md-4">
     <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
       <div class="card-body">
-        <h6 class="text-uppercase text-muted mb-2">License khả dụng</h6>
+        <h6 class="text-uppercase text-muted mb-2">Available licenses</h6>
         <h2 class="display-4 fw-bold text-dark mb-0">0</h2>
-        <p class="mt-3 mb-0 small text-muted">Bạn chưa mua gói đào tạo nào.</p>
+        <p class="mt-3 mb-0 small text-muted">You have not purchased any training packages.</p>
       </div>
     </div>
   </div>
 </div>
 
 <div class="alert alert-light border shadow-sm">
-  <h4 class="alert-heading fw-bold"><i class="bi bi-emoji-smile me-2"></i>Xin chào, <%= current_user.name %>!</h4>
-  <p>Chào mừng bạn đến với trang quản trị đào tạo của <strong><%= @organization.name %></strong>.</p>
+  <h4 class="alert-heading fw-bold"><i class="bi bi-emoji-smile me-2"></i>Hello, <%= current_user.name %>!</h4>
+  <p>Welcome to the training management dashboard for <strong><%= @organization.name %></strong>.</p>
   <hr>
-  <p class="mb-0">Hãy bắt đầu bằng việc thêm nhân viên vào hệ thống tại mục <strong>Quản lý nhân sự</strong>.</p>
+  <p class="mb-0">Start by adding employees in <strong>Manage employees</strong>.</p>
 </div>

@@ -2,36 +2,36 @@
   <div class="col-md-6">
     <div class="card shadow-sm sticky-top" style="top: 20px; z-index: 1;">
       <div class="card-header bg-white py-3">
-        <h5 class="mb-0 text-primary"><i class="bi bi-file-play"></i> Thêm Bài Học</h5>
-        <small>Chương: <strong><%= @course_module.title %></strong></small>
+        <h5 class="mb-0 text-primary"><i class="bi bi-file-play"></i> Add lesson</h5>
+        <small>Module: <strong><%= @course_module.title %></strong></small>
       </div>
       <div class="card-body">
         <%= form_with(model: [:instructor, @course_module, @lesson]) do |f| %>
           <div class="mb-3">
-            <%= f.label :title, "Tên bài học", class: "form-label fw-bold" %>
+            <%= f.label :title, "Lesson title", class: "form-label fw-bold" %>
             <%= f.text_field :title, class: "form-control", autofocus: true %>
           </div>
 
           <div class="mb-3">
-            <%= f.label :description, "Nội dung", class: "form-label" %>
+            <%= f.label :description, "Content", class: "form-label" %>
             <%= f.text_area :description, rows: 3, class: "form-control" %>
           </div>
 
           <div class="mb-3">
-            <%= f.label :video_url, "Link Video (YouTube)", class: "form-label fw-bold" %>
+            <%= f.label :video_url, "Video link (YouTube)", class: "form-label fw-bold" %>
             <%= f.text_field :video_url, class: "form-control", placeholder: "https://www.youtube.com/watch?v=..." %>
           </div>
 
-          <%# --- PHẦN THÊM MỚI: CHECKBOX HỌC THỬ --- %>
+          <%# --- NEW SECTION: FREE PREVIEW CHECKBOX --- %>
           <div class="mb-3 bg-light p-3 rounded border">
             <div class="form-check">
               <%= f.check_box :free_preview, class: "form-check-input", id: "freePreviewCheck" %>
               <label class="form-check-label fw-bold text-dark" for="freePreviewCheck">
-                Cho phép học thử (Free Preview)
+                Allow free preview
               </label>
             </div>
             <div class="form-text text-muted small ms-4 mt-1">
-              <i class="bi bi-info-circle-fill"></i> Nếu chọn, người dùng chưa mua khóa học vẫn có thể xem bài học này để tham khảo chất lượng.
+              <i class="bi bi-info-circle-fill"></i> If selected, learners who have not purchased the course can still view this lesson.
             </div>
           </div>
           <%# --------------------------------------- %>
@@ -39,8 +39,8 @@
           <%= f.hidden_field :order_index %>
 
           <div class="d-grid gap-2 mt-4">
-            <%= f.submit "Lưu & Thêm tiếp", class: "btn btn-primary fw-bold" %>
-            <%= link_to "Quay lại Khóa học", instructor_course_path(@course_module.course), class: "btn btn-outline-secondary" %>
+            <%= f.submit "Save & Add next", class: "btn btn-primary fw-bold" %>
+            <%= link_to "Back to course", instructor_course_path(@course_module.course), class: "btn btn-outline-secondary" %>
           </div>
         <% end %>
       </div>
@@ -48,7 +48,7 @@
   </div>
 
   <div class="col-md-6 mt-4 mt-md-0">
-    <h5 class="mb-3 text-secondary">Danh sách bài học (Kéo thả)</h5>
+    <h5 class="mb-3 text-secondary">Lesson list (drag)</h5>
     <div class="list-group shadow-sm"
          data-controller="sortable"
           data-sortable-param-value="lesson"
@@ -67,21 +67,21 @@
           <div class="flex-grow-1 text-truncate">
             <span class="fw-medium"><%= l.title %></span>
 
-            <%# --- HIỂN THỊ BADGE NẾU LÀ HỌC THỬ --- %>
+            <%# --- SHOW BADGE FOR FREE PREVIEW --- %>
             <% if l.free_preview? %>
               <span class="badge bg-success-subtle text-success border border-success ms-2" style="font-size: 0.75rem;">
-                <i class="bi bi-eye-fill"></i> Học thử
+                <i class="bi bi-eye-fill"></i> Free preview
               </span>
             <% end %>
             <%# ------------------------------------- %>
           </div>
 
           <div class="btn-group">
-            <%= link_to edit_instructor_lesson_path(l), class: "btn btn-sm btn-light text-primary", title: "Sửa bài học" do %>
+            <%= link_to edit_instructor_lesson_path(l), class: "btn btn-sm btn-light text-primary", title: "Edit lesson" do %>
               <i class="bi bi-pencil"></i>
             <% end %>
 
-            <%= button_to instructor_lesson_path(l), method: :delete, class: "btn btn-sm btn-light text-danger", title: "Xóa bài học", data: { confirm: "Bạn có chắc muốn xóa bài học này không?" } do %>
+            <%= button_to instructor_lesson_path(l), method: :delete, class: "btn btn-sm btn-light text-danger", title: "Delete lesson", data: { confirm: "Are you sure you want to delete this lesson?" } do %>
               <i class="bi bi-trash"></i>
             <% end %>
           </div>
@@ -90,7 +90,7 @@
 
       <% if @lessons.empty? %>
         <div class="list-group-item text-center text-muted py-4 fst-italic">
-          Chưa có bài học nào trong chương này.
+          No lessons in this module yet.
         </div>
       <% end %>
     </div>

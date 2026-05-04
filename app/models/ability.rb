@@ -51,6 +51,19 @@ class Ability
     can :create, [Review, Comment]
     can :destroy, Review, user_id: @user.id
     can :destroy, Comment, user_id: @user.id
+    can :manage, Note, user_id: @user.id
+
+    # Discussion permissions
+    can :read, DiscussionPost
+    can :create, DiscussionPost
+    can [:update, :destroy], DiscussionPost, user_id: @user.id
+    can :create, DiscussionReply
+    can [:update, :destroy], DiscussionReply, user_id: @user.id
+
+    # Chat permissions
+    can :read, DiscussionMessage
+    can :create, DiscussionMessage
+    can :destroy, DiscussionMessage, user_id: @user.id
   end
 
   #############################################################
@@ -95,19 +108,19 @@ class Ability
   end
 
   def instructor_module_lesson_rules
-    can :manage, CourseModule, course: {created_by: @user.id}
-    can :manage, Lesson, course_module: {course: {created_by: @user.id}}
+    can :manage, CourseModule, course: { created_by: @user.id }
+    can :manage, Lesson, course_module: { course: { created_by: @user.id } }
   end
 
   def instructor_quiz_rules
     can :manage, Quiz, created_by: @user.id
     can :create, Question
     can [:read, :update, :destroy], Question, created_by: @user.id
-    can :manage, QuizQuestion, quiz: {created_by: @user.id}
+    can :manage, QuizQuestion, quiz: { created_by: @user.id }
   end
 
   def instructor_enrollment_rules
-    can :read, Enrollment, course: {created_by: @user.id}
+    can :read, Enrollment, course: { created_by: @user.id }
     cannot [:approve, :reject], Enrollment
   end
 

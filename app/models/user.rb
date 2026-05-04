@@ -26,10 +26,11 @@ class User < ApplicationRecord
   validates :email,
             presence: true,
             uniqueness: true,
-            format: {with: VALID_EMAIL_REGEX}
+            format: { with: VALID_EMAIL_REGEX }
 
   accepts_nested_attributes_for :profile
   after_create :build_default_profile
+  has_many :notifications, dependent: :destroy
   has_many :enrollments, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :comments, dependent: :destroy
@@ -38,16 +39,25 @@ class User < ApplicationRecord
   has_one :wallet, dependent: :destroy
   has_many :quiz_attempts, dependent: :destroy
   has_many :progress_trackings, dependent: :destroy
+  has_many :notes, dependent: :destroy
+  has_many :discussion_posts, dependent: :destroy
+  has_many :discussion_replies, dependent: :destroy
+  has_many :discussion_messages, dependent: :destroy
   has_many :payout_requests, dependent: :destroy
   has_many :created_courses, class_name: Course.name, foreign_key: :created_by,
 dependent: :nullify
   has_many :created_quizzes, class_name: Quiz.name, foreign_key: :created_by,
 dependent: :nullify
   has_many :created_questions, class_name: Question.name,
-foreign_key: :created_by, dependent: :nullify
+           foreign_key: :created_by, dependent: :nullify
+  has_many :coupons, foreign_key: :creator_id, dependent: :nullify
   has_one :cart, dependent: :destroy
   after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}
+
+  def unread_notifications_count
+    notifications.unread.count
+  end
 
   def enrolled_in? course
     enrollments.exists?(course_id: course.id)

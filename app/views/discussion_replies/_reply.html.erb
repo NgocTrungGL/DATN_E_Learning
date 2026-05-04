@@ -1,0 +1,45 @@
+<%= turbo_frame_tag reply do %>
+  <article class="disc-reply">
+    <div class="disc-reply__avatar">
+      <%= reply.author_name[0].upcase %>
+    </div>
+    <div class="disc-reply__body">
+      <div class="disc-reply__meta">
+        <span class="disc-reply__author">
+          <%= reply.author_name %>
+          <% if reply.instructor_reply? %>
+            <span class="disc-card__badge disc-card__badge--instructor">
+              <i class="bi bi-patch-check-fill"></i> Instructor
+            </span>
+          <% end %>
+        </span>
+        <span class="disc-reply__time">
+          <%= time_ago_in_words(reply.created_at) %> ago
+        </span>
+      </div>
+      <div class="disc-reply__content">
+        <%= simple_format(reply.content) %>
+      </div>
+      <div class="disc-reply__actions">
+        <% if current_user == reply.user || current_user.admin? || course.created_by == current_user.id %>
+          <%= button_to course_discussion_post_discussion_reply_path(course, post, reply),
+                method: :delete,
+                class: "disc-reply__delete-btn",
+                data: { turbo_confirm: "Delete this reply?" } do %>
+            <i class="bi bi-trash"></i> Delete
+          <% end %>
+        <% end %>
+      </div>
+
+      <%# Nested replies (children) %>
+      <% if reply.children.any? %>
+        <div class="disc-reply__children">
+          <% reply.children.each do |child| %>
+            <%= render "discussion_replies/reply",
+                  reply: child, course: course, post: post %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </article>
+<% end %>

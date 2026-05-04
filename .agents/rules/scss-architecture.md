@@ -5,6 +5,17 @@
 
 # SCSS Architecture & Styling Conventions
 
+## 🔹 CODE LANGUAGE REQUIREMENT
+
+**ALL SCSS code must be written in ENGLISH ONLY:**
+- ❌ **Forbidden**: Vietnamese class names (`.nut-chinh`), variable names (`$chieuDai`), mixin names, file names, and comments in Vietnamese
+- ✅ **Required**:
+	- File naming: `_course-card.scss` (not `_the-khoa-hoc.scss`)
+	- Class naming (BEM): `.course-card__header--active` (not `.the-khoa-hoc__phan-dau--hoat-dong`)
+	- Variable names: `$primary-color` (not `$mauChinh`)
+	- Mixin names: `@mixin flex-center` (not `@mixin flex-chinh-giua`)
+	- Comments: `// Course card component` (not `// Thành phần thẻ khóa học`)
+
 ## 1. 7-1 Architectural Pattern (MANDATORY)
 
 The platform follows a strict 7-1 architecture to ensure scalability and maintainability.

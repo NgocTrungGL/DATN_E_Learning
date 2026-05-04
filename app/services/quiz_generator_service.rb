@@ -37,4 +37,3 @@ class QuizGeneratorService
     (easy_qs + medium_qs + hard_qs).shuffle
   end
 end
-s

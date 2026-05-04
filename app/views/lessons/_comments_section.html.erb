@@ -3,13 +3,13 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="d-flex align-items-center">
       <h4 class="fw-bold mb-0 text-dark">
-        <i class="bi bi-chat-dots-fill text-primary me-2"></i>Hỏi đáp & Thảo luận
+        <i class="bi bi-chat-dots-fill text-primary me-2"></i>Q&A & Discussion
       </h4>
       <span class="badge bg-secondary ms-2 rounded-pill"><%= @lesson.comments.count %></span>
     </div>
 
     <button type="button" class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#questionModal">
-      <i class="bi bi-plus-lg me-1"></i> Đặt câu hỏi mới
+      <i class="bi bi-plus-lg me-1"></i> Ask a new question
     </button>
   </div>
 
@@ -28,9 +28,9 @@
             <div>
               <span class="fw-bold text-dark me-2"><%= comment.user.name %></span>
               <% if comment.user == @lesson.course.creator %>
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill me-2" style="font-size: 0.7em">Giảng viên</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill me-2" style="font-size: 0.7em">Instructor</span>
               <% end %>
-              <small class="text-muted" style="font-size: 0.85rem"><%= time_ago_in_words(comment.created_at) %> trước</small>
+              <small class="text-muted" style="font-size: 0.85rem"><%= time_ago_in_words(comment.created_at) %> ago</small>
             </div>
 
 <% if can?(:destroy, comment) %>
@@ -41,9 +41,9 @@
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                   <li>
                     <%= link_to lesson_comment_path(@lesson, comment),
-                        data: { turbo_method: :delete, turbo_confirm: "Xóa bình luận này?" },
+                        data: { turbo_method: :delete, turbo_confirm: "Delete this comment?" },
                         class: "dropdown-item text-danger small" do %>
-                      <i class="bi bi-trash me-2"></i> Xóa bình luận
+                      <i class="bi bi-trash me-2"></i> Delete comment
                     <% end %>
                   </li>
                 </ul>
@@ -54,7 +54,7 @@
           <p class="mb-2 text-secondary text-break"><%= simple_format(comment.body, {}, wrapper_tag: "span") %></p>
 
           <button class="btn btn-sm btn-light text-primary fw-bold rounded-pill px-3" type="button" data-bs-toggle="collapse" data-bs-target="#replyForm<%= comment.id %>">
-            <i class="bi bi-reply-fill me-1"></i> Trả lời
+            <i class="bi bi-reply-fill me-1"></i> Reply
           </button>
 
           <% if comment.replies.any? %>
@@ -69,14 +69,14 @@
                       <div>
                         <span class="fw-bold small text-dark"><%= reply.user.name %></span>
                         <% if reply.user == @lesson.course.creator %>
-                          <span class="badge bg-info text-dark ms-1" style="font-size: 0.6em">Tác giả</span>
+                          <span class="badge bg-info text-dark ms-1" style="font-size: 0.6em">Author</span>
                         <% end %>
                       </div>
                       <div class="d-flex align-items-center">
                         <small class="text-muted me-2" style="font-size: 0.75rem"><%= time_ago_in_words(reply.created_at) %></small>
                         <% if can?(:destroy, reply) %>
                           <%= link_to lesson_comment_path(@lesson, reply),
-                              data: { turbo_method: :delete, turbo_confirm: "Xóa câu trả lời?" },
+                              data: { turbo_method: :delete, turbo_confirm: "Delete this reply?" },
                               class: "text-secondary small text-decoration-none hover-text-danger" do %>
                             <i class="bi bi-x-lg"></i>
                           <% end %>
@@ -97,9 +97,9 @@
                 <div class="d-flex align-items-start">
                    <img src="https://ui-avatars.com/api/?name=<%= current_user&.name %>&background=random" class="rounded-circle me-2 avatar-sm" width="32" height="32" alt="<%= current_user&.name %>">
                    <div class="flex-grow-1">
-                     <%= f.text_area :body, class: "form-control form-control-sm mb-2 border-0 shadow-sm", placeholder: "Viết câu trả lời của bạn...", rows: 2, style: "resize: none;" %>
+                     <%= f.text_area :body, class: "form-control form-control-sm mb-2 border-0 shadow-sm", placeholder: "Write your reply...", rows: 2, style: "resize: none;" %>
                      <div class="text-end">
-                       <%= f.submit "Gửi phản hồi", class: "btn btn-sm btn-primary fw-bold" %>
+                        <%= f.submit "Submit reply", class: "btn btn-sm btn-primary fw-bold" %>
                      </div>
                    </div>
                 </div>
@@ -116,13 +116,12 @@
         <div class="mb-3">
           <i class="bi bi-chat-square-quote text-muted opacity-25" style="font-size: 3rem;"></i>
         </div>
-        <h5 class="text-muted fw-normal">Chưa có thảo luận nào</h5>
-        <p class="text-muted small mb-3">Hãy là người đầu tiên đặt câu hỏi cho bài học này!</p>
+        <h5 class="text-muted fw-normal">No discussions yet</h5>
+        <p class="text-muted small mb-3">Be the first to ask a question for this lesson!</p>
         <button type="button" class="btn btn-outline-primary btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#questionModal">
-          Đặt câu hỏi ngay
+          Ask a question
         </button>
       </div>
     <% end %>
   </div>
 </div>
-

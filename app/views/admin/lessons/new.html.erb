@@ -2,23 +2,23 @@
   <div class="admin-lessons__inner">
     <%= link_to admin_course_path(@course_module.course), class: 'admin-lessons__backlink' do %>
       <i class="bi bi-arrow-left"></i>
-      <span>Quay lại khóa học</span>
+      <span>Back to course</span>
     <% end %>
 
     <header class="admin-lessons__hero">
       <div class="admin-lessons__hero-copy">
-        <p class="admin-lessons__eyebrow">Quản lý bài học</p>
-        <h1 class="admin-lessons__title">Thêm bài học mới</h1>
+        <p class="admin-lessons__eyebrow">Lesson management</p>
+        <h1 class="admin-lessons__title">Add new lesson</h1>
         <p class="admin-lessons__subtitle">
-          Chương: <strong><%= @course_module.title %></strong>
+          Module: <strong><%= @course_module.title %></strong>
           <span class="admin-lessons__dot">•</span>
-          Khóa: <strong><%= @course_module.course.title %></strong>
+          Course: <strong><%= @course_module.course.title %></strong>
         </p>
       </div>
 
       <div class="admin-lessons__hero-stats">
         <article class="admin-lessons__stat-card">
-          <span class="admin-lessons__stat-label">Tổng bài học</span>
+          <span class="admin-lessons__stat-label">Total lessons</span>
           <strong class="admin-lessons__stat-value"><%= @lessons.size %></strong>
         </article>
       </div>
@@ -27,17 +27,17 @@
     <div class="admin-lessons__layout">
       <section class="admin-lessons__panel admin-lessons__panel--form">
         <div class="admin-lessons__panel-head">
-          <h2>Thông tin bài học</h2>
-          <p>Tạo nhanh bài học với video hoặc tài liệu đính kèm.</p>
+          <h2>Lesson details</h2>
+          <p>Quickly create a lesson with video or attachments.</p>
         </div>
 
-        <%= render 'form', submit_text: 'Lưu & Thêm bài tiếp' %>
+        <%= render 'form', submit_text: 'Save & Add next lesson' %>
       </section>
 
       <aside class="admin-lessons__panel admin-lessons__panel--list">
         <div class="admin-lessons__list-head">
-          <h2>Danh sách bài học</h2>
-          <span class="admin-lessons__hint"><i class="bi bi-arrows-move"></i> Kéo thả để sắp xếp</span>
+          <h2>Lesson list</h2>
+          <span class="admin-lessons__hint"><i class="bi bi-arrows-move"></i> Drag to reorder</span>
         </div>
 
         <% if @lessons.any? %>
@@ -62,14 +62,14 @@
                 <div class="admin-lessons__lesson-actions">
                   <%= link_to edit_admin_lesson_path(lesson), class: 'admin-lessons__lesson-action admin-lessons__lesson-action--edit' do %>
                     <i class="bi bi-pencil-square"></i>
-                    <span>Sửa</span>
+                    <span>Edit</span>
                   <% end %>
 
                   <%= link_to admin_lesson_path(lesson),
                               class: 'admin-lessons__lesson-action admin-lessons__lesson-action--delete',
-                              data: { turbo_method: :delete, turbo_confirm: 'Xóa bài học này?' } do %>
+                              data: { turbo_method: :delete, turbo_confirm: 'Delete this lesson?' } do %>
                     <i class="bi bi-trash"></i>
-                    <span>Xóa</span>
+                    <span>Delete</span>
                   <% end %>
                 </div>
               </article>
@@ -78,7 +78,7 @@
         <% else %>
           <div class="admin-lessons__empty">
             <i class="bi bi-inbox"></i>
-            <p>Chưa có bài học nào trong chương này. Hãy bắt đầu thêm ở panel bên trái.</p>
+            <p>No lessons in this module yet. Start adding from the left panel.</p>
           </div>
         <% end %>
       </aside>

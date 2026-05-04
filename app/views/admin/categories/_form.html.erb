@@ -27,8 +27,8 @@
         <i class="bi bi-folder-plus"></i>
       </div>
       <div>
-        <h2 class="cat-form__card-title">Thông tin danh mục</h2>
-        <p class="cat-form__card-subtitle">Điền đầy đủ thông tin để tạo hoặc cập nhật danh mục</p>
+        <h2 class="cat-form__card-title">Category information</h2>
+        <p class="cat-form__card-subtitle">Provide the details to create or update the category.</p>
       </div>
     </div>
 
@@ -43,8 +43,8 @@
         <%= form.text_field :name,
             class: 'cat-form__input',
             required: true,
-            placeholder: "VD: Lập trình Web, Thiết kế UI/UX..." %>
-        <span class="cat-form__hint">Tên danh mục sẽ hiển thị công khai trên hệ thống.</span>
+          placeholder: "e.g., Web Development, UI/UX Design..." %>
+        <span class="cat-form__hint">The category name will be shown publicly.</span>
       </div>
 
       <%# Description %>
@@ -56,8 +56,8 @@
         <%= form.text_area :description,
             class: 'cat-form__textarea',
             rows: 4,
-            placeholder: "Mô tả ngắn gọn về danh mục này..." %>
-        <span class="cat-form__hint">Tùy chọn — giúp người dùng hiểu rõ hơn về danh mục.</span>
+          placeholder: "Brief description of this category..." %>
+        <span class="cat-form__hint">Optional — helps learners understand the category.</span>
       </div>
 
       <%# Parent category %>

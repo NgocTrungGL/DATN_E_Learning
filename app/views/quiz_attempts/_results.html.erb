@@ -1,32 +1,32 @@
 <div class="d-flex justify-content-center mt-5">
   <div class="card shadow-lg p-4" style="max-width: 520px; width: 100%; border-radius: 18px;">
     <div class="text-center">
-      <h2 class="fw-bold mb-3">🎉 Hoàn thành Quiz!</h2>
+      <h2 class="fw-bold mb-3">🎉 Quiz completed!</h2>
 
       <h4 class="my-4">
-        Kết quả:
+        Result:
         <span class="fw-bold
           <%= quiz_attempt.is_passed? ? 'text-success' : 'text-danger' %>">
-          <%= quiz_attempt.is_passed? ? "Đã đậu ✔️" : "Chưa đậu ❌" %>
+          <%= quiz_attempt.is_passed? ? "Passed ✔️" : "Not passed ❌" %>
         </span>
       </h4>
 
       <div class="mb-3">
         <p class="fs-4 mb-1">
-          Điểm của bạn:
+          Your score:
           <strong class="text-primary">
             <%= number_to_percentage(quiz_attempt.score, precision: 2) %>
           </strong>
         </p>
 
         <p class="text-muted">
-          (Yêu cầu đạt:
+          (Passing score:
             <%= number_to_percentage(quiz_attempt.quiz.pass_score, precision: 0) %>)
         </p>
       </div>
 
       <p class="text-secondary fst-italic">
-        🕒 Bài thi kết thúc lúc:
+        🕒 Quiz finished at:
         <br>
         <strong><%= quiz_attempt.finished_at.strftime("%H:%M:%S %d/%m/%Y") %></strong>
       </p>
@@ -34,11 +34,11 @@
       <hr class="my-4">
 
       <% if quiz_attempt.quiz.lesson %>
-        <%= link_to "⬅️ Quay lại Bài học",
+        <%= link_to "⬅️ Back to Lesson",
               lesson_path(quiz_attempt.quiz.lesson),
               class: "btn btn-outline-primary w-100 py-2 fw-semibold" %>
       <% else %>
-        <%= link_to "⬅️ Quay lại Khóa học",
+        <%= link_to "⬅️ Back to Course",
               course_path(quiz_attempt.quiz.course),
               class: "btn btn-outline-primary w-100 py-2 fw-semibold" %>
       <% end %>

@@ -1,6 +1,6 @@
 <h2 class="fw-bold text-primary mb-4">
   <i class="bi bi-shop me-2"></i>
-  Mua thêm License
+  Buy more licenses
 </h2>
 
 <div class="row">
@@ -41,19 +41,19 @@
           <div class="mb-3">
             <h4 class="fw-bold text-success mb-0">
               <%= number_to_currency(course.price) %>
-              <small class="fs-6 text-muted fw-normal">/vé</small>
+              <small class="fs-6 text-muted fw-normal">/seat</small>
             </h4>
 
             <!-- Promotion -->
             <div class="alert alert-warning border-warning p-2 mt-2 mb-0 small bg-warning bg-opacity-10 text-dark">
               <div class="fw-bold">
                 <i class="bi bi-tag-fill me-1"></i>
-                Ưu đãi Doanh nghiệp:
+                Business offer:
               </div>
-              Mua từ <strong>10 vé</strong> giảm ngay <strong>10%</strong>.
+              Buy <strong>10 seats</strong> and get <strong>10%</strong> off.
               <br>
-              (Chỉ còn
-              <strong><%= number_to_currency(course.price * 0.9) %></strong>/vé)
+              (Now only
+              <strong><%= number_to_currency(course.price * 0.9) %></strong>/seat)
             </div>
           </div>
 
@@ -68,7 +68,7 @@
             <!-- Quantity (FIXED UI) -->
             <div class="mb-3">
               <label class="form-label fw-semibold small mb-1">
-                Số lượng
+                Quantity
               </label>
 
               <%= f.number_field :quantity,
@@ -82,7 +82,7 @@
             <%= f.button type: "submit",
                           class: "btn btn-primary w-100 fw-bold" do %>
               <i class="bi bi-cart-plus me-2"></i>
-              Mua ngay
+              Buy now
             <% end %>
 
           <% end %>
@@ -93,6 +93,6 @@
 </div>
 <% if @courses.empty? %>
   <div class="alert alert-info">
-    Hiện không có khóa học nào trong kho.
+    No courses are available in the catalog right now.
   </div>
 <% end %>

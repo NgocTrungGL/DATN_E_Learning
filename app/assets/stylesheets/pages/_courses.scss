@@ -175,6 +175,19 @@
 
       &::placeholder { color: $text-muted; }
     }
+
+    .search-clear-icon {
+      color: $text-muted;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: $t;
+      text-decoration: none;
+      margin-left: 0.5rem;
+
+      &:hover { color: $text-dark; transform: scale(1.1); }
+    }
   }
 
   // Select dropdowns
@@ -231,19 +244,37 @@
     &:active { transform: translateY(0); }
   }
 
-  // Clear filters link
-  .filter-clear-link {
+  // Filter actions (Apply + Clear)
+  .filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  // Clear filters button
+  .filter-clear-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    font-size: 0.83rem;
-    color: $text-muted;
+    background: #ffffff;
+    color: #ef4444;
+    border: 1.5px solid #fee2e2;
+    border-radius: $radius-md;
+    padding: 0.575rem 1.25rem;
+    font-size: 0.855rem;
+    font-weight: 700;
     text-decoration: none;
-    font-weight: 600;
     transition: $t;
     white-space: nowrap;
 
-    &:hover { color: $text-mid; }
+    &:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #b91c1c;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    }
+
+    .bi { font-size: 0.95rem; }
   }
 
   // Results count

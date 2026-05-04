@@ -6,7 +6,7 @@
   next_id = all_ids[current_index + 1]
 %>
 
-<h4 class="mb-4 text-primary fw-bold">Câu hỏi: <%= question.question_text %></h4>
+<h4 class="mb-4 text-primary fw-bold">Question: <%= question.question_text %></h4>
 
 <%= form_with(model: quiz_answer, url: quiz_attempt_quiz_answers_path(quiz_attempt), id: "question-form") do |f| %>
 
@@ -34,17 +34,17 @@
 
     <% if prev_id %>
       <%= link_to quiz_attempt_path(quiz_attempt, question_id: prev_id), class: "btn btn-outline-secondary px-4" do %>
-        <i class="bi bi-arrow-left"></i> Câu trước
+        <i class="bi bi-arrow-left"></i> Previous
       <% end %>
     <% else %>
-      <button class="btn btn-outline-secondary px-4" disabled><i class="bi bi-arrow-left"></i> Câu trước</button>
+      <button class="btn btn-outline-secondary px-4" disabled><i class="bi bi-arrow-left"></i> Previous</button>
     <% end %>
 
     <button type="submit" class="btn btn-primary px-4 fw-bold">
       <% if next_id %>
-        Lưu & Câu sau <i class="bi bi-arrow-right"></i>
+        Save & Next <i class="bi bi-arrow-right"></i>
       <% else %>
-        Lưu câu trả lời <i class="bi bi-check2"></i>
+        Save answer <i class="bi bi-check2"></i>
       <% end %>
     </button>
 

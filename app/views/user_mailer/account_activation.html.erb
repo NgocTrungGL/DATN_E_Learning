@@ -4,12 +4,12 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   </head>
   <body>
-    <h1>Xin chào <%= @user.name %>,</h1>
+    <h1>Hello <%= @user.name %>,</h1>
 
-    <p>Cảm ơn bạn đã đăng ký. Click vào link dưới để xác nhận:</p>
+    <p>Thanks for signing up. Click the link below to confirm:</p>
 
     <p>
-      <%= link_to "Kích hoạt tài khoản ngay", edit_email_confirmation_url(@token) %>
+      <%= link_to "Activate your account", edit_email_confirmation_url(@token) %>
     </p>
   </body>
 </html>

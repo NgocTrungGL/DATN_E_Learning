@@ -7,7 +7,7 @@
   <div class="qz-backlink">
     <%= link_to admin_quizzes_path do %>
       <i class="bi bi-arrow-left"></i>
-      <span>Quay lại danh sách</span>
+      <span>Back to list</span>
     <% end %>
   </div>
 
@@ -27,7 +27,7 @@
           <% if @quiz.lesson %>
             <i class="bi bi-layers"></i> <%= @quiz.lesson.title %> &mdash; Mini Quiz
           <% else %>
-            <i class="bi bi-mortarboard"></i> Bài kiểm tra cuối khóa
+            <i class="bi bi-mortarboard"></i> Final course quiz
           <% end %>
         </span>
       </div>
@@ -35,7 +35,7 @@
     <div class="qz-page__header-right">
       <%= link_to edit_admin_quiz_path(@quiz), class: 'qz-hero-btn qz-hero-btn--secondary' do %>
         <i class="bi bi-gear"></i>
-        <span>Cấu hình</span>
+        <span>Configure</span>
       <% end %>
     </div>
   </header>
@@ -53,35 +53,35 @@
 
     <div class="qz-config-card">
       <div class="qz-config-card__header">
-        <i class="bi bi-sliders"></i> Cấu hình đề thi hiện tại
+        <i class="bi bi-sliders"></i> Current quiz configuration
       </div>
       <div class="qz-config-card__body">
         <div class="qz-stats-grid">
           <div class="qz-stat">
-            <span class="qz-stat__label">Tổng số câu</span>
+            <span class="qz-stat__label">Total questions</span>
             <span class="qz-stat__value"><%= @quiz.total_questions %></span>
           </div>
           <div class="qz-stat">
-            <span class="qz-stat__label">Câu Dễ</span>
+            <span class="qz-stat__label">Easy</span>
             <span class="qz-stat__value qz-stat__value--easy"><%= @quiz.easy_count %></span>
           </div>
           <div class="qz-stat">
-            <span class="qz-stat__label">Câu Trung bình</span>
+            <span class="qz-stat__label">Medium</span>
             <span class="qz-stat__value qz-stat__value--medium"><%= @quiz.medium_count %></span>
           </div>
           <div class="qz-stat">
-            <span class="qz-stat__label">Câu Khó</span>
+            <span class="qz-stat__label">Hard</span>
             <span class="qz-stat__value qz-stat__value--hard"><%= @quiz.hard_count %></span>
           </div>
         </div>
         <div class="qz-config-card__scoring">
           <i class="bi bi-calculator"></i>
-          Kiểu chấm điểm: <strong><%= @quiz.weighted? ? "Phân cấp (Khó x3, TB x2)" : "Đồng cấp (Mọi câu bằng điểm)" %></strong>
+          Scoring: <strong><%= @quiz.weighted? ? "Weighted (Hard x3, Medium x2)" : "Equal (all questions)" %></strong>
         </div>
       </div>
       <div class="qz-config-card__footer">
         <i class="bi bi-info-circle"></i>
-        Để thay đổi số lượng câu hỏi, vui lòng bấm nút "Cấu hình" ở trên.
+        To change question counts, click "Configure" above.
       </div>
     </div>
 
@@ -93,14 +93,14 @@
       <%# Left: Question List %>
       <div class="qz-questions-panel">
         <div class="qz-questions-panel__header">
-          <span>Câu hỏi đã chọn</span>
+          <span>Selected questions</span>
           <span class="qz-count-badge"><%= @quiz_questions.count %></span>
         </div>
 
         <% if @quiz_questions.empty? %>
           <div class="qz-questions-panel__empty">
             <i class="bi bi-inbox"></i>
-            <p>Chưa có câu hỏi nào được thêm.<br>Hãy chọn câu hỏi từ cột bên phải.</p>
+            <p>No questions added yet.<br>Select questions from the right panel.</p>
           </div>
         <% else %>
           <div class="qz-questions-panel__list">
@@ -111,7 +111,7 @@
                   <p class="qz-question-item__text"><%= truncate(q.question_text, length: 90) %></p>
                   <div class="qz-question-item__tags">
                     <span class="qz-tag qz-tag--<%= q.question_type == 'single' ? 'single' : 'multiple' %>">
-                      <%= q.question_type == 'single' ? '1 Đáp án' : 'Nhiều đáp án' %>
+                      <%= q.question_type == 'single' ? 'Single answer' : 'Multiple answers' %>
                     </span>
                     <span class="qz-tag qz-tag--<%= q.difficulty %>">
                       <%= q.difficulty.capitalize %>
@@ -134,24 +134,24 @@
       <%# Right: Add from Bank %>
       <div class="qz-sidebar">
         <div class="qz-sidebar__header">
-          <i class="bi bi-plus-circle"></i> Thêm từ Ngân hàng
+          <i class="bi bi-plus-circle"></i> Add from question bank
         </div>
         <div class="qz-sidebar__body">
           <p class="qz-sidebar__hint">
-            Chọn câu hỏi từ khóa học <strong><%= @quiz.course.title %></strong>:
+            Select questions from <strong><%= @quiz.course.title %></strong>:
           </p>
 
           <%= form_with(url: admin_quiz_quiz_questions_path(@quiz), method: :post) do |f| %>
             <% if @available_questions.any? %>
-              <label class="qz-sidebar__label">Danh sách câu hỏi có sẵn</label>
+              <label class="qz-sidebar__label">Available questions</label>
               <%= f.collection_select :question_id, @available_questions, :id,
                     ->(q){ "#{truncate(q.question_text, length: 50)} (#{q.difficulty})" },
-                    { prompt: "--- Chọn câu hỏi ---" },
+                    { prompt: "--- Select a question ---" },
                     { class: "qz-sidebar__select", required: true } %>
-              <%= f.submit "Thêm vào Quiz", class: "qz-sidebar__submit" %>
+              <%= f.submit "Add to quiz", class: "qz-sidebar__submit" %>
             <% else %>
               <div class="qz-sidebar__exhausted">
-                <i class="bi bi-check-all"></i> Đã thêm hết tất cả câu hỏi của khóa học này vào Quiz.
+                <i class="bi bi-check-all"></i> All questions from this course are already in the quiz.
               </div>
             <% end %>
           <% end %>
@@ -159,7 +159,7 @@
           <hr class="qz-sidebar__divider">
           <%= link_to new_admin_question_path(course_id: @quiz.course_id),
               class: "qz-sidebar__create-btn", target: "_blank" do %>
-            <i class="bi bi-pencil-square"></i> Tạo câu hỏi mới cho khóa này
+            <i class="bi bi-pencil-square"></i> Create a new question for this course
           <% end %>
         </div>
       </div>

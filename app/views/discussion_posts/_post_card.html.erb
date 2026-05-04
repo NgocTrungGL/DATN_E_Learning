@@ -1,0 +1,37 @@
+<%= link_to course_discussion_post_path(course, post), class: "disc-card #{'disc-card--pinned' if post.pinned?}" do %>
+  <div class="disc-card__left">
+    <div class="disc-card__avatar">
+      <%= post.author_name[0].upcase %>
+    </div>
+  </div>
+  <div class="disc-card__body">
+    <div class="disc-card__meta">
+      <span class="disc-card__author">
+        <%= post.author_name %>
+        <% if post.instructor_post? %>
+          <span class="disc-card__badge disc-card__badge--instructor">
+            <i class="bi bi-patch-check-fill"></i> Instructor
+          </span>
+        <% end %>
+      </span>
+      <span class="disc-card__time">
+        <i class="bi bi-clock"></i> <%= time_ago_in_words(post.created_at) %> ago
+      </span>
+    </div>
+    <h3 class="disc-card__title">
+      <% if post.pinned? %>
+        <i class="bi bi-pin-angle-fill disc-card__pin-icon"></i>
+      <% end %>
+      <% if post.locked? %>
+        <i class="bi bi-lock-fill disc-card__lock-icon"></i>
+      <% end %>
+      <%= post.title %>
+    </h3>
+    <p class="disc-card__excerpt"><%= truncate(post.content, length: 120) %></p>
+  </div>
+  <div class="disc-card__right">
+    <span class="disc-card__replies-count">
+      <i class="bi bi-chat-left-text"></i> <%= post.replies_count %>
+    </span>
+  </div>
+<% end %>

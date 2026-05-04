@@ -33,7 +33,7 @@
                 <span class="fw-bold"><%= current_user.name %></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                <li><%= link_to "Đăng xuất", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item text-danger" %></li>
+                <li><%= link_to "Sign out", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item text-danger" %></li>
               </ul>
             </div>
           </div>

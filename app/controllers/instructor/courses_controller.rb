@@ -67,7 +67,7 @@ class Instructor::CoursesController < Instructor::BaseController
 
   def course_params
     params.require(:course).permit(:title, :description, :price,
-                                   :thumbnail_url, :category_id)
+                                   :thumbnail_url, :category_id, :allow_admin_discounts)
   end
 
   def submittable_status?

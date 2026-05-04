@@ -38,13 +38,9 @@
       <span class="card-badge badge-<%= badge[:label] %>"><%= badge[:text] %></span>
     <% end %>
 
-    <span class="card-price-overlay <%= 'price-free' if course.free? %>">
-      <% if course.free? %>
-        Free
-      <% else %>
-        <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
-      <% end %>
-    </span>
+    <% if course.has_discount? %>
+      <span class="card-badge-discount"><%= course.discount_label %></span>
+    <% end %>
   </div>
 
   <%# ── Body ──────────────────────────────────────────── %>
@@ -96,17 +92,23 @@
 
   <%# ── Card Footer ────────────────────────────────────── %>
   <div class="card-footer">
-    <span class="card-price-label <%= 'is-free' if course.free? %>">
-      <% if course.free? %>
-        <i class="bi bi-award-fill"></i> Free
-      <% else %>
-        <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+    <div class="card-price-group">
+      <span class="card-price-label <%= 'is-free' if course.free? %>">
+        <% if course.free? %>
+          <i class="bi bi-award-fill"></i> Free
+        <% else %>
+          <%= number_to_currency(course.discounted_price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+        <% end %>
+      </span>
+
+      <% if !course.free? && course.has_discount? %>
+        <span class="card-price-original">
+          <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+        </span>
       <% end %>
-    </span>
+    </div>
 
     <div class="card-actions">
-      <%= link_to "View Course", course_path(course), class: "btn-view-course" %>
-
       <% if current_user && !course.free? %>
         <% if current_user.cart&.courses&.include?(course) %>
           <%= link_to cart_path, class: "btn-cart btn-cart-done", title: "Already in cart" do %>

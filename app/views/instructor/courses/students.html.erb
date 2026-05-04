@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h3>Học viên khóa: <%= @course.title %></h3>
-  <%= link_to "Quay lại", instructor_course_path(@course), class: "btn btn-outline-secondary" %>
+  <h3>Students in course: <%= @course.title %></h3>
+  <%= link_to "Back", instructor_course_path(@course), class: "btn btn-outline-secondary" %>
 </div>
 
 <div class="card shadow-sm">
@@ -8,10 +8,10 @@
     <table class="table table-hover align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>Học viên</th>
+          <th>Student</th>
           <th>Email</th>
-          <th>Ngày tham gia</th>
-          <th>Tiến độ</th>
+          <th>Joined on</th>
+          <th>Progress</th>
         </tr>
       </thead>
       <tbody>
@@ -40,7 +40,7 @@
         <% end %>
 
         <% if @enrollments.empty? %>
-          <tr><td colspan="4" class="text-center text-muted py-4">Chưa có học viên nào.</td></tr>
+          <tr><td colspan="4" class="text-center text-muted py-4">No students yet.</td></tr>
         <% end %>
       </tbody>
     </table>

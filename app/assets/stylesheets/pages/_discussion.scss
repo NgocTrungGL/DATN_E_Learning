@@ -1,0 +1,541 @@
+// ============================================================
+// LUMINA DISCUSSION SUITE — Premium Course Chat
+// Senior Product Designer Redesign
+// Part of the 7-1 Architectural Pattern — Strict BEM
+// ============================================================
+
+:root {
+  --lumina-primary: #0d9488;
+  --lumina-primary-soft: #f0fdfa;
+  --lumina-instructor: #4f46e5;
+  --lumina-instructor-soft: #eef2ff;
+  --lumina-bg: #f8fafc;
+  --lumina-surface: #ffffff;
+  --lumina-sidebar: #f1f5f9;
+  --lumina-border: #e2e8f0;
+  --lumina-text-main: #1e293b;
+  --lumina-text-muted: #64748b;
+  --lumina-radius: 12px;
+  --lumina-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --lumina-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --lumina-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-page-body {
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .lumina {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr 0px; 
+    width: 100vw;
+    background: var(--lumina-bg);
+    overflow: hidden;
+    transition: var(--lumina-transition);
+
+    &--panel-open {
+      grid-template-columns: 280px 1fr 320px;
+    }
+  }
+}
+
+.lumina {
+  display: grid;
+  grid-template-columns: 280px 1fr 0px; // Default: Right panel collapsed
+  height: 100vh; // Fallback
+  width: 100vw;
+  background: var(--lumina-bg);
+  overflow: hidden;
+  transition: var(--lumina-transition);
+
+  &--panel-open {
+    grid-template-columns: 280px 1fr 320px;
+  }
+
+  // ── SIDEBAR (LEFT) ──────────────────────────────────────────
+  &__sidebar {
+    background: var(--lumina-sidebar);
+    border-right: 1px solid var(--lumina-border);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+
+    @media (max-width: 1024px) {
+      display: none; // Collapse sidebar on tablets/phones
+    }
+  }
+
+  &__course-info {
+    .course-mini {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--lumina-surface);
+      border-radius: var(--lumina-radius);
+      box-shadow: var(--lumina-shadow);
+
+      &__icon {
+        width: 40px;
+        height: 40px;
+        background: var(--lumina-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 1.25rem;
+      }
+
+      &__details {
+        flex: 1;
+        min-width: 0;
+      }
+
+      &__title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--lumina-text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+      }
+
+      &__tag {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--lumina-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
+    }
+  }
+
+  &__search {
+    position: relative;
+    
+    i {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--lumina-text-muted);
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.6rem 0.75rem 0.6rem 2.25rem;
+      background: var(--lumina-surface);
+      border: 1px solid var(--lumina-border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: var(--lumina-primary);
+      }
+    }
+  }
+
+  &__nav-section {
+    flex: 1;
+    overflow-y: auto;
+
+    &-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--lumina-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      padding-left: 0.5rem;
+    }
+  }
+
+  &__member {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    &-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--lumina-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.8rem;
+      position: relative;
+    }
+
+    &-status {
+      position: absolute;
+      right: -1px;
+      bottom: -1px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--lumina-sidebar);
+      background: #cbd5e1;
+
+      &--online { background: #22c55e; }
+    }
+
+    &-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--lumina-text-main);
+    }
+
+    &--instructor {
+      .lumina__member-avatar {
+        background: var(--lumina-instructor);
+        color: white;
+      }
+    }
+  }
+
+  // ── MAIN CHAT AREA (CENTER) ─────────────────────────────────
+  &__main {
+    display: flex;
+    flex-direction: column;
+    background: var(--lumina-surface);
+    position: relative;
+    box-shadow: -4px 0 15px -3px rgba(0, 0, 0, 0.05);
+  }
+
+  &__header {
+    height: 64px;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--lumina-border);
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.8);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+
+    .channel-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      i { color: var(--lumina-text-muted); font-size: 1.25rem; }
+      h2 { font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--lumina-text-main); }
+    }
+
+    .header-tools {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+
+  &__messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem 0;
+    
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-thumb { background: var(--lumina-border); border-radius: 10px; }
+  }
+
+  &__footer {
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  // ── MESSAGE COMPONENT ───────────────────────────────────────
+  &__msg {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    position: relative;
+    transition: background 0.2s;
+
+    &:hover {
+      background: var(--lumina-bg);
+      .lumina__msg-actions { opacity: 1; transform: translateY(0); }
+    }
+
+    &--instructor {
+      background: var(--lumina-instructor-soft);
+      &:hover { background: #e0e7ff; }
+    }
+
+    &--resolved {
+      opacity: 0.8;
+      border-left: 3px solid #22c55e;
+    }
+
+    &-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px; // Squircle for modern look
+      background: var(--lumina-border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--lumina-text-muted);
+      box-shadow: var(--lumina-shadow);
+    }
+
+    &-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    &-author {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--lumina-text-main);
+    }
+
+    &-time {
+      font-size: 0.75rem;
+      color: var(--lumina-text-muted);
+    }
+
+    &-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+
+      &--instructor {
+        background: var(--lumina-instructor);
+        color: white;
+      }
+    }
+
+    &-subject {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--lumina-text-main);
+      margin: 0 0 0.5rem;
+    }
+
+    &-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--lumina-text-main);
+      
+      p { margin: 0; }
+    }
+
+    &-thread-btn {
+      margin-top: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      background: var(--lumina-surface);
+      border: 1px solid var(--lumina-border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--lumina-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: var(--lumina-primary);
+        box-shadow: var(--lumina-shadow);
+      }
+    }
+
+    &-actions {
+      position: absolute;
+      top: -16px;
+      right: 1.5rem;
+      background: var(--lumina-surface);
+      border: 1px solid var(--lumina-border);
+      border-radius: 8px;
+      padding: 0.25rem;
+      display: flex;
+      gap: 0.125rem;
+      box-shadow: var(--lumina-shadow-lg);
+      opacity: 0;
+      transform: translateY(5px);
+      transition: all 0.2s;
+      z-index: 10;
+    }
+  }
+
+  // ── INPUT BAR ───────────────────────────────────────────────
+  &__input-container {
+    background: var(--lumina-bg);
+    border: 1px solid var(--lumina-border);
+    border-radius: var(--lumina-radius);
+    padding: 0.75rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus-within {
+      border-color: var(--lumina-primary);
+      box-shadow: 0 0 0 4px var(--lumina-primary-soft);
+      background: var(--lumina-surface);
+    }
+
+    textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      padding: 0.4rem 0;
+      resize: none;
+      color: var(--lumina-text-main);
+
+      &::placeholder { color: var(--lumina-text-muted); }
+    }
+  }
+
+  // ── INFO PANEL (RIGHT) ──────────────────────────────────────
+  &__info-panel {
+    background: var(--lumina-surface);
+    border-left: 1px solid var(--lumina-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__panel-header {
+    height: 64px;
+    padding: 0 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--lumina-border);
+
+    h3 { font-size: 1rem; font-weight: 700; margin: 0; color: var(--lumina-text-main); }
+  }
+
+  &__panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  &__pinned-card {
+    padding: 1rem;
+    background: var(--lumina-primary-soft);
+    border: 1px solid var(--lumina-primary);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    position: relative;
+
+    p { font-size: 0.85rem; line-height: 1.5; margin: 0; color: var(--lumina-text-main); }
+    
+    &::before {
+      content: '\F4F0'; // bi-pin-angle-fill
+      font-family: 'bootstrap-icons';
+      position: absolute;
+      top: -10px;
+      right: -5px;
+      background: var(--lumina-primary);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// ── UTILS ───────────────────────────────────────────────────
+
+.tool-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--lumina-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--lumina-bg);
+    color: var(--lumina-primary);
+  }
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--lumina-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--lumina-bg);
+    color: var(--lumina-primary);
+  }
+
+  &--success:hover {
+    background: #f0fdf4;
+    color: #22c55e;
+  }
+}
+
+.send-btn {
+  background: var(--lumina-primary);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}

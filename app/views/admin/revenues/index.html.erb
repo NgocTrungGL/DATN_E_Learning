@@ -4,8 +4,8 @@
 <div class="admin-page-header">
   <div class="admin-page-header__inner">
     <div>
-      <div class="admin-page-header__badge"><i class="bi bi-cash-coin"></i> Tài chính</div>
-      <h1 class="admin-page-header__title">Tài chính Hệ thống</h1>
+      <div class="admin-page-header__badge"><i class="bi bi-cash-coin"></i> Finance</div>
+      <h1 class="admin-page-header__title">Platform Finance</h1>
     </div>
   </div>
 </div>
@@ -17,28 +17,28 @@
     <div class="admin-stats__card admin-stats__card--accent">
       <i class="bi bi-safe2-fill admin-stats__icon"></i>
       <div class="admin-stats__value">
-        <%= number_to_currency(@wallet.balance, unit: "₫", precision: 0, format: "%n %u") %>
+        <%= number_to_currency(@wallet.balance, unit: "VND", precision: 0, format: "%n %u") %>
       </div>
-      <div class="admin-stats__label">Ví Admin (30% Phí)</div>
-      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Số tiền thực tế bạn có thể rút</div>
+      <div class="admin-stats__label">Admin Wallet (30% Fee)</div>
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Amount you can withdraw</div>
     </div>
 
     <div class="admin-stats__card admin-stats__card--success">
       <i class="bi bi-graph-up-arrow admin-stats__icon"></i>
       <div class="admin-stats__value">
-        <%= number_to_currency(@total_platform_revenue, unit: "₫", precision: 0, format: "%n %u") %>
+        <%= number_to_currency(@total_platform_revenue, unit: "VND", precision: 0, format: "%n %u") %>
       </div>
-      <div class="admin-stats__label">Tổng doanh thu (Lifetime)</div>
-      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Tổng phí 30% đã thu từ trước đến nay</div>
+      <div class="admin-stats__label">Total Revenue (Lifetime)</div>
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Total 30% fee collected to date</div>
     </div>
 
     <div class="admin-stats__card admin-stats__card--warning">
       <i class="bi bi-bank admin-stats__icon"></i>
       <div class="admin-stats__value">
-        <%= number_to_currency(@total_system_balance, unit: "₫", precision: 0, format: "%n %u") %>
+        <%= number_to_currency(@total_system_balance, unit: "VND", precision: 0, format: "%n %u") %>
       </div>
-      <div class="admin-stats__label">Tổng System Hold</div>
-      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Tổng số dư tất cả ví (Admin + GV)</div>
+      <div class="admin-stats__label">Total System Hold</div>
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Total balance across all wallets (Admin + Instructors)</div>
     </div>
   </div>
 
@@ -46,19 +46,19 @@
   <div style="display:grid; grid-template-columns:1fr 380px; gap:1.5rem; margin-bottom:2rem;">
     <div class="admin-card">
       <div class="admin-card__header">
-        <h5><i class="bi bi-bar-chart-line" style="color:#0d9488;"></i> Biểu đồ doanh thu (30 ngày gần nhất)</h5>
+        <h5><i class="bi bi-bar-chart-line" style="color:#0d9488;"></i> Revenue chart (last 30 days)</h5>
       </div>
       <div class="admin-card__body">
-        <%= line_chart @revenue_chart_data, prefix: "₫", thousands: ",", colors: ["#0d9488"], height: "300px", empty: "Chưa có dữ liệu doanh thu" %>
+        <%= line_chart @revenue_chart_data, prefix: "VND ", thousands: ",", colors: ["#0d9488"], height: "300px", empty: "No revenue data yet" %>
       </div>
     </div>
 
     <div class="admin-card">
       <div class="admin-card__header">
-        <h5><i class="bi bi-pie-chart-fill" style="color:#10b981;"></i> Top khóa học bán chạy</h5>
+        <h5><i class="bi bi-pie-chart-fill" style="color:#10b981;"></i> Top-selling courses</h5>
       </div>
       <div class="admin-card__body">
-        <%= pie_chart @top_courses_data, donut: true, height: "300px", empty: "Chưa có dữ liệu" %>
+        <%= pie_chart @top_courses_data, donut: true, height: "300px", empty: "No data yet" %>
       </div>
     </div>
   </div>
@@ -66,17 +66,17 @@
   <%# ── Revenue Transaction Log ───────────────────────────── %>
   <div class="admin-card">
     <div class="admin-card__header">
-      <h5><i class="bi bi-journal-text" style="color:#2563eb;"></i> Nhật ký doanh thu (Platform Fee)</h5>
+      <h5><i class="bi bi-journal-text" style="color:#2563eb;"></i> Revenue log (Platform Fee)</h5>
     </div>
     <div style="overflow:hidden;">
       <table class="admin-table">
         <thead>
           <tr>
-            <th>Mã GD</th>
-            <th>Loại giao dịch</th>
-            <th>Số tiền (30%)</th>
-            <th>Nguồn gốc</th>
-            <th>Thời gian</th>
+            <th>Transaction ID</th>
+            <th>Transaction type</th>
+            <th>Amount (30%)</th>
+            <th>Source</th>
+            <th>Time</th>
           </tr>
         </thead>
         <tbody>
@@ -85,20 +85,20 @@
               <td style="font-family:monospace; color:#94a3b8; font-size:0.8rem;">#<%= txn.id %></td>
               <td>
                 <% if txn.platform_fee? %>
-                  <span class="admin-badge admin-badge--info"><i class="bi bi-pie-chart-fill"></i> Phí nền tảng</span>
+                  <span class="admin-badge admin-badge--info"><i class="bi bi-pie-chart-fill"></i> Platform fee</span>
                 <% else %>
                   <span class="admin-badge admin-badge--neutral"><%= txn.transaction_type %></span>
                 <% end %>
               </td>
               <td style="font-weight:800; font-size:1.05rem; color:#10b981;">
-                +<%= number_to_currency(txn.amount, unit: "₫", precision: 0, format: "%n %u") %>
+                +<%= number_to_currency(txn.amount, unit: "VND", precision: 0, format: "%n %u") %>
               </td>
               <td>
                 <% if txn.source.is_a?(Enrollment) %>
                   <div class="admin-table__title"><%= txn.source.course.title %></div>
                   <div class="admin-table__sub">
-                    Giá gốc: <%= number_to_currency(txn.source.price, unit: "₫", precision: 0) %>
-                    | HV: <%= txn.source.user.name %>
+                    Base price: <%= number_to_currency(txn.source.price, unit: "VND", precision: 0) %>
+                    | Student: <%= txn.source.user.name %>
                   </div>
                 <% end %>
               </td>
@@ -111,7 +111,7 @@
               <td colspan="5">
                 <div class="admin-table__empty">
                   <i class="bi bi-cash-coin"></i>
-                  <p>Chưa có doanh thu nào.</p>
+                  <p>No revenue yet.</p>
                 </div>
               </td>
             </tr>

@@ -1,0 +1,25 @@
+<div id="reply-form">
+  <%= form_with model: reply,
+        url: course_discussion_post_discussion_replies_path(course, post),
+        class: "disc-reply-form" do |f| %>
+    <div class="disc-reply-form__wrap">
+      <div class="disc-reply-form__avatar">
+        <%= current_user.name[0].upcase %>
+      </div>
+      <div class="disc-reply-form__input-group">
+        <%= f.text_area :content, rows: 3,
+            placeholder: "Write your reply...",
+              class: "disc-reply-form__textarea",
+              required: true %>
+        <% if reply.errors[:content].any? %>
+          <span class="disc-reply-form__error"><%= reply.errors[:content].first %></span>
+        <% end %>
+      </div>
+    </div>
+    <div class="disc-reply-form__actions">
+      <button type="submit" class="disc-reply-form__submit">
+        <i class="bi bi-reply"></i> Submit reply
+      </button>
+    </div>
+  <% end %>
+</div>

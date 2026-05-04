@@ -34,13 +34,13 @@
         <thead>
           <tr>
             <th class="crs-table__th crs-table__th--course">
-              <i class="bi bi-play-circle"></i> Khóa học
+              <i class="bi bi-play-circle"></i> Course
             </th>
             <th class="crs-table__th crs-table__th--category">
-              <i class="bi bi-tag"></i> Danh mục
+              <i class="bi bi-tag"></i> Category
             </th>
             <th class="crs-table__th crs-table__th--price">
-              <i class="bi bi-currency-dollar"></i> Giá
+              <i class="bi bi-currency-dollar"></i> Price
             </th>
             <th class="crs-table__th crs-table__th--actions">
               <%= t('admin.courses.index.actions') %>
@@ -68,7 +68,7 @@
                       <%= link_to course.title, admin_course_path(course), class: 'crs-table__course-link' %>
                     </span>
                     <span class="crs-table__course-desc">
-                      <%= course.description.present? ? truncate(course.description, length: 70) : "Chưa có mô tả" %>
+                      <%= course.description.present? ? truncate(course.description, length: 70) : "No description yet" %>
                     </span>
                   </div>
                 </div>
@@ -84,28 +84,28 @@
               <%# Price %>
               <td class="crs-table__td crs-table__td--price">
                 <% if course.price.present? && course.price > 0 %>
-                  <span class="crs-table__price"><%= number_with_delimiter(course.price.to_i) %>&nbsp;VNĐ</span>
+                  <span class="crs-table__price"><%= number_with_delimiter(course.price.to_i) %>&nbsp;VND</span>
                 <% else %>
-                  <span class="crs-table__price-free">Miễn phí</span>
+                  <span class="crs-table__price-free">Free</span>
                 <% end %>
               </td>
 
               <%# Actions — icon-only buttons with title tooltip %>
               <td class="crs-table__td crs-table__td--actions">
                 <div class="crs-table__action-group">
-                  <%= link_to admin_course_path(course), class: 'crs-btn crs-btn--view', title: 'Xem chi tiết' do %>
-                    <%= image_tag 'view.png', class: 'crs-btn__img', alt: 'Xem' %>
+                  <%= link_to admin_course_path(course), class: 'crs-btn crs-btn--view', title: 'View details' do %>
+                    <%= image_tag 'view.png', class: 'crs-btn__img', alt: 'View' %>
                   <% end %>
-                  <%= link_to new_admin_course_course_module_path(course), class: 'crs-btn crs-btn--module', title: 'Thêm chương' do %>
-                    <%= image_tag 'add.png', class: 'crs-btn__img', alt: 'Thêm chương' %>
+                  <%= link_to new_admin_course_course_module_path(course), class: 'crs-btn crs-btn--module', title: 'Add module' do %>
+                    <%= image_tag 'add.png', class: 'crs-btn__img', alt: 'Add module' %>
                   <% end %>
-                  <%= link_to edit_admin_course_path(course), class: 'crs-btn crs-btn--edit', title: 'Chỉnh sửa' do %>
-                    <%= image_tag 'edit.png', class: 'crs-btn__img', alt: 'Sửa' %>
+                  <%= link_to edit_admin_course_path(course), class: 'crs-btn crs-btn--edit', title: 'Edit' do %>
+                    <%= image_tag 'edit.png', class: 'crs-btn__img', alt: 'Edit' %>
                   <% end %>
                   <%= link_to admin_course_path(course),
                       data: { turbo_method: :delete, turbo_confirm: t('admin.courses.index.confirm_delete') },
-                      class: 'crs-btn crs-btn--delete', title: 'Xóa' do %>
-                    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Xóa' %>
+                      class: 'crs-btn crs-btn--delete', title: 'Delete' do %>
+                    <%= image_tag 'delete.png', class: 'crs-btn__img', alt: 'Delete' %>
                   <% end %>
                 </div>
               </td>

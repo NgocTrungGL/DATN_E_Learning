@@ -1,7 +1,7 @@
 class Question < ApplicationRecord
   # --- Enums ---
-  enum question_type: {single: "single", multiple: "multiple"}
-  enum difficulty: {easy: "easy", medium: "medium", hard: "hard"}
+  enum question_type: { single: "single", multiple: "multiple" }
+  enum difficulty: { easy: "easy", medium: "medium", hard: "hard" }
 
   # --- Associations ---
   belongs_to :course

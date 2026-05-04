@@ -39,9 +39,7 @@ class Admin::CategoriesController < Admin::BaseController
     else
       error_message = @category.errors.full_messages.to_sentence
 
-      if error_message.blank?
-        error_message = t("admin.categories.destroy.failure")
-      end
+      error_message = t("admin.categories.destroy.failure") if error_message.blank?
 
       redirect_to admin_categories_path, alert: error_message
     end

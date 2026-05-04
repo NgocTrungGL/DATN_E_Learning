@@ -18,7 +18,7 @@
     <div class="admin-course-modules__field">
       <%= form.label :title, t('admin.course_modules.form.title'), class: 'admin-course-modules__label' %>
       <%= form.text_field :title,
-                          class: 'admin-input admin-course-modules__input',
+                          class: 'form-control form-control-lg admin-course-modules__input',
                           placeholder: t('admin.course_modules.form.title_placeholder'),
                           autofocus: true,
                           required: true %>
@@ -28,7 +28,7 @@
       <%= form.label :description, t('admin.course_modules.form.description'), class: 'admin-course-modules__label' %>
       <%= form.text_area :description,
                          rows: 4,
-                         class: 'admin-textarea admin-course-modules__textarea',
+                         class: 'form-control admin-course-modules__textarea',
                          placeholder: t('admin.course_modules.form.description_placeholder') %>
     </div>
 
@@ -36,10 +36,10 @@
   </div>
 
   <div class="admin-course-modules__form-actions">
-    <%= link_to admin_course_path(@course), class: 'btn-cancel admin-course-modules__action' do %>
+    <%= link_to admin_course_path(@course), class: 'btn btn-outline-secondary admin-course-modules__action' do %>
       <%= t('admin.course_modules.form.back_to_course') %>
     <% end %>
 
-    <%= form.submit t(submit_key), class: 'btn-save admin-course-modules__action' %>
+    <%= form.submit t(submit_key), class: 'btn btn-primary admin-course-modules__action' %>
   </div>
 <% end %>

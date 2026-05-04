@@ -9,6 +9,16 @@ In modern Rails applications using Hotwire Turbo, you must be careful about how 
 
 Follow these strict guidelines when working on frontend features in a Turbo application.
 
+## ⚠️ CODE LANGUAGE REQUIREMENT: ENGLISH ONLY
+
+**All JavaScript, CSS, and ERB code must use English:**
+- ❌ **Forbidden**: Vietnamese class names, event handler names, comments in Vietnamese
+- ✅ **Required**:
+  - Class names: `body.layout-learning` (not `body.trang-hoc`)
+  - Data attributes: `data-reveal` (not `data-hien-thi`)
+  - Event handlers: `turbo:load` (not `turbo-tai`)
+  - Comments: `// Initialize animations` (not `// Khởi tạo hoạt ảnh`)
+
 ## 1. Avoid Inline `<style>` Tags in `<head>`
 **The Problem**: Turbo merges `<head>` tags across page navigations. If you have a specific layout with an inline `<style>` block (e.g., locking the scrollbar with `body { overflow: hidden; }`), Turbo will **retain** that style when you navigate to a different layout. This causes CSS to leak randomly, making the UI unstable (sometimes working on hard refresh, breaking on navigation).
 

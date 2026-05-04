@@ -7,6 +7,16 @@ description: Step-by-step workflow for creating a properly structured BEM SCSS f
 
 Use this skill whenever implementing CSS/SCSS for a new page view, a new landing section, or a significant new UI component that doesn't already have a stylesheet.
 
+## ⚠️ CODE LANGUAGE REQUIREMENT: ENGLISH ONLY
+
+**All SCSS code must use English:**
+- ❌ **Forbidden**: Vietnamese class names (`.nut-chinh`), variable names (`$chieuDai`), comments (`// Thành phần thẻ`)
+- ✅ **Required**:
+  - File names: `_course-detail.scss` (not `_chi-tiet-khoa-hoc.scss`)
+  - Class names: `.course-detail__header` (not `.chi-tiet-khoa__phan-dau`)
+  - Comments: `// Course detail section` (not `// Phần chi tiết khóa học`)
+  - Variable references: Use `$primary`, `$accent`, `$bg` (already defined in abstracts/)
+
 ## Step 1 — Identify the Scope
 
 Before writing any SCSS, determine:
@@ -32,11 +42,20 @@ Create the file at the appropriate path. **NEVER** define local variables or mix
 .my-page-block {
   background: $bg;
   @include section-padding;
-  
+
   &__inner {
     @include inner-container;
   }
+  ## ⚠️ CODE LANGUAGE REQUIREMENT: ENGLISH ONLY
 }
+  **All SCSS code must use English:**
+  - ❌ **Forbidden**: Vietnamese class names (`.nut-chinh`), variable names (`$chieuDai`), comments (`// Thành phần thẻ`)
+  - ✅ **Required**:
+    - File names: `_course-detail.scss` (not `_chi-tiet-khoa-hoc.scss`)
+    - Class names: `.course-detail__header` (not `.chi-tiet-khoa__phan-dau`)
+    - Comments: `// Course detail section` (not `// Phần chi tiết khóa học`)
+    - Variable references: Use `$primary`, `$accent`, `$bg` (already defined in abstracts/)
+
 ```
 
 ## Step 3 — Write BEM Blocks
@@ -55,7 +74,7 @@ Use **mobile-first**: styles target 375px base, then add queries:
 .my-section {
   display: grid;
   grid-template-columns: 1fr;
-  
+
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
   }

@@ -1,0 +1,33 @@
+<div class="notifications__container">
+  <div class="notifications__header">
+    <h1 class="notifications__title"><%= t("notifications.index.title") %></h1>
+    
+    <div class="notifications__actions">
+      <% if @notifications.any? %>
+        <%= link_to t("notifications.index.mark_all_as_read"), 
+                    mark_all_as_read_notifications_path, 
+                    method: :post, 
+                    class: "btn-outline" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @notifications.any? %>
+    <div class="notifications__list" id="notifications-list">
+      <%= render partial: "notification_item", collection: @notifications, as: :notification %>
+    </div>
+    
+    <div class="mt-4">
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    </div>
+  <% else %>
+    <div class="notifications__empty">
+      <div class="notifications__empty-icon">
+        <i class="bi bi-bell-slash"></i>
+      </div>
+      <h3 class="notifications__empty-title"><%= t("notifications.index.empty_title") %></h3>
+      <p class="notifications__empty-body"><%= t("notifications.index.empty_body") %> Cop</p>
+      <%= link_to t("notifications.index.browse_courses"), courses_path, class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>

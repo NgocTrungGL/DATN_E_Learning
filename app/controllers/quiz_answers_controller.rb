@@ -41,7 +41,7 @@ class QuizAnswersController < ApplicationController
   def render_forbidden_if_finished
     return false unless @quiz_attempt.completed? || @quiz_attempt.expired?
 
-    render json: {error: "Bài thi đã kết thúc"}, status: :forbidden
+    render json: { error: "Bài thi đã kết thúc" }, status: :forbidden
     true
   end
 
