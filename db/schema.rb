@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_02_064747) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_03_051557) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -231,6 +231,20 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_02_064747) do
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
+  create_table "notifications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.text "body"
+    t.string "notification_type"
+    t.datetime "read_at"
+    t.string "actionable_type", null: false
+    t.bigint "actionable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actionable_type", "actionable_id"], name: "index_notifications_on_actionable"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "organizations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "domain"
@@ -448,6 +462,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_02_064747) do
   add_foreign_key "notes", "courses"
   add_foreign_key "notes", "lessons"
   add_foreign_key "notes", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "payout_requests", "users"
   add_foreign_key "profiles", "users", on_delete: :cascade
   add_foreign_key "progress_trackings", "courses"

@@ -8,7 +8,7 @@ class DiscussionMessage < ApplicationRecord
   scope :recent_window, ->(limit = 100){order(created_at: :desc).limit(limit)}
 
   def author_name
-    user&.name || "Ẩn danh"
+    user&.name || I18n.t("notifications.common.anonymous")
   end
 
   def author_initial

@@ -16,7 +16,7 @@ class DiscussionReply < ApplicationRecord
   after_create :touch_discussion_post
 
   def author_name
-    user&.name || "Ẩn danh"
+    user&.name || I18n.t("notifications.common.anonymous")
   end
 
   def instructor_reply?
@@ -24,9 +24,35 @@ class DiscussionReply < ApplicationRecord
     user&.instructor? && course&.created_by == user.id
   end
 
+  after_create_commit :notify_recipient
+
   private
 
   def touch_discussion_post
     discussion_post.touch
+  end
+
+  def notify_recipient
+    # Notify Post Author
+    if discussion_post.user_id != user_id
+      Notification.create(
+        user: discussion_post.user,
+        title: I18n.t("notifications.reply.post_author.title"),
+        body: I18n.t("notifications.reply.post_author.body", user_name: user.name, post_title: discussion_post.title),
+        notification_type: "instructor_reply", # Reusing icon
+        actionable: self
+      )
+    end
+
+    # Notify Parent Reply Author if nested
+    return unless parent && parent.user_id != user_id && parent.user_id != discussion_post.user_id
+
+    Notification.create(
+      user: parent.user,
+      title: I18n.t("notifications.reply.comment_author.title"),
+      body: I18n.t("notifications.reply.comment_author.body", user_name: user.name),
+      notification_type: "instructor_reply",
+      actionable: self
+    )
   end
 end

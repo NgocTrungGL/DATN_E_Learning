@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  resources :notifications, only: [:index, :update] do
+    collection do
+      post :mark_all_as_read
+    end
+  end
   root "home#index"
   devise_for :users
   post 'create-checkout-session', to: 'checkouts#create'

@@ -21,6 +21,30 @@ optional: true
     published: 2,
     rejected: 3
   }
+
+  after_commit :notify_status_change, on: :update, if: :saved_change_to_status?
+
+  def notify_status_change
+    title_key = case status
+                when "published" then "notifications.course_status.published.title"
+                when "rejected" then "notifications.course_status.rejected.title"
+                else return
+                end
+
+    body_key = case status
+               when "published" then "notifications.course_status.published.body"
+               when "rejected" then "notifications.course_status.rejected.body"
+               end
+
+    Notification.create(
+      user: creator,
+      title: I18n.t(title_key),
+      body: I18n.t(body_key, course_title: title),
+      notification_type: "course_update",
+      actionable: self
+    )
+  end
+
   def total_students
     enrollments.active.count
   end

@@ -1,0 +1,19 @@
+<%= link_to notification_path(notification), 
+            method: :patch, 
+            class: "notification-item #{'notification-item--unread' unless notification.read?}",
+            id: dom_id(notification) do %>
+  <div class="notification-item__icon notification-item__icon--<%= notification.notification_type %>">
+    <i class="bi <%= notification_icon(notification.notification_type) %>"></i>
+  </div>
+
+  <div class="notification-item__content">
+    <h4 class="notification-item__title"><%= notification.title %></h4>
+    <p class="notification-item__body"><%= notification.body %></p>
+    <div class="notification-item__meta">
+      <span><i class="bi bi-clock"></i> <%= time_ago_in_words(notification.created_at) %> <%= t("notifications.item.ago") %></span>
+      <% unless notification.read? %>
+        <span class="notification-item__badge"></span>
+      <% end %>
+    </div>
+  </div>
+<% end %>

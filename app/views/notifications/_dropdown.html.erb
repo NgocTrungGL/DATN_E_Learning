@@ -1,0 +1,45 @@
+<div class="notifications-trigger" 
+     data-controller="dropdown" 
+     data-dropdown-active-class="notifications-dropdown--active">
+  
+  <div class="btn-icon" data-action="click->dropdown#toggle">
+    <i class="bi bi-bell"></i>
+    <% if current_user.unread_notifications_count > 0 %>
+      <span class="notifications-trigger__badge">
+        <%= current_user.unread_notifications_count %>
+      </span>
+    <% end %>
+  </div>
+
+  <div class="notifications-dropdown" data-dropdown-target="menu">
+    <div class="notifications-dropdown__header">
+      <span class="notifications-dropdown__title"><%= t("notifications.index.title") %></span>
+      <% if current_user.unread_notifications_count > 0 %>
+        <%= link_to t("notifications.index.mark_all_as_read"), 
+                    mark_all_as_read_notifications_path, 
+                    method: :post, 
+                    class: "btn--sm btn-outline" %>
+      <% end %>
+    </div>
+
+    <div class="notifications-dropdown__body">
+      <% if current_user.notifications.any? %>
+        <div id="notifications-dropdown-list">
+          <%= render partial: "notifications/notification_item", 
+                     collection: current_user.notifications.recent.limit(5), 
+                     as: :notification %>
+        </div>
+      <% else %>
+        <div class="notifications__empty" style="padding: 2rem 1rem;">
+          <p class="notifications__empty-body" style="font-size: 0.9rem; margin: 0;">
+            <%= t("notifications.index.empty_title") %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="notifications-dropdown__footer">
+      <%= link_to t("notifications.index.see_all"), notifications_path %>
+    </div>
+  </div>
+</div>

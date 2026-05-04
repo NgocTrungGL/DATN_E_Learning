@@ -12,7 +12,7 @@ class DiscussionPost < ApplicationRecord
   scope :recent, ->{order(updated_at: :desc)}
 
   def author_name
-    user&.name || "Ẩn danh"
+    user&.name || I18n.t("notifications.common.anonymous")
   end
 
   def locked?

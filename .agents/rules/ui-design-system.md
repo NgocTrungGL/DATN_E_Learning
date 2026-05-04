@@ -28,12 +28,16 @@ This is a **Vietnamese E-learning SaaS platform** (Udemy/Coursera-style). All UI
 - **Light backgrounds** — public pages use `#f8fafc` or `#ffffff`
 - **Dark sections** — marketing sections (flash sales, learning paths) use `#0f172a` / `#1e293b`
 
-## ⚠️ CRITICAL STYLING REQUIREMENT
+## ⚠️ CRITICAL STYLING REQUIREMENT: NO BOOTSTRAP
 
-**All UI styling MUST be implemented using CSS/SCSS only.** NO Bootstrap CSS framework utilities are allowed in any new code:
-- ❌ **Forbidden**: Bootstrap utility classes such as `.btn-outline-secondary`, `.btn-sm`, `.me-4`, `.btn-close`, `data-bs-*` attributes
-- ✅ **Required**: Platform button component classes following BEM convention, centered on the core `.btn` base class (e.g., `.btn`, `.btn--primary`, `.btn--secondary`, `.btn--ghost`, `.btn--sm`, `.btn--lg`)
-- ✅ **Allowed**: Bootstrap Icons CDN for icon-only usage (not the CSS framework)
+**All UI styling MUST be implemented using CUSTOM CSS/SCSS ONLY.** Use of the Bootstrap CSS framework (classes, utilities, or components) is STRICTLY FORBIDDEN for all new development:
+- ❌ **Forbidden**: Bootstrap utility classes (e.g., `.d-flex`, `.justify-content-between`, `.mb-3`, `.shadow-sm`, `.rounded-4`).
+- ❌ **Forbidden**: Bootstrap components (e.g., `.card`, `.dropdown-menu`, `.list-group`, `.btn`).
+- ❌ **Forbidden**: Bootstrap data attributes (e.g., `data-bs-toggle`).
+- ✅ **Required**: BEM (Block Element Modifier) convention for all new components.
+- ✅ **Required**: Use design tokens from `abstracts/_variables.scss` and mixins from `abstracts/_mixins.scss`.
+- ✅ **Required**: Custom layout logic using CSS Grid and Flexbox in component-specific SCSS files.
+- ✅ **Allowed**: Bootstrap Icons CDN for icon-only usage (e.g., `<i class="bi bi-bell"></i>`).
 
 All new components must be created in `app/assets/stylesheets/components/` using centralized design tokens from `abstracts/`.
 

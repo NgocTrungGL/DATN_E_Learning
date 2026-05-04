@@ -30,6 +30,7 @@ class User < ApplicationRecord
 
   accepts_nested_attributes_for :profile
   after_create :build_default_profile
+  has_many :notifications, dependent: :destroy
   has_many :enrollments, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :comments, dependent: :destroy
@@ -53,6 +54,10 @@ dependent: :nullify
   has_one :cart, dependent: :destroy
   after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}
+
+  def unread_notifications_count
+    notifications.unread.count
+  end
 
   def enrolled_in? course
     enrollments.exists?(course_id: course.id)

@@ -1,0 +1,235 @@
+// Notifications Component (BEM)
+@import "abstracts/variables";
+@import "abstracts/mixins";
+
+.notifications {
+  &__container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  &__title {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 800;
+    color: $text-dark;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: $white;
+    border-radius: $radius-md;
+    border: 1px solid $border;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+  }
+
+  &__empty {
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    &-icon {
+      font-size: 3.5rem;
+      color: $border;
+      background: $bg;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    &-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $text-dark;
+      margin: 0;
+    }
+
+    &-body {
+      color: $text-muted;
+      margin-bottom: 1.5rem;
+    }
+  }
+}
+
+.notification-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: $t;
+  border-bottom: 1px solid $border;
+  background: $white;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $primary-light;
+  }
+
+  &--unread {
+    background: rgba($primary, 0.03);
+    border-left: 4px solid $primary;
+
+    .notification-item__title {
+      font-weight: 700;
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+
+    &--enrollment {
+      background: $primary-light;
+      color: $primary;
+    }
+
+    &--instructor_reply {
+      background: $accent-light;
+      color: $accent;
+    }
+
+    &--course_status {
+      background: $warning-light;
+      color: $warning;
+    }
+  }
+
+  &__content {
+    flex-grow: 1;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0 0 0.25rem 0;
+  }
+
+  &__body {
+    font-size: 0.95rem;
+    color: $text-mid;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: $text-muted;
+  }
+
+  &__badge {
+    width: 8px;
+    height: 8px;
+    background: $primary;
+    border-radius: 50%;
+  }
+}
+
+// Dropdown specific overrides
+.notifications-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 380px;
+  max-height: 500px;
+  background: $white;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  border: 1px solid $border;
+  z-index: 1000;
+  overflow: hidden;
+  display: none;
+
+  &--active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    padding: 1rem;
+    border-bottom: 1px solid $border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  &__body {
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  &__footer {
+    padding: 0.75rem;
+    border-top: 1px solid $border;
+    text-align: center;
+    background: $bg;
+
+    a {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $primary;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.notifications-trigger {
+  position: relative;
+  cursor: pointer;
+
+  &__badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: $danger;
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 2px solid $white;
+    font-weight: 700;
+  }
+}
