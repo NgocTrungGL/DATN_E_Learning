@@ -1,0 +1,8 @@
+<%= turbo_frame_tag dom_id(course, :wishlist) do %>
+  <%= button_to course_toggle_wishlist_path(course),
+               method: :post,
+               class: "btn-wishlist #{'is-active' if wishlisted?(course)}",
+               title: wishlisted?(course) ? t("wishlists.remove") : t("wishlists.add") do %>
+    <i class="bi bi-heart<%= '-fill' if wishlisted?(course) %>"></i>
+  <% end %>
+<% end %>

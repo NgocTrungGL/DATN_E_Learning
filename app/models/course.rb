@@ -14,6 +14,8 @@ optional: true
   has_many :coupons, dependent: :destroy
   has_many :discussion_posts, dependent: :destroy
   has_many :discussion_messages, dependent: :destroy
+  has_many :wishlists, dependent: :destroy
+  has_many :wishlisting_users, through: :wishlists, source: :user
   has_one_attached :image
   enum status: {
     draft: 0,
