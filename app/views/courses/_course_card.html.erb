@@ -109,6 +109,8 @@
     </div>
 
     <div class="card-actions">
+      <%= render "wishlists/wishlist_button", course: course %>
+
       <% if current_user && !course.free? %>
         <% if current_user.cart&.courses&.include?(course) %>
           <%= link_to cart_path, class: "btn-cart btn-cart-done", title: "Already in cart" do %>

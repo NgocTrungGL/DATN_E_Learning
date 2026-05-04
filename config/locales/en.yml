@@ -192,3 +192,13 @@ en:
       ago: "ago"
     common:
       anonymous: "Anonymous"
+
+  wishlists:
+    add: "Add to wishlist"
+    remove: "Remove from wishlist"
+    index:
+      title: "My Wishlist"
+      count: "You have %{count} saved courses"
+      empty_title: "Your wishlist is empty"
+      empty_body: "You haven't saved any courses yet. Browse our catalog and save your favorites!"
+      browse_courses: "Browse Courses"

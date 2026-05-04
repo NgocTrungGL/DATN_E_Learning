@@ -1,0 +1,31 @@
+<section class="wishlist-page">
+  <div class="wishlist-container">
+    <header class="wishlist-header">
+      <h1 class="wishlist-title"><%= t("wishlists.index.title") %></h1>
+      <p class="wishlist-subtitle">
+        <%= t("wishlists.index.count", count: current_user.wishlists.count) %>
+      </p>
+    </header>
+
+    <% if @wishlists.any? %>
+      <div class="course-grid">
+        <% @wishlists.each do |wishlist| %>
+          <%= render "courses/course_card", course: wishlist.course %>
+        <% end %>
+      </div>
+
+      <div class="pagination-container">
+        <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="wishlist-empty">
+        <div class="empty-icon">
+          <i class="bi bi-heart"></i>
+        </div>
+        <h3 class="empty-title"><%= t("wishlists.index.empty_title") %></h3>
+        <p class="empty-body"><%= t("wishlists.index.empty_body") %></p>
+        <%= link_to t("wishlists.index.browse_courses"), courses_path, class: "btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</section>

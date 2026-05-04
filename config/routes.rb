@@ -27,12 +27,14 @@ Rails.application.routes.draw do
   resource :instructor_registration, only: [:new, :create, :show]
   resources :my_courses, only: [:index]
   resources :my_notes, only: [:index]
+  resources :wishlists, only: [:index]
 
   # --- HỌC VIÊN (PUBLIC) ---
   resources :categories, only: [:index, :show]
 
   # Gom nhóm resources :courses lại cho gọn
   resources :courses, only: [:index, :show] do
+    post :toggle_wishlist, to: "wishlists#toggle", as: "toggle_wishlist"
     resources :reviews, only: [:create, :destroy]
     resources :enrollments, only: [:create]
     resources :discussion_messages, path: "chat", only: [:index, :create, :destroy]

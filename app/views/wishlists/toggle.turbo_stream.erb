@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@course, :wishlist) do %>
+  <%= render "wishlists/wishlist_button", course: @course %>
+<% end %>

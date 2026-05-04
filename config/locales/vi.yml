@@ -170,3 +170,13 @@ vi:
       ago: "trước"
     common:
       anonymous: "Ẩn danh"
+
+  wishlists:
+    add: "Lưu vào yêu thích"
+    remove: "Xóa khỏi yêu thích"
+    index:
+      title: "Khóa học yêu thích"
+      count: "Bạn có %{count} khóa học đã lưu"
+      empty_title: "Danh sách yêu thích trống"
+      empty_body: "Bạn chưa lưu khóa học nào. Hãy khám phá và lưu lại những khóa học bạn quan tâm!"
+      browse_courses: "Khám phá ngay"

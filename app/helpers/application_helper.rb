@@ -11,8 +11,9 @@ module ApplicationHelper
     end
   end
 
-  def render_not_found path, message
-    redirect_to path, alert: message
-    false
+  def wishlisted? course
+    return false unless user_signed_in?
+
+    current_user.wishlists.exists?(course_id: course.id)
   end
 end

@@ -31,6 +31,8 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :profile
   after_create :build_default_profile
   has_many :notifications, dependent: :destroy
+  has_many :wishlists, dependent: :destroy
+  has_many :wishlisted_courses, through: :wishlists, source: :course
   has_many :enrollments, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :comments, dependent: :destroy
