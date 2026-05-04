@@ -1,5 +1,5 @@
 module NotificationsHelper
-  def notification_icon(type)
+  def notification_icon type
     case type
     when "enrollment"
       "bi-journal-check"
