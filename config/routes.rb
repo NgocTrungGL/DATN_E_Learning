@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   resources :my_notes, only: [:index]
   resources :wishlists, only: [:index]
   resources :certificates, only: [:index, :show], param: :code
+  resources :subscriptions, only: [:index, :create, :destroy]
 
   # --- HỌC VIÊN (PUBLIC) ---
   resources :categories, only: [:index, :show]

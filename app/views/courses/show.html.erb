@@ -601,25 +601,39 @@
         <% end %>
 
         <%# ── CTA Button Logic ─────────────────────────────── %>
-        <% if has_access %>
-          <%# ENROLLED / OWNER / ADMIN: go to course %>
+        <% if enrollment&.active? %>
+          <%# ALREADY ENROLLED: go to course %>
           <% if first_lesson %>
             <%= link_to lesson_path(first_lesson), class: "cd-btn cd-btn--success" do %>
               <i class="bi bi-play-circle-fill"></i>
-              <% if current_user&.admin? %>
-                Start Learning (Admin)
-              <% elsif is_creator %>
-                Preview Course
-              <% else %>
-                Continue Learning
-              <% end %>
+              Continue Learning
             <% end %>
           <% else %>
             <button class="cd-btn cd-btn--ghost" disabled>Content Coming Soon</button>
           <% end %>
 
+        <% elsif has_access %>
+          <%# HAS ACCESS (Subscription/Admin/Creator) but not enrolled yet %>
+          <% if current_user&.admin? || is_creator %>
+            <% if first_lesson %>
+              <%= link_to lesson_path(first_lesson), class: "cd-btn cd-btn--success" do %>
+                <i class="bi bi-play-circle-fill"></i>
+                <%= current_user&.admin? ? "Preview (Admin)" : "Preview Course" %>
+              <% end %>
+            <% else %>
+              <button class="cd-btn cd-btn--ghost" disabled>Content Coming Soon</button>
+            <% end %>
+          <% else %>
+            <%# Subscription student: must enroll to track progress %>
+            <%= button_to course_enrollments_path(@course),
+                  method: :post,
+                  class: "cd-btn cd-btn--primary" do %>
+              <i class="bi bi-plus-circle-fill"></i> Enroll (Included with Plan)
+            <% end %>
+          <% end %>
+
         <% else %>
-          <%# NOT ENROLLED OR GUEST %>
+          <%# NO ACCESS: GUEST OR NOT SUBSCRIBED %>
           <% pending = current_user&.enrollments&.find_by(course: @course, status: :pending) %>
 
           <% if pending %>

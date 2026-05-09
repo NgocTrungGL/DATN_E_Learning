@@ -1,0 +1,239 @@
+<%# ============================================================ %>
+<%# SUBSCRIPTIONS INDEX — Pricing & Plan Management Page       %>
+<%# ============================================================ %>
+<% content_for :title, "Pricing Plans | E-Learning" %>
+<% content_for :meta_description, "Choose the perfect plan to unlock all courses and advanced features." %>
+<% content_for :full_width, true %>
+<% content_for :body_class, "landing-page" %>
+
+<%
+  plans = [
+    {
+      key:         "free",
+      name:        "Free",
+      price_vnd:   0,
+      description: "Start your journey with free access to selected courses.",
+      badge:       nil,
+      features: [
+        { text: "Access to 20+ free courses",         ok: true  },
+        { text: "Community forum access",             ok: true  },
+        { text: "Official certificates",              ok: false },
+        { text: "AI Study Assistant",                 ok: false },
+        { text: "All courses under 1 million",        ok: false },
+        { text: "Priority support",                   ok: false }
+      ]
+    },
+    {
+      key:         "pro",
+      name:        "Pro",
+      price_vnd:   499_000,
+      description: "Everything you need to accelerate your learning journey.",
+      badge:       "⭐ Most Popular",
+      features: [
+        { text: "Access to 20+ free courses",         ok: true  },
+        { text: "All courses under 1 million",        ok: true  },
+        { text: "AI Study Assistant",                 ok: true  },
+        { text: "Community forum access",             ok: true  },
+        { text: "Official certificates",              ok: true  },
+        { text: "Priority support",                   ok: false }
+      ]
+    },
+    {
+      key:         "premium",
+      name:        "Premium",
+      price_vnd:   999_000,
+      description: "Full access with personalized mentoring and all features.",
+      badge:       nil,
+      features: [
+        { text: "Access to 20+ free courses",         ok: true  },
+        { text: "ALL courses at any price",           ok: true  },
+        { text: "AI Study Assistant",                 ok: true  },
+        { text: "Community forum access",             ok: true  },
+        { text: "Official certificates",              ok: true  },
+        { text: "Priority support",                   ok: true  }
+      ]
+    }
+  ]
+%>
+
+<div class="subscriptions-page">
+
+  <%# ── Page Header ────────────────────────────────────────── %>
+  <div class="subs-hero">
+    <div class="container">
+      <div class="text-center">
+        <span class="subs-badge">💳 Pricing Plans</span>
+        <h1 class="subs-title">Invest in Your Future</h1>
+        <p class="subs-subtitle">
+          Flexible plans for every stage of your journey. Start free, scale when you're ready.
+        </p>
+
+        <%# Show current plan badge if logged in %>
+        <% if current_user && @current_plan != "free" %>
+          <div class="current-plan-notice">
+            <i class="bi bi-patch-check-fill"></i>
+            You are currently on the
+            <strong><%= Subscription::PLAN_LABELS[@current_plan] %></strong> plan
+            <% if @current_subscription&.current_period_end %>
+              · Renews on <%= @current_subscription.current_period_end.strftime("%d/%m/%Y") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Pricing Grid ────────────────────────────────────────── %>
+  <div class="container">
+    <div class="pricing-grid">
+      <% plans.each do |plan| %>
+        <%
+          is_active    = current_user && (@current_plan == plan[:key])
+          is_popular   = plan[:badge].present?
+          is_free      = plan[:key] == "free"
+        %>
+        <div class="pricing-card <%= 'pricing-card--popular' if is_popular %> <%= 'pricing-card--active' if is_active %>"
+             id="plan-<%= plan[:key] %>">
+
+          <%# Popular badge %>
+          <% if plan[:badge] %>
+            <div class="pricing-card__badge"><%= plan[:badge] %></div>
+          <% end %>
+
+          <%# Active badge %>
+          <% if is_active %>
+            <div class="pricing-card__active-tag">
+              <i class="bi bi-check-circle-fill"></i> Current Plan
+            </div>
+          <% end %>
+
+          <div class="pricing-card__header">
+            <div class="pricing-card__name"><%= plan[:name] %></div>
+            <div class="pricing-card__price">
+              <% if is_free %>
+                <span class="pricing-card__amount">Free</span>
+              <% else %>
+                <span class="pricing-card__amount">
+                  <%= number_to_currency(plan[:price_vnd], unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+                </span>
+                <span class="pricing-card__period">/ month</span>
+              <% end %>
+            </div>
+            <p class="pricing-card__description"><%= plan[:description] %></p>
+          </div>
+
+          <ul class="pricing-card__features">
+            <% plan[:features].each do |feature| %>
+              <li class="<%= 'pricing-card__feature--disabled' unless feature[:ok] %>">
+                <% if feature[:ok] %>
+                  <i class="bi bi-check-circle-fill"></i>
+                <% else %>
+                  <i class="bi bi-x-circle"></i>
+                <% end %>
+                <%= feature[:text] %>
+              </li>
+            <% end %>
+          </ul>
+
+          <div class="pricing-card__cta">
+            <% if is_active %>
+              <%# Current plan - show cancel option for paid plans %>
+              <% if !is_free && @current_subscription&.stripe_subscription_id %>
+                <button class="btn-plan btn-plan--current" disabled>
+                  <i class="bi bi-patch-check-fill"></i> Current Plan
+                </button>
+                <%= button_to subscription_path(@current_subscription),
+                               method: :delete,
+                               class: "btn-plan-cancel",
+                               data: { confirm: "Are you sure you want to cancel your #{plan[:name]} plan? You will retain access until the end of the current billing cycle." } do %>
+                  <i class="bi bi-x-circle"></i> Cancel Subscription
+                <% end %>
+              <% else %>
+                <button class="btn-plan btn-plan--current" disabled>
+                  <i class="bi bi-patch-check-fill"></i> Current Plan
+                </button>
+              <% end %>
+            <% elsif is_free %>
+              <%# Free plan CTA %>
+              <% if user_signed_in? %>
+                <a href="<%= courses_path %>" class="btn-plan btn-plan--outline" id="free-plan-cta">
+                  <i class="bi bi-compass"></i> Explore Courses
+                </a>
+              <% else %>
+                <%= link_to new_user_registration_path, class: "btn-plan btn-plan--outline", id: "free-plan-register" do %>
+                  <i class="bi bi-person-plus"></i> Get Started Free
+                <% end %>
+              <% end %>
+            <% else %>
+              <%# Paid plan CTA %>
+              <% if user_signed_in? %>
+                <%= button_to subscriptions_path,
+                               method: :post,
+                               params: { plan: plan[:key] },
+                               class: "btn-plan #{is_popular ? 'btn-plan--solid' : 'btn-plan--outline'}",
+                               data: { turbo: false },
+                               id: "subscribe-#{plan[:key]}" do %>
+                  <i class="bi bi-lightning-charge-fill"></i>
+                  <%= @current_plan == "free" ? "Start #{plan[:name]} Plan" : "Switch to #{plan[:name]}" %>
+                <% end %>
+              <% else %>
+                <%= link_to new_user_session_path,
+                            class: "btn-plan #{is_popular ? 'btn-plan--solid' : 'btn-plan--outline'}",
+                            id: "login-for-#{plan[:key]}" do %>
+                  <i class="bi bi-box-arrow-in-right"></i> Login to Subscribe
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ── Guarantee Strip ──────────────────────────────────── %>
+    <div class="guarantee-strip">
+      <div class="guarantee-item">
+        <i class="bi bi-shield-check-fill"></i>
+        <span>Secure checkout with Stripe</span>
+      </div>
+      <div class="guarantee-item">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        <span>30-day money back guarantee</span>
+      </div>
+      <div class="guarantee-item">
+        <i class="bi bi-credit-card"></i>
+        <span>Cancel anytime</span>
+      </div>
+    </div>
+  </div>
+
+  <%# ── FAQ ─────────────────────────────────────────────────── %>
+  <div class="container">
+    <div class="subs-faq">
+      <h2 class="subs-faq__title">Frequently Asked Questions</h2>
+      <div class="subs-faq__grid">
+
+        <div class="subs-faq__item">
+          <div class="subs-faq__q"><i class="bi bi-question-circle-fill"></i> Can I cancel anytime?</div>
+          <p class="subs-faq__a">Yes! You can cancel your subscription at any time from your account settings. Your access will remain active until the end of the current billing period.</p>
+        </div>
+
+        <div class="subs-faq__item">
+          <div class="subs-faq__q"><i class="bi bi-question-circle-fill"></i> What is the difference between Pro and Premium?</div>
+          <p class="subs-faq__a">The Pro plan gives you access to all courses priced under 1 million VND. The Premium plan unlocks every single course on the platform and includes priority mentor support.</p>
+        </div>
+
+        <div class="subs-faq__item">
+          <div class="subs-faq__q"><i class="bi bi-question-circle-fill"></i> Are certificates included in the subscription?</div>
+          <p class="subs-faq__a">Yes, both Pro and Premium plans include official certificates of completion for every course you finish 100% and pass the required assessments.</p>
+        </div>
+
+        <div class="subs-faq__item">
+          <div class="subs-faq__q"><i class="bi bi-question-circle-fill"></i> Can I upgrade from Pro to Premium?</div>
+          <p class="subs-faq__a">Absolutely! You can upgrade to Premium at any time. The change will take effect immediately, and your billing will be adjusted accordingly.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

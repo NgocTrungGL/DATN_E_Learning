@@ -72,7 +72,7 @@
               <a class="nav-link" href="#learning-paths">Learning Paths</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#pricing">Pricing</a>
+              <%= link_to "Pricing", root_path(anchor: "pricing"), class: "nav-link" %>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#instructors">About</a>
@@ -81,6 +81,7 @@
               <a class="nav-link" href="#cta">Contact</a>
             </li>
           <% end %>
+          <%# Removed duplicate Pricing link %>
         </ul>
 
       <%# --- AUTH BUTTONS / USER SECTION --- %>
@@ -120,6 +121,17 @@
               <li><%= link_to "My Wishlist", wishlists_path, class: "dropdown-item" %></li>
               <li><%= link_to "My Certificates", certificates_path, class: "dropdown-item" %></li>
               <li><%= link_to "My Notes", my_notes_path, class: "dropdown-item" %></li>
+              <li>
+                <%= link_to subscriptions_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-credit-card"></i>
+                  Subscription
+                  <% if current_user.current_plan != "free" %>
+                    <span class="badge rounded-pill ms-auto" style="background:#2563eb; font-size:0.65rem;">
+                      <%= current_user.current_plan.upcase %>
+                    </span>
+                  <% end %>
+                <% end %>
+              </li>
               <li><%= link_to "Edit Profile", edit_user_registration_path, class: "dropdown-item" %></li>
 
               <% if current_user.admin? %>

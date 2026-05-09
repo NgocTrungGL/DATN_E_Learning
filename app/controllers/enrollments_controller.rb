@@ -11,9 +11,9 @@ class EnrollmentsController < ApplicationController
       return
     end
 
-    unless @course.free?
+    unless current_user.can_access_course?(@course)
       redirect_to course_path(@course),
-                  alert: "Vui lòng thanh toán để tham gia khóa học này."
+                  alert: "Vui lòng thanh toán hoặc nâng cấp gói đăng ký để tham gia khóa học này."
       return
     end
 
