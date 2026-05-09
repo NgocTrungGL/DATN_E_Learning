@@ -1172,10 +1172,23 @@
     font-weight: 900;
     color: var(--lp-text);
     line-height: 1;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
 
-    sup { font-size: 1.25rem; vertical-align: top; margin-top: 0.5rem; }
-    sub { font-size: 0.9rem; color: var(--lp-text-muted); font-weight: 400; }
+    .currency-symbol { 
+      font-size: 1.5rem; 
+      font-weight: 700;
+      color: var(--lp-text);
+    }
+    sub { 
+      font-size: 0.9rem; 
+      color: var(--lp-text-muted); 
+      font-weight: 400; 
+      margin-left: 2px;
+    }
   }
 
   .pricing-description {

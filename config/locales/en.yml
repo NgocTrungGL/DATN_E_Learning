@@ -223,3 +223,8 @@ en:
       platform: "Platform Representative"
       download_pdf: "Download PDF"
       add_to_linkedin: "Add to LinkedIn"
+
+  subscriptions:
+    invalid_plan: "Invalid plan selected."
+    no_active_subscription: "You don't have an active subscription."
+    canceled_successfully: "Subscription canceled successfully. You will retain access until the end of the billing period."

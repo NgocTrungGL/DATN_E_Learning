@@ -116,28 +116,28 @@
   testimonials = [
     {
       text: "This platform completely transformed my career. Within 3 months of completing the Fullstack path, I landed a job at a top tech company with a 60% salary increase!",
-      name: "Nguyen Van Minh",
+      name: "Alex Johnson",
       title: "Junior → Mid Software Engineer",
       rating: 5,
       bg: "linear-gradient(135deg, #2563eb, #4f46e5)"
     },
     {
       text: "The structured learning paths are incredible. I went from zero coding knowledge to building my own web app in just 4 months. The instructors are world-class.",
-      name: "Tran Thi Lan",
+      name: "Sarah Parker",
       title: "Freelance Developer",
       rating: 5,
       bg: "linear-gradient(135deg, #0d9488, #2563eb)"
     },
     {
       text: "Best investment I've ever made. The real-world projects are exactly what employers are looking for. I got 3 job offers after completing the Backend path.",
-      name: "Le Hoang Nam",
+      name: "Michael Chen",
       title: "Backend Developer at Startup",
       rating: 5,
       bg: "linear-gradient(135deg, #7c3aed, #2563eb)"
     },
     {
       text: "As a designer transitioning to development, this platform gave me everything I needed. The community support is amazing — always someone to help!",
-      name: "Pham Bich Ngoc",
+      name: "Emily Wilson",
       title: "Full-Stack Designer",
       rating: 5,
       bg: "linear-gradient(135deg, #db2777, #9333ea)"
@@ -756,7 +756,7 @@
               <% if plan[:price] == "0" %>
                 Free
               <% else %>
-                <sup>₫</sup><%= plan[:price] %>K<sub>/month</sub>
+                <%= plan[:price] %>.000<span class="currency-symbol">đ</span><sub>/month</sub>
               <% end %>
             </div>
             <p class="pricing-description"><%= plan[:description] %></p>
@@ -772,9 +772,19 @@
                 </li>
               <% end %>
             </ul>
-            <%= link_to plan[:name] == "Free" ? new_user_registration_path : new_user_registration_path,
-                        class: "btn-pricing #{plan[:cta_class]}" do %>
-              <%= plan[:cta_text] %>
+            <%# ── CTA wired to real subscription routes ── %>
+            <% if plan[:name] == "Free" %>
+              <%= link_to user_signed_in? ? courses_path : new_user_registration_path,
+                          class: "btn-pricing #{plan[:cta_class]}", id: "home-pricing-free" do %>
+                <%= plan[:cta_text] %>
+              <% end %>
+            <% else %>
+              <%# Paid plans: go to subscriptions page %>
+              <%= link_to subscriptions_path,
+                          class: "btn-pricing #{plan[:cta_class]}",
+                          id: "home-pricing-#{plan[:name].downcase}" do %>
+                <%= plan[:cta_text] %>
+              <% end %>
             <% end %>
           </div>
         </div>

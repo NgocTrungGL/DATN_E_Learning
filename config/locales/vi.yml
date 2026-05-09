@@ -222,3 +222,8 @@ vi:
       platform: "Đại diện nền tảng"
       download_pdf: "Tải PDF"
       add_to_linkedin: "Thêm vào LinkedIn"
+
+  subscriptions:
+    invalid_plan: "Gói đăng ký không hợp lệ."
+    no_active_subscription: "Bạn không có gói đăng ký đang hoạt động."
+    canceled_successfully: "Gói đăng ký đã được hủy thành công. Bạn có thể tiếp tục sử dụng đến cuối kỳ thanh toán."

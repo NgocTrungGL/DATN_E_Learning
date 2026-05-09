@@ -43,6 +43,7 @@ class User < ApplicationRecord
   has_many :progress_trackings, dependent: :destroy
   has_many :certificates, dependent: :destroy
   has_many :notes, dependent: :destroy
+  has_one :subscription, dependent: :destroy
   has_many :discussion_posts, dependent: :destroy
   has_many :discussion_replies, dependent: :destroy
   has_many :discussion_messages, dependent: :destroy
@@ -71,9 +72,17 @@ dependent: :nullify
   end
 
   def can_access_course? course
-    return true if admin?
+    return true if admin? || enrolled_in_active_course?(course) || has_license_for?(course)
 
-    enrollments.active.exists?(course_id: course.id)
+    subscription_allows_course?(course)
+  end
+
+  def active_subscription
+    subscription if subscription&.currently_active?
+  end
+
+  def current_plan
+    active_subscription&.plan_type || "free"
   end
 
   def lesson_completed? lesson
@@ -101,6 +110,19 @@ dependent: :nullify
     licenses.where(course_id: course.id, status: :assigned).exists?
   end
   private
+
+  def enrolled_in_active_course? course
+    enrollments.active.exists?(course_id: course.id)
+  end
+
+  def subscription_allows_course? course
+    case current_plan
+    when "premium" then true
+    when "pro" then course.price <= 1_000_000
+    when "free" then course.price.zero?
+    else false
+    end
+  end
 
   def build_default_profile
     create_profile

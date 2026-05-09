@@ -36,7 +36,15 @@ class Ability
       # Check creator (Instructor)
       is_creator = (course.created_by == @user.id)
 
-      has_enrollment || has_license || is_creator
+      # Check subscription tier
+      has_subscription = case @user.current_plan
+                         when "premium" then true
+                         when "pro"     then course.price <= 1_000_000
+                         when "free"    then course.price.zero?
+                         else false
+                         end
+
+      has_enrollment || has_license || is_creator || has_subscription
     end
   end
 
