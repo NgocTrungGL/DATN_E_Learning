@@ -17,7 +17,7 @@ class Subscription < ApplicationRecord
   validates :plan_type, :status, presence: true
 
   # A subscription is "active" when status=active AND the billing period hasn't ended.
-  scope :currently_active, -> {
+  scope :currently_active, lambda {
     where(status: :active).where("current_period_end > ? OR current_period_end IS NULL", Time.current)
   }
 
