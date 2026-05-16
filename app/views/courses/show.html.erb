@@ -302,7 +302,8 @@
                   <% else %>
                     <%= button_to quiz_quiz_attempts_path(quiz), method: :post,
                           class: "cd-btn cd-btn--primary",
-                          style: "width:auto;padding:.5rem 1rem;font-size:.82rem;" do %>
+                          style: "width:auto;padding:.5rem 1rem;font-size:.82rem;",
+                          data: { turbo: false } do %>
                       <i class="bi bi-play-circle-fill"></i> Start Quiz
                     <% end %>
                   <% end %>

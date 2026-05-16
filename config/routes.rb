@@ -61,7 +61,10 @@ Rails.application.routes.draw do
   end
   resources :quiz_attempts, only: [:show] do
     resources :quiz_answers, only: [:create], shallow: false
-    patch :finish, on: :member
+    member do
+      patch :finish
+      get :review
+    end
   end
 
   # --- ADMIN ---

@@ -40,7 +40,7 @@
   - params[:price_filter] → "free" → Course.where(price: 0); "paid" → where("price > 0")
   - params[:min_rating]  → join reviews + having avg >= min_rating
 %>
-<turbo-frame id="courses-grid-container">
+<turbo-frame id="courses-grid-container" target="_top">
 <div class="courses-filter-bar">
   <div class="courses-inner">
     <%= search_form_for @q, url: courses_path, method: :get, data: { turbo_action: "advance" } do |f| %>
@@ -270,16 +270,30 @@
       });
     })();
 
-    // ── CardClickRouter
+    // ── CardClickRouter (Event Delegation)
     (function() {
-      document.querySelectorAll('[data-href]').forEach(function(card) {
-        card.setAttribute('role', 'link');
-        card.setAttribute('tabindex', '0');
-        card.addEventListener('click', function(e) {
-          if (e.target.closest('a, button')) return;
-          window.location.href = card.dataset.href;
-        });
+      const container = document.getElementById('courses-grid-container');
+      if (!container) return;
+
+      container.addEventListener('click', function(e) {
+        const card = e.target.closest('[data-href]');
+        if (!card) return;
+        
+        // Ignore clicks on actual links or buttons inside the card
+        if (e.target.closest('a, button')) return;
+
+        const href = card.dataset.href;
+        if (href) {
+          // If the card is inside a turbo-frame with target="_top", 
+          // we should probably use Turbo.visit for consistency, 
+          // but window.location.href works fine for full page navigation.
+          window.location.href = href;
+        }
       });
+
+      // Accessibility: roles and tabindices can still be set on load or via MutationObserver
+      // For now, we just ensure they are role="link"
+      container.querySelectorAll('[data-href]').forEach(el => el.setAttribute('role', 'link'));
     })();
   });
 </script>

@@ -1,0 +1,19 @@
+<turbo-frame id="cart-action-course-<%= course.id %>">
+  <% if current_user && !course.free? %>
+    <% if (cart_item = current_user.cart&.cart_items&.find_by(course: course)) %>
+      <%= link_to cart_item_path(cart_item),
+            data: { turbo_method: :delete },
+            class: "btn-cart btn-cart-done",
+            title: "Remove from cart" do %>
+        <i class="bi bi-check-lg"></i>
+      <% end %>
+    <% else %>
+      <%= link_to cart_items_path(course_id: course.id),
+            data: { turbo_method: :post },
+            class: "btn-cart btn-cart-add",
+            title: "Add to cart" do %>
+        <i class="bi bi-cart-plus"></i>
+      <% end %>
+    <% end %>
+  <% end %>
+</turbo-frame>

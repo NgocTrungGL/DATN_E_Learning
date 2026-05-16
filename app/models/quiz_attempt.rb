@@ -7,6 +7,6 @@ class QuizAttempt < ApplicationRecord
   def expired?
     return false if quiz.time_limit.blank?
 
-    Time.current > (started_at + quiz.time_limit.minutes + 10.seconds)
+    Time.current > (started_at + quiz.time_limit.minutes)
   end
 end

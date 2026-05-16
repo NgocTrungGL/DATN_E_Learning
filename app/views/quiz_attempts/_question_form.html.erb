@@ -1,59 +1,109 @@
 <%
   all_ids = @all_questions.map(&:id)
   current_index = all_ids.index(question.id)
-
   prev_id = current_index > 0 ? all_ids[current_index - 1] : nil
-  next_id = all_ids[current_index + 1]
+  next_id = current_index < all_ids.size - 1 ? all_ids[current_index + 1] : nil
+  is_answered = quiz_answer.selected_option_ids.present?
 %>
 
-<h4 class="mb-4 text-primary fw-bold">Question: <%= question.question_text %></h4>
+<div class="qa-panel">
+  <div class="qa-panel__header">
+    <div class="qa-panel__header-left">
+      <span class="qa-panel__question-num">Question <%= current_index + 1 %> of <%= @all_questions.count %></span>
+      <span class="qa-panel__marks">5 marks</span>
+    </div>
+    <div class="qa-panel__header-right">
+      <% if is_answered %>
+        <i class="bi bi-check-circle u-text-success" style="font-size: 1.25rem;"></i>
+      <% else %>
+        <i class="bi bi-circle u-text-muted" style="font-size: 1.25rem; opacity: 0.5;"></i>
+      <% end %>
+    </div>
+  </div>
 
-<%= form_with(model: quiz_answer, url: quiz_attempt_quiz_answers_path(quiz_attempt), id: "question-form") do |f| %>
+  <h2 class="qa-question-form__title"><%= question.question_text %></h2>
 
-  <%= f.hidden_field :question_id, value: question.id %>
+  <%= form_with(scope: :quiz_answer, url: quiz_attempt_quiz_answers_path(quiz_attempt), 
+        id: "question-form-#{question.id}", 
+        method: :post,
+        local: true,
+        data: { turbo: false }) do |f| %>
 
-  <%= hidden_field_tag :next_question_id, next_id %>
+    <%= f.hidden_field :question_id, value: question.id %>
+    <%= hidden_field_tag :next_question_id, "", id: "next-question-id-#{question.id}" %>
 
-  <div class="list-group mb-4">
-    <% question.question_options.each do |option| %>
-      <% if question.single? %>
-        <label class="list-group-item list-group-item-action cursor-pointer p-3 border rounded mb-2 shadow-sm">
-          <div class="form-check d-flex align-items-center">
-            <%= f.radio_button :question_option_id, option.id,
-                  class: "form-check-input me-3 fs-5",
-                  style: "cursor: pointer;" %>
-
-            <span class="form-check-label fs-5"><%= option.option_text %></span>
-          </div>
+    <div class="qa-question-form__options">
+      <% question.question_options.each do |option| %>
+        <% is_checked = quiz_answer.selected_option_ids.include?(option.id.to_s) || quiz_answer.selected_option_ids.include?(option.id) %>
+        <label class="qa-option-box <%= 'checked' if is_checked %>">
+          <% if question.single? %>
+            <%= f.radio_button :selected_option_ids, option.id,
+                  class: "qa-option-input qa-auto-save",
+                  checked: is_checked %>
+          <% else %>
+            <%= f.check_box :selected_option_ids,
+                  { multiple: true, class: "qa-option-input qa-auto-save" },
+                  option.id, nil,
+                  checked: is_checked %>
+          <% end %>
+          <span class="qa-option-text"><%= option.option_text %></span>
         </label>
       <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="qa-controls">
+  <% if prev_id %>
+    <%= link_to quiz_attempt_path(quiz_attempt, question_id: prev_id), class: "btn-prev" do %>
+      <i class="bi bi-chevron-left"></i> Previous
     <% end %>
-  </div>
-
-  <div class="d-flex justify-content-between mt-4 pt-3 border-top">
-
-    <% if prev_id %>
-      <%= link_to quiz_attempt_path(quiz_attempt, question_id: prev_id), class: "btn btn-outline-secondary px-4" do %>
-        <i class="bi bi-arrow-left"></i> Previous
-      <% end %>
-    <% else %>
-      <button class="btn btn-outline-secondary px-4" disabled><i class="bi bi-arrow-left"></i> Previous</button>
-    <% end %>
-
-    <button type="submit" class="btn btn-primary px-4 fw-bold">
-      <% if next_id %>
-        Save & Next <i class="bi bi-arrow-right"></i>
-      <% else %>
-        Save answer <i class="bi bi-check2"></i>
-      <% end %>
+  <% else %>
+    <button class="btn-prev" disabled>
+      <i class="bi bi-chevron-left"></i> Previous
     </button>
+  <% end %>
 
-  </div>
+  <% if next_id %>
+    <button type="button" class="btn-next" onclick="const f = document.getElementById('question-form-<%= question.id %>'); f.querySelector('#next-question-id-<%= question.id %>').value = '<%= next_id %>'; f.requestSubmit();">
+      Next <i class="bi bi-chevron-right"></i>
+    </button>
+  <% else %>
+    <button type="button" class="btn-next" onclick="document.getElementById('question-form-<%= question.id %>').requestSubmit();">
+      Save <i class="bi bi-check"></i>
+    </button>
+  <% end %>
+</div>
 
-<% end %>
+<script>
+  document.addEventListener('turbo:load', function() {
+    const form = document.getElementById('question-form-<%= question.id %>');
+    if (!form) return;
 
-<style>
-  .cursor-pointer { cursor: pointer; }
-  .list-group-item:hover { background-color: #f0f8ff; border-color: #0d6efd; }
-  .form-check-input:checked + .form-check-label { font-weight: bold; color: #0d6efd; }
-</style>
+    if (form.dataset.autoSaveInit === 'true') return;
+    form.dataset.autoSaveInit = 'true';
+
+    const autoSaveInputs = form.querySelectorAll('.qa-auto-save');
+    autoSaveInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        // Update styling immediately for visual feedback
+        form.querySelectorAll('.qa-option-box').forEach(box => box.classList.remove('checked'));
+        if (input.type === 'radio' && input.checked) {
+          input.closest('.qa-option-box').classList.add('checked');
+        } else if (input.type === 'checkbox') {
+          form.querySelectorAll('.qa-option-input:checked').forEach(checkedInput => {
+            checkedInput.closest('.qa-option-box').classList.add('checked');
+          });
+        }
+
+        // Clear next_question_id for auto-save so we stay on current page
+        const nextInput = form.querySelector('#next-question-id-<%= question.id %>');
+        if (nextInput) nextInput.value = '';
+
+        setTimeout(() => {
+          form.requestSubmit();
+        }, 100);
+      });
+    });
+  });
+</script>

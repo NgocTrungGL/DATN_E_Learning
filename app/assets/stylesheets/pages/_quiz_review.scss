@@ -1,0 +1,354 @@
+// ============================================================
+// QUIZ REVIEW PAGE — Pure SCSS, Strict BEM
+// ============================================================
+
+.qreview-env {
+  background-color: $bg;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: $text-dark;
+}
+
+.qreview-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// ── Topbar ────────────────────────────────────────────────────
+.qreview-topbar {
+  background: $surface;
+  padding: 1.25rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: $shadow-sm;
+  border-bottom: 1px solid $border;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.85rem;
+    color: $text-muted;
+    font-weight: 500;
+  }
+}
+
+.qreview-back-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: $text-mid;
+  font-size: 1.2rem;
+  transition: $t;
+  text-decoration: none;
+
+  &:hover {
+    background: $bg;
+    color: $primary;
+  }
+}
+
+// ── Content ──────────────────────────────────────────────────
+.qreview-content {
+  margin-top: 2rem;
+  padding-bottom: 5rem;
+}
+
+// ── Hero Banner ──────────────────────────────────────────────
+.qreview-banner {
+  background: $success;
+  border-radius: $radius-lg;
+  padding: 2.5rem;
+  color: $white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+
+    i { font-size: 1.4rem; }
+  }
+
+  &__quiz-title {
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  &__course-title {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+}
+
+.qreview-score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.qreview-score-circle {
+  width: 110px;
+  height: 110px;
+  background: $white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: $success;
+  box-shadow: $shadow-md;
+
+  .qreview-score-percent {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .qreview-score-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+  }
+}
+
+.qreview-grade {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+// ── Stats Row ────────────────────────────────────────────────
+.qreview-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.qreview-stat-card {
+  background: $surface;
+  border-radius: $radius-md;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+}
+
+.qreview-stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.qreview-stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.qreview-stat-value {
+  display: flex;
+  flex-direction: column;
+}
+
+.qreview-stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $text-dark;
+  line-height: 1.1;
+}
+
+.qreview-stat-sub {
+  font-size: 0.75rem;
+  color: $text-mid;
+  font-weight: 500;
+}
+
+.qreview-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+
+  &--blue { background: $primary-light; color: $primary; }
+  &--green { background: $success-light; color: $success; }
+  &--red { background: $danger-light; color: $danger; }
+  &--purple { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+}
+
+// ── Answer Review Section ─────────────────────────────────────
+.qreview-section {
+  &-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.qreview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.qreview-card {
+  background: $surface;
+  border-radius: $radius-md;
+  border: 1px solid $border;
+  padding: 1.5rem 2rem;
+  transition: $t;
+
+  &--correct {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.02);
+  }
+
+  &--incorrect {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.02);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: $text-dark;
+
+    i {
+      font-size: 1.15rem;
+      .qreview-card--correct & { color: $success; }
+      .qreview-card--incorrect & { color: $danger; }
+    }
+  }
+
+  &__marks {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $text-muted;
+  }
+
+  &__question {
+    font-size: 1rem;
+    font-weight: 500;
+    color: $text-mid;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  &__answers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.qreview-answer-item {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  .qreview-answer-label {
+    color: $text-muted;
+    min-width: 110px;
+  }
+
+  .qreview-answer-text {
+    font-weight: 700;
+  }
+}
+
+.qreview-answer-box {
+   margin-top: 1rem;
+   padding: 1rem;
+   border: 1px solid $border;
+   border-radius: $radius-sm;
+   background: $white;
+
+   .qreview-answer-item {
+      flex-direction: column;
+   }
+
+   .qreview-answer-note {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: $text-muted;
+      font-style: italic;
+   }
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+.u-text-success { color: $success !important; }
+// ── Global Overrides ──────────────────────────────────────────
+.no-navbar .lp-navbar { display: none !important; }

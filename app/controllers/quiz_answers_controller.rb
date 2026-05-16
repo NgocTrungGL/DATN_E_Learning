@@ -68,7 +68,7 @@ class QuizAnswersController < ApplicationController
 
   def redirect_after_save
     target_question_id =
-      params[:next_question_id] || @answer.question_id
+      params[:next_question_id].presence || @answer.question_id
 
     redirect_to(
       quiz_attempt_path(@quiz_attempt, question_id: target_question_id),

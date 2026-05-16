@@ -1,6 +1,6 @@
 class QuizAttemptsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_quiz_attempt, only: [:show, :finish]
+  before_action :set_quiz_attempt, only: [:show, :finish, :review]
   layout "learning", only: [:show]
 
   # POST /quizzes/:quiz_id/quiz_attempts
@@ -25,8 +25,11 @@ class QuizAttemptsController < ApplicationController
 
   # GET /quiz_attempts/:id
   def show
+    @quiz = @quiz_attempt.quiz
+
     if @quiz_attempt.completed?
-      render :result
+      @quiz_is_finished = true
+      render :show
       return
     end
 
@@ -46,6 +49,13 @@ class QuizAttemptsController < ApplicationController
                       else
                         @quiz_answers.first
                       end
+
+    @all_questions = @quiz.questions
+    @current_question = @current_answer&.question
+    @answered_ids = @quiz_answers.select { |qa| qa.selected_option_ids.present? }.index_by(&:question_id)
+    @quiz_is_finished = @quiz_attempt.completed?
+    @quiz_answer = @current_answer
+    @unanswered_count = @all_questions.count - @answered_ids.count
   end
 
   # PATCH /quiz_attempts/:id/finish
@@ -55,6 +65,22 @@ class QuizAttemptsController < ApplicationController
     finalize_attempt!
     redirect_to quiz_attempt_path(@quiz_attempt),
                 notice: "Đã nộp bài thành công!"
+  end
+
+  # GET /quiz_attempts/:id/review
+  def review
+    unless @quiz_attempt.completed? && @quiz_attempt.is_passed?
+      redirect_to quiz_attempt_path(@quiz_attempt), alert: "You need to pass the quiz to review the answers!"
+      return
+    end
+
+    @quiz = @quiz_attempt.quiz
+    @quiz_answers = @quiz_attempt.quiz_answers.includes(question: :question_options).order(:id)
+    
+    @total_questions = @quiz_answers.count
+    @correct_count = @quiz_answers.where(is_correct: true).count
+    @incorrect_count = @total_questions - @correct_count
+    @accuracy = @total_questions > 0 ? (@correct_count.to_f / @total_questions * 100).round(1) : 0
   end
 
   private

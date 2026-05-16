@@ -1,48 +1,111 @@
-<div class="d-flex justify-content-center mt-5">
-  <div class="card shadow-lg p-4" style="max-width: 520px; width: 100%; border-radius: 18px;">
-    <div class="text-center">
-      <h2 class="fw-bold mb-3">🎉 Quiz completed!</h2>
+<div class="qr-page--modern <%= quiz_attempt.is_passed? ? 'passed' : 'failed' %>">
+  <!-- LEFT PANEL -->
+  <div class="qr-left">
+    <!-- CSS Hexagon pattern & Confetti -->
+    <div class="qr-left__bg"></div>
+    <div class="qr-confetti-container">
+      <% if quiz_attempt.is_passed? %>
+        <% 20.times do %>
+          <div class="qr-confetti"></div>
+        <% end %>
+      <% end %>
+    </div>
 
-      <h4 class="my-4">
-        Result:
-        <span class="fw-bold
-          <%= quiz_attempt.is_passed? ? 'text-success' : 'text-danger' %>">
-          <%= quiz_attempt.is_passed? ? "Passed ✔️" : "Not passed ❌" %>
-        </span>
-      </h4>
+    <div class="qr-left__content">
+      <div class="qr-hero-icon">
+        <%= quiz_attempt.is_passed? ? '🎉' : '💪' %>
+      </div>
+      <h1 class="qr-hero-title">
+        <%= quiz_attempt.is_passed? ? 'Congratulations!' : 'Keep Going!' %>
+      </h1>
+      <p class="qr-hero-subtitle">
+        <%= quiz_attempt.is_passed? ? "You have successfully completed the quiz. Great work!" : "Don't give up! Review the material and try again." %>
+      </p>
+    </div>
+  </div>
 
-      <div class="mb-3">
-        <p class="fs-4 mb-1">
-          Your score:
-          <strong class="text-primary">
-            <%= number_to_percentage(quiz_attempt.score, precision: 2) %>
-          </strong>
-        </p>
-
-        <p class="text-muted">
-          (Passing score:
-            <%= number_to_percentage(quiz_attempt.quiz.pass_score, precision: 0) %>)
-        </p>
+  <!-- RIGHT PANEL -->
+  <div class="qr-right">
+    <div class="qr-right__bg"></div>
+    
+    <div class="qr-right__content">
+      <!-- Circular Progress Ring -->
+      <% score_percent = (quiz_attempt.score * 100).round %>
+      <div class="qr-progress-wrapper">
+        <div class="qr-progress-ring" style="--progress: <%= score_percent %>%;">
+          <div class="qr-progress-inner">
+            <span class="qr-progress-val"><%= number_to_percentage(quiz_attempt.score, precision: 0) %></span>
+            <span class="qr-progress-lbl">YOUR SCORE</span>
+          </div>
+        </div>
       </div>
 
-      <p class="text-secondary fst-italic">
-        🕒 Quiz finished at:
-        <br>
-        <strong><%= quiz_attempt.finished_at.strftime("%H:%M:%S %d/%m/%Y") %></strong>
-      </p>
+      <!-- Stat Cards -->
+      <div class="qr-stats-row">
+        <!-- Card 1: Score -->
+        <div class="qr-stat-card">
+          <div class="qr-stat-icon" style="color: #2563eb; background: #eff6ff;">
+            <i class="bi bi-patch-check-fill"></i>
+          </div>
+          <div class="qr-stat-val"><%= number_to_percentage(quiz_attempt.score, precision: 1) %></div>
+          <div class="qr-stat-lbl">Your Score</div>
+        </div>
 
-      <hr class="my-4">
+        <!-- Card 2: Passing Score -->
+        <div class="qr-stat-card">
+          <div class="qr-stat-icon" style="color: #f59e0b; background: #fffbeb;">
+            <i class="bi bi-bullseye"></i>
+          </div>
+          <div class="qr-stat-val"><%= number_to_percentage(quiz_attempt.quiz.pass_score, precision: 0) %></div>
+          <div class="qr-stat-lbl">Passing Score</div>
+        </div>
 
-      <% if quiz_attempt.quiz.lesson %>
-        <%= link_to "⬅️ Back to Lesson",
-              lesson_path(quiz_attempt.quiz.lesson),
-              class: "btn btn-outline-primary w-100 py-2 fw-semibold" %>
-      <% else %>
-        <%= link_to "⬅️ Back to Course",
-              course_path(quiz_attempt.quiz.course),
-              class: "btn btn-outline-primary w-100 py-2 fw-semibold" %>
-      <% end %>
+        <!-- Card 3: Result -->
+        <div class="qr-stat-card">
+          <div class="qr-stat-icon qr-stat-icon--result">
+            <i class="bi <%= quiz_attempt.is_passed? ? 'bi-trophy-fill' : 'bi-x-circle-fill' %>"></i>
+          </div>
+          <div class="qr-stat-val"><%= quiz_attempt.is_passed? ? 'Passed' : 'Failed' %></div>
+          <div class="qr-stat-lbl">Result</div>
+        </div>
 
+        <!-- Card 4: Date/Time -->
+        <div class="qr-stat-card">
+          <div class="qr-stat-icon" style="color: #8b5cf6; background: #f5f3ff;">
+            <i class="bi bi-clock-fill"></i>
+          </div>
+          <div class="qr-stat-val">
+             <% duration = quiz_attempt.finished_at - quiz_attempt.started_at %>
+             <%= Time.at(duration).utc.strftime("%M:%S") %>
+          </div>
+          <div class="qr-stat-lbl">Time Taken</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="qr-actions-row">
+        <% if quiz_attempt.quiz.lesson %>
+          <%= link_to lesson_path(quiz_attempt.quiz.lesson), class: "qr-btn qr-btn-primary" do %>
+            <i class="bi bi-arrow-left"></i> Back to Lesson
+          <% end %>
+        <% else %>
+          <%= link_to course_path(quiz_attempt.quiz.course), class: "qr-btn qr-btn-primary" do %>
+            <i class="bi bi-arrow-left"></i> Back to Course
+          <% end %>
+        <% end %>
+
+        <% if quiz_attempt.is_passed? %>
+          <%= link_to review_quiz_attempt_path(quiz_attempt), class: "qr-btn qr-btn-secondary" do %>
+            <i class="bi bi-eye"></i> Review Answers
+          <% end %>
+        <% end %>
+
+        <% unless quiz_attempt.is_passed? %>
+          <%= button_to quiz_quiz_attempts_path(quiz_attempt.quiz), method: :post, class: "qr-btn qr-btn-primary" do %>
+            <i class="bi bi-arrow-repeat"></i> Try Again
+          <% end %>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
