@@ -1,162 +1,121 @@
-<div class="container-fluid py-4 bg-light" style="min-height: 100vh;">
-
-  <div class="d-flex justify-content-between align-items-center mb-4 px-3">
-    <h4 class="mb-0 text-primary fw-bold"><i class="bi bi-journals"></i> <%= @quiz.title %></h4>
-
-    <% unless @quiz_is_finished %>
-      <button class="btn btn-danger btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#submitModal">
-        <i class="bi bi-check-circle"></i> Submit
-      </button>
-    <% end %>
-  </div>
-
-  <div class="row g-4 px-3">
-
-    <% if @quiz_is_finished %>
-      <div class="col-12">
-        <div class="card border-0 shadow-sm">
-          <div class="card-body p-5">
-            <%= render 'results', quiz_attempt: @quiz_attempt %>
-          </div>
-        </div>
+<% if @quiz_is_finished %>
+  <% content_for :quiz_result, true %>
+  <%= render 'results', quiz_attempt: @quiz_attempt %>
+<% else %>
+  <div class="qa-env--modern">
+    <header class="qa-topbar">
+      <div class="qa-topbar__left">
+        <h1 class="qa-topbar__title"><%= @quiz.title %></h1>
+        <span class="qa-topbar__course"><%= @quiz.course.title %></span>
       </div>
 
-    <% else %>
-      <div class="col-lg-8">
+      <div class="qa-topbar__right">
+        <div class="qa-topbar__timer" id="qa-timer-widget">
+          <i class="bi bi-clock"></i>
+          <span id="quiz-timer">--:--</span>
+        </div>
+        <div id="timer-data" 
+             data-end-time="<%= (@quiz_attempt.started_at + (@quiz.time_limit || 60).minutes).iso8601 %>" 
+             hidden></div>
 
+        <button class="qa-topbar__btn-success qa-topbar__submit" onclick="document.getElementById('submitModal').classList.add('is-active')">
+          Submit Exam
+        </button>
+      </div>
+    </header>
+
+    <div class="qa-body">
+      <main class="qa-main">
         <% if @current_question %>
-
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white py-3 border-bottom">
-              <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                  Question <%= @all_questions.index(@current_question) + 1 %>
-                  <span class="text-muted fs-6">/ <%= @all_questions.count %></span>
-                </h5>
-                <span class="badge bg-info text-dark"><%= @current_question.difficulty.humanize %></span>
-              </div>
-            </div>
-
-            <div class="card-body p-4">
-              <%= render 'question_form',
-                    quiz_attempt: @quiz_attempt,
-                    question: @current_question,
-                    quiz_answer: @quiz_answer %>
-            </div>
-          </div>
-
+          <%= render 'question_form',
+                quiz_attempt: @quiz_attempt,
+                question: @current_question,
+                quiz_answer: @quiz_answer %>
         <% else %>
-
-          <div class="alert alert-warning text-center p-5 shadow-sm border-0">
-            <h4><i class="bi bi-exclamation-circle-fill text-warning display-4 d-block mb-3"></i></h4>
-            <h5>Question data not found</h5>
-            <p class="text-muted">The question may have been deleted or the quiz is not configured correctly.</p>
-            <%= link_to "Back", :back, class: "btn btn-outline-dark mt-3" %>
+          <div class="u-text-center u-p-5 qa-panel">
+            <i class="bi bi-exclamation-triangle u-display-1 u-text-muted"></i>
+            <h3 class="u-mt-3">Question not found</h3>
           </div>
-
         <% end %>
+      </main>
 
-      </div>
-
-      <div class="col-lg-4">
-
-        <div class="card border-0 shadow-sm mb-3">
-          <div class="card-body text-center bg-dark text-white rounded">
-            <small class="text-uppercase text-white-50 fw-bold">Time remaining</small>
-            <div id="quiz-timer" class="display-4 fw-bold my-2">--:--</div>
-            <% end_time = @quiz_attempt.started_at + (@quiz.time_limit || 60).minutes %>
-            <div id="timer-data" data-end-time="<%= end_time.iso8601 %>"></div>
-          </div>
+      <aside class="qa-sidebar">
+        <h3 class="qa-sidebar__title">Question Navigator</h3>
+        
+        <div class="qa-sidebar__grid">
+          <% @all_questions.each_with_index do |q, index| %>
+            <% 
+              is_answered = @answered_ids.key?(q.id)
+              is_current  = (q.id == @current_question&.id)
+              
+              status_class = if is_current
+                               'node--current'
+                             elsif is_answered
+                               'node--answered'
+                             else
+                               'node--unanswered'
+                             end
+            %>
+            <%= link_to quiz_attempt_path(@quiz_attempt, question_id: q.id), 
+                  class: "qa-sidebar__node #{status_class}" do %>
+              <%= index + 1 %>
+            <% end %>
+          <% end %>
         </div>
 
-        <div class="card border-0 shadow-sm">
-          <div class="card-header bg-white fw-bold">Question list</div>
-          <div class="card-body">
-            <div class="row g-2">
-              <% @all_questions.each_with_index do |q, index| %>
-                <% is_answered = @answered_ids[q.id] %>
-                <% is_current = (q == @current_question) %>
-
-                <div class="col-3 col-sm-2 col-lg-3">
-                  <%= link_to quiz_attempt_path(@quiz_attempt, question_id: q.id),
-                      class: "btn w-100 py-2 fw-bold position-relative #{is_current ? 'btn-primary border-2 border-dark' : (is_answered ? 'btn-success' : 'btn-outline-secondary')}" do %>
-
-                    <%= index + 1 %>
-
-                    <% if is_current %>
-                      <span class="position-absolute top-0 start-100 translate-middle p-1 bg-warning border border-light rounded-circle">
-                        <span class="visually-hidden">Current</span>
-                      </span>
-                    <% end %>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-
-            <div class="mt-3 pt-3 border-top small text-muted d-flex justify-content-between">
-              <span><i class="bi bi-square-fill text-success"></i> Answered</span>
-              <span><i class="bi bi-square-fill text-primary"></i> In progress</span>
-              <span><i class="bi bi-square text-secondary"></i> Unanswered</span>
-            </div>
+        <div class="qa-sidebar__legend">
+          <div class="legend-item">
+            <div class="legend-box box-answered"></div>
+            <span>Answered</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box box-unanswered"></div>
+            <span>Not Answered</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box box-current"></div>
+            <span>Current</span>
           </div>
         </div>
-
-      </div>
-    <% end %>
+      </aside>
+    </div>
   </div>
-</div>
 
-<% unless @quiz_is_finished %>
-
-  <div class="modal fade" id="submitModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold text-danger">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm submission
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-
-        <div class="modal-body p-4">
-          <% count = @unanswered_count || 0 %>
-
-          <% if count > 0 %>
-            <div class="text-center">
-              <h3 class="text-warning fw-bold display-6 mb-3"><%= count %></h3>
-              <p class="fs-5">Some questions are still <strong>unanswered</strong>.</p>
-              <p class="text-muted small">If you submit now, these questions will be scored as 0.</p>
-            </div>
-          <% else %>
-            <div class="text-center text-success">
-              <i class="bi bi-check-circle-fill display-1 mb-3"></i>
-              <p class="fs-5 fw-bold">You have completed all questions!</p>
-              <p class="text-muted">Are you sure you want to submit and view the results?</p>
-            </div>
-          <% end %>
-        </div>
-
-        <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Review</button>
-          <%= button_to finish_quiz_attempt_path(@quiz_attempt), method: :patch, class: "btn btn-danger px-4 fw-bold" do %>
-            <i class="bi bi-send-check-fill"></i> Submit now
-          <% end %>
-        </div>
+  <%# Custom Modal (No Bootstrap) %>
+  <div class="qa-modal" id="submitModal">
+    <div class="qa-modal__content">
+      <div class="qa-modal__header">
+        <h5 class="qa-modal__title">Confirm Submission</h5>
+        <button type="button" class="qa-modal__close" onclick="document.getElementById('submitModal').classList.remove('is-active')">&times;</button>
+      </div>
+      <div class="qa-modal__body u-p-4 u-text-center">
+        <% if @unanswered_count.to_i > 0 %>
+          <div class="u-mb-3"><i class="bi bi-exclamation-circle u-text-warning u-display-4"></i></div>
+          <h4>You have <%= @unanswered_count %> unanswered questions!</h4>
+          <p class="u-text-muted">Are you sure you want to submit?</p>
+        <% else %>
+          <div class="u-mb-3"><i class="bi bi-check-circle u-text-success u-display-4"></i></div>
+          <h4>All questions answered!</h4>
+          <p class="u-text-muted">Ready to see your results?</p>
+        <% end %>
+      </div>
+      <div class="qa-modal__footer">
+        <button type="button" class="qr-btn qr-btn-secondary" onclick="document.getElementById('submitModal').classList.remove('is-active')">Cancel</button>
+        <%= button_to "Confirm Submit", finish_quiz_attempt_path(@quiz_attempt), method: :patch, class: "qa-topbar__btn-success" %>
       </div>
     </div>
   </div>
 
-  <%= form_with url: finish_quiz_attempt_path(@quiz_attempt), method: :patch, id: "auto-submit-form", class: "d-none" do %>
-  <% end %>
+  <%= form_with url: finish_quiz_attempt_path(@quiz_attempt), method: :patch, id: "auto-submit-form", class: "u-d-none" do %><% end %>
 
   <script>
     document.addEventListener("turbo:load", function() {
       const timerData = document.getElementById("timer-data");
       const timerDisplay = document.getElementById("quiz-timer");
+      const timerWidget = document.getElementById("qa-timer-widget");
 
       if (timerData && timerDisplay) {
         const endTime = new Date(timerData.dataset.endTime).getTime();
-
         const interval = setInterval(function() {
           const now = new Date().getTime();
           const distance = endTime - now;
@@ -164,30 +123,22 @@
           if (distance < 0) {
             clearInterval(interval);
             timerDisplay.innerHTML = "00:00";
-            timerDisplay.classList.add("text-danger");
-
+            timerWidget.classList.add("danger");
             const autoForm = document.getElementById("auto-submit-form");
-            if (autoForm) {
-               alert("Time is up! The system will submit automatically.");
-               autoForm.requestSubmit();
-            }
+            if (autoForm) autoForm.requestSubmit();
             return;
           }
 
           const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          timerDisplay.innerHTML = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
 
-          timerDisplay.innerHTML =
-            (minutes < 10 ? "0" + minutes : minutes) + ":" +
-            (seconds < 10 ? "0" + seconds : seconds);
-
-          if (distance < 60000) {
-              timerDisplay.classList.remove("text-white");
-              timerDisplay.classList.add("text-warning");
+          if (distance < 120000) {
+            timerWidget.classList.add("danger");
           }
         }, 1000);
+        document.addEventListener("turbo:before-cache", () => clearInterval(interval), { once: true });
       }
     });
   </script>
-
 <% end %>

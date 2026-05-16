@@ -104,7 +104,9 @@
           </span>
         <% else %>
           <div class="lesson-quiz__btn-start">
-            <%= button_to "Start now →", quiz_quiz_attempts_path(quiz), method: :post %>
+            <%= button_to "Start now →", quiz_quiz_attempts_path(quiz),
+                  method: :post,
+                  data: { turbo: false } %>
           </div>
         <% end %>
       </div>
@@ -225,7 +227,9 @@
                   </div>
                 <% else %>
                   <div class="sb-quiz-item__btn sb-quiz-item__btn--start">
-                    <%= button_to "Start now", quiz_quiz_attempts_path(quiz), method: :post %>
+                    <%= button_to "Start now", quiz_quiz_attempts_path(quiz),
+                          method: :post,
+                          data: { turbo: false } %>
                   </div>
                 <% end %>
               </div>

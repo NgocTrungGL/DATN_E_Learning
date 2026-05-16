@@ -1,0 +1,8 @@
+<div id="navbar-cart-icon">
+  <%= link_to cart_path, class: "btn-cart me-2" do %>
+    <i class="bi bi-cart3"></i>
+    <% if current_cart && current_cart.cart_items.count > 0 %>
+      <span class="btn-cart__badge"><%= current_cart.cart_items.count %></span>
+    <% end %>
+  <% end %>
+</div>

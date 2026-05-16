@@ -1,0 +1,141 @@
+<% content_for :full_width, true %>
+<% content_for :body_class, 'no-navbar' %>
+<div class="qreview-env">
+  <%# Topbar %>
+  <header class="qreview-topbar">
+    <div class="qreview-container qreview-topbar__inner">
+      <div class="qreview-topbar__left">
+        <%= link_to quiz_attempt_path(@quiz_attempt), class: "qreview-back-btn" do %>
+          <i class="bi bi-arrow-left"></i>
+        <% end %>
+        <div class="qreview-topbar__titles">
+          <h1 class="qreview-topbar__title">Exam Results</h1>
+          <span class="qreview-topbar__subtitle">Automatic Evaluation Complete</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="qreview-container qreview-content">
+    <%# Green Hero Banner %>
+    <div class="qreview-banner">
+      <div class="qreview-banner__left">
+        <div class="qreview-banner__status">
+          <i class="bi bi-check-circle-fill"></i> Exam Submitted Successfully!
+        </div>
+        <h2 class="qreview-banner__quiz-title"><%= @quiz.title %></h2>
+        <p class="qreview-banner__course-title"><%= @quiz.course.title %></p>
+      </div>
+      <div class="qreview-banner__right">
+        <div class="qreview-score-box">
+          <div class="qreview-score-circle">
+            <span class="qreview-score-percent"><%= number_to_percentage(@quiz_attempt.score, precision: 1) %></span>
+            <span class="qreview-score-label">Score</span>
+          </div>
+          <div class="qreview-grade">Grade: <%= @quiz_attempt.is_passed? ? 'Pass' : 'D' %></div>
+        </div>
+      </div>
+    </div>
+
+    <%# Stats Section %>
+    <div class="qreview-stats">
+      <div class="qreview-stat-card">
+        <div class="qreview-stat-info">
+          <span class="qreview-stat-label">Score</span>
+          <div class="qreview-stat-value">
+            <span class="qreview-stat-number"><%= (@quiz_attempt.score * @total_questions / 100).to_i %>/<%= @total_questions * 5 %></span>
+            <span class="qreview-stat-sub">Marks Obtained</span>
+          </div>
+        </div>
+        <div class="qreview-stat-icon qreview-stat-icon--blue">
+          <i class="bi bi-award"></i>
+        </div>
+      </div>
+
+      <div class="qreview-stat-card">
+        <div class="qreview-stat-info">
+          <span class="qreview-stat-label">Correct</span>
+          <div class="qreview-stat-value">
+            <span class="qreview-stat-number"><%= @correct_count %></span>
+            <span class="qreview-stat-sub">Answers</span>
+          </div>
+        </div>
+        <div class="qreview-stat-icon qreview-stat-icon--green">
+          <i class="bi bi-check-circle"></i>
+        </div>
+      </div>
+
+      <div class="qreview-stat-card">
+        <div class="qreview-stat-info">
+          <span class="qreview-stat-label">Incorrect</span>
+          <div class="qreview-stat-value">
+            <span class="qreview-stat-number"><%= @incorrect_count %></span>
+            <span class="qreview-stat-sub">Answers</span>
+          </div>
+        </div>
+        <div class="qreview-stat-icon qreview-stat-icon--red">
+          <i class="bi bi-x-circle"></i>
+        </div>
+      </div>
+
+      <div class="qreview-stat-card">
+        <div class="qreview-stat-info">
+          <span class="qreview-stat-label">Accuracy</span>
+          <div class="qreview-stat-value">
+            <span class="qreview-stat-number"><%= @accuracy %>%</span>
+            <span class="qreview-stat-sub">Performance</span>
+          </div>
+        </div>
+        <div class="qreview-stat-icon qreview-stat-icon--purple">
+          <i class="bi bi-graph-up"></i>
+        </div>
+      </div>
+    </div>
+
+    <%# Answer Review Section %>
+    <div class="qreview-section">
+      <h3 class="qreview-section-title">Answer Review</h3>
+      
+      <div class="qreview-list">
+        <% @quiz_answers.each_with_index do |answer, index| %>
+          <% question = answer.question %>
+          <div class="qreview-card <%= answer.is_correct? ? 'qreview-card--correct' : 'qreview-card--incorrect' %>">
+            <div class="qreview-card__header">
+              <div class="qreview-card__title">
+                <i class="bi <%= answer.is_correct? ? 'bi-check-circle' : 'bi-x-circle' %>"></i>
+                Question <%= index + 1 %>
+              </div>
+              <div class="qreview-card__marks">5 marks</div>
+            </div>
+            
+            <div class="qreview-card__body">
+              <p class="qreview-card__question"><%= question.question_text %></p>
+              
+              <div class="qreview-card__answers">
+                <div class="qreview-answer-item">
+                  <span class="qreview-answer-label">Your answer:</span>
+                  <span class="qreview-answer-text <%= answer.is_correct? ? 'u-text-success' : 'u-text-danger' %>">
+                    <% if answer.selected_option_ids.present? %>
+                      <%= question.question_options.where(id: answer.selected_option_ids).pluck(:option_text).join(", ") %>
+                    <% else %>
+                      Not answered
+                    <% end %>
+                  </span>
+                </div>
+                
+                <% unless answer.is_correct? %>
+                  <div class="qreview-answer-item">
+                    <span class="qreview-answer-label">Correct answer:</span>
+                    <span class="qreview-answer-text u-text-success">
+                      <%= question.question_options.where(is_correct: true).pluck(:option_text).join(", ") %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

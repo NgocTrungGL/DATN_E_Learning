@@ -26,7 +26,7 @@
     "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=340&fit=crop&q=80"
 %>
 
-<article class="course-card">
+<article class="course-card" data-href="<%= course_path(course) %>">
 
   <%# ── Thumbnail ─────────────────────────────────────── %>
   <div class="card-thumb">
@@ -111,20 +111,9 @@
     <div class="card-actions">
       <%= render "wishlists/wishlist_button", course: course %>
 
-      <% if current_user && !course.free? %>
-        <% if current_user.cart&.courses&.include?(course) %>
-          <%= link_to cart_path, class: "btn-cart btn-cart-done", title: "Already in cart" do %>
-            <i class="bi bi-check-lg"></i>
-          <% end %>
-        <% else %>
-          <%= link_to cart_items_path(course_id: course.id),
-                data: { turbo_method: :post },
-                class: "btn-cart btn-cart-add",
-                title: "Add to cart" do %>
-            <i class="bi bi-cart-plus"></i>
-          <% end %>
-        <% end %>
-      <% end %>
+      <turbo-frame id="cart-action-course-<%= course.id %>">
+        <%= render "courses/cart_action", course: course %>
+      </turbo-frame>
     </div>
   </div>
 
