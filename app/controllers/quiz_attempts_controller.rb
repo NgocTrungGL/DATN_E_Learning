@@ -34,28 +34,11 @@ class QuizAttemptsController < ApplicationController
     end
 
     if @quiz_attempt.expired?
-      finalize_attempt!
-      redirect_to quiz_attempt_path(@quiz_attempt),
-                  alert: "Đã hết thời gian làm bài!"
+      handle_expired_attempt
       return
     end
 
-    @quiz_answers = @quiz_attempt.quiz_answers
-                                 .includes(question: :question_options)
-                                 .order(:id)
-
-    @current_answer = if params[:question_id]
-                        @quiz_answers.find_by(question_id: params[:question_id])
-                      else
-                        @quiz_answers.first
-                      end
-
-    @all_questions = @quiz.questions
-    @current_question = @current_answer&.question
-    @answered_ids = @quiz_answers.select { |qa| qa.selected_option_ids.present? }.index_by(&:question_id)
-    @quiz_is_finished = @quiz_attempt.completed?
-    @quiz_answer = @current_answer
-    @unanswered_count = @all_questions.count - @answered_ids.count
+    prepare_quiz_data
   end
 
   # PATCH /quiz_attempts/:id/finish
@@ -80,10 +63,33 @@ class QuizAttemptsController < ApplicationController
     @total_questions = @quiz_answers.count
     @correct_count = @quiz_answers.where(is_correct: true).count
     @incorrect_count = @total_questions - @correct_count
-    @accuracy = @total_questions > 0 ? (@correct_count.to_f / @total_questions * 100).round(1) : 0
+    @accuracy = @total_questions.positive? ? (@correct_count.to_f / @total_questions * 100).round(1) : 0
   end
 
-  private
+  def handle_expired_attempt
+    finalize_attempt!
+    redirect_to quiz_attempt_path(@quiz_attempt),
+                alert: "Đã hết thời gian làm bài!"
+  end
+
+  def prepare_quiz_data
+    @quiz_answers = @quiz_attempt.quiz_answers.includes(question: :question_options).order(:id)
+    @current_answer = find_current_answer
+    @all_questions = @quiz.questions
+    @current_question = @current_answer&.question
+    @answered_ids = @quiz_answers.select { |qa| qa.selected_option_ids.present? }.index_by(&:question_id)
+    @quiz_is_finished = @quiz_attempt.completed?
+    @quiz_answer = @current_answer
+    @unanswered_count = @all_questions.count - @answered_ids.count
+  end
+
+  def find_current_answer
+    if params[:question_id]
+      @quiz_answers.find_by(question_id: params[:question_id])
+    else
+      @quiz_answers.first
+    end
+  end
 
   def set_quiz_attempt
     @quiz_attempt = QuizAttempt.find(params[:id])
@@ -100,8 +106,8 @@ class QuizAttemptsController < ApplicationController
     @quiz_attempt.update!(
       status: :completed,
       finished_at: Time.current,
-      score:,
-      is_passed:
+      score: score,
+      is_passed: is_passed
     )
 
     update_progress if is_passed
