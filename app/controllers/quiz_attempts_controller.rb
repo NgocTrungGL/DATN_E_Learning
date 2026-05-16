@@ -59,7 +59,7 @@ class QuizAttemptsController < ApplicationController
 
     @quiz = @quiz_attempt.quiz
     @quiz_answers = @quiz_attempt.quiz_answers.includes(question: :question_options).order(:id)
-    
+
     @total_questions = @quiz_answers.count
     @correct_count = @quiz_answers.where(is_correct: true).count
     @incorrect_count = @total_questions - @correct_count
@@ -77,7 +77,7 @@ class QuizAttemptsController < ApplicationController
     @current_answer = find_current_answer
     @all_questions = @quiz.questions
     @current_question = @current_answer&.question
-    @answered_ids = @quiz_answers.select { |qa| qa.selected_option_ids.present? }.index_by(&:question_id)
+    @answered_ids = @quiz_answers.select{|qa| qa.selected_option_ids.present?}.index_by(&:question_id)
     @quiz_is_finished = @quiz_attempt.completed?
     @quiz_answer = @current_answer
     @unanswered_count = @all_questions.count - @answered_ids.count
@@ -106,8 +106,8 @@ class QuizAttemptsController < ApplicationController
     @quiz_attempt.update!(
       status: :completed,
       finished_at: Time.current,
-      score: score,
-      is_passed: is_passed
+      score:,
+      is_passed:
     )
 
     update_progress if is_passed
