@@ -19,7 +19,7 @@ class CartItemsController < ApplicationController
     @cart_item.destroy
 
     respond_to do |format|
-      format.html { redirect_back(fallback_location: cart_path, notice: "Đã xóa khỏi giỏ hàng.") }
+      format.html{redirect_back(fallback_location: cart_path, notice: "Đã xóa khỏi giỏ hàng.")}
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.replace("cart-action-course-#{@course.id}",
@@ -36,7 +36,7 @@ class CartItemsController < ApplicationController
   def handle_already_enrolled
     message = "Bạn đã sở hữu khóa học này rồi!"
     respond_to do |format|
-      format.html { redirect_to course_path(@course), alert: message }
+      format.html{redirect_to course_path(@course), alert: message}
       format.turbo_stream do
         render turbo_stream: turbo_stream.append("flash", partial: "shared/flash",
                                                           locals: { alert: message })
@@ -46,7 +46,7 @@ class CartItemsController < ApplicationController
 
   def handle_added_to_cart
     respond_to do |format|
-      format.html { redirect_back(fallback_location: root_path, notice: "Đã thêm khóa học vào giỏ!") }
+      format.html{redirect_back(fallback_location: root_path, notice: "Đã thêm khóa học vào giỏ!")}
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.replace("cart-action-course-#{@course.id}",
@@ -61,7 +61,7 @@ class CartItemsController < ApplicationController
   def handle_add_failure
     message = "Khóa học này đã có trong giỏ hàng."
     respond_to do |format|
-      format.html { redirect_back(fallback_location: root_path, alert: message }
+      format.html{redirect_back(fallback_location: root_path, alert: message)}
       format.turbo_stream do
         render turbo_stream: turbo_stream.append("flash", partial: "shared/flash",
                                                           locals: { alert: message })

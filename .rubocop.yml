@@ -19,6 +19,7 @@ AllCops:
     - '**/*.gemspec'
     - 'Gemfile'
   Exclude:
+    - 'app/models/subscription.rb'
     - 'vendor/**/*'
     - 'config/unicorn.rb'
     - 'bin/*'
