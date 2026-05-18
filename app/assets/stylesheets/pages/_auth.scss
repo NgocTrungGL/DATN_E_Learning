@@ -2,16 +2,11 @@
 // Auth Split Layout — matching design mockup
 // ================================================
 
-// --- Variables ---
-$teal: #4ECDC4;
-$teal-light: #6EDDD6;
-$teal-dark: #38B2AC;
-$text-dark: #1a1a2e;
-$text-mid: #4a4a6a;
-$text-light: #8888aa;
-$border: #d0f0ee;
-$bg: #ffffff;
-$input-bg: #f5fdfd;
+// --- Soft Blue Variables (to maintain harmony like the original teal) ---
+$auth-blue: #5b9cf6;
+$auth-blue-hover: #3b82f6;
+$auth-blue-light: #f5f9ff;
+$auth-blue-ring: rgba(91, 156, 246, 0.25);
 
 // --- Layout ---
 .auth-wrapper {
@@ -48,9 +43,9 @@ $input-bg: #f5fdfd;
   min-height: 480px;
 
   // Fallback gradient if no image
-  background-color: #3a6186;
+  background-color: #1e3a8a;
   background-image:
-    linear-gradient(160deg, rgba(58, 97, 134, 0.7) 0%, rgba(89, 193, 184, 0.5) 100%),
+    linear-gradient(160deg, rgba(15, 23, 42, 0.7) 0%, rgba(59, 130, 246, 0.45) 100%),
     asset-url('auth.jpg');
 
   .image-overlay {
@@ -103,7 +98,7 @@ $input-bg: #f5fdfd;
 // --- Tab Switcher ---
 .auth-tabs {
   display: flex;
-  background: #e8f8f7;
+  background: $auth-blue-light;
   border-radius: 50px;
   padding: 4px;
   margin-bottom: 28px;
@@ -134,7 +129,7 @@ $input-bg: #f5fdfd;
     }
 
     &:hover:not(.active) {
-      color: $teal-dark;
+      color: $auth-blue-hover;
       text-decoration: none;
     }
 
@@ -153,9 +148,9 @@ $input-bg: #f5fdfd;
     left: 4px;
     width: calc(50% - 4px);
     height: calc(100% - 8px);
-    background: $teal;
+    background: $auth-blue;
     border-radius: 50px;
-    box-shadow: 0 6px 16px rgba(78, 205, 196, 0.45);
+    box-shadow: 0 6px 16px rgba(91, 156, 246, 0.4);
     z-index: 1;
 
     // GPU acceleration & anti-aliasing
@@ -246,15 +241,52 @@ $input-bg: #f5fdfd;
   margin-bottom: 6px;
 }
 
+// --- Error Messages ---
+.auth-error {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #991b1b;
+    margin: 0 0 8px;
+
+    i {
+      color: #ef4444;
+      font-size: 1.1rem;
+    }
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: 24px;
+    font-size: 0.85rem;
+    color: #991b1b;
+
+    li {
+      margin-bottom: 4px;
+      &:last-child { margin-bottom: 0; }
+    }
+  }
+}
+
 .input-wrap {
   position: relative;
 
   input {
     width: 100%;
     padding: 13px 18px;
-    border: 1.5px solid $border;
+    border: 1.5px solid rgba(91, 156, 246, 0.2);
     border-radius: 50px;
-    background: $input-bg;
+    background: $auth-blue-light;
     font-size: 0.9rem;
     color: $text-dark;
     outline: none;
@@ -262,12 +294,12 @@ $input-bg: #f5fdfd;
     box-sizing: border-box;
 
     &::placeholder {
-      color: #b0c8c6;
+      color: rgba(91, 156, 246, 0.6);
     }
 
     &:focus {
-      border-color: $teal;
-      box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.15);
+      border-color: $auth-blue;
+      box-shadow: 0 0 0 3px $auth-blue-ring;
       background: #fff;
     }
   }
@@ -285,13 +317,13 @@ $input-bg: #f5fdfd;
   background: none;
   border: none;
   cursor: pointer;
-  color: $text-light;
+  color: $text-muted;
   padding: 4px;
   display: flex;
   align-items: center;
 
   &:hover {
-    color: $teal-dark;
+    color: $auth-blue-hover;
   }
 
   i {
@@ -318,7 +350,7 @@ $input-bg: #f5fdfd;
   input[type="checkbox"] {
     width: 15px;
     height: 15px;
-    accent-color: $teal;
+    accent-color: $auth-blue;
     cursor: pointer;
   }
 }
@@ -329,7 +361,7 @@ $input-bg: #f5fdfd;
   text-decoration: none;
 
   &:hover {
-    color: $teal-dark;
+    color: $auth-blue-hover;
     text-decoration: underline;
   }
 }
@@ -338,7 +370,7 @@ $input-bg: #f5fdfd;
 .btn-login {
   width: 100%;
   padding: 14px;
-  background: $teal;
+  background: $auth-blue;
   color: #fff;
   border: none;
   border-radius: 50px;
@@ -347,11 +379,11 @@ $input-bg: #f5fdfd;
   cursor: pointer;
   letter-spacing: 0.5px;
   transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-  box-shadow: 0 4px 16px rgba(78, 205, 196, 0.35);
+  box-shadow: 0 4px 16px rgba(91, 156, 246, 0.35);
 
   &:hover {
-    background: $teal-dark;
-    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.45);
+    background: $auth-blue-hover;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
     transform: translateY(-1px);
   }
 

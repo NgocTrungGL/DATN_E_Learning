@@ -1,6 +1,9 @@
 <% content_for :full_width, true %>
 <% content_for :body_class, "chat-page-body" %>
 
+<%# Real-time WebSocket subscription %>
+<%= turbo_stream_from [@course, :chat] %>
+
 <div class="lumina" data-controller="lumina-layout" data-lumina-layout-target="container">
   
   <%# ── LEFT SIDEBAR ────────────────────────────────────────── %>
@@ -12,44 +15,37 @@
         </div>
         <div class="course-mini__details">
           <h3 class="course-mini__title"><%= @course.title %></h3>
-          <span class="course-mini__tag">Nhóm Thảo Luận</span>
+          <span class="course-mini__tag">Group Discussion</span>
         </div>
       </div>
     </div>
 
-    <div class="lumina__search">
-      <i class="bi bi-search"></i>
-      <input type="text" placeholder="Tìm kiếm tin nhắn...">
+    <div class="lumina__sidebar-stats">
+      <div class="lumina__stat">
+        <i class="bi bi-people-fill"></i>
+        <span><%= @members_count %> members enrolled</span>
+      </div>
+      <div class="lumina__stat">
+        <i class="bi bi-chat-dots"></i>
+        <span><%= @course.discussion_messages.count %> messages total</span>
+      </div>
     </div>
 
-    <nav class="lumina__nav-section">
-      <h4 class="lumina__nav-section-title">Thành viên</h4>
-      <div class="lumina__member-list">
-        <%# Mocked online members for visual fidelity %>
-        <div class="lumina__member lumina__member--instructor">
-          <div class="lumina__member-avatar">
-            <%= @course.creator&.name&.first&.upcase %>
-            <span class="lumina__member-status lumina__member-status--online"></span>
-          </div>
-          <span class="lumina__member-name"><%= @course.creator&.name %> (Giảng viên)</span>
-        </div>
-        
-        <%# Current User %>
-        <div class="lumina__member">
-          <div class="lumina__member-avatar">
-            <%= current_user.name.first.upcase %>
-            <span class="lumina__member-status lumina__member-status--online"></span>
-          </div>
-          <span class="lumina__member-name"><%= current_user.name %> (Bạn)</span>
-        </div>
-
-        <%# More members from enrollment if needed, but let's keep it clean %>
+    <nav class="lumina__nav-section" style="margin-top: 16px;">
+      <h4 class="lumina__nav-section-title">Navigation</h4>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <%= link_to course_path(@course), class: "lumina__nav-link lumina__nav-link--active" do %>
+          <i class="bi bi-chat-right-text"></i> Group Chat
+        <% end %>
+        <%= link_to course_discussion_posts_path(@course), class: "lumina__nav-link" do %>
+          <i class="bi bi-layout-text-sidebar-reverse"></i> Forum Threads
+        <% end %>
       </div>
     </nav>
 
     <div class="lumina__sidebar-footer" style="margin-top:auto;">
-      <%= link_to course_path(@course), class: "cd-btn cd-btn--outline", style: "width:100%; font-size: 0.8rem;" do %>
-        <i class="bi bi-arrow-left"></i> Về khóa học
+      <%= link_to course_path(@course), class: "cd-btn cd-btn--outline", style: "width:100%; font-size: 0.8rem; text-align: center;" do %>
+        <i class="bi bi-arrow-left"></i> Back to course
       <% end %>
     </div>
   </aside>
@@ -59,38 +55,55 @@
     <header class="lumina__header">
       <div class="channel-head">
         <i class="bi bi-chat-right-text"></i>
-        <h2>Thảo luận chung</h2>
+        <div>
+          <h2>General Discussion</h2>
+          <span style="font-size: 0.75rem; color: var(--lumina-text-muted); font-weight: 400;">
+            Ask questions, share insights, and learn together
+          </span>
+        </div>
       </div>
       <div class="header-tools">
-        <button class="tool-btn" data-action="click->lumina-layout#togglePanel" title="Thông tin nhóm">
+        <button class="tool-btn" data-action="click->lumina-layout#togglePanel" title="Group info">
           <i class="bi bi-info-circle"></i>
-        </button>
-        <button class="tool-btn" title="Tin nhắn đã ghim">
-          <i class="bi bi-pin-angle"></i>
         </button>
       </div>
     </header>
 
     <div class="lumina__messages" id="chat-scroll-area" data-controller="chat-scroll">
-      <% if @messages.empty? && @course.discussion_posts.empty? %>
+      <% if @messages.empty? %>
         <div class="chatroom__welcome" style="max-width: 500px; margin: 4rem auto; text-align: center;">
           <div class="chatroom__welcome-icon" style="margin: 0 auto 1.5rem;">
-            <i class="bi bi-chat-quote" style="font-size: 3rem;"></i>
+            <i class="bi bi-chat-quote" style="font-size: 3rem; color: var(--lumina-primary);"></i>
           </div>
-          <h2 class="chatroom__welcome-title" style="font-size: 1.5rem;">Bắt đầu thảo luận thôi!</h2>
-          <p class="chatroom__welcome-text">Đặt câu hỏi cho giảng viên hoặc chia sẻ kiến thức với các bạn học viên khác.</p>
+          <h2 class="chatroom__welcome-title" style="font-size: 1.5rem;">Start the conversation!</h2>
+          <p class="chatroom__welcome-text" style="color: var(--lumina-text-muted);">
+            Ask your instructor a question or share something you learned with your fellow students.
+          </p>
         </div>
       <% end %>
 
+      <%# Only DiscussionMessages — clean, unified timeline %>
       <div id="chat-messages">
-        <%# Legacy Discussion Posts (Forum-style) converted to Lumina messages %>
-        <% @course.discussion_posts.pinned_first.each do |post| %>
-          <%= render "discussion_messages/lumina_post", post: post, course: @course %>
-        <% end %>
-
-        <%# Direct Chat Messages %>
         <% previous_message = nil %>
+        <% last_date = nil %>
         <% @messages.each do |msg| %>
+          <% msg_date = msg.created_at.to_date %>
+          <% if last_date != msg_date %>
+            <%
+              day_num = msg.created_at.day
+              suffix = case day_num
+                       when 1, 21, 31 then "st"
+                       when 2, 22 then "nd"
+                       when 3, 23 then "rd"
+                       else "th"
+                       end
+              formatted_date = msg.created_at.strftime("%A, %B %-d") + suffix
+            %>
+            <div class="lumina__date-divider">
+              <span><%= formatted_date %></span>
+            </div>
+            <% last_date = msg_date %>
+          <% end %>
           <%= render "discussion_messages/lumina_message",
                 message: msg,
                 previous_message: previous_message,
@@ -105,29 +118,23 @@
     </footer>
   </main>
 
-  <%# ── INFO PANEL (RIGHT) ────────────────────────────────────── %>
+  <%# ── THREAD PANEL (RIGHT) — Loaded via Turbo Frame ──────────── %>
   <aside class="lumina__info-panel" data-lumina-layout-target="infoPanel">
+    <div class="lumina__resize-handle" data-action="mousedown->lumina-layout#startResize"></div>
     <header class="lumina__panel-header">
-      <h3 data-lumina-layout-target="panelTitle">Thông tin nhóm</h3>
+      <h3 data-lumina-layout-target="panelTitle">Thread</h3>
       <button class="tool-btn" data-action="click->lumina-layout#closePanel">
         <i class="bi bi-x-lg"></i>
       </button>
     </header>
     <div class="lumina__panel-body" data-lumina-layout-target="panelContent">
-      <div class="pinned-section">
-        <h4 style="font-size: 0.7rem; font-weight: 700; color: var(--lumina-text-muted); text-transform: uppercase; margin-bottom: 1rem;">Tin nhắn đã ghim</h4>
-        <% pinned_posts = @course.discussion_posts.where(pinned: true) %>
-        <% if pinned_posts.any? %>
-          <% pinned_posts.each do |pp| %>
-            <div class="lumina__pinned-card">
-              <p><strong><%= pp.title %></strong></p>
-              <p style="margin-top: 0.25rem;"><%= truncate(pp.content, length: 100) %></p>
-            </div>
-          <% end %>
-        <% else %>
-          <p style="font-size: 0.85rem; color: var(--lumina-text-muted); text-align: center; padding: 2rem 0;">Chưa có tin nhắn nào được ghim.</p>
-        <% end %>
-      </div>
+      <%# Content is loaded dynamically via Turbo Frame when clicking Reply %>
+      <%= turbo_frame_tag "thread-panel", class: "thread-frame" do %>
+        <div class="thread-empty-state">
+          <i class="bi bi-chat-right-text"></i>
+          <p>Click <strong>Reply</strong> on any message to open a thread discussion here.</p>
+        </div>
+      <% end %>
     </div>
   </aside>
 

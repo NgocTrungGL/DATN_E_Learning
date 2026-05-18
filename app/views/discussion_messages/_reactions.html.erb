@@ -1,0 +1,52 @@
+<div id="msg-reactions-<%= message.id %>" class="lumina__msg-reactions">
+  <% grouped = message.reactions_grouped_by_emoji %>
+  <% if grouped.any? %>
+    <% grouped.each do |grp| %>
+      <%= button_to toggle_reaction_course_discussion_message_path(course, message),
+                    method: :post,
+                    params: { emoji: grp[:emoji] },
+                    class: "reaction-pill",
+                    form: { class: "reaction-pill-form", data: { turbo: true } },
+                    data: { "reactor-ids": grp[:user_ids].join(",") },
+                    title: grp[:users].map(&:name).join(", ") do %>
+        <span class="reaction-pill__emoji"><%= grp[:emoji] %></span>
+        <span class="reaction-pill__count"><%= grp[:count] %></span>
+      <% end %>
+    <% end %>
+
+    <%# Mini emoji picker dropdown next to reactions %>
+    <div class="reaction-picker-dropdown">
+      <button class="reaction-picker-btn" title="Add reaction">
+        <i class="bi bi-emoji-smile" style="font-size: 0.85rem;"></i>
+        <span class="reaction-picker-btn__plus">+</span>
+      </button>
+      <div class="reaction-picker-menu">
+        <% ["👍", "❤️", "😂", "😮", "😢", "🙏", "🎉", "🚀"].each do |emoji| %>
+          <%= button_to toggle_reaction_course_discussion_message_path(course, message),
+                        method: :post,
+                        params: { emoji: emoji },
+                        class: "reaction-picker-menu__item",
+                        form: { class: "reaction-picker-form", data: { turbo: true } } do %>
+            <%= emoji %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const meta = document.querySelector('meta[name="current-user-id"]');
+        const currentUserId = meta ? meta.getAttribute("content") : null;
+        if (!currentUserId) return;
+        const container = document.getElementById("msg-reactions-<%= message.id %>");
+        if (!container) return;
+        container.querySelectorAll(".reaction-pill").forEach(pill => {
+          const reactorIds = pill.getAttribute("data-reactor-ids") || "";
+          if (reactorIds.split(",").includes(currentUserId)) {
+            pill.classList.add("reaction-pill--reacted");
+          }
+        });
+      })();
+    </script>
+  <% end %>
+</div>

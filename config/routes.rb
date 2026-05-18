@@ -18,7 +18,11 @@ Rails.application.routes.draw do
 
   # Route trang thành công
   get 'checkout-success', to: 'checkouts#success', as: 'checkout_success'
-  resources :cart_items, only: [:create, :destroy]
+  resources :cart_items, only: [:create, :destroy] do
+    member do
+      post :move_to_wishlist
+    end
+  end
   # --- USER (PROFILE & SETTINGS) ---
   resource :profile, only: [:edit, :update]
   get "password/edit", to: "passwords#edit"
@@ -28,6 +32,7 @@ Rails.application.routes.draw do
   resources :my_courses, only: [:index]
   resources :my_notes, only: [:index]
   resources :wishlists, only: [:index]
+  post 'wishlists/:course_id/move_to_cart', to: 'wishlists#move_to_cart', as: 'move_wishlist_to_cart'
   resources :certificates, only: [:index, :show], param: :code
   resources :subscriptions, only: [:index, :create, :destroy]
 
@@ -39,7 +44,16 @@ Rails.application.routes.draw do
     post :toggle_wishlist, to: "wishlists#toggle", as: "toggle_wishlist"
     resources :reviews, only: [:create, :destroy]
     resources :enrollments, only: [:create]
-    resources :discussion_messages, path: "chat", only: [:index, :create, :destroy]
+    resources :discussion_messages, path: "chat", only: [:index, :create, :destroy] do
+      collection do
+        get :mentions
+      end
+      member do
+        get  :thread
+        post :replies, to: "discussion_message_replies#create"
+        post :toggle_reaction, to: "discussion_message_reactions#create"
+      end
+    end
     resources :discussion_posts, path: "discussions", only: [:index, :show, :create, :update, :destroy] do
       member do
         patch :toggle_pin

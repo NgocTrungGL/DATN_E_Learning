@@ -87,18 +87,31 @@
 
     </div>
 
-    <%# Right column: thumbnail card with play-preview %>
-    <div class="cd-hero__thumb-card">
-      <% thumb = @course.thumbnail_url.presence || "https://placehold.co/480x270/1e3a8a/93c5fd?text=#{URI.encode_www_form_component(@course.title.truncate(24))}" %>
-      <img class="cd-hero__thumb-img" src="<%= thumb %>" alt="<%= @course.title %>" loading="lazy">
+    <%# Right column: wrapped to support placing chat button directly below %>
+    <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+      <div class="cd-hero__thumb-card">
+        <% thumb = @course.thumbnail_url.presence || "https://placehold.co/480x270/1e3a8a/93c5fd?text=#{URI.encode_www_form_component(@course.title.truncate(24))}" %>
+        <img class="cd-hero__thumb-img" src="<%= thumb %>" alt="<%= @course.title %>" loading="lazy">
 
-      <%# Show play overlay if there's a free preview %>
-      <% free_lessons = @course.course_modules.flat_map { |m| m.lessons }.select(&:free_preview?) %>
-      <% if free_lessons.any? %>
-        <button class="cd-hero__thumb-play"
-                onclick="pmOpen('<%= free_lessons.first.video_url %>', '<%= j free_lessons.first.title %>')">
-          <div class="play-icon"><i class="bi bi-play-fill"></i></div>
-        </button>
+        <%# Show play overlay if there's a free preview %>
+        <% free_lessons = @course.course_modules.flat_map { |m| m.lessons }.select(&:free_preview?) %>
+        <% if free_lessons.any? %>
+          <button class="cd-hero__thumb-play"
+                  onclick="pmOpen('<%= free_lessons.first.video_url %>', '<%= j free_lessons.first.title %>')">
+            <div class="play-icon"><i class="bi bi-play-fill"></i></div>
+          </button>
+        <% end %>
+      </div>
+
+      <%# Discussion Group link (enrolled users) placed directly below preview card inside hero %>
+      <% if has_access %>
+        <%= link_to course_discussion_messages_path(@course), class: "cd-btn cd-btn--outline cd-btn--hero-chat", style: "width:100%;justify-content:center;" do %>
+          <i class="bi bi-chat-dots-fill"></i> Course discussion group (chat)
+          <% msg_count = @course.discussion_messages.count %>
+          <% if msg_count > 0 %>
+            <span style="background:rgba(255,255,255,0.2);color:white;padding:0.1rem 0.5rem;border-radius:50px;font-size:0.75rem;font-weight:700;margin-left:0.3rem;"><%= msg_count %></span>
+          <% end %>
+        <% end %>
       <% end %>
     </div>
 
@@ -129,19 +142,6 @@
           <span>Keep going!</span>
           <span><%= enrollment.current_progress_percentage %>% of <%= total_lessons %> lessons</span>
         </div>
-      </div>
-    <% end %>
-
-    <%# ── Discussion Group link (enrolled users) ────────────── %>
-    <% if has_access %>
-      <div class="cd-card" style="margin-bottom: 1.2rem;">
-        <%= link_to course_discussion_messages_path(@course), class: "cd-btn cd-btn--outline", style: "width:100%;justify-content:center;" do %>
-          <i class="bi bi-chat-dots-fill"></i> Course discussion group (chat)
-          <% msg_count = @course.discussion_messages.count %>
-          <% if msg_count > 0 %>
-            <span style="background:#eff6ff;color:#2563eb;padding:0.1rem 0.5rem;border-radius:50px;font-size:0.75rem;font-weight:700;margin-left:0.3rem;"><%= msg_count %></span>
-          <% end %>
-        <% end %>
       </div>
     <% end %>
 
@@ -578,15 +578,23 @@
       <div class="cd-sidebar-body">
 
         <%# Price %>
-        <div class="cd-sidebar-price">
+        <div class="cd-sidebar-price" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
           <% if @course.free? %>
             <span class="price-free-label">Free</span>
           <% else %>
             <span class="price-current">
-              <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
+              <%= number_to_currency(@course.discounted_price, unit: "₫", format: "%n %u", precision: 0) %>
             </span>
+            <% if @course.has_discount? %>
+              <span class="price-original" style="text-decoration: line-through; color: #94a3b8; font-size: 1.1rem; font-weight: 500;">
+                <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
+              </span>
+              <span class="price-badge" style="background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5; margin-left: 4px;">
+                <%= @course.discount_label %>
+              </span>
+            <% end %>
             <% if current_user && (current_user.admin? || is_creator) %>
-              <span class="price-badge">Listed price</span>
+              <span class="price-badge" style="margin-left: 4px;">Listed price</span>
             <% end %>
           <% end %>
         </div>

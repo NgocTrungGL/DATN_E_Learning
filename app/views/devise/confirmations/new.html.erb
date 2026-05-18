@@ -1,16 +1,36 @@
-<h2>Resend confirmation instructions</h2>
+<div class="auth-wrapper">
+  <div class="auth-split-layout">
+    <div class="auth-image-panel">
+      <div class="image-overlay">
+        <h2>Verify Your Email</h2>
+        <p>Ensure you receive important updates and access to your courses.</p>
+      </div>
+    </div>
+    
+    <div class="auth-form-panel">
+      <div class="auth-form-inner">
+        <h1 class="auth-title" style="margin-bottom: 8px;">Resend Confirmation</h1>
+        <p class="auth-subtitle text-center" style="margin-bottom: 32px;">Didn't receive instructions? We'll send them again.</p>
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+        <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+          <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+          <div class="field-group">
+            <%= f.label :email, "Email address", class: "field-label" %>
+            <div class="input-wrap">
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), placeholder: "Enter your email" %>
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-top: 24px;">
+            <%= f.submit "Resend instructions", class: "btn-login" %>
+          </div>
+
+          <div class="field-group text-center" style="margin-top: 24px;">
+            <%= link_to "Back to Login", new_user_session_path, class: "forgot-link" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </div>
-
-  <div class="actions">
-    <%= f.submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

@@ -4,6 +4,7 @@ class CartsController < ApplicationController
   def show
     @cart = current_cart
     @items = @cart.cart_items.includes(:course)
+    @wishlists = current_user.wishlists.includes(:course).order(created_at: :desc)
   end
 
   def apply_coupon

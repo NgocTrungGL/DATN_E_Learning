@@ -1,104 +1,222 @@
-<div class="container py-5">
-  <h3 class="mb-4 fw-bold"><i class="bi bi-cart3"></i> Your cart</h3>
+<% content_for :full_width, "true" %>
+<div class="cart-wrapper">
+  <div class="cart-header">
+    <h1 class="cart-header__title"><i class="bi bi-cart3"></i> Your cart</h1>
+  </div>
 
   <% if @items.any? %>
-    <div class="row">
-      <div class="col-lg-8">
-        <div class="card shadow-sm border-0">
-          <ul class="list-group list-group-flush">
-            <% @items.each do |item| %>
-              <li class="list-group-item p-4 d-flex align-items-center">
+    <div class="cart-layout">
+      <%# Main List %>
+      <div class="cart-main">
+        <ul class="cart-list">
+          <% @items.each do |item| %>
+            <li class="cart-item">
+              <div class="cart-item__thumb">
+                <% if item.course.thumbnail_url.present? %>
+                  <img src="<%= item.course.thumbnail_url %>" alt="<%= item.course.title %>">
+                <% else %>
+                  <i class="bi bi-image fs-4"></i>
+                <% end %>
+              </div>
 
-                <div class="me-3 flex-shrink-0" style="width: 120px; height: 70px; background: #eee; border-radius: 8px; overflow: hidden;">
-                   <% if item.course.thumbnail_url.present? %>
-                     <img src="<%= item.course.thumbnail_url %>" style="width: 100%; height: 100%; object-fit: cover;" alt="<%= item.course.title %>">
-                   <% else %>
-                     <div class="w-100 h-100 bg-secondary-subtle d-flex align-items-center justify-content-center text-muted">
-                       <i class="bi bi-image fs-4"></i>
-                     </div>
-                   <% end %>
+              <div class="cart-item__details">
+                <%= link_to item.course.title, course_path(item.course), class: "cart-item__title" %>
+                <p class="cart-item__instructor">Instructor: <%= item.course.creator&.name || "Admin" %></p>
+              </div>
+
+              <div class="cart-item__actions">
+                <div class="cart-item__buttons-group">
+                  <%= button_to "Remove", cart_item_path(item), method: :delete, class: "cart-item__text-btn cart-item__text-btn--danger", title: "Remove this course" %>
+                  <%= button_to "Move to wishlist", move_to_wishlist_cart_item_path(item), method: :post, class: "cart-item__text-btn", title: "Move to wishlist" %>
                 </div>
 
-                <div class="flex-grow-1">
-                  <h5 class="mb-1 fw-bold">
-                    <%= link_to item.course.title, course_path(item.course), class: "text-decoration-none text-dark" %>
-                  </h5>
-                  <p class="mb-0 text-muted small">Instructor: <%= item.course.creator&.name || "Admin" %></p>
-                </div>
-
-                <div class="text-end ms-4">
-                  <div class="fw-bold fs-5 text-primary mb-2">
-                    <%= number_to_currency(item.course.price, unit: "VND", precision: 0, format: "%n %u") %>
-                  </div>
-                  <%= button_to cart_item_path(item), method: :delete, class: "btn btn-sm btn-outline-danger border-0 p-2", title: "Remove this course" do %>
-                    <i class="bi bi-trash"></i> Remove
+                <div class="cart-item__price-wrap">
+                  <span class="cart-item__current-price">
+                    <%= number_to_currency(item.course.discounted_price, unit: "VND", precision: 0, format: "%n %u") %>
+                  </span>
+                  <% if item.course.has_discount? %>
+                    <div class="cart-item__original-price-row">
+                      <span class="cart-item__original-price">
+                        <%= number_to_currency(item.course.price, unit: "VND", precision: 0, format: "%n %u") %>
+                      </span>
+                      <span class="cart-item__discount-badge">
+                        <%= item.course.discount_label %>
+                      </span>
+                    </div>
                   <% end %>
                 </div>
-              </li>
-            <% end %>
-          </ul>
-        </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
       </div>
 
-      <div class="col-lg-4">
-        <div class="card shadow-sm border-0 bg-light">
-          <div class="card-body p-4">
-            <h5 class="fw-bold mb-3">Order summary</h5>
+      <%# Sidebar Summary %>
+      <div class="cart-sidebar">
+        <div class="cart-summary">
+          <h2 class="cart-summary__title">Order summary</h2>
 
-            <div class="mb-4">
-              <label class="form-label small fw-bold">Promo code</label>
-              <%= form_with(url: apply_coupon_cart_path, method: :post, class: "input-group input-group-sm") do |f| %>
-                <%= f.text_field :promo_code, value: @cart.promo_code, class: "form-control", placeholder: "Enter code..." %>
-                <%= f.submit "Apply", class: "btn btn-outline-primary" %>
-              <% end %>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="text-muted small">Subtotal:</span>
-              <span class="fw-bold">
-                <%= number_to_currency(@cart.total_price, unit: "VND", precision: 0, format: "%n %u") %>
-              </span>
-            </div>
-
-            <% if @cart.discount_amount > 0 %>
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted small">Discount:</span>
-                <span class="text-danger fw-bold">
-                  - <%= number_to_currency(@cart.discount_amount, unit: "VND", precision: 0, format: "%n %u") %>
-                </span>
-              </div>
+          <div class="cart-summary__promo">
+            <label>Promo code</label>
+            <%= form_with(url: apply_coupon_cart_path, method: :post, class: "promo-form") do |f| %>
+              <%= f.text_field :promo_code, value: @cart.promo_code, placeholder: "Enter code..." %>
+              <%= f.submit "Apply" %>
             <% end %>
+          </div>
 
-            <hr class="my-3 opacity-10">
+          <div class="cart-summary__row">
+            <span class="label">Subtotal:</span>
+            <span class="value"><%= number_to_currency(@cart.total_price, unit: "VND", precision: 0, format: "%n %u") %></span>
+          </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <span class="fw-bold">Total:</span>
-              <span class="fw-bold fs-4 text-primary">
-                <%= number_to_currency(@cart.final_total, unit: "VND", precision: 0, format: "%n %u") %>
-              </span>
+          <% if @cart.discount_amount > 0 %>
+            <div class="cart-summary__row cart-summary__row--discount">
+              <span class="label">Discount:</span>
+              <span class="value">- <%= number_to_currency(@cart.discount_amount, unit: "VND", precision: 0, format: "%n %u") %></span>
             </div>
-
-            <div class="d-grid">
-              <%= button_to checkout_cart_path, method: :post, data: { turbo: false }, class: "btn btn-primary btn-lg fw-bold py-3" do %>
-                Checkout now
-              <% end %>
+            
+            <% percentage_saved = ((@cart.discount_amount.to_f / @cart.total_price) * 100).round %>
+            <div class="cart-summary__row">
+              <span class="label">Saved:</span>
+              <span class="value" style="color: #10b981; background: #d1fae5; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem;"><%= percentage_saved %>%</span>
             </div>
+          <% end %>
 
-            <p class="text-center mt-3 small text-muted">
-              <i class="bi bi-shield-lock"></i> Secure checkout via Stripe
-            </p>
+          <div class="cart-summary__divider"></div>
+
+          <div class="cart-summary__total">
+            <span class="label">Total:</span>
+            <span class="value"><%= number_to_currency(@cart.final_total, unit: "VND", precision: 0, format: "%n %u") %></span>
+          </div>
+
+          <%= button_to checkout_cart_path, method: :post, data: { turbo: false }, class: "cart-summary__checkout-btn" do %>
+            Checkout now
+          <% end %>
+
+          <div class="cart-summary__secure">
+            <i class="bi bi-shield-lock"></i> Secure checkout via Stripe
           </div>
         </div>
       </div>
+      
+      <%# Wishlist Section inside layout so it sits under the main cart %>
+      <% if @wishlists.any? %>
+        <div class="cart-wishlist">
+          <div class="cart-wishlist__header">
+            <h3>Recently added to wishlist</h3>
+          </div>
+          <div class="cart-wishlist__list">
+            <% @wishlists.each do |wishlist| %>
+              <% course = wishlist.course %>
+              <div class="cart-wishlist-item">
+                <div class="cart-wishlist-item__thumb">
+                  <% if course.thumbnail_url.present? %>
+                    <img src="<%= course.thumbnail_url %>" alt="<%= course.title %>">
+                  <% else %>
+                    <div style="width:100%;height:100%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;">
+                      <i class="bi bi-image" style="color:#94a3b8;font-size:1.5rem;"></i>
+                    </div>
+                  <% end %>
+                </div>
+                
+                <div class="cart-wishlist-item__details">
+                  <%= link_to course.title, course_path(course), class: "cart-wishlist-item__title" %>
+                  <p class="cart-wishlist-item__meta">By <%= course.creator&.name || "Admin" %></p>
+                  
+                  <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 0.85rem;">
+                    <% if course.reviews.any? %>
+                      <strong style="color: #b4690e;"><%= course.reviews.average(:rating).to_f.round(1) %></strong>
+                      <i class="bi bi-star-fill" style="color: #f59e0b; font-size: 0.75rem;"></i>
+                      <span class="text-muted">(<%= course.reviews.count %> ratings)</span>
+                    <% else %>
+                      <span class="text-muted">No reviews yet</span>
+                    <% end %>
+                  </div>
+                </div>
+                
+                <div class="cart-wishlist-item__actions">
+                  <div class="cart-wishlist-item__buttons">
+                    <%= button_to "Remove", course_toggle_wishlist_path(course), method: :post, class: "cart-wishlist-item__remove-btn" %>
+                    <%= button_to "Move to cart", move_wishlist_to_cart_path(course), method: :post, class: "cart-wishlist-item__move-btn" %>
+                  </div>
+                  
+                  <div class="cart-item__price-wrap">
+                    <span class="cart-item__current-price" style="font-size: 1.1rem;">
+                      <%= number_to_currency(course.discounted_price, unit: "₫", precision: 0, format: "%n %u") %>
+                    </span>
+                    <% if course.has_discount? %>
+                      <div class="cart-item__original-price-row">
+                        <span class="cart-item__original-price">
+                          <%= number_to_currency(course.price, unit: "₫", precision: 0, format: "%n %u") %>
+                        </span>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      
     </div>
   <% else %>
-    <div class="text-center py-5">
-      <div class="mb-3">
-        <i class="bi bi-cart-x display-1 text-muted opacity-25"></i>
+    <div class="cart-empty">
+      <div class="cart-empty__icon">
+        <i class="bi bi-cart-x"></i>
       </div>
-      <h4 class="text-muted">Your cart is empty</h4>
-      <p class="mb-4">Find the right course to level up your skills today.</p>
-      <%= link_to "Explore courses", courses_path, class: "btn btn-primary px-4 py-2" %>
+      <h2 class="cart-empty__title">Your cart is empty</h2>
+      <p class="cart-empty__text">Find the right course to level up your skills today.</p>
+      <%= link_to "Explore courses", courses_path, class: "cart-empty__btn" %>
     </div>
+    
+    <% if @wishlists.any? %>
+      <div class="cart-wishlist" style="margin-top: 24px;">
+        <div class="cart-wishlist__header">
+          <h3>Recently added to wishlist</h3>
+        </div>
+        <div class="cart-wishlist__list">
+          <% @wishlists.each do |wishlist| %>
+            <% course = wishlist.course %>
+            <div class="cart-wishlist-item">
+              <div class="cart-wishlist-item__thumb">
+                <% if course.thumbnail_url.present? %>
+                  <img src="<%= course.thumbnail_url %>" alt="<%= course.title %>">
+                <% else %>
+                  <div style="width:100%;height:100%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-image" style="color:#94a3b8;font-size:1.5rem;"></i>
+                  </div>
+                <% end %>
+              </div>
+              
+              <div class="cart-wishlist-item__details">
+                <%= link_to course.title, course_path(course), class: "cart-wishlist-item__title" %>
+                <p class="cart-wishlist-item__meta">By <%= course.creator&.name || "Admin" %></p>
+              </div>
+              
+              <div class="cart-wishlist-item__actions">
+                <div class="cart-wishlist-item__buttons">
+                  <%= button_to "Remove", course_toggle_wishlist_path(course), method: :post, class: "cart-wishlist-item__remove-btn" %>
+                  <%= button_to "Move to cart", move_wishlist_to_cart_path(course), method: :post, class: "cart-wishlist-item__move-btn" %>
+                </div>
+                
+                <div class="cart-item__price-wrap">
+                  <span class="cart-item__current-price" style="font-size: 1.1rem;">
+                    <%= number_to_currency(course.discounted_price, unit: "₫", precision: 0, format: "%n %u") %>
+                  </span>
+                  <% if course.has_discount? %>
+                    <div class="cart-item__original-price-row">
+                      <span class="cart-item__original-price">
+                        <%= number_to_currency(course.price, unit: "₫", precision: 0, format: "%n %u") %>
+                      </span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   <% end %>
 </div>

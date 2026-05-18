@@ -1,45 +1,38 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-5 col-lg-4">
-      <div class="card border-0 shadow-lg rounded-3">
-        <div class="card-header bg-warning text-dark text-center py-3">
-          <h4 class="fw-bold mb-0"><i class="bi bi-key-fill me-2"></i>Forgot your password?</h4>
-        </div>
+<div class="auth-wrapper">
+  <div class="auth-split-layout">
+    <div class="auth-image-panel">
+      <div class="image-overlay">
+        <h2>Password Recovery</h2>
+        <p>Securely regain access to your learning journey.</p>
+      </div>
+    </div>
+    
+    <div class="auth-form-panel">
+      <div class="auth-form-inner">
+        <h1 class="auth-title" style="margin-bottom: 8px;">Forgot your password?</h1>
+        <p class="auth-subtitle text-center" style="margin-bottom: 32px;">Enter your email and we will send reset instructions.</p>
 
-        <div class="card-body p-4 bg-light">
-          <p class="text-muted small mb-3 text-center">Enter your email and we will send reset instructions.</p>
+        <%# IMPORTANT: Keep url as user_password_path %>
+        <%= form_for(resource, as: resource_name, url: user_password_path, html: { method: :post }) do |f| %>
+          
+          <%# Show errors for invalid email %>
+          <%= render "devise/shared/error_messages", resource: resource %>
 
-          <%# IMPORTANT: Keep url as user_password_path %>
-          <%= form_for(resource, as: resource_name, url: user_password_path, html: { method: :post }) do |f| %>
-
-            <%# Show errors for invalid email %>
-            <%= render "devise/shared/error_messages", resource: resource %>
-
-            <div class="form-floating mb-3">
-              <%= f.email_field :email,
-                  autofocus: true,
-                  autocomplete: "email",
-                  class: "form-control",
-                  id: "floatingInput",
-                  placeholder: "name@example.com" %>
-              <%= f.label :email, "Email address", for: "floatingInput" %>
+          <div class="field-group">
+            <%= f.label :email, "Email address", class: "field-label" %>
+            <div class="input-wrap">
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Enter your email" %>
             </div>
+          </div>
 
-            <div class="d-grid gap-2">
-              <%= f.submit "Send instructions", class: "btn btn-warning fw-bold text-dark" %>
-            </div>
-          <% end %>
-        </div>
+          <div class="field-group" style="margin-top: 24px;">
+            <%= f.submit "Send instructions", class: "btn-login" %>
+          </div>
 
-        <div class="card-footer bg-white text-center py-3 small">
-          <%# IMPORTANT: Keep as new_user_session_path %>
-          <%= link_to "Back to sign in", new_user_session_path, class: "text-decoration-none" %>
-
-          <span class="mx-2 text-muted">|</span>
-
-          <%# Add sign-up link for convenience %>
-          <%= link_to "Create an account", new_user_registration_path, class: "text-decoration-none" %>
-        </div>
+          <div class="field-group text-center" style="margin-top: 24px;">
+            <%= link_to "Back to Login", new_user_session_path, class: "forgot-link" %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

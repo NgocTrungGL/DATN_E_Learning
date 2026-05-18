@@ -31,6 +31,16 @@ class CartItemsController < ApplicationController
     end
   end
 
+  def move_to_wishlist
+    @cart_item = current_cart.cart_items.find(params[:id])
+    @course = @cart_item.course
+    
+    current_user.wishlists.find_or_create_by(course: @course)
+    @cart_item.destroy
+    
+    redirect_to cart_path, notice: "Đã chuyển khóa học xuống danh sách mong ước."
+  end
+
   private
 
   def handle_already_enrolled

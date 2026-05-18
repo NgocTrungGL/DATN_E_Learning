@@ -1,0 +1,26 @@
+<%# Replies count badge — updated in real-time via broadcast %>
+<div id="msg-replies-badge-<%= message.id %>" class="lumina__msg-replies-badge">
+  <% if message.replies.size > 0 %>
+    <button class="thread-btn"
+            data-action="click->lumina-layout#openThread"
+            data-thread-url="<%= thread_course_discussion_message_path(course, message) %>">
+      <div class="thread-btn__avatars">
+        <% message.earliest_replier_users(5).each do |u| %>
+          <span class="thread-avatar"
+                style="background: <%= '#' + Digest::MD5.hexdigest(u.name)[0..5] %>;"
+                title="<%= u.name %>">
+            <%= u.name[0]&.upcase %>
+          </span>
+        <% end %>
+      </div>
+      <span class="thread-btn__text">
+        <%= message.replies.size %> <%= message.replies.size == 1 ? "reply" : "replies" %>
+      </span>
+      <% if last_reply_info = message.last_reply_time_info %>
+        <span class="thread-btn__last-reply">
+          <%= last_reply_info %>
+        </span>
+      <% end %>
+    </button>
+  <% end %>
+</div>

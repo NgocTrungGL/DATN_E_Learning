@@ -17,7 +17,7 @@
       <% if current_user.unread_notifications_count > 0 %>
         <%= link_to t("notifications.index.mark_all_as_read"), 
                     mark_all_as_read_notifications_path, 
-                    method: :post, 
+                    data: { turbo_method: :post }, 
                     class: "btn--sm btn-outline" %>
       <% end %>
     </div>

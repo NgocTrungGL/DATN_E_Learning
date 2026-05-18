@@ -6,10 +6,19 @@ class DiscussionMessagesController < ApplicationController
   # GET /courses/:course_id/chat
   def index
     @messages = @course.discussion_messages
-                       .includes(:user)
-                       .chronological
+                       .top_level
+                       .includes(:user, replies: :user)
+                       .recent_window(50)
+                       .reverse
     @members_count = @course.enrollments.active.count
     @message = DiscussionMessage.new
+  end
+
+  # GET /courses/:course_id/chat/:id/thread
+  def thread
+    @parent  = @course.discussion_messages.find(params[:id])
+    @replies = @parent.replies.includes(:user).chronological
+    @reply   = DiscussionMessage.new
   end
 
   # POST /courses/:course_id/chat
@@ -18,7 +27,6 @@ class DiscussionMessagesController < ApplicationController
     @message.user = current_user
 
     if @message.save
-      @previous_message = previous_message
       respond_to_message_created
     else
       respond_to_message_invalid
@@ -35,6 +43,55 @@ class DiscussionMessagesController < ApplicationController
       format.turbo_stream{render turbo_stream: turbo_stream.remove(@message)}
       format.html{redirect_to course_discussion_messages_path(@course)}
     end
+  end
+
+  # GET /courses/:course_id/chat/mentions
+  def mentions
+    query = params[:query].to_s.strip.downcase
+
+    # 1. Fetch prioritized instructor
+    instructor = @course.creator
+
+    # 2. Fetch other candidates (enrolled users + active chat participants)
+    active_chat_users = @course.discussion_messages.includes(:user).map(&:user).compact.uniq
+    enrolled_users = @course.enrolled_users.to_a
+
+    candidates = ([instructor] + active_chat_users + enrolled_users).compact.uniq
+
+    # 3. If candidates is less than 5, grab some random users as backup autocomplete candidates
+    if candidates.size < 5
+      backup_users = User.limit(10).to_a
+      candidates = (candidates + backup_users).uniq
+    end
+
+    # 4. Filter by query if present
+    if query.present?
+      candidates = candidates.select do |u|
+        u.name.to_s.downcase.include?(query) || u.email.to_s.downcase.include?(query)
+      end
+    end
+
+    # 5. Format results: prioritize instructor first
+    results = candidates.map do |u|
+      is_instructor = (u == instructor || u.role == "instructor")
+      {
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        is_instructor: is_instructor,
+        avatar_initial: u.name[0]&.upcase || "?",
+        avatar_bg: '#' + Digest::MD5.hexdigest(u.name)[0..5]
+      }
+    end
+
+    # Ensure instructor is at the absolute top of the sorted results
+    results = results.sort_by { |r| r[:is_instructor] ? 0 : 1 }
+
+    # Limit to 5 results when query is empty, or 10 when searching
+    limit = query.empty? ? 5 : 10
+    results = results.first(limit)
+
+    render json: results
   end
 
   private
@@ -54,14 +111,7 @@ class DiscussionMessagesController < ApplicationController
     return if current_user.has_license_for?(@course)
 
     redirect_to course_path(@course),
-                alert: "Bạn cần đăng ký khóa học để tham gia nhóm trao đổi."
-  end
-
-  def previous_message
-    @course.discussion_messages
-           .where("id < ?", @message.id)
-           .order(created_at: :desc)
-           .first
+                 alert: "Bạn cần đăng ký khóa học để tham gia nhóm trao đổi."
   end
 
   def respond_to_message_created
@@ -73,11 +123,8 @@ class DiscussionMessagesController < ApplicationController
 
   def message_created_streams
     [
-      turbo_stream.append("chat-messages",
-                          partial: "discussion_messages/message",
-                          locals: message_locals),
       turbo_stream.replace("chat-form",
-                           partial: "discussion_messages/form",
+                           partial: "discussion_messages/lumina_form",
                            locals: new_message_form_locals)
     ]
   end
@@ -86,15 +133,11 @@ class DiscussionMessagesController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace("chat-form",
-                                                  partial: "discussion_messages/form",
+                                                  partial: "discussion_messages/lumina_form",
                                                   locals: message_form_locals)
       end
       format.html{redirect_to course_discussion_messages_path(@course)}
     end
-  end
-
-  def message_locals
-    { message: @message, previous_message: @previous_message, course: @course }
   end
 
   def new_message_form_locals

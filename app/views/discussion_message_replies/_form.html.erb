@@ -1,6 +1,7 @@
-<div id="chat-form">
-  <%= form_with model: message,
-        url: course_discussion_messages_path(course),
+<%# Reply input form for the thread panel %>
+<div id="reply-form-<%= parent.id %>">
+  <%= form_with model: reply,
+        url: replies_course_discussion_message_path(course, parent),
         class: "lumina__input-bar",
         data: {
           controller: "chat-form",
@@ -9,7 +10,7 @@
 
     <div class="lumina__input-container" data-controller="chat-mention" data-chat-mention-course-id-value="<%= course.id %>">
       <%= f.text_area :content,
-            placeholder: "Message the group — ask a question or share an insight...",
+            placeholder: "Reply in thread...",
             rows: 1,
             data: {
               chat_form_target: "input",
