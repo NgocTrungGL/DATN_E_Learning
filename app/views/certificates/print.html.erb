@@ -1,0 +1,75 @@
+<div class="certificate-wrapper">
+  <div class="certificate-container">
+    <div class="certificate-border">
+      <div class="certificate-content">
+        <div class="certificate-header">
+          <div class="certificate-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <span>LearnPlate</span>
+          </div>
+          <div class="certificate-code">
+            <%= t('certificates.show.certificate_id', default: 'Certificate ID') %>: <%= @certificate.certificate_code %>
+          </div>
+        </div>
+
+        <div class="certificate-body">
+          <h1 class="certificate-title"><%= t('certificates.show.title', default: 'Certificate of Completion') %></h1>
+
+          <p class="certificate-presented-to"><%= t('certificates.show.presented_to', default: 'This is to certify that') %></p>
+
+          <h2 class="certificate-student-name"><%= @student.name %></h2>
+
+          <p class="certificate-description">
+            <%= t('certificates.show.description_html',
+                default: 'has successfully completed the course <strong>%{course}</strong> on %{platform}.',
+                course: @course.title, platform: 'LearnPlate Platform') %>
+          </p>
+
+          <div class="certificate-details">
+            <div class="certificate-detail-item">
+              <span class="detail-label"><%= t('certificates.show.issued_date', default: 'Date of Issue') %>:</span>
+              <span class="detail-value"><%= @certificate.issued_at.strftime('%B %d, %Y') %></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="certificate-footer">
+          <div class="certificate-signature">
+            <div class="signature-line">
+              <span class="signature-text"><%= @course.creator&.name || 'Admin' %></span>
+            </div>
+            <p class="signature-role"><%= t('certificates.show.instructor', default: 'Course Instructor') %></p>
+          </div>
+
+          <div class="certificate-seal">
+            <div class="seal-inner">
+              <span class="seal-text">VERIFIED</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <div class="certificate-signature">
+            <div class="signature-line">
+              <span class="signature-text admin-sig">Platform Admin</span>
+            </div>
+            <p class="signature-role"><%= t('certificates.show.platform', default: 'Platform Representative') %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.onload = function() {
+    window.print();
+    window.onafterprint = function() {
+      window.close();
+    };
+  };
+</script>

@@ -1,0 +1,25 @@
+<%= form_with(model: [lesson, Comment.new],
+            html: { id: "question-modal-form", "data-question-modal-target": "formEl" },
+            data: { controller: "question-form" }) do |f| %>
+  <div class="lumina-ask-input-card">
+    <%= f.label :body, "Question details", class: "lumina-ask-input-label" %>
+    <%= f.text_area :body,
+        class: "lumina-ask-input-area",
+        placeholder: "Describe your question in detail so the instructor and others can help...",
+        rows: 5,
+        required: true,
+        "data-question-form-target": "input" %>
+  </div>
+
+  <div class="lumina-ask-notice">
+    <span class="lumina-ask-notice-icon" aria-hidden="true">
+      <i class="bi bi-info-circle-fill"></i>
+    </span>
+    <span>Please use polite and respectful language.</span>
+  </div>
+
+  <div class="lumina-ask-footer">
+    <button type="button" class="lumina-ask-btn lumina-ask-btn--cancel" data-action="question-modal#close">Cancel</button>
+    <%= f.submit "Submit question", class: "lumina-ask-btn lumina-ask-btn--submit" %>
+  </div>
+<% end %>

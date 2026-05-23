@@ -1,0 +1,22 @@
+<div id="note-form">
+  <%= form_with model: note, url: note_path(note), method: :patch, class: "notes-form" do |f| %>
+    <div class="notes-form__input-wrap">
+      <%= f.text_area :content, rows: 3,
+        placeholder: "Write your notes for this lesson...",
+        class: "notes-form__textarea", id: "note-textarea" %>
+      <% if note.errors[:content].any? %>
+        <span class="notes-form__error"><%= note.errors[:content].first %></span>
+      <% end %>
+    </div>
+    <div class="notes-form__actions">
+      <button type="submit" class="notes-form__submit">
+        <i class="bi bi-check-lg"></i> Save
+      </button>
+      <button type="button" class="notes-form__cancel-btn"
+              onclick="this.closest('.note-card').querySelector('.note-card__view').hidden = false;
+                       this.closest('.note-card').querySelector('.note-card__edit').hidden = true;">
+        Cancel
+      </button>
+    </div>
+  <% end %>
+</div>

@@ -2,70 +2,67 @@
   <header class="lesson-tabs__hero">
     <div class="lesson-tabs__hero-content">
       <p class="lesson-tabs__eyebrow">Learning Experience</p>
-      <h2 class="lesson-tabs__heading">Build clear, maintainable, and scalable Rails code</h2>
-      <p class="lesson-tabs__description">
-        This lesson focuses on organizing service objects, isolating side effects, and keeping business logic coherent.
-        The goal is to help you move from code that merely works to architecture that scales in real projects.
-      </p>
+      <h2 class="lesson-tabs__heading">
+        <%= @lesson.description.present? ? @lesson.description : @lesson.title %>
+      </h2>
+      <% if @lesson.description.present? %>
+        <p class="lesson-tabs__description">
+          <%= simple_format(@lesson.description) %>
+        </p>
+      <% end %>
     </div>
 
     <aside class="lesson-tabs__hero-stats" aria-label="Lesson quick stats">
       <div class="lesson-tabs__stat-card">
-        <span class="lesson-tabs__stat-value">43 minutes</span>
-        <span class="lesson-tabs__stat-label">Duration</span>
+        <span class="lesson-tabs__stat-icon"><i class="bi bi-clock"></i></span>
+        <div class="lesson-tabs__stat-body">
+          <span class="lesson-tabs__stat-value">43 min</span>
+          <span class="lesson-tabs__stat-label">Duration</span>
+        </div>
       </div>
       <div class="lesson-tabs__stat-card">
-        <span class="lesson-tabs__stat-value">12</span>
-        <span class="lesson-tabs__stat-label">Design patterns</span>
+        <span class="lesson-tabs__stat-icon"><i class="bi bi-stack"></i></span>
+        <div class="lesson-tabs__stat-body">
+          <span class="lesson-tabs__stat-value">12</span>
+          <span class="lesson-tabs__stat-label">Patterns</span>
+        </div>
       </div>
       <div class="lesson-tabs__stat-card">
-        <span class="lesson-tabs__stat-value">4.9</span>
-        <span class="lesson-tabs__stat-label">Learner rating</span>
+        <span class="lesson-tabs__stat-icon"><i class="bi bi-star-fill"></i></span>
+        <div class="lesson-tabs__stat-body">
+          <span class="lesson-tabs__stat-value">4.9</span>
+          <span class="lesson-tabs__stat-label">Rating</span>
+        </div>
       </div>
     </aside>
   </header>
 
-  <section class="lesson-tabs__resources" aria-label="Downloadable resources">
-    <div class="lesson-tabs__resources-header">
-      <h3 class="lesson-tabs__subheading">Lesson Resources</h3>
-      <span class="lesson-tabs__subcaption">2 curated resources</span>
-    </div>
+  <% if @lesson.attachment_url.present? %>
+    <section class="lesson-tabs__resources" aria-label="Downloadable resources">
+      <div class="lesson-tabs__resources-header">
+        <h3 class="lesson-tabs__subheading">Lesson Resources</h3>
+        <span class="lesson-tabs__subcaption">Curated resources for this lesson</span>
+      </div>
 
-    <ul class="lesson-tabs__resource-list">
-      <li class="lesson-tabs__resource-item">
-        <div class="lesson-tabs__resource-meta">
-          <span class="lesson-tabs__resource-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7 2H14L20 8V20C20 21.1 19.1 22 18 22H7C5.9 22 5 21.1 5 20V4C5 2.9 5.9 2 7 2Z" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M8.5 14H15.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M8.5 17H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <div class="lesson-tabs__resource-text">
-            <p class="lesson-tabs__resource-title">Rails Architecture Cheatsheet.pdf</p>
-            <p class="lesson-tabs__resource-caption">PDF • 3.1 MB • Updated today</p>
+      <ul class="lesson-tabs__resource-list">
+        <li class="lesson-tabs__resource-item">
+          <div class="lesson-tabs__resource-meta">
+            <span class="lesson-tabs__resource-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 2H14L20 8V20C20 21.1 19.1 22 18 22H7C5.9 22 5 21.1 5 20V4C5 2.9 5.9 2 7 2Z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M8.5 14H15.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M8.5 17H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="lesson-tabs__resource-text">
+              <p class="lesson-tabs__resource-title">Lesson Attachment</p>
+              <p class="lesson-tabs__resource-caption">Downloadable resource</p>
+            </div>
           </div>
-        </div>
-        <button class="lesson-tabs__download-btn" type="button">Download</button>
-      </li>
-
-      <li class="lesson-tabs__resource-item">
-        <div class="lesson-tabs__resource-meta">
-          <span class="lesson-tabs__resource-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 7.5C4 6.12 5.12 5 6.5 5H9.8L11.1 6.6C11.48 7.06 12.05 7.33 12.65 7.33H17.5C18.88 7.33 20 8.45 20 9.83V17.5C20 18.88 18.88 20 17.5 20H6.5C5.12 20 4 18.88 4 17.5V7.5Z" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M12 10V16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M9.8 13.8L12 16L14.2 13.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <div class="lesson-tabs__resource-text">
-            <p class="lesson-tabs__resource-title">Refactor Practice Kit.zip</p>
-            <p class="lesson-tabs__resource-caption">ZIP • 8.9 MB • Includes sample specs</p>
-          </div>
-        </div>
-        <button class="lesson-tabs__download-btn" type="button">Download</button>
-      </li>
-    </ul>
-  </section>
+          <a href="<%= @lesson.attachment_url %>" target="_blank" class="lesson-tabs__download-btn" type="button">Download</a>
+        </li>
+      </ul>
+    </section>
+  <% end %>
 </article>

@@ -33,7 +33,11 @@ Rails.application.routes.draw do
   resources :my_notes, only: [:index]
   resources :wishlists, only: [:index]
   post 'wishlists/:course_id/move_to_cart', to: 'wishlists#move_to_cart', as: 'move_wishlist_to_cart'
-  resources :certificates, only: [:index, :show], param: :code
+  resources :certificates, only: [:index, :show], param: :code do
+    member do
+      get :print
+    end
+  end
   resources :subscriptions, only: [:index, :create, :destroy]
 
   # --- HỌC VIÊN (PUBLIC) ---

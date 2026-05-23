@@ -197,38 +197,13 @@
     padding: 0 1rem;
 
     .btn-prev {
-      background: #ffffff;
-      color: #64748b;
-      border: 1px solid #e2e8f0;
-      padding: 0.6rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-decoration: none;
-      transition: all 0.2s;
-
-      &:hover:not(:disabled) {
-        background: #f8fafc;
-        color: #334155;
-      }
-      &:disabled { opacity: 0.6; cursor: not-allowed; }
+      padding: 0.55rem 1rem;
+      font-size: 0.85rem;
     }
 
     .btn-next {
-      background: #2563eb;
-      color: #ffffff;
-      border: none;
-      padding: 0.6rem 2rem;
-      border-radius: 8px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: background 0.2s;
-
-      &:hover { background: #1d4ed8; }
+      padding: 0.55rem 1.2rem;
+      font-size: 0.85rem;
     }
   }
 

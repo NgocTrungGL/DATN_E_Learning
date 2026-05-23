@@ -7,6 +7,8 @@ class LessonsController < ApplicationController
   # GET /lessons/1
   def show
     @course = @lesson.course_module.course
+    @qa_comments = @lesson.comments.where(parent_id: nil).order(created_at: :desc)
+    @qa_badge_count = @lesson.comments.count
     authenticate_user! if !@lesson.free_preview? && !user_signed_in?
     authorize! :read, @lesson
   end

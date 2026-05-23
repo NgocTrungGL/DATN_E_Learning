@@ -1,0 +1,11 @@
+<%= turbo_stream.prepend("notes-list", partial: "notes/note", locals: { note: @note }) %>
+<%= turbo_stream.replace("note-form", partial: "notes/form", locals: { lesson: @lesson, note: Note.new }) do %>
+  <script>
+    requestAnimationFrame(function() {
+      var t = document.getElementById("note-textarea");
+      if (t) { t.value = ""; t.focus(); }
+    });
+  </script>
+<% end %>
+<%= turbo_stream.replace("notes-empty-state", "") %>
+<%= turbo_stream.replace("notes-count-badge", partial: "notes/count_badge", locals: { count: notes_count(@lesson) }) %>

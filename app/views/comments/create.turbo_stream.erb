@@ -1,0 +1,9 @@
+<%= turbo_stream.prepend "question-list", partial: "comments/question_card", locals: { lesson: @lesson, comment: @comment } %>
+<%= turbo_stream.after "luminaAskModal" do %>
+  <script>
+    document.getElementById("luminaAskModal").classList.remove("is-open");
+    document.body.style.overflow = "";
+    const t = document.getElementById("luminaAskModal").querySelector("textarea");
+    if (t) t.value = "";
+  </script>
+<% end %>

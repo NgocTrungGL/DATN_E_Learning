@@ -1,0 +1,377 @@
+// ============================================================
+// QUESTION MODAL — Ask a question dialog
+// Follows Visual Design System rule
+// Pure SCSS (No Bootstrap) | BEM naming | White surface + dark header
+// ============================================================
+
+.qm {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+
+  &.is-open {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  // ── Backdrop ─────────────────────────────────────────────
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  // ── Dialog card ───────────────────────────────────────────
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    width: 94%;
+    max-width: 620px;
+    background: #ffffff;
+    border-radius: $radius-lg; // 16px
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.08),
+                0 12px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    animation: qmSlideUp 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // ── Header: dark gradient (hero section style) ────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0b2545 100%);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 26px 26px;
+      pointer-events: none;
+    }
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__header-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-sm;
+    background: rgba(37, 99, 235, 0.25);
+    border: 1px solid rgba(37, 99, 235, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #93c5fd;
+    flex-shrink: 0;
+  }
+
+  &__header-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__close {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    position: relative;
+    z-index: 1;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(90deg);
+    }
+  }
+
+  // ── Body ─────────────────────────────────────────────────
+  &__body {
+    padding: 2rem;
+    background: $bg; // #f8fafc
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; // Space between each section block
+  }
+
+  // ── User identity row ────────────────────────────────────
+  &__user-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid $border;
+  }
+
+  &__avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  &__user-info {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  &__user-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  &__user-context {
+    font-size: 0.85rem;
+    color: $text-muted;
+    line-height: 1.5;
+
+    strong {
+      color: $text-mid;
+    }
+  }
+
+  // ── Form field card ──────────────────────────────────────
+  &__field-card {
+    background: #ffffff;
+    border: 1.5px solid $border;
+    border-radius: $radius-md; // 12px
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: $text-mid;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  &__textarea {
+    width: 100%;
+    min-height: 160px;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: $text-dark;
+    line-height: 1.8;
+    background: transparent;
+    resize: vertical;
+    outline: none;
+
+    &::placeholder {
+      color: $text-muted;
+      line-height: 1.8;
+    }
+  }
+
+  // ── Hint banner ──────────────────────────────────────────
+  &__hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    background: rgba($primary, 0.06);
+    border: 1px solid rgba($primary, 0.15);
+    border-radius: $radius-md; // 12px
+    font-size: 0.875rem;
+    color: $text-mid;
+    line-height: 1.6;
+  }
+
+  &__hint-icon {
+    color: $primary;
+    font-size: 1rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding-top: 1px;
+  }
+
+  // ── Actions ──────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.85rem;
+    padding-top: 0.5rem;
+  }
+
+  // ── Buttons ───────────────────────────────────────────────
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: $radius-sm; // 8px
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &--primary {
+      background: linear-gradient(135deg, $primary 0%, darken($primary, 8%) 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba($primary, 0.3);
+
+      &:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba($primary, 0.35);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba($primary, 0.25);
+      }
+    }
+
+    &--ghost {
+      background: transparent;
+      color: $text-mid;
+      border: 1.5px solid $border;
+
+      &:hover {
+        background: $bg;
+        color: $text-dark;
+        border-color: darken($border, 10%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+    }
+  }
+}
+
+// ── Animation ──────────────────────────────────────────────
+@keyframes qmSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ============================================================
+// RESPONSIVE — TABLET
+// ============================================================
+@media (max-width: 768px) {
+  .qm {
+    &__header {
+      padding: 1.25rem 1.5rem;
+    }
+
+    &__body {
+      padding: 1.5rem;
+      gap: 1.25rem;
+    }
+
+    &__actions {
+      gap: 0.65rem;
+
+      .qm__btn {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// ============================================================
+// RESPONSIVE — MOBILE
+// ============================================================
+@media (max-width: 480px) {
+  .qm {
+    &__dialog {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+
+    &__header {
+      padding: 1.25rem 1.25rem;
+    }
+
+    &__header-icon {
+      width: 38px;
+      height: 38px;
+      font-size: 1rem;
+    }
+
+    &__header-title {
+      font-size: 1rem;
+    }
+
+    &__body {
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+
+    &__user-row {
+      gap: 0.85rem;
+    }
+
+    &__avatar {
+      width: 46px;
+      height: 46px;
+    }
+
+    &__field-card {
+      padding: 1rem;
+    }
+
+    &__actions {
+      flex-direction: column-reverse;
+
+      .qm__btn {
+        width: 100%;
+      }
+    }
+  }
+}

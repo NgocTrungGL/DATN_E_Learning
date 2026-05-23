@@ -1,0 +1,8 @@
+<%
+  remaining = current_user.notes.where(lesson: @note.lesson).count
+%>
+<%= turbo_stream.remove(@note) %>
+<%= turbo_stream.replace("notes-count-badge", partial: "notes/count_badge", locals: { count: remaining }) %>
+<% if remaining.zero? %>
+<%= turbo_stream.replace("notes-list", partial: "notes/empty_state") %>
+<% end %>
