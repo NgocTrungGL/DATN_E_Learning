@@ -7,14 +7,9 @@
           action: "turbo:submit-end->chat-form#reset"
         } do |f| %>
 
-    <div class="lumina__input-container">
-      <div class="input-actions" style="display: flex; gap: 0.25rem; padding-bottom: 4px;">
-        <button type="button" class="tool-btn" title="Đính kèm"><i class="bi bi-plus-circle"></i></button>
-        <button type="button" class="tool-btn" title="Chèn code"><i class="bi bi-code-slash"></i></button>
-      </div>
-
+    <div class="lumina__input-container" data-controller="chat-mention" data-chat-mention-course-id-value="<%= course.id %>">
       <%= f.text_area :content,
-            placeholder: "Nhắn tin tới nhóm thảo luận # #{course.title}",
+            placeholder: "Message the group — ask a question or share an insight...",
             rows: 1,
             data: {
               chat_form_target: "input",

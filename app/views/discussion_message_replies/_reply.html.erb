@@ -1,0 +1,31 @@
+<%# Single reply row used in thread panel %>
+<article class="lumina__reply" id="<%= dom_id(reply) %>">
+  <div class="lumina__reply-avatar" style="background: <%= '#' + Digest::MD5.hexdigest(reply.author_name)[0..5] %>; color: white;">
+    <%= reply.author_initial %>
+  </div>
+  <div class="lumina__reply-body">
+    <div class="lumina__reply-meta">
+      <span class="lumina__reply-author"><%= reply.author_name %></span>
+      <% if reply.instructor_message? %>
+        <span class="lumina__msg-badge lumina__msg-badge--instructor">Instructor</span>
+      <% end %>
+      <span class="lumina__reply-time"><%= reply.created_at.strftime("%I:%M %p") %></span>
+    </div>
+    <div class="lumina__reply-text">
+      <%= render_chat_message(reply.content, course) %>
+    </div>
+  </div>
+
+  <% viewer = begin; current_user; rescue; nil; end %>
+  <% if viewer && (viewer == reply.user || viewer.admin? || course.created_by == viewer.id) %>
+    <div class="lumina__reply-actions">
+      <%= button_to course_discussion_message_path(course, reply),
+            method: :delete,
+            class: "action-btn",
+            title: "Delete",
+            data: { turbo_confirm: "Delete this reply?" } do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    </div>
+  <% end %>
+</article>

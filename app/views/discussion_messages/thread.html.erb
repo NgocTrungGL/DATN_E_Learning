@@ -1,0 +1,39 @@
+<%# Thread panel content — loaded into lumina__panel-body via Turbo Frame %>
+<%= turbo_frame_tag "thread-panel", class: "thread-frame" do %>
+  <%= turbo_stream_from [@course, :thread, @parent.id] %>
+
+  <%# ── Parent message (quoted at top) ── %>
+  <div class="thread-panel__parent">
+    <div class="thread-panel__parent-avatar" style="background: <%= '#' + Digest::MD5.hexdigest(@parent.author_name)[0..5] %>; color: white;">
+      <%= @parent.author_initial %>
+    </div>
+    <div class="thread-panel__parent-body">
+      <div class="thread-panel__parent-meta">
+        <span class="lumina__msg-author"><%= @parent.author_name %></span>
+        <% if @parent.instructor_message? %>
+          <span class="lumina__msg-badge lumina__msg-badge--instructor">Instructor</span>
+        <% end %>
+        <span class="lumina__msg-time"><%= @parent.created_at.strftime("%I:%M %p, %b %d") %></span>
+      </div>
+      <div class="lumina__msg-text thread-panel__parent-text">
+        <%= simple_format(@parent.content) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="thread-panel__divider">
+    <span><%= pluralize(@replies.count, "reply", "replies") %></span>
+  </div>
+
+  <%# ── Replies list ── %>
+  <div id="thread-replies-<%= @parent.id %>" class="thread-panel__replies">
+    <% @replies.each do |reply| %>
+      <%= render "discussion_message_replies/reply", reply: reply, course: @course %>
+    <% end %>
+  </div>
+
+  <%# ── Reply input ── %>
+  <div class="thread-panel__footer">
+    <%= render "discussion_message_replies/form", course: @course, parent: @parent, reply: @reply %>
+  </div>
+<% end %>

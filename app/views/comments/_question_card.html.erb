@@ -1,0 +1,143 @@
+<article class="lesson-tabs__question-card" id="comment-<%= comment.id %>">
+  <div class="lesson-tabs__question-body">
+    <header class="lesson-tabs__question-meta">
+      <% if comment.user&.avatar_url.present? %>
+        <img src="<%= comment.user.avatar_url %>" class="lesson-tabs__avatar" alt="<%= comment.user.name %>" style="border-radius: 50%; object-fit: cover;">
+      <% else %>
+        <span class="lesson-tabs__avatar" aria-hidden="true">
+          <%= comment.user&.name&.first&.upcase || "?" %>
+        </span>
+      <% end %>
+      <div class="lesson-tabs__author-block">
+        <span class="lesson-tabs__author-name"><%= comment.user&.name || "Anonymous" %></span>
+        <time class="lesson-tabs__question-time" datetime="<%= comment.created_at.iso8601 %>">
+          <%= time_ago_in_words(comment.created_at) %> ago
+        </time>
+      </div>
+      <% if comment.user == lesson.course.creator %>
+        <span class="lesson-tabs__badge lesson-tabs__badge--verified">Instructor</span>
+      <% end %>
+    </header>
+
+    <h3 class="lesson-tabs__question-title"><%= comment.body %></h3>
+
+    <div class="lesson-tabs__question-actions">
+      <% if user_signed_in? %>
+        <button class="lesson-tabs__reply-toggle-btn"
+                type="button"
+                aria-expanded="false"
+                aria-controls="replyForm<%= comment.id %>"
+                data-action="click->qa-reply#toggle"
+                data-qa-reply-target="toggle"
+                data-comment-id="<%= comment.id %>">
+          <i class="bi bi-reply-fill"></i> Reply
+        </button>
+      <% end %>
+
+      <% if comment.replies.any? %>
+        <button class="lesson-tabs__replies-toggle-btn"
+                type="button"
+                aria-expanded="false"
+                aria-controls="repliesList<%= comment.id %>"
+                data-action="click->qa-replies#toggle"
+                data-qa-replies-target="toggle"
+                data-comment-id="<%= comment.id %>">
+          <i class="bi bi-chat-left-text"></i>
+          <%= pluralize(comment.replies.count, "reply") %>
+        </button>
+      <% end %>
+
+      <% if can?(:destroy, comment) %>
+        <%= link_to lesson_comment_path(lesson, comment),
+            "data-turbo-method": :delete,
+            "data-turbo-confirm": "Delete this question?",
+            class: "lesson-tabs__delete-btn",
+            aria_label: "Delete this question" do %>
+          <i class="bi bi-trash"></i>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if user_signed_in? %>
+      <div class="lesson-tabs__reply-form"
+           id="replyForm<%= comment.id %>"
+           data-qa-reply-target="form"
+           hidden>
+        <div class="lesson-tabs__reply-form-inner">
+          <div class="lesson-tabs__reply-form-header">
+            <% if current_user&.avatar_url.present? %>
+              <img src="<%= current_user.avatar_url %>" class="lesson-tabs__avatar" alt="<%= current_user.name %>" style="border-radius: 50%; object-fit: cover; width: 36px; height: 36px;">
+            <% else %>
+              <span class="lesson-tabs__avatar" aria-hidden="true" style="width: 36px; height: 36px; font-size: 0.74rem;">
+                <%= current_user&.name&.first&.upcase || "?" %>
+              </span>
+            <% end %>
+            <span class="lesson-tabs__reply-form-label">Replying to <strong><%= comment.user&.name %></strong></span>
+          </div>
+          <%= form_with(model: [lesson, Comment.new], local: true) do |f| %>
+            <%= f.hidden_field :parent_id, value: comment.id %>
+            <div class="lesson-tabs__reply-textarea-wrap">
+              <%= f.text_area :body,
+                  class: "lesson-tabs__reply-textarea",
+                  placeholder: "Write your reply...",
+                  rows: 2,
+                  required: true %>
+            </div>
+            <div class="lesson-tabs__reply-form-actions">
+              <button type="button"
+                      class="lesson-tabs__reply-cancel-btn"
+                      data-action="click->qa-reply#cancel"
+                      data-qa-reply-target="cancel"
+                      data-comment-id="<%= comment.id %>">
+                Cancel
+              </button>
+              <%= f.submit "Submit reply", class: "lesson-tabs__reply-submit-btn" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if comment.replies.any? %>
+      <div class="lesson-tabs__replies-list"
+           id="repliesList<%= comment.id %>"
+           data-qa-replies-target="list"
+           hidden>
+        <% comment.replies.order(:created_at).each do |reply| %>
+          <div class="lesson-tabs__reply-item" id="comment-<%= reply.id %>">
+            <div class="lesson-tabs__reply-header">
+              <div class="lesson-tabs__reply-author">
+                <% if reply.user&.avatar_url.present? %>
+                  <img src="<%= reply.user.avatar_url %>" class="lesson-tabs__reply-avatar" alt="<%= reply.user.name %>">
+                <% else %>
+                  <span class="lesson-tabs__reply-avatar lesson-tabs__reply-avatar--initials" aria-hidden="true">
+                    <%= reply.user&.name&.first&.upcase || "?" %>
+                  </span>
+                <% end %>
+                <div class="lesson-tabs__reply-meta">
+                  <span class="lesson-tabs__reply-name"><%= reply.user&.name || "Anonymous" %></span>
+                  <% if reply.user == lesson.course.creator %>
+                    <span class="lesson-tabs__badge lesson-tabs__badge--verified" style="font-size: 0.7rem;">Instructor</span>
+                  <% end %>
+                  <time class="lesson-tabs__reply-time" datetime="<%= reply.created_at.iso8601 %>">
+                    <%= time_ago_in_words(reply.created_at) %> ago
+                  </time>
+                </div>
+              </div>
+              <% if can?(:destroy, reply) %>
+                <%= link_to lesson_comment_path(lesson, reply),
+                    "data-turbo-method": :delete,
+                    "data-turbo-confirm": "Delete this reply?",
+                    class: "lesson-tabs__reply-delete",
+                    aria_label: "Delete reply" do %>
+                  <i class="bi bi-x-lg"></i>
+                <% end %>
+              <% end %>
+            </div>
+            <p class="lesson-tabs__reply-text"><%= reply.body %></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</article>

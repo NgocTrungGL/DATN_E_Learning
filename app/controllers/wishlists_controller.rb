@@ -23,6 +23,19 @@ class WishlistsController < ApplicationController
     end
   end
 
+  def move_to_cart
+    @course = Course.find(params[:course_id])
+    @wishlist = current_user.wishlists.find_by(course: @course)
+    
+    if !current_user.enrolled_in?(@course)
+      current_cart.cart_items.find_or_create_by(course: @course)
+    end
+    
+    @wishlist&.destroy
+    
+    redirect_to cart_path, notice: "Đã chuyển khóa học vào giỏ hàng."
+  end
+
   private
 
   def set_course

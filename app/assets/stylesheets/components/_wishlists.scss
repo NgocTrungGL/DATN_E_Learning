@@ -1,35 +1,110 @@
-// Wishlist Component (BEM)
-@import "abstracts/variables";
-@import "abstracts/mixins";
+// ============================================================
+// WISHLISTS PAGE — Redesigned Header
+// Pure BEM SCSS — No Bootstrap
+// Course grid, course card, empty state kept as-is
+// ============================================================
 
-.wishlist-page {
-  padding: 3rem 0 5rem;
+// ── Page Wrapper ─────────────────────────────────────────────
+
+.wishlists-page {
   background: $bg;
-  min-height: 80vh;
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
 
-  .wishlist-container {
-    @include inner-container;
+// ── Gradient Header ──────────────────────────────────────────
+
+.wishlists-page__header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0b1e3f 100%);
+  padding: 60px 0 50px;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 20% 50%, rgba($primary, 0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 30%, rgba($danger, 0.06) 0%, transparent 60%);
+    pointer-events: none;
   }
 }
 
-.wishlist-header {
-  margin-bottom: 3rem;
-  border-bottom: 1px solid $border;
-  padding-bottom: 1.5rem;
+.wishlists-page__header-inner {
+  @include inner-container;
+  position: relative;
+  z-index: 1;
+}
 
-  .wishlist-title {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 800;
-    color: $text-dark;
-    margin: 0 0 0.5rem 0;
+.wishlists-page__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 1rem;
+  background: rgba($white, 0.1);
+  border: 1px solid rgba($white, 0.2);
+  border-radius: 999px;
+  color: rgba($white, 0.8);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+}
+
+.wishlists-page__title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 900;
+  color: $white;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.wishlists-page__subtitle {
+  font-size: 1.05rem;
+  color: rgba($white, 0.65);
+  margin: 0;
+}
+
+.wishlists-page__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+
+  &--1 {
+    width: 400px;
+    height: 400px;
+    background: rgba($primary, 0.1);
+    top: -20%;
+    left: -5%;
   }
 
-  .wishlist-subtitle {
-    font-size: 1.1rem;
-    color: $text-mid;
-    margin: 0;
+  &--2 {
+    width: 300px;
+    height: 300px;
+    background: rgba($danger, 0.06);
+    bottom: -10%;
+    right: 5%;
   }
 }
+
+// ── Body ───────────────────────────────────────────────────
+
+.wishlists-page__body {
+  @include inner-container;
+  margin-top: -28px;
+  position: relative;
+  z-index: 2;
+}
+
+.wishlists-page__container {
+  // Container holds course-grid and empty state — no overrides here
+}
+
+// ── Keep original styles (flat, no nesting into .wishlists-page) ──
+// These are kept as-is to avoid affecting course_card internals
 
 .wishlist-empty {
   text-align: center;
@@ -47,7 +122,7 @@
     width: 100px;
     height: 100px;
     background: $bg;
-    color: $text-muted;
+    color: $danger;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -70,7 +145,19 @@
   }
 }
 
-// Button styling
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
 .btn-wishlist {
   background: transparent;
   border: 1.5px solid $border;
@@ -106,15 +193,14 @@
   100% { transform: scale(1); }
 }
 
-.course-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
-}
+// ── Responsive ───────────────────────────────────────────────
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
+@media (max-width: 768px) {
+  .wishlists-page__header {
+    padding: 40px 0 36px;
+  }
+
+  .wishlists-page__body {
+    margin-top: -20px;
+  }
 }

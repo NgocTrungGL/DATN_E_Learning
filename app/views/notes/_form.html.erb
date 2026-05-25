@@ -1,16 +1,36 @@
-<div id="note-form">
-  <%= form_with model: note, url: lesson_notes_path(lesson), class: "notes-form" do |f| %>
-    <div class="notes-form__input-wrap">
-      <%= f.text_area :content, rows: 3,
-        placeholder: "Write your notes for this lesson...",
-            class: "notes-form__textarea" %>
+<div class="lesson-tabs__note-form" id="note-form">
+  <div class="lesson-tabs__note-form-header">
+    <div class="lesson-tabs__note-form-icon" aria-hidden="true">
+      <i class="bi bi-feather"></i>
+    </div>
+    <div class="lesson-tabs__note-form-header-text">
+      <h3 class="lesson-tabs__note-form-title">Take a note</h3>
+      <p class="lesson-tabs__note-form-subtitle">Capture key points from this lesson</p>
+    </div>
+  </div>
+
+  <%= form_with model: note, url: lesson_notes_path(lesson), class: "lesson-tabs__note-form-body" do |f| %>
+    <div class="lesson-tabs__note-form-field">
+      <%= f.text_area :content, rows: 4,
+          placeholder: "What did you learn? Write down your thoughts, questions, or key takeaways...",
+          class: "lesson-tabs__note-form-textarea",
+          id: "note-textarea",
+          required: true %>
       <% if note.errors[:content].any? %>
-        <span class="notes-form__error"><%= note.errors[:content].first %></span>
+        <span class="lesson-tabs__note-form-error">
+          <i class="bi bi-exclamation-circle"></i>
+          <%= note.errors[:content].first %>
+        </span>
       <% end %>
     </div>
-    <div class="notes-form__actions">
-      <button type="submit" class="notes-form__submit">
-        <i class="bi bi-plus-lg"></i> Add note
+    <div class="lesson-tabs__note-form-footer">
+      <div class="lesson-tabs__note-form-hint">
+        <i class="bi bi-lightbulb"></i>
+        Notes are private — only you can see them
+      </div>
+      <button type="submit" class="lesson-tabs__note-form-submit">
+        <i class="bi bi-bookmark-plus"></i>
+        Save note
       </button>
     </div>
   <% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_04_133934) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_18_142154) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -143,8 +143,11 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_04_133934) do
     t.text "content", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "parent_id"
+    t.integer "replies_count", default: 0, null: false
     t.index ["course_id", "created_at"], name: "index_discussion_messages_on_course_id_and_created_at"
     t.index ["course_id"], name: "index_discussion_messages_on_course_id"
+    t.index ["parent_id"], name: "index_discussion_messages_on_parent_id"
     t.index ["user_id"], name: "index_discussion_messages_on_user_id"
   end
 
@@ -231,6 +234,17 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_04_133934) do
     t.index ["organization_id", "course_id", "status"], name: "index_licenses_on_organization_id_and_course_id_and_status"
     t.index ["organization_id"], name: "index_licenses_on_organization_id"
     t.index ["user_id"], name: "index_licenses_on_user_id"
+  end
+
+  create_table "message_reactions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "discussion_message_id", null: false
+    t.string "emoji", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discussion_message_id"], name: "index_message_reactions_on_discussion_message_id"
+    t.index ["user_id", "discussion_message_id", "emoji"], name: "index_msg_reactions_on_user_and_msg_and_emoji", unique: true
+    t.index ["user_id"], name: "index_message_reactions_on_user_id"
   end
 
   create_table "notes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -405,6 +419,19 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_04_133934) do
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
+  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "plan_type"
+    t.string "status"
+    t.datetime "current_period_start"
+    t.datetime "current_period_end"
+    t.string "stripe_subscription_id"
+    t.string "stripe_customer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
@@ -485,6 +512,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_04_133934) do
   add_foreign_key "licenses", "courses"
   add_foreign_key "licenses", "organizations"
   add_foreign_key "licenses", "users"
+  add_foreign_key "message_reactions", "discussion_messages"
+  add_foreign_key "message_reactions", "users"
   add_foreign_key "notes", "courses"
   add_foreign_key "notes", "lessons"
   add_foreign_key "notes", "users"
@@ -511,6 +540,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_04_133934) do
   add_foreign_key "quizzes", "users", column: "created_by"
   add_foreign_key "reviews", "courses"
   add_foreign_key "reviews", "users"
+  add_foreign_key "subscriptions", "users"
   add_foreign_key "users", "organizations"
   add_foreign_key "wallet_transactions", "wallets"
   add_foreign_key "wallets", "users"

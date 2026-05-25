@@ -1,76 +1,137 @@
-<% content_for :title, "My notes" %>
+<%# ============================================================ %>
+<%# MY NOTES PAGE — Redesigned UI (No Bootstrap)               %>
+<%# ============================================================ %>
 
-<div class="my-notes-page">
-  <div class="my-notes-header">
-    <div class="my-notes-header__inner">
-      <h1 class="my-notes-header__title">
-        <i class="bi bi-journal-text"></i> My notes
-      </h1>
-      <p class="my-notes-header__subtitle">
-        Total <strong><%= pluralize(@notes.count, 'note') %></strong>
-        across <strong><%= pluralize(@notes_by_course.keys.count, 'course') %></strong>
+<% content_for :full_width, true %>
+
+<div class="my-notes">
+
+  <%# ── Header ─────────────────────────────────────────────── %>
+  <header class="my-notes__header">
+    <div class="my-notes__header-inner">
+      <div class="my-notes__badge">
+        <i class="bi bi-bookmark-fill"></i>
+        Personal Library
+      </div>
+      <h1 class="my-notes__title">My Notes</h1>
+      <p class="my-notes__subtitle">
+        <% if @notes.any? %>
+          You have captured <strong><%= pluralize(@notes.count, 'note') %></strong>
+          across <strong><%= pluralize(@notes_by_course.keys.count, 'course') %></strong>
+        <% else %>
+          Start capturing insights while you learn
+        <% end %>
       </p>
     </div>
-  </div>
 
-  <div class="my-notes-body">
+    <%# Decorative background blobs %>
+    <div class="my-notes__header-blob my-notes__header-blob--1"></div>
+    <div class="my-notes__header-blob my-notes__header-blob--2"></div>
+  </header>
+
+  <%# ── Content ────────────────────────────────────────────── %>
+  <div class="my-notes__body">
+
     <% if @notes_by_course.any? %>
-      <% @notes_by_course.each do |course, notes| %>
-        <section class="my-notes-course">
-          <div class="my-notes-course__header">
-            <div class="my-notes-course__info">
-              <h2 class="my-notes-course__title">
-                <%= link_to course.title, course_path(course) %>
-              </h2>
-              <span class="my-notes-course__meta">
-                <i class="bi bi-sticky"></i> <%= pluralize(notes.count, 'note') %>
-              </span>
-            </div>
-          </div>
 
-          <div class="my-notes-course__notes">
-            <% notes.each do |note| %>
-              <article class="my-note-item">
-                <div class="my-note-item__lesson">
-                  <i class="bi bi-play-circle"></i>
-                  <%= link_to note.lesson.title, lesson_path(note.lesson) %>
-                </div>
-                <div class="my-note-item__content">
-                  <%= simple_format(note.content) %>
-                </div>
-                <div class="my-note-item__footer">
-                  <span class="my-note-item__time">
-                    <i class="bi bi-clock"></i>
-                    <%= time_ago_in_words(note.updated_at) %> ago
+      <div class="my-notes__courses">
+        <% @notes_by_course.each do |course, notes| %>
+          <section class="mn-course">
+
+            <%# Course header %>
+            <div class="mn-course__header">
+              <div class="mn-course__thumb">
+                <img src="<%= course.thumbnail_url.presence || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=120&h=80&fit=crop' %>"
+                     alt="<%= course.title %>" loading="lazy">
+              </div>
+              <div class="mn-course__info">
+                <%= link_to course_path(course), class: "mn-course__title" do %>
+                  <%= course.title %>
+                <% end %>
+                <div class="mn-course__meta">
+                  <span class="mn-course__meta-item">
+                    <i class="bi bi-bookmark"></i>
+                    <%= pluralize(notes.count, 'note') %>
                   </span>
-                  <div class="my-note-item__actions">
-                    <%= link_to lesson_path(note.lesson, anchor: "lesson-tab-notes"),
-                          class: "my-note-item__link" do %>
-                      <i class="bi bi-pencil-square"></i> Edit
-                    <% end %>
-                    <%= button_to note_path(note), method: :delete,
-                          class: "my-note-item__delete",
-                          data: { turbo_confirm: "Delete this note?" } do %>
-                      <i class="bi bi-trash"></i> Delete
-                    <% end %>
-                  </div>
+                  <span class="mn-course__meta-dot"></span>
+                  <span class="mn-course__meta-item">
+                    <i class="bi bi-clock"></i>
+                    Last updated <%= time_ago_in_words(notes.maximum(:updated_at)) %> ago
+                  </span>
                 </div>
-              </article>
-            <% end %>
-          </div>
-        </section>
-      <% end %>
-    <% else %>
-      <div class="my-notes-empty">
-        <div class="my-notes-empty__icon">
-          <i class="bi bi-journal-text"></i>
-        </div>
-        <h3 class="my-notes-empty__title">No notes yet</h3>
-        <p class="my-notes-empty__text">
-          Start taking notes while learning to capture key points.
-        </p>
-        <%= link_to "Explore courses", courses_path, class: "my-notes-empty__cta" %>
+              </div>
+              <%= link_to course_path(course), class: "mn-course__action", title: "Go to course" do %>
+                <i class="bi bi-arrow-right"></i>
+              <% end %>
+            </div>
+
+            <%# Notes list %>
+            <div class="mn-course__notes">
+              <% notes.each do |note| %>
+                <article class="mn-note">
+
+                  <%# Note lesson breadcrumb %>
+                  <div class="mn-note__lesson">
+                    <i class="bi bi-play-circle"></i>
+                    <%= link_to note.lesson.title, lesson_path(note.lesson),
+                          class: "mn-note__lesson-link" %>
+                  </div>
+
+                  <%# Note content %>
+                  <div class="mn-note__content">
+                    <p class="mn-note__text"><%= truncate(strip_tags(note.content), length: 200, separator: ' ') %></p>
+                  </div>
+
+                  <%# Note footer %>
+                  <div class="mn-note__footer">
+                    <div class="mn-note__time">
+                      <i class="bi bi-calendar-event"></i>
+                      <%= l(note.updated_at, format: :short) %>
+                    </div>
+                    <div class="mn-note__actions">
+                      <%= link_to lesson_path(note.lesson, anchor: "lesson-tab-notes"),
+                            class: "mn-note__btn mn-note__btn--edit" do %>
+                        <i class="bi bi-pencil"></i>
+                        Edit
+                      <% end %>
+                      <%= button_to note_path(note), method: :delete,
+                            class: "mn-note__btn mn-note__btn--delete",
+                            data: { turbo_confirm: "Delete this note?" } do %>
+                        <i class="bi bi-trash"></i>
+                        Delete
+                      <% end %>
+                    </div>
+                  </div>
+
+                </article>
+              <% end %>
+            </div>
+
+          </section>
+        <% end %>
       </div>
+
+    <% else %>
+
+      <%# ── Empty State ─────────────────────────────────────── %>
+      <div class="mn-empty">
+        <div class="mn-empty__visual">
+          <div class="mn-empty__icon">
+            <i class="bi bi-bookmark"></i>
+          </div>
+          <div class="mn-empty__ring mn-empty__ring--1"></div>
+          <div class="mn-empty__ring mn-empty__ring--2"></div>
+        </div>
+        <h3 class="mn-empty__title">No notes yet</h3>
+        <p class="mn-empty__desc">
+          Capture key insights while you learn. Your notes will be organized by course and lesson.
+        </p>
+        <%= link_to courses_path, class: "mn-empty__cta" do %>
+          <i class="bi bi-compass"></i>
+          Explore courses
+        <% end %>
+      </div>
+
     <% end %>
   </div>
 </div>

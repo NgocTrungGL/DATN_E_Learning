@@ -5,16 +5,15 @@
       notes_count = lesson_notes.count
     %>
 
-    <%# Note creation form %>
     <%= render "notes/form", lesson: @lesson, note: Note.new %>
 
-    <%# Saved notes list %>
-    <section class="lesson-tabs__saved-notes" aria-label="Saved notes">
-      <div class="lesson-tabs__resources-header">
-        <h3 class="lesson-tabs__subheading">
+    <section class="lesson-tabs__note-list" aria-label="Saved notes">
+      <div class="lesson-tabs__note-list-header">
+        <h3 class="lesson-tabs__note-list-heading">
+          <i class="bi bi-journal-bookmark"></i>
           Your notes
-          <%= render "notes/count_badge", count: notes_count %>
         </h3>
+        <%= render "notes/count_badge", count: notes_count %>
       </div>
 
       <div id="notes-list">

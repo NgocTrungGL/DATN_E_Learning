@@ -1,13 +1,15 @@
-<%# Grouping logic logic %>
+<%# Grouping logic %>
 <% is_grouped = message.same_group_as?(previous_message) %>
 
-<article class="lumina__msg <%= 'lumina__msg--instructor' if message.instructor_message? %>" id="<%= dom_id(message) %>">
+<article class="lumina__msg <%= 'lumina__msg--grouped' if is_grouped %>" id="<%= dom_id(message) %>">
   <% unless is_grouped %>
-    <div class="lumina__msg-avatar">
+    <div class="lumina__msg-avatar" style="background: <%= '#' + Digest::MD5.hexdigest(message.author_name)[0..5] %>; color: white;">
       <%= message.author_initial %>
     </div>
   <% else %>
-    <div style="width: 44px; flex-shrink: 0;"></div> <%# Spacer for grouped messages %>
+    <div class="lumina__msg-gutter-time">
+      <%= message.created_at.strftime("%H:%M") %>
+    </div>
   <% end %>
 
   <div class="lumina__msg-body">
@@ -15,26 +17,56 @@
       <div class="lumina__msg-meta">
         <span class="lumina__msg-author"><%= message.author_name %></span>
         <% if message.instructor_message? %>
-          <span class="lumina__msg-badge lumina__msg-badge--instructor">GIẢNG VIÊN</span>
+          <span class="lumina__msg-badge lumina__msg-badge--instructor">Instructor</span>
         <% end %>
-        <span class="lumina__msg-time"><%= message.created_at.strftime("%H:%M") %></span>
+        <span class="lumina__msg-time"><%= message.created_at.strftime("%I:%M %p") %></span>
       </div>
     <% end %>
 
     <div class="lumina__msg-text">
-      <%= simple_format(message.content) %>
+      <%= render_chat_message(message.content, course) %>
     </div>
+
+    <%# Message reactions list %>
+    <%= render "discussion_messages/reactions", message: message, course: course %>
+
+    <%# Replies badge — updated in real-time %>
+    <%= render "discussion_messages/replies_badge", message: message, course: course %>
   </div>
 
-  <%# Floating Actions %>
+  <%# Floating Actions on hover %>
   <div class="lumina__msg-actions">
-    <button class="action-btn" title="Phản hồi"><i class="bi bi-reply"></i></button>
-    <% if current_user == message.user || current_user.admin? || course.created_by == current_user.id %>
+    <%# Hover reaction picker %>
+    <div class="action-btn-dropdown">
+      <button class="action-btn" title="Add reaction">
+        <i class="bi bi-emoji-smile"></i>
+      </button>
+      <div class="action-picker-menu">
+        <% ["👍", "❤️", "😂", "😮", "😢", "🙏", "🎉", "🚀"].each do |emoji| %>
+          <%= button_to toggle_reaction_course_discussion_message_path(course, message),
+                        method: :post,
+                        params: { emoji: emoji },
+                        class: "action-picker-menu__item",
+                        form: { class: "action-picker-form", data: { turbo: true } } do %>
+            <%= emoji %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <button class="action-btn"
+            title="Reply in thread"
+            data-action="click->lumina-layout#openThread"
+            data-thread-url="<%= thread_course_discussion_message_path(course, message) %>">
+      <i class="bi bi-chat-left-text"></i>
+    </button>
+    <% viewer = begin; current_user; rescue; nil; end %>
+    <% if viewer && (viewer == message.user || viewer.admin? || course.created_by == viewer.id) %>
       <%= button_to course_discussion_message_path(course, message),
             method: :delete,
             class: "action-btn",
-            title: "Xóa",
-            data: { turbo_confirm: "Xóa tin nhắn này?" } do %>
+            title: "Delete",
+            data: { turbo_confirm: "Delete this message?" } do %>
         <i class="bi bi-trash"></i>
       <% end %>
     <% end %>

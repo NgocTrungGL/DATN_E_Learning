@@ -1,6 +1,6 @@
 class CertificatesController < ApplicationController
   before_action :authenticate_user!, only: [:index]
-  before_action :set_certificate, only: [:show]
+  before_action :set_certificate, only: [:show, :print]
 
   # GET /my_certificates -  logged-in student's certificates
   def index
@@ -12,6 +12,13 @@ class CertificatesController < ApplicationController
     @course = @certificate.course
     @student = @certificate.user
     render layout: "certificate"
+  end
+
+  # GET /certificates/:code/print - print-optimized certificate page
+  def print
+    @course = @certificate.course
+    @student = @certificate.user
+    render layout: "certificate", template: "certificates/print"
   end
 
   private

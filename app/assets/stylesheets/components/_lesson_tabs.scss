@@ -119,58 +119,82 @@
 
   .lesson-tabs__hero {
     display: grid;
-    gap: 1rem;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 0.6rem;
   }
 
   .lesson-tabs__eyebrow {
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.35rem;
     color: #3a66d8;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
   }
 
   .lesson-tabs__heading {
     margin: 0;
     color: #0d243b;
-    font-size: 1.45rem;
+    font-size: 1.2rem;
     line-height: 1.25;
     font-weight: 750;
   }
 
   .lesson-tabs__description {
-    margin: 0.85rem 0 0;
+    margin: 0.5rem 0 0;
     color: var(--lt-muted);
-    line-height: 1.75;
-    font-size: 0.98rem;
+    line-height: 1.6;
+    font-size: 0.88rem;
     max-width: 72ch;
   }
 
   .lesson-tabs__hero-stats {
-    display: grid;
-    gap: 0.6rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
   }
 
   .lesson-tabs__stat-card {
-    background: #ffffff;
-    border: 1px solid var(--lt-line);
-    border-radius: 12px;
-    padding: 0.85rem;
-    box-shadow: 0 10px 24px rgba(20, 52, 109, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #f0f5ff;
+    border: 1px solid rgba(31, 94, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .lesson-tabs__stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #1f5eff 0%, #3b82f6 100%);
+    color: #ffffff;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  .lesson-tabs__stat-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
 
   .lesson-tabs__stat-value {
-    display: block;
     color: #0e2a4a;
-    font-weight: 750;
-    font-size: 1.15rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+    line-height: 1.2;
   }
 
   .lesson-tabs__stat-label {
-    color: var(--lt-muted);
-    font-size: 0.82rem;
+    color: #5d728d;
+    font-size: 0.7rem;
+    line-height: 1.3;
   }
 
   .lesson-tabs__resources,
@@ -452,16 +476,432 @@
     line-height: 1.65;
   }
 
-  .lesson-tabs__notes-form {
-    display: grid;
-    gap: 0.75rem;
-    background: #ffffff;
-    border: 1px solid var(--lt-line);
-    border-radius: 14px;
-    padding: 1rem;
-    box-shadow: 0 12px 30px rgba(15, 42, 87, 0.06);
+  // ── Notes: creation form ─────────────────────────────────────
+  .lesson-tabs__note-form {
+    background: var(--lt-surface);
+    border: 1.5px solid var(--lt-line);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(15, 42, 82, 0.06);
+    transition: box-shadow 250ms ease;
+
+    &:focus-within {
+      border-color: rgba(31, 94, 255, 0.4);
+      box-shadow: 0 6px 28px rgba(37, 99, 235, 0.12);
+    }
   }
 
+  .lesson-tabs__note-form-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.2rem;
+    background: linear-gradient(135deg, #f5f8ff 0%, #eef3ff 100%);
+    border-bottom: 1px solid rgba(31, 94, 255, 0.1);
+  }
+
+  .lesson-tabs__note-form-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1f5eff 0%, #3b82f6 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(31, 94, 255, 0.3);
+  }
+
+  .lesson-tabs__note-form-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .lesson-tabs__note-form-title {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f1f3d;
+  }
+
+  .lesson-tabs__note-form-subtitle {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #5a7090;
+  }
+
+  .lesson-tabs__note-form-body {
+    padding: 0;
+  }
+
+  .lesson-tabs__note-form-field {
+    padding: 1rem 1.2rem 0;
+  }
+
+  .lesson-tabs__note-form-textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1.5px solid var(--lt-line);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: #0f172a;
+    background: #ffffff;
+    resize: vertical;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+
+    &::placeholder { color: #94a3b8; }
+
+    &:focus {
+      outline: none;
+      border-color: #1f5eff;
+      box-shadow: 0 0 0 3px rgba(31, 94, 255, 0.1);
+    }
+  }
+
+  .lesson-tabs__note-form-error {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    color: #ef4444;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .lesson-tabs__note-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1.2rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .lesson-tabs__note-form-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.76rem;
+    color: #94a3b8;
+    font-weight: 500;
+
+    i { color: #0d9488; }
+  }
+
+  .lesson-tabs__note-form-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.15rem;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #1f5eff 0%, #1546c6 100%);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(21, 70, 198, 0.3);
+    transition: all 220ms ease;
+
+    &:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(21, 70, 198, 0.38);
+    }
+
+    i { font-size: 0.9rem; }
+  }
+
+  // ── Notes: list header ────────────────────────────────────────
+  .lesson-tabs__note-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 2px solid rgba(31, 94, 255, 0.08);
+  }
+
+  .lesson-tabs__note-list-heading {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f1f3d;
+
+    i {
+      color: #1f5eff;
+      font-size: 1.05rem;
+    }
+  }
+
+  // ── Notes: individual note card ───────────────────────────────
+  .lesson-tabs__note-card {
+    background: var(--lt-surface);
+    border: 1.5px solid var(--lt-line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.7rem;
+    box-shadow: 0 2px 10px rgba(15, 42, 82, 0.05);
+    transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+
+    &:hover {
+      border-color: rgba(31, 94, 255, 0.25);
+      box-shadow: 0 4px 18px rgba(31, 94, 255, 0.1);
+      transform: translateY(-1px);
+    }
+  }
+
+  .lesson-tabs__note-card-view { }
+
+  .lesson-tabs__note-card-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(135deg, #f9fbff 0%, #f4f7ff 100%);
+    border-bottom: 1px solid rgba(31, 94, 255, 0.07);
+  }
+
+  .lesson-tabs__note-card-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: #1f5eff;
+    font-weight: 600;
+
+    i { font-size: 0.8rem; }
+  }
+
+  .lesson-tabs__note-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .lesson-tabs__note-card:hover .lesson-tabs__note-card-actions {
+    opacity: 1;
+  }
+
+  .lesson-tabs__note-card-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1.5px solid rgba(31, 94, 255, 0.15);
+    border-radius: 8px;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 200ms ease;
+
+    &:hover { transform: translateY(-1px); }
+
+    &--edit:hover {
+      background: #eff6ff;
+      color: #1f5eff;
+      border-color: rgba(31, 94, 255, 0.3);
+    }
+
+    &--delete:hover {
+      background: rgba(239, 68, 68, 0.07);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+  }
+
+  .lesson-tabs__note-card-content {
+    padding: 0.85rem 1rem;
+  }
+
+  .lesson-tabs__note-card-text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.68;
+    color: #1e3a6e;
+
+    p { margin: 0; }
+    p + p { margin-top: 0.5rem; }
+  }
+
+  // ── Notes: edit mode ─────────────────────────────────────────
+  .lesson-tabs__note-card-edit {
+    background: #f8fbff;
+  }
+
+  .lesson-tabs__note-card-edit-header {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(31, 94, 255, 0.1);
+  }
+
+  .lesson-tabs__note-card-edit-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #1f5eff;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    i { font-size: 0.82rem; }
+  }
+
+  .lesson-tabs__note-card-edit-form {
+    padding: 0.85rem 1rem;
+  }
+
+  .lesson-tabs__note-card-textarea {
+    width: 100%;
+    border: 1.5px solid rgba(31, 94, 255, 0.3);
+    border-radius: 9px;
+    padding: 0.7rem 0.9rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: #0f172a;
+    background: #ffffff;
+    resize: vertical;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+
+    &::placeholder { color: #94a3b8; }
+
+    &:focus {
+      outline: none;
+      border-color: #1f5eff;
+      box-shadow: 0 0 0 3px rgba(31, 94, 255, 0.1);
+    }
+  }
+
+  .lesson-tabs__note-card-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.65rem;
+  }
+
+  .lesson-tabs__note-card-save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.45rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1f5eff 0%, #1546c6 100%);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.83rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(21, 70, 198, 0.25);
+    transition: all 200ms ease;
+
+    &:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+  }
+
+  .lesson-tabs__note-card-cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.9rem;
+    border: 1.5px solid #d6e3f7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #475569;
+    font-family: inherit;
+    font-size: 0.83rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 200ms ease;
+
+    &:hover {
+      background: #f1f5ff;
+      color: #0f172a;
+    }
+  }
+
+  // ── Notes: empty state ───────────────────────────────────────
+  .lesson-tabs__note-empty {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .lesson-tabs__note-empty-visual {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 1rem;
+  }
+
+  .lesson-tabs__note-empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);
+  }
+
+  .lesson-tabs__note-empty-rings {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    span {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(59, 130, 246, 0.2);
+      animation: noteEmptyPulse 3s ease-in-out infinite;
+
+      &:nth-child(2) {
+        inset: -8px;
+        animation-delay: 0.8s;
+      }
+    }
+  }
+
+  .lesson-tabs__note-empty-title {
+    margin: 0 0 0.4rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f1f3d;
+  }
+
+  .lesson-tabs__note-empty-desc {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.6;
+  }
+
+  // ── Notes: coming / sign-in state ────────────────────────────
   .lesson-tabs__coming {
     display: flex;
     align-items: center;
@@ -506,75 +946,277 @@
     line-height: 1.55;
   }
 
-  .lesson-tabs__notes-label {
-    color: #112f50;
-    font-size: 0.95rem;
+  // ── Q&A: question actions row ──────────────────────────────
+  .lesson-tabs__question-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .lesson-tabs__reply-toggle-btn,
+  .lesson-tabs__replies-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(31, 94, 255, 0.09);
+    color: #2c58c8;
+    font-size: 0.84rem;
     font-weight: 700;
+    padding: 0.42rem 0.9rem;
+    cursor: pointer;
+    transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
+    min-height: 36px;
+
+    i { font-size: 0.88rem; }
+
+    &:hover {
+      background: rgba(31, 94, 255, 0.16);
+      color: #1546c6;
+      transform: translateY(-1px);
+    }
+
+    &.is-open {
+      background: linear-gradient(135deg, #1f5eff 0%, #1546c6 100%);
+      color: #ffffff;
+    }
   }
 
-  .lesson-tabs__notes-input {
-    width: 100%;
-    min-height: 130px;
-    border: 1px solid var(--lt-line);
-    border-radius: 12px;
-    padding: 0.85rem;
-    color: #15385e;
-    line-height: 1.65;
-    resize: vertical;
-    background: #fbfdff;
+  .lesson-tabs__replies-toggle-btn {
+    background: #edf3ff;
+    color: #355c97;
+
+    &:hover {
+      background: #e2edff;
+      color: #1b52de;
+    }
   }
 
-  .lesson-tabs__notes-input:focus {
-    outline: 2px solid rgba(31, 94, 255, 0.2);
-    border-color: #abc4ef;
-  }
-
-  .lesson-tabs__notes-actions {
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .lesson-tabs__saved-note {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.7rem;
-    background: var(--lt-surface);
-    border: 1px solid var(--lt-line);
-    border-radius: 12px;
-    padding: 0.85rem;
-  }
-
-  .lesson-tabs__saved-note + .lesson-tabs__saved-note {
-    margin-top: 0.65rem;
-  }
-
-  .lesson-tabs__timestamp {
+  .lesson-tabs__delete-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #e6efff 0%, #dae8ff 100%);
-    color: #1b52de;
-    font-weight: 700;
-    font-size: 0.82rem;
-    padding: 0.34rem 0.68rem;
-    white-space: nowrap;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    color: #94a3b8;
     cursor: pointer;
-    transition: transform 200ms ease, box-shadow 200ms ease;
+    transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease;
+    text-decoration: none;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.08);
+      color: #ef4444;
+      border-color: #fca5a5;
+    }
   }
 
-  .lesson-tabs__timestamp:hover,
-  .lesson-tabs__timestamp:focus-visible {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 18px rgba(30, 88, 220, 0.2);
+  // ── Q&A: reply form ───────────────────────────────────────
+  .lesson-tabs__reply-form {
+    margin-top: 1rem;
+  }
+
+  .lesson-tabs__reply-form-inner {
+    background: #f1f5ff;
+    border: 1.5px solid #c7d9f8;
+    border-radius: 14px;
+    padding: 1rem;
+  }
+
+  .lesson-tabs__reply-form-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .lesson-tabs__reply-form-label {
+    font-size: 0.85rem;
+    color: #475569;
+    font-weight: 600;
+  }
+
+  .lesson-tabs__reply-textarea-wrap {
+    margin-bottom: 0.65rem;
+  }
+
+  .lesson-tabs__reply-textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1.5px solid #d6e3f7;
+    border-radius: 10px;
+    padding: 0.75rem 0.9rem;
+    font-family: inherit;
+    font-size: 0.92rem;
+    color: #0f172a;
+    line-height: 1.65;
+    background: #ffffff;
+    resize: vertical;
     outline: none;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+
+    &::placeholder { color: #94a3b8; }
+
+    &:focus {
+      border-color: #1f5eff;
+      box-shadow: 0 0 0 3px rgba(31, 94, 255, 0.12);
+    }
   }
 
-  .lesson-tabs__saved-note-text {
+  .lesson-tabs__reply-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .lesson-tabs__reply-cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #d6e3f7;
+    border-radius: 9px;
+    background: transparent;
+    color: #475569;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.85rem;
+    min-height: 38px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 220ms ease;
+
+    &:hover {
+      background: #f1f5ff;
+      color: #0f172a;
+    }
+  }
+
+  .lesson-tabs__reply-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #1f5eff 0%, #1546c6 100%);
+    color: #ffffff;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.85rem;
+    min-height: 38px;
+    padding: 0.5rem 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(21, 70, 198, 0.28);
+    transition: all 220ms ease;
+
+    &:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(21, 70, 198, 0.35);
+    }
+  }
+
+  // ── Q&A: replies list ────────────────────────────────────
+  .lesson-tabs__replies-list {
+    margin-top: 1rem;
+    padding-left: 1.25rem;
+    border-left: 2.5px solid #d6e3f7;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .lesson-tabs__reply-item {
+    background: #f8fbff;
+    border: 1px solid #e2ecf8;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 2px 8px rgba(15, 42, 82, 0.05);
+  }
+
+  .lesson-tabs__reply-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .lesson-tabs__reply-author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .lesson-tabs__reply-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+
+    &--initials {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #2e6dff 0%, #1b4ddd 100%);
+      color: #ffffff;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+  }
+
+  .lesson-tabs__reply-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .lesson-tabs__reply-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #143659;
+  }
+
+  .lesson-tabs__reply-time {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .lesson-tabs__reply-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 200ms ease;
+    font-size: 0.75rem;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.08);
+      color: #ef4444;
+      border-color: #fca5a5;
+    }
+  }
+
+  .lesson-tabs__reply-text {
     margin: 0;
-    color: #35506f;
-    line-height: 1.62;
+    color: #1e3a6e;
+    line-height: 1.65;
+    font-size: 0.9rem;
   }
 }
 
@@ -584,8 +1226,18 @@
       padding: 1rem;
     }
 
-    .lesson-tabs__hero-stats {
+    .lesson-tabs__hero {
       grid-template-columns: 1fr;
+    }
+
+    .lesson-tabs__hero-stats {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .lesson-tabs__stat-card {
+      flex: 1;
+      min-width: 80px;
     }
 
     .lesson-tabs__qa-toolbar {
@@ -604,7 +1256,7 @@
       align-items: stretch;
     }
 
-    .lesson-tabs__saved-note {
+    .lesson-tabs__note-card {
       flex-direction: column;
     }
 
@@ -648,13 +1300,16 @@
       padding: 1.55rem;
     }
 
-    .lesson-tabs__hero {
-      grid-template-columns: minmax(0, 1fr) 320px;
-      align-items: stretch;
+    .lesson-tabs__heading {
+      font-size: 1.45rem;
     }
 
-    .lesson-tabs__heading {
-      font-size: 1.7rem;
+    .lesson-tabs__hero-stats {
+      gap: 0.5rem;
+    }
+
+    .lesson-tabs__stat-card {
+      padding: 0.4rem 0.75rem;
     }
 
     .lesson-tabs__question-list {

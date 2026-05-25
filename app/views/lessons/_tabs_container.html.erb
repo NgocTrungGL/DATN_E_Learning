@@ -41,7 +41,7 @@
           </svg>
         </span>
         <span class="lesson-tabs__nav-label">Q&A</span>
-        <span class="lesson-tabs__nav-badge"><%= local_assigns[:qa_badge_count] || 1 %></span>
+        <span class="lesson-tabs__nav-badge"><%= @qa_badge_count %></span>
       </button>
 
       <button
@@ -90,6 +90,7 @@
         data-panel="qa"
         data-tab-panel
         data-lesson-tabs-target="panel"
+        data-controller="qa-reply qa-replies"
         hidden
       >
         <%= render "lessons/tabs/qa" %>

@@ -8,60 +8,102 @@
       <input id="lesson-qa-search" class="lesson-tabs__search-input" type="search" placeholder="Search community questions" aria-label="Search questions">
     </label>
 
-    <button class="lesson-tabs__ask-btn" type="button">Ask a question</button>
+    <% if user_signed_in? %>
+    <button class="lesson-tabs__ask-btn" type="button"
+            onclick="document.getElementById('luminaAskModal').classList.add('is-open'); document.body.style.overflow='hidden'">
+      <i class="bi bi-plus-circle"></i> Ask a question
+    </button>
+    <% end %>
   </header>
 
-  <div class="lesson-tabs__question-list">
-    <article class="lesson-tabs__question-card">
-      <div class="lesson-tabs__vote-stack">
-        <button class="lesson-tabs__upvote-btn" type="button" aria-label="Upvote question">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 5L4 14H20L12 5Z"/>
-          </svg>
-        </button>
-        <span class="lesson-tabs__vote-count">24</span>
-      </div>
-
-      <div class="lesson-tabs__question-body">
-        <header class="lesson-tabs__question-meta">
-          <span class="lesson-tabs__avatar" aria-hidden="true">EW</span>
-          <div class="lesson-tabs__author-block">
-            <span class="lesson-tabs__author-name">Emma Wilson</span>
-            <time class="lesson-tabs__question-time" datetime="2026-04-10T10:15:00Z">3 hours ago</time>
-          </div>
-          <span class="lesson-tabs__badge lesson-tabs__badge--verified">Instructor Endorsed</span>
-        </header>
-        <h3 class="lesson-tabs__question-title">When should a service object return a result object instead of a boolean?</h3>
-        <p class="lesson-tabs__question-text">
-          I want clearer error handling in the controller. Is returning an object with status and detailed errors better than just true/false?
+  <% if !user_signed_in? %>
+    <div class="lesson-tabs__coming">
+      <span class="lesson-tabs__coming-icon" aria-hidden="true">
+        <i class="bi bi-lock" style="font-size: 1.4rem;"></i>
+      </span>
+      <div class="lesson-tabs__coming-content">
+        <h3 class="lesson-tabs__coming-title">Sign in to ask a question</h3>
+        <p class="lesson-tabs__coming-subtitle">
+          Join the discussion by signing in to ask questions and help others.
         </p>
       </div>
-    </article>
+    </div>
 
-    <article class="lesson-tabs__question-card">
-      <div class="lesson-tabs__vote-stack">
-        <button class="lesson-tabs__upvote-btn" type="button" aria-label="Upvote question">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 5L4 14H20L12 5Z"/>
-          </svg>
-        </button>
-        <span class="lesson-tabs__vote-count">11</span>
-      </div>
+  <% elsif @qa_comments.any? %>
+    <div class="lesson-tabs__question-list" id="question-list">
+      <% @qa_comments.each do |comment| %>
+        <%= render "comments/question_card", lesson: @lesson, comment: comment %>
+      <% end %>
+    </div>
 
-      <div class="lesson-tabs__question-body">
-        <header class="lesson-tabs__question-meta">
-          <span class="lesson-tabs__avatar" aria-hidden="true">DN</span>
-          <div class="lesson-tabs__author-block">
-            <span class="lesson-tabs__author-name">Daniel Nguyen</span>
-            <time class="lesson-tabs__question-time" datetime="2026-04-09T13:40:00Z">1 day ago</time>
-          </div>
-          <span class="lesson-tabs__badge">Resolved</span>
-        </header>
-        <h3 class="lesson-tabs__question-title">How do you avoid overusing callbacks in large Rails projects?</h3>
-        <p class="lesson-tabs__question-text">
-          I am looking for a structure that keeps business rules readable while ensuring transactions and side effects remain consistent.
+  <% else %>
+    <div class="lesson-tabs__coming">
+      <span class="lesson-tabs__coming-icon" aria-hidden="true">
+        <i class="bi bi-chat-square-text" style="font-size: 1.4rem;"></i>
+      </span>
+      <div class="lesson-tabs__coming-content">
+        <h3 class="lesson-tabs__coming-title">No questions yet</h3>
+        <p class="lesson-tabs__coming-subtitle">
+          Be the first to ask a question about this lesson!
         </p>
       </div>
-    </article>
-  </div>
+    </div>
+  <% end %>
 </article>
+
+<% if user_signed_in? %>
+<div class="lumina-ask-modal" id="luminaAskModal" aria-labelledby="luminaAskModalLabel" role="dialog" aria-modal="true"
+     data-controller="question-modal">
+  <div class="lumina-ask-backdrop" data-action="click->question-modal#closeOnBackdrop"></div>
+  <div class="lumina-ask-card">
+    <div class="lumina-ask-topbar">
+      <div class="lumina-ask-topbar-left">
+        <span class="lumina-ask-topbar-icon" aria-hidden="true">
+          <i class="bi bi-chat-square-text-fill"></i>
+        </span>
+        <h2 class="lumina-ask-topbar-title" id="luminaAskModalLabel">Ask a discussion question</h2>
+      </div>
+      <button class="lumina-ask-close" type="button" aria-label="Close" data-action="question-modal#close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="lumina-ask-content">
+      <div class="lumina-ask-user">
+        <img
+          src="https://ui-avatars.com/api/?name=<%= URI.encode_www_form_component(current_user&.name || "User") %>&background=random&color=fff"
+          alt="<%= current_user&.name %>"
+          class="lumina-ask-avatar"
+        >
+        <div class="lumina-ask-user-info">
+          <span class="lumina-ask-user-name"><%= current_user&.name %></span>
+          <span class="lumina-ask-user-sub">Asking about: <strong><%= @lesson.title %></strong></span>
+        </div>
+      </div>
+
+      <%= form_with(model: [@lesson, Comment.new], local: true) do |f| %>
+        <div class="lumina-ask-input-card">
+          <%= f.label :body, "Question details", class: "lumina-ask-input-label" %>
+          <%= f.text_area :body,
+              class: "lumina-ask-input-area",
+              placeholder: "Describe your question in detail so the instructor and others can help...",
+              rows: 5,
+              required: true %>
+        </div>
+
+        <div class="lumina-ask-notice">
+          <span class="lumina-ask-notice-icon" aria-hidden="true">
+            <i class="bi bi-info-circle-fill"></i>
+          </span>
+          <span>Please use polite and respectful language.</span>
+        </div>
+
+        <div class="lumina-ask-footer">
+          <button type="button" class="lumina-ask-btn lumina-ask-btn--cancel" data-action="question-modal#close">Cancel</button>
+          <%= f.submit "Submit question", class: "lumina-ask-btn lumina-ask-btn--submit", data: { disable_with: false } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>

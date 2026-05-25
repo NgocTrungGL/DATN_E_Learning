@@ -1,31 +1,54 @@
-<section class="wishlist-page">
-  <div class="wishlist-container">
-    <header class="wishlist-header">
-      <h1 class="wishlist-title"><%= t("wishlists.index.title") %></h1>
-      <p class="wishlist-subtitle">
+<%# ============================================================ %>
+<%# WISHLISTS INDEX — Redesigned UI (No Bootstrap)             %>
+<%# Note: course-grid, course-card, wishlist-empty, btn-wishlist kept as-is %>
+<%# ============================================================ %>
+
+<% content_for :full_width, true %>
+
+<section class="wishlists-page">
+
+  <%# ── Header ─────────────────────────────────────────────── %>
+  <header class="wishlists-page__header">
+    <div class="wishlists-page__header-inner">
+      <div class="wishlists-page__badge">
+        <i class="bi bi-heart-fill"></i>
+        Saved Courses
+      </div>
+      <h1 class="wishlists-page__title"><%= t("wishlists.index.title") %></h1>
+      <p class="wishlists-page__subtitle">
         <%= t("wishlists.index.count", count: current_user.wishlists.count) %>
       </p>
-    </header>
+    </div>
+    <div class="wishlists-page__blob wishlists-page__blob--1"></div>
+    <div class="wishlists-page__blob wishlists-page__blob--2"></div>
+  </header>
 
-    <% if @wishlists.any? %>
-      <div class="course-grid">
-        <% @wishlists.each do |wishlist| %>
-          <%= render "courses/course_card", course: wishlist.course %>
-        <% end %>
-      </div>
+  <%# ── Body ──────────────────────────────────────────────── %>
+  <div class="wishlists-page__body">
+    <div class="wishlists-page__container">
 
-      <div class="pagination-container">
-        <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
-      </div>
-    <% else %>
-      <div class="wishlist-empty">
-        <div class="empty-icon">
-          <i class="bi bi-heart"></i>
+      <% if @wishlists.any? %>
+        <div class="course-grid">
+          <% @wishlists.each do |wishlist| %>
+            <%= render "courses/course_card", course: wishlist.course %>
+          <% end %>
         </div>
-        <h3 class="empty-title"><%= t("wishlists.index.empty_title") %></h3>
-        <p class="empty-body"><%= t("wishlists.index.empty_body") %></p>
-        <%= link_to t("wishlists.index.browse_courses"), courses_path, class: "btn-primary" %>
-      </div>
-    <% end %>
+
+        <div class="pagination-container">
+          <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+        </div>
+      <% else %>
+        <div class="wishlist-empty">
+          <div class="empty-icon">
+            <i class="bi bi-heart"></i>
+          </div>
+          <h3 class="empty-title"><%= t("wishlists.index.empty_title") %></h3>
+          <p class="empty-body"><%= t("wishlists.index.empty_body") %></p>
+          <%= link_to t("wishlists.index.browse_courses"), courses_path, class: "btn-primary" %>
+        </div>
+      <% end %>
+
+    </div>
   </div>
+
 </section>

@@ -1,40 +1,111 @@
-<div class="container py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><%= t('certificates.index.title', default: 'My Certificates') %></h2>
-  </div>
+<%# ============================================================ %>
+<%# CERTIFICATES INDEX — Student Achievement Dashboard         %>
+<%# Pure BEM — No Bootstrap                                   %>
+<%# ============================================================ %>
 
-  <% if @certificates.empty? %>
-    <div class="empty-state text-center py-5">
-      <div class="empty-state__icon mb-3">
-        <i class="icon-award" style="font-size: 3rem; color: #ccc;"></i>
+<% content_for :full_width, true %>
+
+<div class="certificates">
+
+  <%# ── Header ─────────────────────────────────────────────── %>
+  <header class="certificates__header">
+    <div class="certificates__header-inner">
+      <div class="certificates__badge">
+        <i class="bi bi-patch-check-fill"></i>
+        Achievement Unlocked
       </div>
-      <h4 class="empty-state__title"><%= t('certificates.index.empty_title', default: 'No certificates yet') %></h4>
-      <p class="empty-state__desc text-muted"><%= t('certificates.index.empty_desc', default: 'Complete a course to earn your first certificate.') %></p>
-      <%= link_to t('shared.explore_courses', default: 'Explore Courses'), courses_path, class: "btn btn--primary mt-3" %>
+      <h1 class="certificates__title">My Certificates</h1>
+      <p class="certificates__subtitle">
+        <% if @certificates.any? %>
+          You have earned <strong><%= pluralize(@certificates.count, 'certificate') %></strong>
+          for completing courses on the platform.
+        <% else %>
+          Complete a course to earn your first certificate.
+        <% end %>
+      </p>
     </div>
-  <% else %>
-    <div class="row g-4">
-      <% @certificates.each do |certificate| %>
-        <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
-            <div class="card-body p-4 d-flex flex-column align-items-center text-center">
-              <div class="mb-3" style="width: 80px; height: 80px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--lp-accent);">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 40px; height: 40px;">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-              </div>
-              <h5 class="card-title mb-2" style="font-weight: 600;"><%= certificate.course.title %></h5>
-              <p class="text-muted small mb-3">
-                <%= t('certificates.index.issued_on', default: 'Issued on') %> <%= certificate.issued_at.strftime('%b %d, %Y') %>
-              </p>
-              
-              <div class="mt-auto w-100">
-                <%= link_to t('certificates.index.view', default: 'View Certificate'), certificate_path(certificate.certificate_code), class: "btn btn--outline-primary w-100 mb-2", target: "_blank" %>
-              </div>
+    <div class="certificates__header-blob certificates__header-blob--1"></div>
+    <div class="certificates__header-blob certificates__header-blob--2"></div>
+  </header>
+
+  <%# ── Content ────────────────────────────────────────────── %>
+  <div class="certificates__body">
+
+    <% if @certificates.any? %>
+
+      <div class="certificates__grid">
+        <% @certificates.each do |cert| %>
+          <article class="cert-card">
+
+            <%# Certificate icon / badge %>
+            <div class="cert-card__badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
             </div>
+
+            <%# Course info %>
+            <h3 class="cert-card__course-title"><%= cert.course.title %></h3>
+
+            <%# Issued date %>
+            <div class="cert-card__meta">
+              <i class="bi bi-calendar-event"></i>
+              Issued <%= l(cert.issued_at, format: :long) %>
+            </div>
+
+            <%# Certificate code (verification) %>
+            <div class="cert-card__code">
+              <span class="cert-card__code-label">Certificate ID</span>
+              <span class="cert-card__code-value"><%= cert.certificate_code.upcase %></span>
+            </div>
+
+            <%# Actions %>
+            <div class="cert-card__actions">
+              <%= link_to certificate_path(cert.certificate_code),
+                    class: "cert-card__btn cert-card__btn--primary",
+                    target: "_blank" do %>
+                <i class="bi bi-award"></i>
+                View Certificate
+              <% end %>
+              <%= link_to print_certificate_path(cert.certificate_code),
+                    class: "cert-card__btn cert-card__btn--ghost",
+                    target: "_blank",
+                    title: "Print certificate" do %>
+                <i class="bi bi-printer"></i>
+              <% end %>
+            </div>
+
+          </article>
+        <% end %>
+      </div>
+
+    <% else %>
+
+      <%# ── Empty State ─────────────────────────────────────── %>
+      <div class="cert-empty">
+        <div class="cert-empty__visual">
+          <div class="cert-empty__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"/>
+              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+            </svg>
           </div>
+          <div class="cert-empty__ring cert-empty__ring--1"></div>
+          <div class="cert-empty__ring cert-empty__ring--2"></div>
         </div>
-      <% end %>
-    </div>
-  <% end %>
+        <h3 class="cert-empty__title">No certificates yet</h3>
+        <p class="cert-empty__desc">
+          Complete a course to earn your first certificate.
+          Keep learning and your achievements will appear here.
+        </p>
+        <%= link_to courses_path, class: "cert-empty__cta" do %>
+          <i class="bi bi-compass"></i>
+          Explore courses
+        <% end %>
+      </div>
+
+    <% end %>
+  </div>
 </div>

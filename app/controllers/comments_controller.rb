@@ -13,8 +13,10 @@ class CommentsController < ApplicationController
     @comment.user = current_user
 
     if @comment.save
-      redirect_to lesson_path(@lesson, anchor: "comment-#{@comment.id}"),
-                  notice: "Đã gửi bình luận."
+      respond_to do |format|
+        format.html { redirect_to lesson_path(@lesson, anchor: "comment-#{@comment.id}"), notice: "Đã gửi bình luận." }
+        format.turbo_stream
+      end
     else
       redirect_to lesson_path(@lesson),
                   alert: "Nội dung bình luận không được để trống."

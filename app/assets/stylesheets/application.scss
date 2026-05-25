@@ -22,6 +22,8 @@
 @import "components/course_card";
 @import "components/my_course_card";
 @import "components/lesson_tabs";
+@import "components/question_modal";
+@import "components/ask_modal";
 @import "pages/navbar"; // Navbar is a global component
 
 // 5. Layouts (scoped inline styles extracted from views)
@@ -41,6 +43,7 @@
 @import "pages/preview_modal";
 @import "pages/lesson";
 @import "pages/notes";
+@import "pages/certificates";
 @import "pages/discussion";
 @import "pages/certificate_template";
 @import "pages/admin/admin_layout";
@@ -61,3 +64,4 @@
 @import "pages/subscriptions";
 @import "pages/quiz_attempts";
 @import "pages/quiz_review";
+@import "pages/cart";

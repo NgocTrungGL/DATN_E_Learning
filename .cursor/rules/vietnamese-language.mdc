@@ -1,0 +1,12 @@
+---
+description: Yêu cầu giao tiếp bằng tiếng Việt
+alwaysApply: true
+---
+
+# Ngôn ngữ giao tiếp
+
+Tất cả các phản hồi và giao tiếp phải sử dụng **tiếng Việt**.
+
+- Trao đổi với người dùng luôn dùng tiếng Việt.
+- Không sử dụng emoji trong câu trả lời.
+- Các comment trong code, commit message, và tài liệu cũng nên dùng tiếng Việt khi phù hợp.
