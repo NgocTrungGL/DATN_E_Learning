@@ -1,44 +1,79 @@
-<div class="row">
-  <div class="col-md-5">
-    <div class="card shadow-sm sticky-top" style="top: 20px; z-index: 1;">
-      <div class="card-header bg-white py-3">
-        <h5 class="mb-0 text-primary"><i class="bi bi-plus-circle"></i> Update module</h5>
-        <small class="text-muted"><%= @course.title %></small>
+<div class="inst-page">
+  <div class="inst-breadcrumb">
+    <a href="<%= instructor_courses_path %>">Courses</a>
+    <i class="bi bi-chevron-right"></i>
+    <a href="<%= instructor_course_path(@course_module.course) %>"><%= truncate(@course_module.course.title, length: 30) %></a>
+    <i class="bi bi-chevron-right"></i>
+    <span>Edit Module</span>
+  </div>
+
+  <div class="module-form-grid">
+    <%# Left: Form %>
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Edit Module</h2>
+        <span class="inst-card__subtitle"><%= @course_module.course.title %></span>
       </div>
-      <div class="card-body">
+      <div class="inst-card__body">
         <%= form_with(model: [:instructor, @course_module]) do |f| %>
-          <div class="mb-3">
-            <%= f.label :title, "Module title", class: "form-label fw-bold" %>
-            <%= f.text_field :title, class: "form-control", autofocus: true %>
-          </div>
-          <div class="mb-3">
-            <%= f.label :description, "Description", class: "form-label" %>
-            <%= f.text_area :description, rows: 2, class: "form-control" %>
-          </div>
-          <%= f.hidden_field :order_index %>
-          <div class="d-grid gap-2 mt-4">
-            <%= f.submit "Save & Add next", class: "btn btn-primary fw-bold" %>
-            <%= link_to "Done", new_instructor_course_course_module_path(@course), class: "btn btn-outline-secondary" %>
+          <div class="inst-form">
+            <div class="inst-form__group">
+              <%= f.label :title, "Module Title", class: "inst-form__label" %>
+              <%= f.text_field :title, class: "inst-form__input", autofocus: true,
+                  placeholder: "e.g. Chapter 1: Introduction" %>
+            </div>
+            <div class="inst-form__group">
+              <%= f.label :description, "Description (optional)", class: "inst-form__label" %>
+              <%= f.text_area :description, rows: 3, class: "inst-form__textarea",
+                  placeholder: "Brief description of this module..." %>
+            </div>
+            <%= f.hidden_field :order_index %>
+            <div class="inst-form__actions">
+              <%= f.submit "Save Changes", class: "btn btn-primary" %>
+              <a href="<%= new_instructor_course_course_module_path(@course_module.course) %>" class="btn btn-outline">
+                Add Another
+              </a>
+            </div>
           </div>
         <% end %>
       </div>
     </div>
-  </div>
-  <div class="col-md-7 mt-4 mt-md-0">
-    <h5 class="mb-3 text-secondary">Module list (drag to reorder)</h5>
-    <div class="list-group shadow-sm"
-         data-controller="sortable"
-          data-sortable-param-value="course_module"
-         data-sortable-url-value="<%= sort_instructor_course_modules_path %>"> <% @modules.each do |mod| %>
-        <div class="list-group-item d-flex align-items-center p-3" data-id="<%= mod.id %>">
-          <div class="drag-handle me-3 text-muted" style="cursor: grab;"><i class="bi bi-grip-vertical fs-4"></i></div>
-          <div class="flex-grow-1 fw-bold"><%= mod.title %></div>
-          <div class="btn-group">
-            <%= link_to edit_instructor_course_module_path(mod), class: "btn btn-sm btn-light text-primary" do %><i class="bi bi-pencil"></i><% end %>
-            <%= button_to instructor_course_module_path(mod), method: :delete, class: "btn btn-sm btn-light text-danger", data: { confirm: "Delete?" } do %><i class="bi bi-trash"></i><% end %>
-          </div>
+
+    <%# Right: Module List %>
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Module List</h2>
+        <span class="badge badge--secondary">Drag to reorder</span>
+      </div>
+      <div class="inst-card__body" style="padding: 0.5rem;">
+        <div class="module-list"
+             data-controller="sortable"
+             data-sortable-param-value="course_module"
+             data-sortable-url-value="<%= sort_instructor_course_modules_path %>">
+          <% @modules.each do |mod| %>
+            <div class="module-list__item <%= mod.id == @course_module.id ? 'module-list__item--active' : '' %>" data-id="<%= mod.id %>">
+              <div class="module-list__drag">
+                <i class="bi bi-grip-vertical"></i>
+              </div>
+              <div class="module-list__info">
+                <span class="module-list__title"><%= mod.title %></span>
+                <span class="module-list__count"><%= mod.lessons.count %> lessons</span>
+              </div>
+              <div class="module-list__actions">
+                <a href="<%= edit_instructor_course_module_path(mod) %>" class="btn-icon btn-icon--sm" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <%= button_to instructor_course_module_path(mod), method: :delete,
+                    class: "btn-icon btn-icon--sm btn-icon--danger",
+                    title: "Delete",
+                    data: { confirm: "Delete this module?" } do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
-      <% end %>
+      </div>
     </div>
   </div>
 </div>

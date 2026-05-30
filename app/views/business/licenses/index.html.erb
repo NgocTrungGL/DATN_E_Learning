@@ -1,87 +1,129 @@
-<h2 class="fw-bold text-primary mb-4"><i class="bi bi-ticket-perforated me-2"></i>Course license inventory</h2>
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <h1 class="business-page__title">Course License Inventory</h1>
+      <p class="business-page__subtitle">Manage licenses for your organization's training courses</p>
+    </div>
+  </div>
 
-<% if @licenses_by_course.any? %>
-  <div class="row">
-    <% @licenses_by_course.each do |course, licenses| %>
-      <%
-         total_count = licenses.count
-         available_count = licenses.select(&:available?).count
-         assigned_count = total_count - available_count
-         progress_percent = (assigned_count.to_f / total_count * 100).round
-      %>
+  <% if @licenses_by_course.any? %>
+    <div class="license-grid">
+      <% @licenses_by_course.each do |course, licenses| %>
+        <%
+          total_count = licenses.count
+          available_count = licenses.select(&:available?).count
+          assigned_count = total_count - available_count
+          expiring_count = licenses.select(&:expiring_soon?).count
+          progress_percent = total_count.positive? ? (assigned_count.to_f / total_count * 100).round : 0
+        %>
 
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body">
-            <div class="d-flex align-items-start justify-content-between mb-3">
-              <div>
-                <h5 class="fw-bold mb-1"><%= course.title %></h5>
-                <span class="badge bg-light text-dark border">Value: <%= number_to_currency(licenses.first.price) %>/seat</span>
+        <div class="license-card">
+          <div class="license-card__header">
+            <div class="license-card__course">
+              <div class="license-card__thumb">
+                <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/48x28/f0f2f5/aaa?text=No+Img' %>"
+                     alt="">
               </div>
+              <div>
+                <h3 class="license-card__title"><%= course.title %></h3>
+                <span class="license-card__price">
+                  <i class="bi bi-tag"></i>
+                  <%= number_to_currency(licenses.first.price) %> / seat
+                </span>
+              </div>
+            </div>
+            <div class="license-card__badge-wrap">
               <% if available_count > 0 %>
-                <span class="badge bg-success"><%= available_count %> seats available</span>
+                <span class="license-card__badge license-card__badge--success">
+                  <%= available_count %> available
+                </span>
               <% else %>
-                <span class="badge bg-secondary">Sold out</span>
+                <span class="license-card__badge license-card__badge--secondary">
+                  Sold out
+                </span>
+              <% end %>
+              <% if expiring_count > 0 %>
+                <span class="license-card__badge license-card__badge--warning">
+                  <i class="bi bi-clock"></i>
+                  <%= expiring_count %> expiring soon
+                </span>
               <% end %>
             </div>
+          </div>
 
-            <div class="mb-3">
-              <div class="d-flex justify-content-between small text-muted mb-1">
-                <span>Used: <%= assigned_count %></span>
-                <span>Total: <%= total_count %></span>
-              </div>
-              <div class="progress" style="height: 6px;">
-                <div class="progress-bar" role="progressbar" style="width: <%= progress_percent %>%"></div>
-              </div>
+          <div class="license-card__body">
+            <div class="license-card__progress-header">
+              <span><%= assigned_count %> / <%= total_count %> assigned</span>
+              <span><%= progress_percent %>%</span>
             </div>
+            <div class="license-card__progress-bar">
+              <div class="license-card__progress-fill" style="width: <%= progress_percent %>%;"></div>
+            </div>
+          </div>
 
-            <hr>
-
+          <div class="license-card__assign">
             <% if available_count > 0 %>
-              <div class="mt-3">
-                <label class="small fw-bold text-muted mb-2">Assign to employee:</label>
-
-                <%= form_with url: assign_business_licenses_path, method: :post, class: "d-flex gap-2" do |f| %>
+              <label class="license-card__assign-label">Assign to employee:</label>
+              <div class="license-card__assign-form">
+                <%= form_with url: assign_business_licenses_path, method: :post do |f| %>
                   <%= f.hidden_field :course_id, value: course.id %>
-
-                  <%= f.collection_select :user_id, current_user.organization.users.where(role: :employee), :id, :name, { prompt: "Select employee..." }, { class: "form-select form-select-sm", required: true } %>
-
-                  <%= f.button type: "submit", class: "btn btn-sm btn-primary text-nowrap" do %>
-                    <i class="bi bi-check-lg"></i> Assign now
+                  <%= f.collection_select :user_id,
+                        current_user.organization.users.where(role: :student),
+                        :id, :name,
+                        { prompt: "Select employee..." },
+                        { class: "license-card__select", required: true } %>
+                  <%= f.button type: "submit", class: "btn btn-primary btn-sm" do %>
+                    <i class="bi bi-check-lg"></i> Assign
                   <% end %>
                 <% end %>
               </div>
             <% else %>
-              <div class="alert alert-warning small mb-0">
-                <i class="bi bi-exclamation-circle me-1"></i> You have used all licenses for this course. Please purchase more.
+              <div class="license-card__alert">
+                <i class="bi bi-exclamation-circle"></i>
+                All licenses for this course have been assigned. Purchase more to assign additional employees.
               </div>
             <% end %>
+          </div>
 
-            <div class="mt-3">
-                <a class="btn btn-link btn-sm text-decoration-none p-0" data-bs-toggle="collapse" href="#list-<%= course.id %>">
-                  View assigned list <i class="bi bi-chevron-down"></i>
-                </a>
-                <div class="collapse mt-2" id="list-<%= course.id %>">
-                  <ul class="list-group list-group-flush small">
-                    <% licenses.select(&:assigned?).each do |lic| %>
-                      <li class="list-group-item px-0 d-flex justify-content-between bg-transparent">
-                        <span><i class="bi bi-person me-2"></i><%= lic.user&.name %></span>
-                        <span class="text-muted"><%= lic.updated_at.strftime("%d/%m") %></span>
-                      </li>
-                    <% end %>
-                  </ul>
-                </div>
-             </div>
-
+          <div class="license-card__assigned">
+            <button type="button" class="license-card__toggle"
+                    onclick="document.getElementById('list-<%= course.id %>').classList.toggle('license-card__list--open')">
+              <span>View assigned list (<%= assigned_count %>)</span>
+              <i class="bi bi-chevron-down"></i>
+            </button>
+            <ul id="list-<%= course.id %>" class="license-card__list">
+              <% licenses.select(&:assigned?).each do |lic| %>
+                <li class="license-card__list-item">
+                  <div class="license-card__list-avatar">
+                    <%= lic.user&.name&.first&.upcase || "?" %>
+                  </div>
+                  <div class="license-card__list-info">
+                    <span class="license-card__list-name"><%= lic.user&.name || "Unknown" %></span>
+                    <span class="license-card__list-date">
+                      <% if lic.expires_at %>
+                        Expires <%= lic.expires_at.strftime("%d %b %Y") %>
+                      <% else %>
+                        No expiry
+                      <% end %>
+                    </span>
+                  </div>
+                </li>
+              <% end %>
+              <% if assigned_count == 0 %>
+                <li class="license-card__list-empty">No employees assigned yet.</li>
+              <% end %>
+            </ul>
           </div>
         </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="biz-card">
+      <div class="inst-empty" style="padding: 3rem; text-align: center;">
+        <i class="bi bi-ticket-perforated" style="font-size: 3rem;"></i>
+        <p style="margin-top: 1rem; color: #94a3b8;">You have not purchased any licenses yet.</p>
+        <p style="color: #94a3b8; font-size: 0.875rem;">Contact your administrator to purchase a training package.</p>
       </div>
-    <% end %>
-  </div>
-<% else %>
-  <div class="text-center py-5">
-    <div class="display-1 text-muted mb-3"><i class="bi bi-cart-x"></i></div>
-    <h4>You have not purchased any licenses yet.</h4>
-    <p class="text-muted">Contact the system admin to purchase a training package.</p>
-  </div>
-<% end %>
+    </div>
+  <% end %>
+</div>

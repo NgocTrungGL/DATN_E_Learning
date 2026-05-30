@@ -1,0 +1,242 @@
+<div class="inst-page">
+  <%# Page Header %>
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title">Dashboard</h1>
+      <p class="inst-page__subtitle">Overview of your teaching performance</p>
+    </div>
+    <div class="inst-page__actions">
+      <%= link_to new_instructor_course_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg"></i>
+        <span>New Course</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# KPI Cards %>
+  <div class="dashboard-kpi-grid">
+    <div class="kpi-card kpi-card--accent">
+      <div class="kpi-card__icon">
+        <i class="bi bi-book"></i>
+      </div>
+      <div class="kpi-card__body">
+        <span class="kpi-card__value"><%= @published_count %></span>
+        <span class="kpi-card__label">Published Courses</span>
+        <% if @pending_count > 0 %>
+          <span class="kpi-card__sub kpi-card__sub--warning">
+            <i class="bi bi-hourglass-split"></i>
+            <%= @pending_count %> pending
+          </span>
+        <% elsif @draft_count > 0 %>
+          <span class="kpi-card__sub"><%= @draft_count %> drafts</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--success">
+        <i class="bi bi-people"></i>
+      </div>
+      <div class="kpi-card__body">
+        <span class="kpi-card__value"><%= @total_students %></span>
+        <span class="kpi-card__label">Total Students</span>
+        <% if @students_change != 0 %>
+          <span class="kpi-card__change <%= @students_change >= 0 ? 'kpi-card__change--up' : 'kpi-card__change--down' %>">
+            <i class="bi <%= @students_change >= 0 ? 'bi-arrow-up' : 'bi-arrow-down' %>"></i>
+            <%= @students_change.abs %>% this month
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--highlight">
+      <div class="kpi-card__icon kpi-card__icon--warning">
+        <i class="bi bi-currency-dollar"></i>
+      </div>
+      <div class="kpi-card__body">
+        <span class="kpi-card__value"><%= number_to_currency(@total_revenue, unit: "", precision: 0) %></span>
+        <span class="kpi-card__label">Total Earnings</span>
+        <% if @revenue_change != 0 %>
+          <span class="kpi-card__change <%= @revenue_change >= 0 ? 'kpi-card__change--up' : 'kpi-card__change--down' %>">
+            <i class="bi <%= @revenue_change >= 0 ? 'bi-arrow-up' : 'bi-arrow-down' %>"></i>
+            <%= @revenue_change.abs %>% vs last month
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--primary">
+        <i class="bi bi-star-fill"></i>
+      </div>
+      <div class="kpi-card__body">
+        <span class="kpi-card__value"><%= @avg_rating > 0 ? @avg_rating : "—" %></span>
+        <span class="kpi-card__label">Avg Rating</span>
+        <span class="kpi-card__sub"><%= @courses.joins(:reviews).distinct.count(:id) %> reviewed</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--accent">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+      <div class="kpi-card__body">
+        <span class="kpi-card__value"><%= @avg_completion > 0 ? "#{@avg_completion}%" : "—" %></span>
+        <span class="kpi-card__label">Avg Completion</span>
+        <span class="kpi-card__sub">across published courses</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--success">
+        <i class="bi bi-wallet2"></i>
+      </div>
+      <div class="kpi-card__body">
+        <span class="kpi-card__value"><%= number_to_currency(current_user.wallet&.balance || 0, unit: "", precision: 0) %></span>
+        <span class="kpi-card__label">Available Balance</span>
+        <span class="kpi-card__sub">
+          <%= link_to "Withdraw", "#", class: "kpi-card__link", data: { bs_toggle: "modal", bs_target: "#payoutModal" } if current_user.wallet&.balance.to_i >= 100000 %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <%# Revenue Chart (full width) %>
+  <div class="inst-card" style="margin-bottom: 1.5rem;">
+    <div class="inst-card__header">
+      <h2 class="inst-card__title">Revenue Trend</h2>
+      <span class="inst-card__subtitle">Last 30 days</span>
+    </div>
+    <div class="inst-card__body">
+        <% if @revenue_chart_data.values.sum > 0 %>
+        <%= column_chart @revenue_chart_data,
+            prefix: "",
+            thousands: ",",
+            colors: ["#2563eb"],
+            height: "220px",
+            messages: { empty: "No revenue data" } %>
+      <% else %>
+        <div class="inst-empty" style="padding: 2rem; text-align: center;">
+          <i class="bi bi-graph-up"></i>
+          <p>No revenue data yet. Publish a course and attract students!</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 2-column Charts %>
+  <div class="dashboard-charts-grid">
+    <%# Enrollments Chart %>
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Enrollments</h2>
+        <span class="inst-card__subtitle">Last 30 days</span>
+      </div>
+      <div class="inst-card__body">
+        <% if @enrollment_chart_data.values.sum > 0 %>
+          <%= area_chart @enrollment_chart_data,
+              colors: ["#10b981"],
+              height: "180px",
+              messages: { empty: "No enrollment data" } %>
+        <% else %>
+          <div class="inst-empty" style="padding: 2rem; text-align: center;">
+            <i class="bi bi-people"></i>
+            <p>No enrollments yet</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Course Performance %>
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Students by Course</h2>
+        <span class="inst-card__subtitle">All time</span>
+      </div>
+      <div class="inst-card__body">
+        <% if @course_students_data.values.sum > 0 %>
+          <%= bar_chart @course_students_data,
+              colors: ["#6366f1"],
+              height: "180px",
+              messages: { empty: "No data" } %>
+        <% else %>
+          <div class="inst-empty" style="padding: 2rem; text-align: center;">
+            <i class="bi bi-bar-chart"></i>
+            <p>Publish courses to see performance</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Course Performance Table %>
+  <div class="inst-card" style="margin-top: 1.5rem;">
+    <div class="inst-card__header">
+      <h2 class="inst-card__title">Course Performance</h2>
+      <%= link_to "Manage Courses", instructor_courses_path, class: "inst-card__link" %>
+    </div>
+    <div class="data-table__wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th style="text-align: center;">Students</th>
+            <th style="text-align: center;">Revenue</th>
+            <th style="text-align: center;">Avg Rating</th>
+            <th style="text-align: center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @courses.order(created_at: :desc).limit(8).each do |course| %>
+            <% course_students = course.enrollments.count %>
+            <% course_revenue = (course_students * course.price.to_i * 0.7).round %>
+            <% course_rating = course.reviews.average(:rating).to_f.round(1) %>
+            <tr>
+              <td>
+                <div class="course-perf-cell">
+                  <span class="course-perf-cell__title"><%= course.title %></span>
+                  <span class="course-perf-cell__price">
+                    <%= number_to_currency(course.price, unit: "", precision: 0) %> VND
+                  </span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span class="course-perf-cell__stat"><%= course_students %></span>
+              </td>
+              <td style="text-align: center;">
+                <span class="course-perf-cell__stat course-perf-cell__stat--success">
+                  <%= number_to_currency(course_revenue, unit: "", precision: 0) %>
+                </span>
+              </td>
+              <td style="text-align: center;">
+                <% if course_rating > 0 %>
+                  <span class="course-perf-cell__rating">
+                    <i class="bi bi-star-fill"></i>
+                    <%= course_rating %>
+                  </span>
+                <% else %>
+                  <span style="color: #94a3b8; font-size: 0.82rem;">No reviews</span>
+                <% end %>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge badge--<%= course.status %>"><%= course.status.titleize %></span>
+              </td>
+            </tr>
+          <% end %>
+          <% if @courses.empty? %>
+            <tr>
+              <td colspan="5">
+                <div class="inst-empty" style="padding: 2rem; text-align: center;">
+                  <i class="bi bi-book"></i>
+                  <p>No courses yet.
+                    <%= link_to "Create your first course", new_instructor_course_path, class: "inst-card__link" %>
+                  </p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

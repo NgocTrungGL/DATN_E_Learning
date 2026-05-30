@@ -45,6 +45,8 @@ class WebhooksController < ApplicationController
       handle_subscription_checkout(user, session)
     elsif cart_checkout?(session)
       handle_cart_checkout(user, session)
+    elsif session.metadata["purchase_type"] == "license"
+      handle_license_checkout(user, session)
     else
       handle_course_checkout(user, session)
     end
@@ -60,6 +62,31 @@ class WebhooksController < ApplicationController
       enroll_user(user, course, session.amount_total / courses.count)
     end
     use_coupon(session.metadata["promo_code"])
+  end
+
+  def handle_license_checkout user, session
+    org_id = session.metadata["organization_id"]
+    course_id = session.metadata["course_id"]
+    quantity = session.metadata["quantity"].to_i
+    unit_price = session.amount_total.to_i / quantity
+
+    organization = Organization.find_by(id: org_id)
+    course = Course.find_by(id: course_id)
+    return unless organization && course
+
+    expires_at = 1.year.from_now
+
+    service = LicensePurchaseService.new(organization, course, quantity, unit_price, expires_at:)
+    invoice = service.call
+
+    if invoice
+      invoice.update!(
+        stripe_session_id: session.id,
+        stripe_payment_intent: session.payment_intent,
+        status: :paid,
+        paid_at: Time.current
+      )
+    end
   end
 
   def handle_course_checkout user, session

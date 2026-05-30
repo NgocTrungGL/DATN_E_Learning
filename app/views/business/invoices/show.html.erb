@@ -1,0 +1,114 @@
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <div class="biz-breadcrumb">
+        <a href="<%= business_invoices_path %>" class="biz-breadcrumb__back">
+          <i class="bi bi-arrow-left"></i> Invoices
+        </a>
+      </div>
+      <h1 class="business-page__title">Invoice <%= @invoice.invoice_number %></h1>
+      <p class="business-page__subtitle">Billing detail</p>
+    </div>
+    <div class="business-page__header-actions">
+      <span class="badge <%= @invoice.paid? ? 'badge--success' : (@invoice.pending? ? 'badge--warning' : 'badge--danger') %>" style="font-size: 0.85rem; padding: 0.4rem 0.75rem;">
+        <%= @invoice.status.capitalize %>
+      </span>
+    </div>
+  </div>
+
+  <div class="invoice-detail">
+    <div class="invoice-detail__main">
+      <div class="invoice-card">
+        <div class="invoice-card__header">
+          <div class="invoice-card__org">
+            <div class="invoice-card__org-icon">
+              <i class="bi bi-building"></i>
+            </div>
+            <div>
+              <h3 class="invoice-card__org-name"><%= @invoice.organization.name %></h3>
+              <p class="invoice-card__org-label">Organization</p>
+            </div>
+          </div>
+          <div class="invoice-card__number-block">
+            <span class="invoice-card__number-label">Invoice No.</span>
+            <span class="invoice-card__number"><%= @invoice.invoice_number %></span>
+          </div>
+        </div>
+
+        <div class="invoice-card__body">
+          <div class="invoice-card__row">
+            <span>Course</span>
+            <span class="invoice-card__row-value"><%= @invoice.course.title %></span>
+          </div>
+          <div class="invoice-card__row">
+            <span>Quantity</span>
+            <span class="invoice-card__row-value"><%= @invoice.quantity %> seats</span>
+          </div>
+          <div class="invoice-card__row">
+            <span>Unit price</span>
+            <span class="invoice-card__row-value"><%= number_to_currency(@invoice.unit_price) %></span>
+          </div>
+          <% if @invoice.unit_price < @invoice.course.price %>
+            <div class="invoice-card__row invoice-card__row--discount">
+              <span>Business discount</span>
+              <span class="invoice-card__row-value invoice-card__row-value--green">
+                10% off
+              </span>
+            </div>
+          <% end %>
+          <div class="invoice-card__row invoice-card__row--total">
+            <span>Total</span>
+            <span class="invoice-card__row-value"><%= number_to_currency(@invoice.total_amount) %></span>
+          </div>
+        </div>
+
+        <div class="invoice-card__footer">
+          <div class="invoice-card__meta">
+            <span><i class="bi bi-calendar"></i> Issued: <%= @invoice.created_at.strftime("%d %b %Y") %></span>
+            <% if @invoice.paid_at %>
+              <span><i class="bi bi-check-circle"></i> Paid: <%= @invoice.paid_at.strftime("%d %b %Y") %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="invoice-detail__licenses">
+      <h2 class="invoice-detail__licenses-title">Licenses Purchased (<%= @invoice.licenses.count %>)</h2>
+      <div class="biz-card">
+        <div class="data-table__wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>License Code</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Expires</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @invoice.licenses.each do |lic| %>
+                <tr>
+                  <td style="font-family: monospace; font-size: 0.82rem; color: #475569;">
+                    <%= lic.code %>
+                  </td>
+                  <td>
+                    <span class="badge <%= lic.available? ? 'badge--success' : (lic.expired? ? 'badge--danger' : 'badge--warning') %>">
+                      <%= lic.status.capitalize %>
+                    </span>
+                  </td>
+                  <td style="color: #475569; font-size: 0.875rem;">
+                    <%= lic.user&.name || "—" %>
+                  </td>
+                  <td style="color: #64748b; font-size: 0.82rem;">
+                    <%= lic.expires_at&.strftime("%d %b %Y") || "—" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

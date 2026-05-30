@@ -1,48 +1,137 @@
-<nav id="inst-sidebar">
-  <div class="sidebar-header">
-    <%= link_to instructor_root_path, class: "text-white text-decoration-none fs-5 fw-bold d-flex align-items-center" do %>
-      <i class="bi bi-person-video3 fs-3 me-2"></i>
-      <span>INSTRUCTOR</span>
-    <% end %>
+<div id="inst-sidebar">
+  <div id="inst-sidebar__header">
+    <a href="<%= instructor_root_path %>" id="inst-sidebar__brand">
+      <div id="inst-sidebar__brand-icon">
+        <i class="bi bi-lightning-charge-fill"></i>
+      </div>
+      <div id="inst-sidebar__brand-text">
+        <span id="inst-sidebar__brand-title">Instructor</span>
+        <span id="inst-sidebar__brand-sub">Learning Hub</span>
+      </div>
+    </a>
   </div>
 
-  <ul class="list-unstyled components">
-    <li>
-      <%= link_to instructor_root_path, class: "#{'active' if controller_name == 'dashboard'}" do %>
-        <i class="bi bi-speedometer2"></i> Overview
-      <% end %>
-    </li>
+  <div id="inst-sidebar__stats">
+    <div id="inst-sidebar__stat">
+      <span id="inst-sidebar__stat-value"><%= current_user.created_courses.published.count %></span>
+      <span id="inst-sidebar__stat-label">Published</span>
+    </div>
+    <div id="inst-sidebar__stat">
+      <span id="inst-sidebar__stat-value"><%= current_user.created_courses.pending.count %></span>
+      <span id="inst-sidebar__stat-label">Pending</span>
+    </div>
+    <div id="inst-sidebar__stat">
+      <span id="inst-sidebar__stat-value">
+        <% total_students = Enrollment.joins(:course).where(course: { created_by: current_user.id }).distinct.count(:user_id) %>
+        <%= total_students %>
+      </span>
+      <span id="inst-sidebar__stat-label">Students</span>
+    </div>
+  </div>
 
-    <li class="header-text">Training management</li>
+  <%# Quick Alerts %>
+  <% pending_courses = current_user.created_courses.pending.count %>
+  <% pending_reviews = Review.joins(:course).where(courses: { created_by: current_user.id }).where("reviews.created_at >= ?", 7.days.ago).count %>
+  <% if pending_courses > 0 || pending_reviews > 0 %>
+    <div id="inst-sidebar__alerts">
+      <% if pending_courses > 0 %>
+        <a href="<%= instructor_courses_path(status: :pending) %>" class="sidebar-alert sidebar-alert--warning">
+          <i class="bi bi-hourglass-split"></i>
+          <span><%= pending_courses %> course<%= "s" if pending_courses > 1 %> pending approval</span>
+        </a>
+      <% end %>
+      <% if pending_reviews > 0 %>
+        <a href="<%= instructor_activities_path %>" class="sidebar-alert sidebar-alert--info">
+          <i class="bi bi-star"></i>
+          <span><%= pending_reviews %> new review<%= "s" if pending_reviews > 1 %> this week</span>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
 
-    <li>
-      <%= link_to instructor_courses_path, class: "#{'active' if controller_name == 'courses' || controller_name == 'lessons'}" do %>
-        <i class="bi bi-collection-play"></i> My courses
-      <% end %>
-    </li>
+  <nav id="inst-sidebar__nav">
+    <div id="inst-sidebar__section">
+      <a href="<%= instructor_root_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if current_page?(instructor_root_path) %>">
+        <i class="bi bi-grid-1x2"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="<%= instructor_activities_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'activities' %>">
+        <i class="bi bi-activity"></i>
+        <span>Activity</span>
+      </a>
+    </div>
 
-    <li class="header-text">Assessment & reviews</li>
+    <div id="inst-sidebar__section">
+      <span id="inst-sidebar__section-label">Analytics</span>
+      <a href="<%= instructor_student_analytics_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'student_analytics' %>">
+        <i class="bi bi-people"></i>
+        <span>Student Analytics</span>
+      </a>
+      <a href="<%= instructor_course_performance_index_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'course_performance' %>">
+        <i class="bi bi-bar-chart"></i>
+        <span>Course Performance</span>
+      </a>
+    </div>
 
-    <li>
-      <%= link_to instructor_questions_path, class: "#{'active' if controller_name == 'questions'}" do %>
-        <i class="bi bi-question-square"></i> Question bank
-      <% end %>
-    </li>
+    <div id="inst-sidebar__section">
+      <span id="inst-sidebar__section-label">Content</span>
+      <a href="<%= instructor_courses_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'courses' %>">
+        <i class="bi bi-book"></i>
+        <span>My Courses</span>
+        <% if current_user.created_courses.pending.count > 0 %>
+          <span id="inst-sidebar__badge-warning"><%= current_user.created_courses.pending.count %></span>
+        <% end %>
+      </a>
+    </div>
 
-    <li>
-      <%= link_to instructor_quizzes_path, class: "#{'active' if controller_name == 'quizzes'}" do %>
-        <i class="bi bi-card-checklist"></i> Quizzes
-      <% end %>
-    </li>
-    <li>
-      <%= link_to instructor_revenues_path, class: "#{'active' if controller_name == 'revenues'}" do %>
-        <i class="bi bi-currency-dollar"></i> My revenue
-      <% end %>
-    </li>
-    <li>
-      <%= link_to instructor_coupons_path, class: "#{'active' if controller_name == 'coupons'}" do %>
-        <i class="bi bi-ticket-perforated"></i> My coupons
-      <% end %>
-    </li>
-  </ul>
-</nav>
+    <div id="inst-sidebar__section">
+      <span id="inst-sidebar__section-label">Assessments</span>
+      <a href="<%= instructor_questions_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'questions' %>">
+        <i class="bi bi-puzzle"></i>
+        <span>Question Bank</span>
+      </a>
+      <a href="<%= instructor_quizzes_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'quizzes' %>">
+        <i class="bi bi-list-check"></i>
+        <span>Quizzes</span>
+      </a>
+      <a href="<%= instructor_quiz_attempts_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'quiz_attempts' %>">
+        <i class="bi bi-clock-history"></i>
+        <span>Quiz History</span>
+      </a>
+    </div>
+
+    <div id="inst-sidebar__section">
+      <span id="inst-sidebar__section-label">Community</span>
+      <a href="<%= instructor_discussions_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'discussions' %>">
+        <i class="bi bi-chat-dots"></i>
+        <span>My Discussions</span>
+      </a>
+    </div>
+
+    <div id="inst-sidebar__section">
+      <span id="inst-sidebar__section-label">Finance</span>
+      <a href="<%= instructor_revenues_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'revenues' %>">
+        <i class="bi bi-graph-up"></i>
+        <span>Revenue</span>
+      </a>
+      <a href="<%= instructor_coupons_path %>"
+         class="inst-sidebar__link <%= 'inst-sidebar__link--active' if controller_name == 'coupons' %>">
+        <i class="bi bi-tag"></i>
+        <span>Coupons</span>
+      </a>
+    </div>
+  </nav>
+
+  <div id="inst-sidebar__footer">
+  </div>
+</div>

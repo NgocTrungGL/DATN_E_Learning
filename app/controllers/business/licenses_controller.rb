@@ -38,13 +38,24 @@ class Business::LicensesController < ApplicationController
   end
 
   def assign_license license, user
-    license.update(user:, status: :assigned)
+    ActiveRecord::Base.transaction do
+      license.update!(user: user, status: :assigned)
+      Enrollment.find_or_create_by!(
+        user: user,
+        course: license.course
+      ) do |e|
+        e.price = license.price
+        e.enrolled_at = Time.current
+      end
+    end
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
   end
 
   def redirect_success license, user
     redirect_to business_licenses_path,
-                notice: "Đã cấp khóa
-                học '#{license.course.title}' cho #{user.name}."
+                notice: "Đã cấp khóa học '#{license.course.title}' cho #{user.name}."
   end
 
   def redirect_no_license

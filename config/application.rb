@@ -17,7 +17,7 @@ module ELearning
     # in config/environments, which are processed later.
     #
     config.time_zone = "Hanoi"
-    config.active_record.default_timezone = :local
+    config.active_record.default_timezone = :utc
     config.i18n.default_locale = :en
     config.i18n.available_locales = [:vi, :en]
     # config.eager_load_paths << Rails.root.join("extras")

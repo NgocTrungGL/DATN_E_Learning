@@ -52,7 +52,14 @@ class QuizAttemptsController < ApplicationController
 
   # GET /quiz_attempts/:id/review
   def review
-    unless @quiz_attempt.completed? && @quiz_attempt.is_passed?
+    is_instructor = @quiz_attempt.quiz.course.created_by == current_user.id
+
+    unless @quiz_attempt.completed?
+      redirect_to quiz_attempt_path(@quiz_attempt), alert: "This attempt is not completed yet!"
+      return
+    end
+
+    unless is_instructor || @quiz_attempt.is_passed?
       redirect_to quiz_attempt_path(@quiz_attempt), alert: "You need to pass the quiz to review the answers!"
       return
     end
@@ -93,7 +100,8 @@ class QuizAttemptsController < ApplicationController
 
   def set_quiz_attempt
     @quiz_attempt = QuizAttempt.find(params[:id])
-    return unless @quiz_attempt.user != current_user
+    return if @quiz_attempt.user == current_user ||
+              @quiz_attempt.quiz.course.created_by == current_user.id
 
     redirect_to root_path, alert: "Bạn không có quyền truy cập."
   end

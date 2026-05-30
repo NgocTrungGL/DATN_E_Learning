@@ -1,25 +1,37 @@
-<div class="bg-white border-end" id="sidebar-wrapper" style="width: 280px; min-height: 100vh;">
-  <div class="sidebar-heading border-bottom bg-light fw-bold text-uppercase text-primary">
-    <i class="bi bi-briefcase-fill me-2"></i> Business Portal
+<aside class="biz-sidebar">
+  <div class="biz-sidebar__header">
+    <div class="biz-sidebar__brand">
+      <i class="bi bi-briefcase-fill"></i>
+      <span class="biz-sidebar__brand-text">Business Portal</span>
+    </div>
   </div>
 
-  <div class="list-group list-group-flush p-3">
-    <%= link_to business_root_path, class: "list-group-item list-group-item-action mb-2 #{'active' if controller_name == 'dashboard'}" do %>
-      <i class="bi bi-speedometer2 me-2"></i> Overview
-    <% end %>
+  <nav class="biz-sidebar__nav">
+    <a href="<%= business_root_path %>"
+       class="biz-sidebar__link <%= 'biz-sidebar__link--active' if controller_name == 'dashboard' %>">
+      <i class="bi bi-speedometer2"></i>
+      <span>Overview</span>
+    </a>
 
-    <small class="text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">EMPLOYEE MANAGEMENT</small>
+    <div class="biz-sidebar__section-label">EMPLOYEE MANAGEMENT</div>
 
-    <%= link_to business_employees_path, class: "list-group-item list-group-item-action mb-2 #{'active' if controller_name == 'employees'}" do %>
-      <i class="bi bi-people-fill me-2"></i> Employee list
-    <% end %>
+    <a href="<%= business_employees_path %>"
+       class="biz-sidebar__link <%= 'biz-sidebar__link--active' if controller_name == 'employees' %>">
+      <i class="bi bi-people-fill"></i>
+      <span>Employee List</span>
+    </a>
 
-    <small class="text-uppercase text-muted fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">TRAINING</small>
-    <%= link_to business_licenses_path, class: "list-group-item list-group-item-action mb-2 #{'active' if controller_name == 'licenses'}" do %>
-      <i class="bi bi-ticket-perforated me-2"></i> Course license inventory
-    <% end %>
-    <%= link_to business_course_market_index_path, class: "list-group-item list-group-item-action mb-2" do %>
-      <i class="bi bi-cart-plus me-2"></i> Buy more licenses
-    <% end %>
-  </div>
-</div>
+    <div class="biz-sidebar__section-label">TRAINING</div>
+
+    <a href="<%= business_licenses_path %>"
+       class="biz-sidebar__link <%= 'biz-sidebar__link--active' if controller_name == 'licenses' %>">
+      <i class="bi bi-ticket-perforated"></i>
+      <span>Course License Inventory</span>
+    </a>
+    <a href="<%= business_course_market_index_path %>"
+       class="biz-sidebar__link">
+      <i class="bi bi-cart-plus"></i>
+      <span>Buy More Licenses</span>
+    </a>
+  </nav>
+</aside>

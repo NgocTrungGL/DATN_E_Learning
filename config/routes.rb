@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     end
   end
   root "home#index"
+  get "instructors/:id", to: "public_instructors#show", as: :public_instructor
   devise_for :users
   post 'create-checkout-session', to: 'checkouts#create'
 
@@ -147,14 +148,24 @@ Rails.application.routes.draw do
   # --- INSTRUCTOR NAMESPACE (GIẢNG VIÊN) ---
   namespace :instructor do
     root to: "dashboard#index"
+    resources :activities, only: [:index]
     resources :revenues, only: [:index]
     resources :payouts, only: [:create]
     resources :quizzes
+    resources :quiz_attempts, only: [:index]
+    resources :student_analytics, only: [:index, :show]
+    resources :course_performance, only: [:index, :show]
+    resources :discussions, only: [:index]
+    get "courses/:course_id/builder" => "course_builder#show", as: :course_builder
+    patch "courses/:course_id/sort_modules" => "course_builder#sort_modules", as: :sort_modules
+    patch "courses/:course_id/sort_lessons" => "course_builder#sort_lessons", as: :sort_lessons
 
     resources :courses do
       member do
-        get :students
-        patch :submit_for_review # <--- (MỚI) Giảng viên gửi duyệt
+        get  :students
+        patch :sort_modules
+        patch :sort_lessons
+        patch :submit_for_review
       end
 
       resources :course_modules, shallow: true do
@@ -188,10 +199,23 @@ Rails.application.routes.draw do
   namespace :business do
     root 'dashboard#index'
 
-    resources :employees
+    resources :employees do
+      member do
+        get :progress, controller: "employee_progress", action: "show"
+        get :export, controller: "employee_progress"
+      end
+    end
     resources :licenses, only: [:index] do
       post :assign, on: :collection
     end
     resources :course_market, only: [:index]
+
+    resources :bulk_imports, only: [:new, :create] do
+      collection do
+        get :template
+      end
+    end
+
+    resources :purchases, only: [:new, :create]
   end
 end

@@ -32,6 +32,8 @@
 @import "pages/layout_business";
 
 // 6. Pages
+@import "pages/instructor";
+@import "pages/business";
 @import "pages/login";
 @import "pages/auth";
 @import "pages/landing";
@@ -65,3 +67,4 @@
 @import "pages/quiz_attempts";
 @import "pages/quiz_review";
 @import "pages/cart";
+@import "pages/public_instructor";

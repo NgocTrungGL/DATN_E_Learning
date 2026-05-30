@@ -1,2 +1,15 @@
-<h2 class="mb-4">Create new course</h2>
-<div class="card shadow-sm p-4"><%= render "form" %></div>
+<div class="inst-page">
+  <div class="inst-breadcrumb">
+    <a href="<%= instructor_courses_path %>">Courses</a>
+    <i class="bi bi-chevron-right"></i>
+    <span>New Course</span>
+  </div>
+  <div class="inst-card">
+    <div class="inst-card__header">
+      <h2 class="inst-card__title">Create New Course</h2>
+    </div>
+    <div class="inst-card__body">
+      <%= render "form" %>
+    </div>
+  </div>
+</div>

@@ -112,7 +112,7 @@ class Ability
 
   def instructor_course_rules
     can :create, Course
-    can [:update, :destroy, :submit_for_review], Course, created_by: @user.id
+    can :manage, Course, created_by: @user.id
   end
 
   def instructor_module_lesson_rules
@@ -125,6 +125,7 @@ class Ability
     can :create, Question
     can [:read, :update, :destroy], Question, created_by: @user.id
     can :manage, QuizQuestion, quiz: { created_by: @user.id }
+    can :read, QuizAttempt, quiz: { created_by: @user.id }
   end
 
   def instructor_enrollment_rules

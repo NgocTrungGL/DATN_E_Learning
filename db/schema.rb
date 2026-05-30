@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_18_142154) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -230,6 +230,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_18_142154) do
     t.decimal "price", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "expires_at"
     t.index ["course_id"], name: "index_licenses_on_course_id"
     t.index ["organization_id", "course_id", "status"], name: "index_licenses_on_organization_id_and_course_id_and_status"
     t.index ["organization_id"], name: "index_licenses_on_organization_id"

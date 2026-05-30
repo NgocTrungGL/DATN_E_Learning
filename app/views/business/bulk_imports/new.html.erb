@@ -1,0 +1,45 @@
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <div class="biz-breadcrumb">
+        <a href="<%= business_employees_path %>" class="biz-breadcrumb__back">
+          <i class="bi bi-arrow-left"></i> Employees
+        </a>
+      </div>
+      <h1 class="business-page__title">Import Employees</h1>
+      <p class="business-page__subtitle">Bulk import employees from CSV file</p>
+    </div>
+  </div>
+
+  <div class="bulk-import">
+    <div class="bulk-import__info">
+      <h2 class="bulk-import__info-title">Instructions</h2>
+      <ol class="bulk-import__steps">
+        <li>Download the CSV template below</li>
+        <li>Fill in employee information (email is required)</li>
+        <li>Upload the completed CSV file</li>
+      </ol>
+      <a href="<%= template_business_bulk_imports_path %>"
+         class="btn btn-outline-secondary">
+        <i class="bi bi-download"></i>
+        Download CSV Template
+      </a>
+    </div>
+
+    <div class="bulk-import__form">
+      <h2 class="bulk-import__form-title">Upload File</h2>
+      <%= form_with model: @import, url: business_bulk_imports_path,
+                    local: true, html: { multipart: true } do |f| %>
+        <div class="bulk-import__field">
+          <label class="bulk-import__label">CSV File</label>
+          <%= f.file_field :file, accept: ".csv", required: true, class: "bulk-import__file-input" %>
+          <p class="bulk-import__hint">Accepted format: .csv</p>
+        </div>
+        <div class="bulk-import__actions">
+          <%= f.submit "Import", class: "btn btn-primary" %>
+          <a href="<%= business_employees_path %>" class="btn btn-secondary">Cancel</a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

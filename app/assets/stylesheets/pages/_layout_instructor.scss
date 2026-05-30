@@ -1,94 +1,205 @@
 // ============================================================
 // INSTRUCTOR LAYOUT
-// Scoped styles to prevent Turbo leak
+// Replaces old inline styles with BEM structure
 // ============================================================
 
 body.layout-instructor {
   min-height: 100vh;
+  background-color: $bg;
   overflow-x: hidden;
-  background-color: #f0f2f5;
+}
 
-  .instructor-wrapper {
-    display: flex;
-    width: 100%;
-    align-items: stretch;
+// Wrapper flex cho sidebar + main
+.instructor-wrapper {
+  display: flex !important;
+  width: 100%;
+  min-height: 100vh;
+  align-items: stretch;
+  overflow: visible;
+}
+
+// ── Main Content Area ────────────────────────────────────
+.layout-instructor__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+// ── Topbar ─────────────────────────────────────────────
+.layout-instructor__topbar {
+  height: 64px;
+  background: $surface;
+  border-bottom: 1px solid $border;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.layout-instructor__topbar-left {
+  display: flex !important;
+  align-items: center;
+}
+
+.layout-instructor__topbar-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.layout-instructor__topbar-right {
+  display: flex !important;
+  align-items: center;
+  gap: 1rem;
+  overflow: visible;
+}
+
+.layout-instructor__topbar-link {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $text-mid;
+  text-decoration: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
   }
 
-  /* --- SIDEBAR MÀU XANH --- */
-  #inst-sidebar {
-    min-width: 260px;
-    max-width: 260px;
-    min-height: 100vh;
-    background: #0d6efd;
-    background: linear-gradient(180deg, #0d6efd 0%, #0a58ca 100%);
-    color: #fff;
-    transition: all 0.3s;
-
-    .sidebar-header {
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.1);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    ul.components {
-      padding: 20px 0;
-    }
-
-    ul li.header-text {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.75rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 15px 25px 5px 25px;
-    }
-
-    ul li a {
-      padding: 12px 25px;
-      font-size: 0.95rem;
-      display: block;
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      transition: 0.2s;
-      border-left: 4px solid transparent;
-
-      &:hover {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.1);
-        border-left-color: #fff;
-      }
-
-      &.active {
-        color: #0d6efd;
-        background: #fff;
-        border-left-color: #ffc107;
-        font-weight: 600;
-        border-radius: 30px 0 0 30px;
-        margin-left: 10px;
-      }
-
-      i {
-        margin-right: 10px;
-        width: 20px;
-        text-align: center;
-      }
-    }
+  i {
+    font-size: 0.9rem;
   }
+}
 
-  /* --- CONTENT --- */
-  #inst-content {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+// ── User Menu ──────────────────────────────────────────
+.layout-instructor__user {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0;
 
-  .inst-topbar {
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,.05);
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  &:hover .layout-instructor__user-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
   }
+}
+
+.layout-instructor__user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.layout-instructor__user-info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.5rem;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.layout-instructor__user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $text-dark;
+  line-height: 1.2;
+}
+
+.layout-instructor__user-role {
+  font-size: 0.7rem;
+  color: $success;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.layout-instructor__user-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  min-width: 180px;
+  padding: 0.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.15s ease;
+  z-index: 100;
+}
+
+.layout-instructor__user-menu-item {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $text-mid;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $bg;
+    color: $primary;
+  }
+}
+
+.layout-instructor__user-menu-item--danger {
+  color: $danger;
+
+  &:hover {
+    background: rgba($danger, 0.08);
+    color: $danger;
+  }
+}
+
+// ── Content Area ────────────────────────────────────────
+.layout-instructor__content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+// ── Footer ────────────────────────────────────────────
+.layout-instructor__footer {
+  background: $surface;
+  border-top: 1px solid $border;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: $text-muted;
+  flex-shrink: 0;
 }

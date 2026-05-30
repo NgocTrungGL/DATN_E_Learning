@@ -78,9 +78,27 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      
+
       &:hover { background: #059669; }
       &:disabled { background: #94a3b8; cursor: not_allowed; }
+    }
+
+    &__submit {
+      background: #10b981;
+      color: #ffffff;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover { background: #059669; }
     }
   }
 
@@ -286,10 +304,278 @@
   }
 }
 
+// ──────────────────────────────────────────────────────────
+// SUBMIT MODAL — Confirmation Dialog
+// ──────────────────────────────────────────────────────────
+.qa-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 
-// ──────────────────────────────────────────────────────────
-// RESULTS PAGE — Modern 2-Column (Exact Match)
-// ──────────────────────────────────────────────────────────
+  &.is-active {
+    display: flex;
+  }
+
+  // ── Backdrop ─────────────────────────────────────────────
+  .qa-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer;
+  }
+
+  // ── Card ─────────────────────────────────────────────────
+  .qa-modal__card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 460px;
+    background: #ffffff;
+    border-radius: $radius-lg;
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.08),
+                0 12px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    animation: qaModalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // ── Head ─────────────────────────────────────────────────
+  .qa-modal__head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid $border;
+    background: #f8fafc;
+  }
+
+  .qa-modal__head-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+
+    &--confirm {
+      background: rgba($primary, 0.1);
+      color: $primary;
+      border: 1px solid rgba($primary, 0.15);
+    }
+  }
+
+  .qa-modal__head-text {
+    flex: 1;
+  }
+
+  .qa-modal__title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $text-dark;
+    margin: 0 0 0.2rem;
+    letter-spacing: -0.01em;
+  }
+
+  .qa-modal__subtitle {
+    font-size: 0.85rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  .qa-modal__close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+
+    &:hover {
+      background: rgba($text-dark, 0.06);
+      color: $text-dark;
+      transform: rotate(90deg);
+    }
+  }
+
+  // ── Body ─────────────────────────────────────────────────
+  .qa-modal__body {
+    padding: 2rem 1.75rem;
+  }
+
+  // ── Status Row ───────────────────────────────────────────
+  .qa-modal__status {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+
+    &--warn {
+      background: $warning-light;
+      border: 1px solid rgba($warning, 0.2);
+    }
+
+    &--done {
+      background: $success-light;
+      border: 1px solid rgba($success, 0.2);
+    }
+  }
+
+  .qa-modal__status-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+    padding-top: 1px;
+
+    .qa-modal__status--warn & { color: $warning; }
+    .qa-modal__status--done & { color: $success; }
+  }
+
+  .qa-modal__status-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .qa-modal__status-title {
+    font-size: 0.975rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0;
+  }
+
+  .qa-modal__status-desc {
+    font-size: 0.875rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  // ── Foot ─────────────────────────────────────────────────
+  .qa-modal__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.25rem 1.75rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid $border;
+  }
+
+  .qa-modal__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    min-height: 44px;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    text-decoration: none;
+
+    &--ghost {
+      background: transparent;
+      color: $text-mid;
+      border: 1.5px solid $border;
+
+      &:hover {
+        background: $bg;
+        color: $text-dark;
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+    }
+
+    &--primary {
+      background: $primary;
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba($primary, 0.3);
+
+      &:hover {
+        background: $primary-dark;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba($primary, 0.35);
+        color: #ffffff;
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba($primary, 0.25);
+      }
+    }
+  }
+}
+
+// ── Animation ──────────────────────────────────────────────
+@keyframes qaModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ── Responsive ─────────────────────────────────────────────
+@media (max-width: 480px) {
+  .qa-modal {
+    padding: 0;
+    align-items: flex-end;
+
+    &.is-active {
+      display: flex;
+    }
+
+    .qa-modal__card {
+      width: 100%;
+      max-width: 100%;
+      border-radius: $radius-lg $radius-lg 0 0;
+      animation: qaModalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .qa-modal__foot {
+      flex-direction: column-reverse;
+
+      .qa-modal__btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+@keyframes qaModalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .qr-page--modern {
   display: flex;
   min-height: 100vh;

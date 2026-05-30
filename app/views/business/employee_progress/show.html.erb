@@ -1,0 +1,149 @@
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <div class="emp-progress__breadcrumb">
+        <a href="<%= business_employees_path %>" class="emp-progress__back">
+          <i class="bi bi-arrow-left"></i> Employees
+        </a>
+      </div>
+      <h1 class="business-page__title"><%= @employee.name %></h1>
+      <p class="business-page__subtitle"><%= @employee.email %></p>
+    </div>
+    <div class="business-page__header-actions">
+      <a href="<%= export_business_employee_path(@employee, format: :csv) %>"
+         class="btn btn-outline-secondary">
+        <i class="bi bi-download"></i>
+        Export CSV
+      </a>
+    </div>
+  </div>
+
+  <%# Employee Stats %>
+  <div class="biz-stats-grid biz-stats-grid--4">
+    <div class="biz-stat-card">
+      <div class="biz-stat-card__icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;">
+        <i class="bi bi-journal-bookmark"></i>
+      </div>
+      <div class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @stats[:enrolled_courses] %></span>
+        <span class="biz-stat-card__label">Enrolled</span>
+      </div>
+    </div>
+    <div class="biz-stat-card">
+      <div class="biz-stat-card__icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+        <i class="bi bi-check-circle"></i>
+      </div>
+      <div class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @stats[:completed_courses] %></span>
+        <span class="biz-stat-card__label">Completed</span>
+      </div>
+    </div>
+    <div class="biz-stat-card">
+      <div class="biz-stat-card__icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
+        <i class="bi bi-clock"></i>
+      </div>
+      <div class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @stats[:total_time_spent].round(1) %>h</span>
+        <span class="biz-stat-card__label">Time Spent</span>
+      </div>
+    </div>
+    <div class="biz-stat-card">
+      <div class="biz-stat-card__icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+        <i class="bi bi-graph-up"></i>
+      </div>
+      <div class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @stats[:avg_score] %>%</span>
+        <span class="biz-stat-card__label">Avg Quiz Score</span>
+      </div>
+    </div>
+  </div>
+
+  <%# Course Progress Table %>
+  <div class="biz-section">
+    <h2 class="biz-section__title">Course Progress</h2>
+    <div class="biz-card">
+      <div class="data-table__wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Enrolled Date</th>
+              <th>Progress</th>
+              <th style="text-align: center;">Lessons</th>
+              <th style="text-align: center;">Quiz</th>
+              <th>Last Activity</th>
+              <th style="text-align: center;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @course_progress.any? %>
+              <% @course_progress.each do |item| %>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <div style="width: 40px; height: 24px; border-radius: 4px; overflow: hidden; background: #f1f5f9; flex-shrink: 0;">
+                        <img src="<%= item[:course].thumbnail_url.presence || 'https://via.placeholder.com/40x24/f1f5f9/aaa?text=No+Img' %>"
+                             alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                      </div>
+                      <span style="font-weight: 600; font-size: 0.875rem; color: #0f172a;">
+                        <%= item[:course].title %>
+                      </span>
+                    </div>
+                  </td>
+                  <td style="color: #64748b; font-size: 0.82rem; white-space: nowrap;">
+                    <%= item[:enrollment].created_at.strftime("%d %b %Y") %>
+                  </td>
+                  <td>
+                    <div class="emp-progress-cell">
+                      <div class="emp-progress-cell__bar">
+                        <div class="emp-progress-cell__fill" style="width: <%= item[:progress_percent] %>%;"></div>
+                      </div>
+                      <span><%= item[:progress_percent] %>%</span>
+                    </div>
+                  </td>
+                  <td style="text-align: center; font-size: 0.82rem; color: #64748b;">
+                    <%= item[:completed_lessons] %> / <%= item[:total_lessons] %>
+                  </td>
+                  <td style="text-align: center;">
+                    <% if item[:quiz_attempt].present? %>
+                      <span class="badge <%= item[:quiz_attempt].is_passed? ? 'badge--success' : 'badge--danger' %>">
+                        <%= item[:quiz_attempt].score %>%
+                      </span>
+                    <% else %>
+                      <span style="color: #94a3b8; font-size: 0.8rem;">—</span>
+                    <% end %>
+                  </td>
+                  <td style="color: #64748b; font-size: 0.82rem; white-space: nowrap;">
+                    <% if item[:last_activity].present? %>
+                      <%= time_ago_in_words(item[:last_activity]) %> ago
+                    <% else %>
+                      <span style="color: #94a3b8;">No activity</span>
+                    <% end %>
+                  </td>
+                  <td style="text-align: center;">
+                    <% if item[:progress_percent] >= 100 %>
+                      <span class="badge badge--success">Completed</span>
+                    <% elsif item[:progress_percent] > 0 %>
+                      <span class="badge badge--warning">In Progress</span>
+                    <% else %>
+                      <span class="badge badge--secondary">Not Started</span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="7">
+                  <div class="inst-empty" style="padding: 2.5rem; text-align: center;">
+                    <i class="bi bi-journal-bookmark" style="font-size: 2.5rem;"></i>
+                    <p style="margin-top: 0.75rem; color: #94a3b8;">This employee hasn't enrolled in any course yet.</p>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -16,4 +16,8 @@ module ApplicationHelper
 
     current_user.wishlists.exists?(course_id: course.id)
   end
+
+  def notes_count(lesson)
+    current_user.notes.where(lesson:).count
+  end
 end

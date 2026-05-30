@@ -1,0 +1,92 @@
+// ============================================================
+// BUSINESS SIDEBAR
+// ============================================================
+
+.biz-sidebar {
+  width: 260px;
+  min-width: 260px;
+  min-height: 100vh;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  &__header {
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: #0ea5e9;
+    font-size: 1rem;
+    font-weight: 700;
+
+    i { font-size: 1.2rem; }
+  }
+
+  &__nav {
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+  }
+
+  &__section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    padding: 0.75rem 0.75rem 0.25rem;
+    margin-top: 0.5rem;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: $radius-md;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    i {
+      font-size: 1.05rem;
+      color: #94a3b8;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      background: #f8fafc;
+      color: #0f172a;
+
+      i { color: #64748b; }
+    }
+
+    &--active {
+      background: rgba(#0ea5e9, 0.08);
+      color: #0ea5e9;
+      font-weight: 600;
+
+      i { color: #0ea5e9; }
+    }
+  }
+}

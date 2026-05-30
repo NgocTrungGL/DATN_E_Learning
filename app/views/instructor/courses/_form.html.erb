@@ -1,47 +1,79 @@
-<%= form_with(model: [:instructor, @course]) do |f| %>
-  <% if @course.errors.any? %>
-    <div class="alert alert-danger">
-      <ul><% @course.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %></ul>
+<div class="inst-form">
+  <%= form_with(model: [:instructor, @course]) do |f| %>
+    <% if @course.errors.any? %>
+      <div class="inst-alert inst-alert--danger">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <ul style="margin: 0; padding-left: 1.25rem;">
+          <% @course.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="inst-form__section">
+      <h3 class="inst-form__section-title">Basic Information</h3>
+
+      <div class="inst-form__group">
+        <%= f.label :title, "Course Title", class: "inst-form__label" %>
+        <%= f.text_field :title, class: "inst-form__input", required: true, placeholder: "e.g. Complete Ruby on Rails Bootcamp" %>
+      </div>
+
+      <div class="inst-form__group">
+        <%= f.label :description, "Description", class: "inst-form__label" %>
+        <%= f.text_area :description, rows: 4, class: "inst-form__textarea", placeholder: "Describe what students will learn..." %>
+      </div>
+
+      <div class="inst-form__group">
+        <%= f.label :thumbnail_url, "Thumbnail URL", class: "inst-form__label" %>
+        <%= f.text_field :thumbnail_url, class: "inst-form__input", placeholder: "https://..." %>
+        <% if @course.thumbnail_url.present? %>
+          <div class="inst-form__thumbnail-preview">
+            <img src="<%= @course.thumbnail_url %>" alt="Thumbnail preview">
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="inst-form__section">
+      <h3 class="inst-form__section-title">Pricing & Category</h3>
+
+      <div class="inst-form__row">
+        <div class="inst-form__group">
+          <%= f.label :category_id, "Category", class: "inst-form__label" %>
+          <%= f.collection_select :category_id, Category.all, :id, :name,
+              { include_blank: "Select a category" }, class: "inst-form__select" %>
+        </div>
+
+        <div class="inst-form__group">
+          <%= f.label :price, "Price (VND)", class: "inst-form__label" %>
+          <div class="inst-form__input-group">
+            <span class="inst-form__input-prefix">VND</span>
+            <%= f.number_field :price, class: "inst-form__input", step: 1000, min: 0, value: @course.price || 0 %>
+          </div>
+          <span class="inst-form__hint">Enter 0 for free course.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="inst-form__section">
+      <div class="inst-form__checkbox-wrap">
+        <label class="inst-form__checkbox">
+          <%= f.check_box :allow_admin_discounts, class: "inst-form__checkbox-input" %>
+          <span class="inst-form__checkbox-box"></span>
+          <span class="inst-form__checkbox-label">
+            <strong>Allow system-wide discounts</strong>
+            <small>Let admin-created discount codes apply to this course.</small>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="inst-form__actions">
+      <%= f.submit "Save Course", class: "btn btn-primary" %>
+      <a href="<%= @course.persisted? ? instructor_course_path(@course) : instructor_courses_path %>" class="btn btn-outline">
+        Cancel
+      </a>
     </div>
   <% end %>
-  <div class="mb-3">
-    <%= f.label :title, "Tên khóa học", class: "form-label fw-bold" %>
-    <%= f.text_field :title, class: "form-control", required: true %>
-  </div>
-  <div class="mb-3">
-    <%= f.label :description, "Mô tả", class: "form-label fw-bold" %>
-    <%= f.text_area :description, rows: 3, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= f.label :thumbnail_url, "Link Ảnh bìa", class: "form-label fw-bold" %>
-    <%= f.text_field :thumbnail_url, class: "form-control" %>
-  </div>
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <%= f.label :category_id, "Danh mục", class: "form-label fw-bold" %>
-      <%= f.collection_select :category_id, Category.all, :id, :name, { include_blank: "Chọn danh mục" }, { class: "form-select", required: true } %>
-    </div>
-    <div class="col-md-6 mb-3">
-      <%= f.label :price, "Giá bán (VND)", class: "form-label fw-bold" %>
-      <div class="input-group">
-        <span class="input-group-text">₫</span>
-        <%= f.number_field :price, class: "form-control", step: 1000, min: 0 %>
-      </div>
-      <div class="form-text">Nhập 0 để miễn phí.</div>
-    </div>
-  </div>
-
-  <div class="mb-3">
-    <div class="form-check form-switch">
-      <%= f.check_box :allow_admin_discounts, class: "form-check-input", id: "allowAdminDiscounts" %>
-      <%= f.label :allow_admin_discounts, "Đồng ý tham gia các chương trình giảm giá toàn sàn của Admin", class: "form-check-label fw-bold", for: "allowAdminDiscounts" %>
-    </div>
-    <div class="form-text">Nếu bật, các mã giảm giá hệ thống do Admin tạo có thể được áp dụng cho khóa học này.</div>
-  </div>
-  <div class="mt-4">
-    <%= f.submit "Lưu Khóa Học", class: "btn btn-primary fw-bold" %>
-    <%= link_to "Hủy", instructor_courses_path, class: "btn btn-outline-secondary" %>
-  </div>
-<% end %>
+</div>

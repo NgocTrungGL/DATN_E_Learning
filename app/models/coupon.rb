@@ -34,6 +34,22 @@ class Coupon < ApplicationRecord
       (usage_limit.zero? || usage_count < usage_limit)
   end
 
+  def conversion_rate
+    return 0 if usage_count.zero?
+    # Ước tính: giả định mỗi lượt xem tạo 1 enrollment
+    100.0.round(1)
+  end
+
+  def revenue_generated
+    return 0 if course.blank?
+    (usage_count * course.price.to_f * 0.7).round
+  end
+
+  def total_discount_given
+    return 0 if course.blank?
+    (usage_count * course.price.to_f * discount_value / 100.0).round
+  end
+
   private
 
   def end_at_after_start_at

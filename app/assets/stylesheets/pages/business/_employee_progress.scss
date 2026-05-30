@@ -1,0 +1,53 @@
+// ============================================================
+// BUSINESS EMPLOYEE PROGRESS
+// ============================================================
+
+.emp-progress {
+  &__breadcrumb {
+    margin-bottom: 0.75rem;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+
+    i { font-size: 0.9rem; }
+
+    &:hover { color: #0ea5e9; }
+  }
+}
+
+// ── Progress Cell ─────────────────────────────────────────────────
+.emp-progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &__bar {
+    width: 80px;
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  span {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    min-width: 36px;
+  }
+}

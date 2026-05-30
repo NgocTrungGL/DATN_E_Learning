@@ -81,6 +81,20 @@ optional: true
     [:min_rating_filter, :price_filter]
   end
 
+  def average_progress_percentage
+    total_items = lessons.count + quizzes.count
+    return 0 if total_items.zero?
+
+    progress_trackings.completed.count.to_f / (enrollments.active.count * total_items) * 100
+  end
+
+  def average_quiz_score
+    return 0 if quizzes.empty?
+
+    attempts = QuizAttempt.where(quiz: quizzes).completed
+    attempts.average(:score).to_f.round(1)
+  end
+
   def free?
     price.to_f.zero?
   end

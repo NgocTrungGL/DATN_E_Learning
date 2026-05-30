@@ -1,0 +1,69 @@
+<div class="inst-page">
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title">Course Performance</h1>
+      <p class="inst-page__subtitle">Overview of all your courses</p>
+    </div>
+  </div>
+
+  <div class="perf-course-grid">
+    <% @courses_data.each do |data| %>
+      <% course = data[:course] %>
+      <div class="perf-course-card">
+        <div class="perf-course-card__header">
+          <div class="perf-course-card__thumb">
+            <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/80x45/f0f2f5/aaa?text=No+Img' %>"
+                 alt="<%= course.title %>">
+          </div>
+          <div class="perf-course-card__title-wrap">
+            <span class="perf-course-card__category"><%= course.category&.name || "Uncategorized" %></span>
+            <h3 class="perf-course-card__title"><%= course.title %></h3>
+            <span class="badge badge--<%= course.status %>"><%= course.status.titleize %></span>
+          </div>
+        </div>
+
+        <div class="perf-course-card__metrics">
+          <div class="perf-metric">
+            <span class="perf-metric__value"><%= course.enrollments.count %></span>
+            <span class="perf-metric__label">Students</span>
+          </div>
+          <div class="perf-metric">
+            <span class="perf-metric__value"><%= course.reviews.count %></span>
+            <span class="perf-metric__label">Reviews</span>
+          </div>
+          <div class="perf-metric">
+            <span class="perf-metric__value">
+              <% rev = course.enrollments.sum { |e| e.price.to_f * 0.7 }.round %>
+              <%= number_to_currency(rev, unit: "", precision: 0) %>
+            </span>
+            <span class="perf-metric__label">Revenue</span>
+          </div>
+          <div class="perf-metric">
+            <span class="perf-metric__value">
+              <% avg = course.reviews.average(:rating).to_f.round(1) %>
+              <%= avg > 0 ? avg : "—" %>
+            </span>
+            <span class="perf-metric__label">Rating</span>
+          </div>
+        </div>
+
+        <div class="perf-course-card__chart">
+          <% if data[:chart].values.sum > 0 %>
+            <%= column_chart data[:chart],
+                height: "100px",
+                colors: ["#2563eb"],
+                messages: { empty: "No enrollments" } %>
+          <% else %>
+            <div style="height: 100px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.85rem;">
+              <i class="bi bi-bar-chart"></i> No enrollment data
+            </div>
+          <% end %>
+        </div>
+
+        <%= link_to "View Details",
+                    instructor_course_performance_path(course),
+                    class: "btn btn-outline btn-block" %>
+      </div>
+    <% end %>
+  </div>
+</div>

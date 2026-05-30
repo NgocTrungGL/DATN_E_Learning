@@ -81,27 +81,52 @@
     </div>
   </div>
 
-  <%# Custom Modal (No Bootstrap) %>
-  <div class="qa-modal" id="submitModal">
-    <div class="qa-modal__content">
-      <div class="qa-modal__header">
-        <h5 class="qa-modal__title">Confirm Submission</h5>
-        <button type="button" class="qa-modal__close" onclick="document.getElementById('submitModal').classList.remove('is-active')">&times;</button>
+  <%# Submit Confirmation Modal — Custom BEM %>
+  <div class="qa-modal" id="submitModal" role="dialog" aria-modal="true" aria-labelledby="submitModalTitle">
+    <div class="qa-modal__backdrop" onclick="document.getElementById('submitModal').classList.remove('is-active')"></div>
+    <div class="qa-modal__card">
+      <div class="qa-modal__head">
+        <div class="qa-modal__head-icon qa-modal__head-icon--confirm">
+          <i class="bi bi-paperclip"></i>
+        </div>
+        <div class="qa-modal__head-text">
+          <h3 class="qa-modal__title" id="submitModalTitle">Confirm Submission</h3>
+          <p class="qa-modal__subtitle">Quiz attempt</p>
+        </div>
+        <button type="button" class="qa-modal__close" onclick="document.getElementById('submitModal').classList.remove('is-active')" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
-      <div class="qa-modal__body u-p-4 u-text-center">
+
+      <div class="qa-modal__body">
         <% if @unanswered_count.to_i > 0 %>
-          <div class="u-mb-3"><i class="bi bi-exclamation-circle u-text-warning u-display-4"></i></div>
-          <h4>You have <%= @unanswered_count %> unanswered questions!</h4>
-          <p class="u-text-muted">Are you sure you want to submit?</p>
+          <div class="qa-modal__status qa-modal__status--warn">
+            <div class="qa-modal__status-icon">
+              <i class="bi bi-exclamation-circle-fill"></i>
+            </div>
+            <div class="qa-modal__status-text">
+              <p class="qa-modal__status-title">You have <%= @unanswered_count %> unanswered question<%= 's' if @unanswered_count.to_i > 1 %>!</p>
+              <p class="qa-modal__status-desc">Are you sure you want to submit?</p>
+            </div>
+          </div>
         <% else %>
-          <div class="u-mb-3"><i class="bi bi-check-circle u-text-success u-display-4"></i></div>
-          <h4>All questions answered!</h4>
-          <p class="u-text-muted">Ready to see your results?</p>
+          <div class="qa-modal__status qa-modal__status--done">
+            <div class="qa-modal__status-icon">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="qa-modal__status-text">
+              <p class="qa-modal__status-title">All questions answered!</p>
+              <p class="qa-modal__status-desc">Ready to see your results?</p>
+            </div>
+          </div>
         <% end %>
       </div>
-      <div class="qa-modal__footer">
-        <button type="button" class="qr-btn qr-btn-secondary" onclick="document.getElementById('submitModal').classList.remove('is-active')">Cancel</button>
-        <%= button_to "Confirm Submit", finish_quiz_attempt_path(@quiz_attempt), method: :patch, class: "qa-topbar__btn-success" %>
+
+      <div class="qa-modal__foot">
+        <button type="button" class="qa-modal__btn qa-modal__btn--ghost" onclick="document.getElementById('submitModal').classList.remove('is-active')">
+          Cancel
+        </button>
+        <%= button_to "Confirm & Submit", finish_quiz_attempt_path(@quiz_attempt), method: :patch, class: "qa-modal__btn qa-modal__btn--primary" %>
       </div>
     </div>
   </div>

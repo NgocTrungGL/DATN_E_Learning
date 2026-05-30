@@ -1,87 +1,160 @@
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="inst-page">
+  <div class="inst-page__header">
     <div>
-      <h2 class="fw-bold mb-1 text-dark">Mã giảm giá của tôi</h2>
-      <p class="text-muted small mb-0">Tạo mã ưu đãi dành riêng cho học viên của bạn.</p>
+      <h1 class="inst-page__title">Coupons</h1>
+      <p class="inst-page__subtitle">Manage discount codes for your courses</p>
     </div>
-    <%= link_to new_instructor_coupon_path, class: "btn btn-primary fw-bold px-4 py-2" do %>
-      <i class="bi bi-plus-lg me-2"></i> Tạo mã mới
-    <% end %>
+    <div class="inst-page__actions">
+      <a href="<%= new_instructor_coupon_path %>" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        New Coupon
+      </a>
+    </div>
   </div>
 
-  <div class="card border-0 shadow-sm overflow-hidden">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="bg-light">
-          <tr>
-            <th class="px-4 py-3 border-0">Mã Code</th>
-            <th class="py-3 border-0">Giá trị</th>
-            <th class="py-3 border-0">Khóa học áp dụng</th>
-            <th class="py-3 border-0">Thời gian</th>
-            <th class="py-3 border-0">Trạng thái</th>
-            <th class="px-4 py-3 border-0 text-end">Thao tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if @coupons.any? %>
+  <% if @coupons.any? %>
+    <%# Stats Cards %>
+    <div class="coupon-stats-grid">
+      <div class="coupon-stat-card">
+        <div class="coupon-stat-card__icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="coupon-stat-card__body">
+          <span class="coupon-stat-card__value"><%= @coupons.active.count %></span>
+          <span class="coupon-stat-card__label">Active Coupons</span>
+        </div>
+      </div>
+      <div class="coupon-stat-card">
+        <div class="coupon-stat-card__icon" style="background: rgba(37,99,235,0.1); color: #2563eb;">
+          <i class="bi bi-ticket"></i>
+        </div>
+        <div class="coupon-stat-card__body">
+          <span class="coupon-stat-card__value"><%= @coupons.sum(&:usage_count) %></span>
+          <span class="coupon-stat-card__label">Total Uses</span>
+        </div>
+      </div>
+      <div class="coupon-stat-card">
+        <div class="coupon-stat-card__icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
+          <i class="bi bi-currency-dollar"></i>
+        </div>
+        <div class="coupon-stat-card__body">
+          <span class="coupon-stat-card__value">
+            <%= number_to_currency(@coupons.sum(&:revenue_generated), unit: "", precision: 0) %>
+          </span>
+          <span class="coupon-stat-card__label">Revenue Generated</span>
+        </div>
+      </div>
+      <div class="coupon-stat-card">
+        <div class="coupon-stat-card__icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+          <i class="bi bi-percent"></i>
+        </div>
+        <div class="coupon-stat-card__body">
+          <span class="coupon-stat-card__value">
+            <%= number_to_currency(@coupons.sum(&:total_discount_given), unit: "", precision: 0) %>
+          </span>
+          <span class="coupon-stat-card__label">Total Discount Given</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="inst-card">
+      <div class="data-table__wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Discount</th>
+              <th>Course</th>
+              <th style="text-align: center;">Uses</th>
+              <th style="text-align: center;">Conversion</th>
+              <th style="text-align: center;">Revenue</th>
+              <th>Valid Period</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             <% @coupons.each do |coupon| %>
               <tr>
-                <td class="px-4 py-3">
-                  <div class="d-flex align-items-center">
-                    <div class="coupon-code-badge bg-primary-subtle text-primary fw-bold px-2 py-1 rounded">
-                      <%= coupon.code %>
-                    </div>
-                  </div>
+                <td>
+                  <code class="coupon-code"><%= coupon.code %></code>
                 </td>
-                <td class="py-3">
-                  <span class="fw-bold text-dark">
-                    <%= coupon.percentage? ? "#{coupon.discount_value}%" : number_to_currency(coupon.discount_value, unit: "₫", precision: 0, format: "%n %u") %>
+                <td>
+                  <span class="coupon-discount">
+                    <%= coupon.percentage? ? "#{coupon.discount_value}%" : number_to_currency(coupon.discount_value, unit: "", precision: 0) + " VND" %>
                   </span>
                 </td>
-                <td class="py-3">
-                  <div class="text-truncate" style="max-width: 250px;">
-                    <%= coupon.course&.title %>
-                  </div>
+                <td>
+                  <span class="coupon-course"><%= coupon.course&.title || "—" %></span>
                 </td>
-                <td class="py-3">
-                  <div class="small text-muted"><%= coupon.start_at.strftime("%d/%m/%Y") %> - <%= coupon.end_at.strftime("%d/%m/%Y") %></div>
-                </td>
-                <td class="py-3">
-                  <% if coupon.active? && coupon.active_and_current? %>
-                    <span class="badge rounded-pill bg-success px-3">Đang chạy</span>
-                  <% elsif coupon.inactive? %>
-                    <span class="badge rounded-pill bg-secondary px-3">Đã tắt</span>
-                  <% elsif coupon.expired? %>
-                    <span class="badge rounded-pill bg-danger px-3">Hết hạn</span>
-                  <% else %>
-                    <span class="badge rounded-pill bg-info px-3">Lên lịch</span>
+                <td style="text-align: center;">
+                  <span style="font-weight: 600;"><%= coupon.usage_count %></span>
+                  <% if coupon.usage_limit > 0 %>
+                    <span style="font-size: 0.75rem; color: #94a3b8;">/ <%= coupon.usage_limit %></span>
                   <% end %>
                 </td>
-                <td class="px-4 py-3 text-end">
-                  <div class="btn-group">
-                    <%= link_to edit_instructor_coupon_path(coupon), class: "btn btn-sm btn-outline-primary" do %>
+                <td style="text-align: center;">
+                  <div class="conv-cell">
+                    <div class="conv-bar">
+                      <div class="conv-bar__fill" style="width: <%= coupon.conversion_rate %>%;"></div>
+                    </div>
+                    <span><%= coupon.conversion_rate %>%</span>
+                  </div>
+                </td>
+                <td style="text-align: center;">
+                  <span style="font-weight: 600; color: #10b981;">
+                    <%= number_to_currency(coupon.revenue_generated, unit: "", precision: 0) %>
+                  </span>
+                </td>
+                <td>
+                  <span class="coupon-date">
+                    <i class="bi bi-calendar"></i>
+                    <%= coupon.start_at.strftime("%d %b %Y") %>
+                    &ndash;
+                    <%= coupon.end_at.strftime("%d %b %Y") %>
+                  </span>
+                </td>
+                <td>
+                  <% if coupon.active? && coupon.active_and_current? %>
+                    <span class="badge badge--success">Active</span>
+                  <% elsif coupon.inactive? %>
+                    <span class="badge badge--secondary">Inactive</span>
+                  <% elsif coupon.expired? %>
+                    <span class="badge badge--danger">Expired</span>
+                  <% else %>
+                    <span class="badge badge--warning">Scheduled</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="data-table__cell-actions">
+                    <a href="<%= edit_instructor_coupon_path(coupon) %>" class="btn-icon btn-icon--sm" title="Edit">
                       <i class="bi bi-pencil"></i>
-                    <% end %>
-                    <%= link_to instructor_coupon_path(coupon), data: { turbo_method: :delete, turbo_confirm: "Xóa mã này?" }, class: "btn btn-sm btn-outline-danger" do %>
+                    </a>
+                    <%= button_to instructor_coupon_path(coupon), method: :delete,
+                        class: "btn-icon btn-icon--sm btn-icon--danger",
+                        title: "Delete",
+                        data: { confirm: "Delete this coupon?" } do %>
                       <i class="bi bi-trash"></i>
                     <% end %>
                   </div>
                 </td>
               </tr>
             <% end %>
-          <% else %>
-            <tr>
-              <td colspan="6" class="text-center py-5">
-                <div class="text-muted opacity-50 mb-3">
-                  <i class="bi bi-ticket-perforated display-1"></i>
-                </div>
-                <h5 class="text-muted">Bạn chưa tạo mã giảm giá nào.</h5>
-                <p class="text-muted small">Hãy tạo mã đầu tiên để tăng doanh số bán hàng!</p>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  <% else %>
+    <div class="inst-empty-state">
+      <div class="inst-empty-state__icon">
+        <i class="bi bi-ticket-perforated"></i>
+      </div>
+      <h2>No coupons yet</h2>
+      <p>Create discount codes to boost your course sales.</p>
+      <a href="<%= new_instructor_coupon_path %>" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        Create Your First Coupon
+      </a>
+    </div>
+  <% end %>
 </div>

@@ -4,7 +4,14 @@ class Business::CourseMarketController < ApplicationController
   layout "business"
 
   def index
+    @search = params[:search].presence
     @courses = Course.all
+
+    if @search.present?
+      @courses = @courses.where("title LIKE ?", "%#{@search}%")
+    end
+
+    @pagy, @courses = pagy(@courses.order(created_at: :desc), items: 12)
   end
 
   private

@@ -1,0 +1,61 @@
+<div class="inst-page">
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title">Student Analytics</h1>
+      <p class="inst-page__subtitle">Select a course to view student insights</p>
+    </div>
+  </div>
+
+  <% if @courses_data.any? %>
+    <div class="analytics-course-grid">
+      <% @courses_data.each do |data| %>
+        <% course = data[:course] %>
+        <a href="<%= students_instructor_course_path(course) %>"
+           class="analytics-course-card">
+          <div class="analytics-course-card__header">
+            <div class="analytics-course-card__thumb">
+              <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/80x45/f0f2f5/aaa?text=No+Img' %>"
+                   alt="<%= course.title %>">
+            </div>
+            <div class="analytics-course-card__title-wrap">
+              <span class="analytics-course-card__category"><%= course.category&.name || "Uncategorized" %></span>
+              <h3 class="analytics-course-card__title"><%= course.title %></h3>
+            </div>
+            <div class="analytics-course-card__arrow">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </div>
+          <div class="analytics-course-card__stats">
+            <div class="analytics-course-card__stat">
+              <i class="bi bi-people"></i>
+              <span><%= data[:total_students] %> students</span>
+            </div>
+            <div class="analytics-course-card__stat">
+              <i class="bi bi-check-circle"></i>
+              <span><%= data[:active_students] %> active</span>
+            </div>
+            <div class="analytics-course-card__stat">
+              <i class="bi bi-graph-up"></i>
+              <span><%= data[:avg_progress] > 0 ? "#{data[:avg_progress].round}%" : "—" %> progress</span>
+            </div>
+            <div class="analytics-course-card__stat">
+              <i class="bi bi-trophy"></i>
+              <span><%= data[:avg_quiz_score] > 0 ? data[:avg_quiz_score] : "—" %> avg quiz</span>
+            </div>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="inst-card">
+      <div class="inst-card__body" style="padding: 3rem; text-align: center;">
+        <div class="inst-empty">
+          <i class="bi bi-bar-chart" style="font-size: 3rem;"></i>
+          <p style="margin-top: 1rem; color: #94a3b8;">No published courses yet</p>
+          <p style="color: #64748b; margin-bottom: 1.5rem;">Publish a course to start tracking student analytics.</p>
+          <%= link_to "Create Course", new_instructor_course_path, class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

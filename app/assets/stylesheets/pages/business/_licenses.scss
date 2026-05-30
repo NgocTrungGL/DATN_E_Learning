@@ -1,0 +1,246 @@
+// ============================================================
+// BUSINESS LICENSES PAGE
+// ============================================================
+
+.license-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 1.25rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.license-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+
+  &:hover { box-shadow: $shadow-md; }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.25rem 1.25rem 0;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  &__course {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__thumb {
+    width: 48px;
+    height: 28px;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    background: #f1f5f9;
+    flex-shrink: 0;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 0.25rem;
+  }
+
+  &__price {
+    font-size: 0.78rem;
+    color: $text-muted;
+
+    i { margin-right: 0.25rem; }
+  }
+
+  &__badge-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-end;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &--success { background: rgba($success, 0.1); color: $success; }
+    &--warning { background: rgba($warning, 0.1); color: darken($warning, 5%); }
+    &--secondary { background: #f1f5f9; color: $text-mid; }
+  }
+
+  &__body {
+    padding: 1rem 1.25rem;
+  }
+
+  &__progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: $text-muted;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+  }
+
+  &__progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $primary, lighten($primary, 10%));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  &__assign {
+    padding: 0 1.25rem 1rem;
+    border-top: 1px solid $border;
+    padding-top: 1rem;
+  }
+
+  &__assign-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $text-muted;
+    margin-bottom: 0.5rem;
+  }
+
+  &__assign-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  &__select {
+    flex: 1;
+    min-width: 160px;
+    padding: 0.4rem 0.75rem;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    font-size: 0.82rem;
+    background: $bg;
+    color: $text-dark;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+
+    &:focus { border-color: $primary; }
+  }
+
+  &__alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: darken($warning, 10%);
+    background: rgba($warning, 0.08);
+    border: 1px solid rgba($warning, 0.2);
+    border-radius: $radius-md;
+    padding: 0.75rem;
+
+    i { flex-shrink: 0; margin-top: 0.1rem; }
+  }
+
+  &__assigned {
+    border-top: 1px solid $border;
+  }
+
+  &__toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $text-mid;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.15s;
+
+    i { transition: transform 0.2s; }
+
+    &:hover { color: $primary; }
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 1.25rem 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+
+    &--open { max-height: 400px; }
+
+    &-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f1f5f9;
+
+      &:last-child { border-bottom: none; }
+    }
+
+    &-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba($primary, 0.12);
+      color: $primary;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    &-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    &-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: $text-dark;
+    }
+
+    &-date {
+      font-size: 0.72rem;
+      color: $text-muted;
+    }
+
+    &-empty {
+      font-size: 0.82rem;
+      color: $text-muted;
+      padding: 0.5rem 0;
+    }
+  }
+}

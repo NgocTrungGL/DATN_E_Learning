@@ -1,0 +1,106 @@
+<div class="inst-page">
+  <div class="inst-breadcrumb">
+    <a href="<%= instructor_courses_path %>">Courses</a>
+    <i class="bi bi-chevron-right"></i>
+    <a href="<%= instructor_course_path(@course_module.course) %>"><%= truncate(@course_module.course.title, length: 30) %></a>
+    <i class="bi bi-chevron-right"></i>
+    <span>Edit Lesson</span>
+  </div>
+
+  <div class="module-form-grid">
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Edit Lesson</h2>
+        <span class="inst-card__subtitle">
+          <i class="bi bi-collection"></i>
+          <%= @course_module.title %>
+        </span>
+      </div>
+      <div class="inst-card__body">
+        <%= form_with(model: [:instructor, @lesson]) do |f| %>
+          <div class="inst-form">
+            <div class="inst-form__group">
+              <%= f.label :title, "Lesson Title", class: "inst-form__label" %>
+              <%= f.text_field :title, class: "inst-form__input", autofocus: true,
+                  placeholder: "e.g. Introduction to Variables" %>
+            </div>
+
+            <div class="inst-form__group">
+              <%= f.label :description, "Content", class: "inst-form__label" %>
+              <%= f.text_area :description, rows: 4, class: "inst-form__textarea",
+                  placeholder: "Lesson content or notes..." %>
+            </div>
+
+            <div class="inst-form__group">
+              <%= f.label :video_url, "Video URL (YouTube)", class: "inst-form__label" %>
+              <%= f.text_field :video_url, class: "inst-form__input",
+                  placeholder: "https://www.youtube.com/watch?v=..." %>
+            </div>
+
+            <div class="inst-form__checkbox-wrap">
+              <label class="inst-form__checkbox">
+                <%= f.check_box :free_preview, class: "inst-form__checkbox-input", id: "freePreviewCheck" %>
+                <span class="inst-form__checkbox-box"></span>
+                <span class="inst-form__checkbox-label">
+                  <strong>Allow free preview</strong>
+                  <small>Students who haven't purchased the course can still view this lesson.</small>
+                </span>
+              </label>
+            </div>
+
+            <%= f.hidden_field :order_index %>
+            <div class="inst-form__actions">
+              <%= f.submit "Save Changes", class: "btn btn-primary" %>
+              <a href="<%= new_instructor_course_module_lesson_path(@course_module) %>" class="btn btn-outline">
+                Add Another
+              </a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Lesson List</h2>
+        <span class="badge badge--secondary">Drag to reorder</span>
+      </div>
+      <div class="inst-card__body" style="padding: 0.5rem;">
+        <div class="module-list"
+             data-controller="sortable"
+             data-sortable-param-value="lesson"
+             data-sortable-url-value="<%= sort_instructor_lessons_path %>">
+          <% @lessons.each do |l| %>
+            <div class="module-list__item <%= l.id == @lesson.id ? 'module-list__item--active' : '' %>" data-id="<%= l.id %>">
+              <div class="module-list__drag">
+                <i class="bi bi-grip-vertical"></i>
+              </div>
+              <div class="module-list__icon">
+                <i class="bi <%= l.video_url.present? ? 'bi-play-circle-fill' : 'bi-file-text-fill' %>"></i>
+              </div>
+              <div class="module-list__info">
+                <span class="module-list__title"><%= l.title %></span>
+                <% if l.free_preview? %>
+                  <span class="badge badge--success" style="font-size: 0.65rem;">
+                    <i class="bi bi-eye-fill"></i> Free
+                  </span>
+                <% end %>
+              </div>
+              <div class="module-list__actions">
+                <a href="<%= edit_instructor_lesson_path(l) %>" class="btn-icon btn-icon--sm" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <%= button_to instructor_lesson_path(l), method: :delete,
+                    class: "btn-icon btn-icon--sm btn-icon--danger",
+                    title: "Delete",
+                    data: { confirm: "Delete this lesson?" } do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
