@@ -138,6 +138,17 @@
     flex-wrap: wrap;
   }
 
+  // Category wrapper — holds parent + subcategory selects side-by-side
+  .filter-category-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .filter-select--sub {
+      min-width: 120px;
+    }
+  }
+
   // Search input group
   .filter-search {
     display: flex;

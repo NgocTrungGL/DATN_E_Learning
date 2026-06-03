@@ -92,8 +92,17 @@
 
         <%# FREE preview lessons %>
         <% free_lessons.each_with_index do |lesson, idx| %>
+          <%
+            video_src = if lesson.cloudinary_video?
+                          lesson.cloudinary_video_url
+                        elsif lesson.video_url.present?
+                          lesson.video_url
+                        else
+                          nil
+                        end
+          %>
           <button class="pm__playlist-item <%= 'is-active' if idx == 0 %>"
-                  data-video-url="<%= lesson.video_url %>"
+                  data-video-url="<%= video_src %>"
                   data-lesson-title="<%= lesson.title %>"
                   data-free="true"
                   onclick="pmPlayItem(this)">
@@ -103,8 +112,8 @@
             <div class="pm__pl-info">
               <div class="pm__pl-title"><%= lesson.title %></div>
               <div class="pm__pl-meta">
-                <i class="bi bi-<%= lesson.video_url.present? ? 'camera-video' : 'file-text' %>"></i>
-                <%= lesson.video_url.present? ? 'Video' : 'Reading' %>
+                <i class="bi bi-<%= lesson.video? ? 'camera-video' : 'file-text' %>"></i>
+                <%= lesson.video? ? 'Video' : 'Reading' %>
               </div>
             </div>
             <span class="pm__pl-badge pm__pl-badge--free">

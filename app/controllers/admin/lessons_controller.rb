@@ -94,7 +94,10 @@ class Admin::LessonsController < Admin::BaseController
 
   def lesson_params
     params.require(:lesson).permit(:title, :description, :video_url,
-                                   :attachment_url, :order_index)
+                                   :attachment_url, :order_index, :lesson_type,
+                                   :upload_type, :content, :video_file,
+                                   attachments: [],
+                                   resources: [:title, :url])
   end
 
   def set_lesson_context

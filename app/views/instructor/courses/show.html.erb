@@ -104,6 +104,10 @@
             <i class="bi bi-people"></i>
             Students
           </a>
+          <a href="<%= instructor_course_performance_path(@course) %>" class="btn btn-outline" style="flex: 1;">
+            <i class="bi bi-star"></i>
+            Reviews
+          </a>
         </div>
       </div>
     </div>
@@ -157,15 +161,14 @@
                     <% mod.lessons.order(:order_index).each do |lesson| %>
                       <div class="curriculum-lesson">
                         <div class="curriculum-lesson__icon">
-                          <i class="bi <%= lesson.video_url.present? ? 'bi-play-circle-fill' : 'bi-file-text-fill' %>"></i>
+                          <i class="bi <%= lesson.video? ? 'bi-play-circle-fill' : 'bi-file-text-fill' %>"></i>
                         </div>
                         <div class="curriculum-lesson__info">
                           <span class="curriculum-lesson__title"><%= lesson.title %></span>
                           <div class="curriculum-lesson__meta">
-                            <% if lesson.video_url.present? %>
+                            <% if lesson.video? %>
                               <span><i class="bi bi-play-btn"></i> Video</span>
-                            <% end %>
-                            <% if lesson.description.present? %>
+                            <% else %>
                               <span><i class="bi bi-file-text"></i> Text</span>
                             <% end %>
                           </div>

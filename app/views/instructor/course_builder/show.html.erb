@@ -115,7 +115,7 @@
                       <i class="bi bi-grip-vertical"></i>
                     </div>
                     <div class="lesson-item__icon">
-                      <% if lesson.video_url.present? %>
+                      <% if lesson.video? %>
                         <i class="bi bi-play-circle"></i>
                       <% else %>
                         <i class="bi bi-file-text"></i>
@@ -124,7 +124,7 @@
                     <div class="lesson-item__info">
                       <span class="lesson-item__title"><%= lesson.title %></span>
                       <span class="lesson-item__meta">
-                        <% if lesson.video_url.present? %>
+                        <% if lesson.video? %>
                           <i class="bi bi-play-circle"></i> Video
                         <% else %>
                           <i class="bi bi-file-text"></i> Text

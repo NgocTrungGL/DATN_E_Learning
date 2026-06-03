@@ -12,7 +12,11 @@ class Instructor::CoursesController < Instructor::BaseController
     @big_quizzes = @course.quizzes.big
   end
 
-  def new; end
+  def new
+    @course = Course.new
+    # Build empty learning outcomes for the form
+    4.times { @course.course_learning_outcomes.build }
+  end
 
   def create
     @course.creator = current_user
@@ -20,11 +24,17 @@ class Instructor::CoursesController < Instructor::BaseController
       redirect_to instructor_course_path(@course),
                   notice: "Tạo thành công. Thêm bài học và gửi duyệt nhé!"
     else
+      # Ensure at least 4 empty outcomes for the form
+      (4 - @course.course_learning_outcomes.size).times { @course.course_learning_outcomes.build }
       render :new, status: :unprocessable_entity
     end
   end
 
-  def edit; end
+  def edit
+    # Ensure at least 4 empty outcomes for the form
+    @course.course_learning_outcomes.load
+    (4 - @course.course_learning_outcomes.size).times { @course.course_learning_outcomes.build }
+  end
 
   def update
     if @course.update(course_params)
@@ -110,7 +120,8 @@ class Instructor::CoursesController < Instructor::BaseController
 
   def course_params
     params.require(:course).permit(:title, :description, :price,
-                                   :thumbnail_url, :category_id, :allow_admin_discounts)
+                                   :thumbnail_url, :category_id, :allow_admin_discounts,
+                                   course_learning_outcomes_attributes: [:id, :content, :order_index, :_destroy])
   end
 
   def submittable_status?

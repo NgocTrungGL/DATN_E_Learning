@@ -242,5 +242,20 @@
       color: $text-muted;
       padding: 0.5rem 0;
     }
+
+    &-revoke {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: color 0.15s, background 0.15s;
+      flex-shrink: 0;
+
+      &:hover { color: $danger; background: rgba($danger, 0.08); }
+    }
   }
 }

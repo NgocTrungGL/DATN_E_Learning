@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_02_222235) do
+  create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body", size: :long
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -111,6 +121,16 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
     t.index ["creator_id"], name: "index_coupons_on_creator_id"
   end
 
+  create_table "course_learning_outcomes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "course_id", null: false
+    t.string "content", null: false
+    t.integer "order_index", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id", "order_index"], name: "index_course_learning_outcomes_on_course_id_and_order_index"
+    t.index ["course_id"], name: "index_course_learning_outcomes_on_course_id"
+  end
+
   create_table "course_modules", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.string "title", limit: 200, null: false
@@ -119,6 +139,18 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_course_modules_on_course_id"
+  end
+
+  create_table "course_similarities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "course_a_id", null: false
+    t.bigint "course_b_id", null: false
+    t.decimal "score", precision: 8, scale: 6, null: false
+    t.datetime "computed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_a_id", "course_b_id"], name: "index_course_similarities_on_course_a_id_and_course_b_id", unique: true
+    t.index ["course_a_id", "score"], name: "index_course_similarities_on_course_a_id_and_score"
+    t.index ["course_b_id"], name: "fk_rails_9f57006a7a"
   end
 
   create_table "courses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -208,6 +240,25 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
     t.index ["user_id"], name: "index_instructor_profiles_on_user_id"
   end
 
+  create_table "invoices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "course_id", null: false
+    t.integer "quantity", default: 1, null: false
+    t.decimal "unit_price", precision: 10, scale: 2, null: false
+    t.decimal "total_amount", precision: 10, scale: 2, null: false
+    t.string "stripe_session_id"
+    t.string "stripe_payment_intent"
+    t.integer "status", default: 0
+    t.string "invoice_number"
+    t.datetime "paid_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_invoices_on_course_id"
+    t.index ["organization_id", "created_at"], name: "index_invoices_on_organization_id_and_created_at"
+    t.index ["organization_id"], name: "index_invoices_on_organization_id"
+    t.index ["stripe_session_id"], name: "index_invoices_on_stripe_session_id"
+  end
+
   create_table "lessons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "course_module_id", null: false
     t.string "title", limit: 200, null: false
@@ -218,7 +269,13 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "free_preview", default: false
+    t.integer "lesson_type"
+    t.text "content"
+    t.json "resources"
+    t.integer "upload_type", default: 0, null: false
+    t.string "document_url"
     t.index ["course_module_id"], name: "index_lessons_on_course_module_id"
+    t.index ["upload_type"], name: "index_lessons_on_upload_type"
   end
 
   create_table "licenses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -422,15 +479,29 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
 
   create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.integer "plan_type"
-    t.string "status"
-    t.datetime "current_period_start"
-    t.datetime "current_period_end"
+    t.integer "plan_type", default: 0, null: false
+    t.string "status", default: "active", null: false
     t.string "stripe_subscription_id"
     t.string "stripe_customer_id"
+    t.datetime "current_period_start"
+    t.datetime "current_period_end"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+    t.index ["stripe_subscription_id"], name: "index_subscriptions_on_stripe_subscription_id"
+    t.index ["user_id"], name: "index_subscriptions_on_user_id", unique: true
+  end
+
+  create_table "user_recommendations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "course_id", null: false
+    t.decimal "score", precision: 8, scale: 4
+    t.string "reason_type"
+    t.datetime "computed_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "fk_rails_ffdca66d10"
+    t.index ["user_id", "course_id"], name: "index_user_recommendations_on_user_id_and_course_id", unique: true
+    t.index ["user_id", "score"], name: "index_user_recommendations_on_user_id_and_score"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -496,7 +567,10 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
   add_foreign_key "comments", "users"
   add_foreign_key "coupons", "courses"
   add_foreign_key "coupons", "users", column: "creator_id"
+  add_foreign_key "course_learning_outcomes", "courses"
   add_foreign_key "course_modules", "courses", on_delete: :cascade
+  add_foreign_key "course_similarities", "courses", column: "course_a_id", on_delete: :cascade
+  add_foreign_key "course_similarities", "courses", column: "course_b_id", on_delete: :cascade
   add_foreign_key "courses", "categories"
   add_foreign_key "courses", "users", column: "created_by", on_delete: :nullify
   add_foreign_key "discussion_messages", "courses"
@@ -509,6 +583,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
   add_foreign_key "enrollments", "courses"
   add_foreign_key "enrollments", "users"
   add_foreign_key "instructor_profiles", "users"
+  add_foreign_key "invoices", "courses"
+  add_foreign_key "invoices", "organizations"
   add_foreign_key "lessons", "course_modules", on_delete: :cascade
   add_foreign_key "licenses", "courses"
   add_foreign_key "licenses", "organizations"
@@ -542,6 +618,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_30_070036) do
   add_foreign_key "reviews", "courses"
   add_foreign_key "reviews", "users"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "user_recommendations", "courses", on_delete: :cascade
+  add_foreign_key "user_recommendations", "users", on_delete: :cascade
   add_foreign_key "users", "organizations"
   add_foreign_key "wallet_transactions", "wallets"
   add_foreign_key "wallets", "users"

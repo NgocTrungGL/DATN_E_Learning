@@ -17,8 +17,9 @@
         </span>
       </div>
       <div class="inst-card__body">
-        <%= form_with(model: [:instructor, @course_module, @lesson]) do |f| %>
+        <%= form_with(model: [:instructor, @course_module, @lesson], data: { turbo: false }) do |f| %>
           <div class="inst-form">
+
             <div class="inst-form__group">
               <%= f.label :title, "Lesson Title", class: "inst-form__label" %>
               <%= f.text_field :title, class: "inst-form__input", autofocus: true,
@@ -26,33 +27,174 @@
             </div>
 
             <div class="inst-form__group">
-              <%= f.label :description, "Content", class: "inst-form__label" %>
-              <%= f.text_area :description, rows: 4, class: "inst-form__textarea",
-                  placeholder: "Lesson content or notes..." %>
+              <label class="inst-form__label">Lesson Type</label>
+              <div class="inst-form__type-toggle">
+                <label class="inst-form__type-option <%= 'active' if @lesson.video? || !@lesson.persisted? %>">
+                  <%= f.radio_button :lesson_type, :video, checked: @lesson.video? || !@lesson.persisted? %>
+                  <span class="inst-form__type-icon"><i class="bi bi-play-circle-fill"></i></span>
+                  <span class="inst-form__type-text">Video</span>
+                </label>
+                <label class="inst-form__type-option <%= 'active' if @lesson.text? %>">
+                  <%= f.radio_button :lesson_type, :text, checked: @lesson.text? %>
+                  <span class="inst-form__type-icon"><i class="bi bi-file-text-fill"></i></span>
+                  <span class="inst-form__type-text">Text</span>
+                </label>
+              </div>
             </div>
 
             <div class="inst-form__group">
-              <%= f.label :video_url, "Video URL (YouTube)", class: "inst-form__label" %>
-              <%= f.text_field :video_url, class: "inst-form__input",
-                  placeholder: "https://www.youtube.com/watch?v=..." %>
+              <%= f.label :description, "Description", class: "inst-form__label" %>
+              <%= f.text_area :description, rows: 2, class: "inst-form__textarea",
+                  placeholder: "Brief description..." %>
+            </div>
+
+            <%# === VIDEO SECTION === %>
+            <div id="video-section" class="inst-form__group inst-form__group--conditional <%= 'hidden' if @lesson.text? %>">
+
+              <%# Upload Type Toggle %>
+              <div class="inst-upload-toggle">
+                <label class="inst-form__label" style="margin-bottom: 0.5rem;">Video source:</label>
+                <div class="inst-upload-toggle__options">
+                  <label class="inst-upload-toggle__option <%= 'active' if @lesson.link? || !@lesson.persisted? %>" data-upload="link">
+                    <input type="radio" name="lesson[upload_type]" value="link"
+                           <%= 'checked' if @lesson.link? || !@lesson.persisted? %>>
+                    <i class="bi bi-link-45deg"></i>
+                    <span>Tu lưu (link)</span>
+                  </label>
+                  <label class="inst-upload-toggle__option <%= 'active' if @lesson.cloudinary? %>" data-upload="cloudinary">
+                    <input type="radio" name="lesson[upload_type]" value="cloudinary"
+                           <%= 'checked' if @lesson.cloudinary? %>>
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span>Lưu trên HT</span>
+                  </label>
+                </div>
+              </div>
+
+              <%# TU LUU (LINK MODE): 2 fields URL, khong co choose file %>
+              <div id="upload-link-section" class="inst-upload-section">
+                <div class="inst-upload-section__row">
+                  <div class="inst-upload-section__field">
+                    <label class="inst-form__label">
+                      <i class="bi bi-play-circle"></i> Video URL
+                    </label>
+                    <%= f.text_field :video_url, class: "inst-form__input",
+                        placeholder: "https://youtube.com/... hoac Google Drive link" %>
+                  </div>
+                  <div class="inst-upload-section__field">
+                    <label class="inst-form__label">
+                      <i class="bi bi-file-earmark-text"></i> Tài liệu URL
+                    </label>
+                    <%= f.text_field :document_url, class: "inst-form__input",
+                        placeholder: "https://docs.google.com/... hoac link PDF" %>
+                  </div>
+                </div>
+              </div>
+
+              <%# LUU TREN HT (CLOUDINARY MODE): 2 fields upload, co choose file %>
+              <div id="upload-cloudinary-section" class="inst-upload-section hidden">
+                <div class="inst-upload-section__row">
+                  <%# Upload Video %>
+                  <div class="inst-upload-section__field">
+                    <label class="inst-form__label">
+                      <i class="bi bi-film"></i> Upload Video
+                    </label>
+
+                    <% if @lesson.video_file.attached? %>
+                      <div class="inst-upload-preview inst-upload-preview--visible" id="video-preview">
+                        <i class="bi bi-film"></i>
+                        <div class="inst-upload-preview__info">
+                          <p class="inst-upload-preview__name"><%= @lesson.video_file.filename %></p>
+                          <p class="inst-upload-preview__size"><%= number_to_human_size(@lesson.video_file.byte_size) %></p>
+                        </div>
+                        <button type="button" class="inst-upload-preview__remove" data-action="remove-video">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                    <% else %>
+                      <div class="inst-upload-preview hidden" id="video-preview">
+                        <i class="bi bi-film"></i>
+                        <div class="inst-upload-preview__info">
+                          <p class="inst-upload-preview__name"></p>
+                          <p class="inst-upload-preview__size"></p>
+                        </div>
+                        <button type="button" class="inst-upload-preview__remove" data-action="remove-video">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                    <% end %>
+
+                    <div class="inst-file-dropzone" id="video-upload-area">
+                      <i class="bi bi-cloud-arrow-up inst-file-dropzone__icon"></i>
+                      <p class="inst-file-dropzone__text">Drag & drop hoac <label for="lesson_video_file" class="inst-file-dropzone__browse">choose file</label></p>
+                      <p class="inst-file-dropzone__hint">MP4, MOV, AVI, WebM</p>
+                      <%= f.file_field :video_file, id: 'lesson_video_file', class: 'hidden', accept: 'video/*' %>
+                    </div>
+                  </div>
+
+                  <%# Upload Tai lieu %>
+                  <div class="inst-upload-section__field">
+                    <label class="inst-form__label">
+                      <i class="bi bi-paperclip"></i> Upload Tài liệu
+                    </label>
+
+                    <% if @lesson.document_file.attached? %>
+                      <div class="inst-upload-preview inst-upload-preview--visible" id="doc-preview">
+                        <i class="bi bi-file-earmark"></i>
+                        <div class="inst-upload-preview__info">
+                          <p class="inst-upload-preview__name"><%= @lesson.document_file.filename %></p>
+                          <p class="inst-upload-preview__size"><%= number_to_human_size(@lesson.document_file.byte_size) %></p>
+                        </div>
+                        <button type="button" class="inst-upload-preview__remove" data-action="remove-doc">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                    <% else %>
+                      <div class="inst-upload-preview hidden" id="doc-preview">
+                        <i class="bi bi-file-earmark"></i>
+                        <div class="inst-upload-preview__info">
+                          <p class="inst-upload-preview__name"></p>
+                          <p class="inst-upload-preview__size"></p>
+                        </div>
+                        <button type="button" class="inst-upload-preview__remove" data-action="remove-doc">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                    <% end %>
+
+                    <div class="inst-file-dropzone" id="doc-upload-area">
+                      <i class="bi bi-cloud-arrow-up inst-file-dropzone__icon"></i>
+                      <p class="inst-file-dropzone__text">Drag & drop hoac <label for="lesson_document_file" class="inst-file-dropzone__browse">choose file</label></p>
+                      <p class="inst-file-dropzone__hint">PDF, DOCX, ZIP, PNG, JPG</p>
+                      <%= f.file_field :document_file, id: 'lesson_document_file', class: 'hidden', accept: '.pdf,.doc,.docx,.zip,.png,.jpg,.jpeg' %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <%# === TEXT SECTION === %>
+            <div id="text-section" class="inst-form__group inst-form__group--conditional <%= 'hidden' if @lesson.video? %>">
+              <%= f.label :content, "Content", class: "inst-form__label" %>
+              <div class="trix-editor-wrapper inst-form__rich-editor">
+                <%= f.rich_text_area :content, placeholder: "Lesson content...", data: { trix_autofocus: false } %>
+              </div>
             </div>
 
             <div class="inst-form__checkbox-wrap">
               <label class="inst-form__checkbox">
-                <%= f.check_box :free_preview, class: "inst-form__checkbox-input", id: "freePreviewCheck" %>
+                <%= f.check_box :free_preview, class: "inst-form__checkbox-input" %>
                 <span class="inst-form__checkbox-box"></span>
                 <span class="inst-form__checkbox-label">
-                  <strong>Allow free preview</strong>
-                  <small>Students who haven't purchased the course can still view this lesson.</small>
+                  <strong>Free preview</strong>
                 </span>
               </label>
             </div>
 
             <%= f.hidden_field :order_index %>
             <div class="inst-form__actions">
-              <%= f.submit "Save & Add Next", class: "btn btn-primary" %>
+              <%= f.submit "Save", class: "btn btn-primary" %>
               <a href="<%= instructor_course_path(@course_module.course) %>" class="btn btn-outline">
-                Back to Course
+                Back
               </a>
             </div>
           </div>
@@ -76,7 +218,7 @@
                 <i class="bi bi-grip-vertical"></i>
               </div>
               <div class="module-list__icon">
-                <i class="bi <%= l.video_url.present? ? 'bi-play-circle-fill' : 'bi-file-text-fill' %>"></i>
+                <i class="bi <%= l.video? ? 'bi-play-circle-fill' : 'bi-file-text-fill' %>"></i>
               </div>
               <div class="module-list__info">
                 <span class="module-list__title"><%= l.title %></span>
@@ -99,13 +241,181 @@
               </div>
             </div>
           <% end %>
-          <% if @lessons.empty? %>
-            <div class="inst-empty" style="padding: 2rem;">
-              <p>No lessons in this module yet.</p>
-            </div>
-          <% end %>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ========== TOGGLE LESSON TYPE ==========
+  document.querySelectorAll('input[name="lesson[lesson_type]"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      var videoSection = document.getElementById('video-section');
+      var textSection = document.getElementById('text-section');
+
+      document.querySelectorAll('.inst-form__type-option').forEach(function(el) { el.classList.remove('active'); });
+      var wrapper = this.closest('.inst-form__type-option');
+      if (wrapper) wrapper.classList.add('active');
+
+      if (this.value === 'video') {
+        videoSection.classList.remove('hidden');
+        textSection.classList.add('hidden');
+      } else {
+        videoSection.classList.add('hidden');
+        textSection.classList.remove('hidden');
+      }
+    });
+  });
+
+  // ========== TOGGLE UPLOAD TYPE ==========
+  document.querySelectorAll('input[name="lesson[upload_type]"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      var linkSection = document.getElementById('upload-link-section');
+      var cloudSection = document.getElementById('upload-cloudinary-section');
+
+      document.querySelectorAll('.inst-upload-toggle__option').forEach(function(el) { el.classList.remove('active'); });
+      var wrapper = this.closest('.inst-upload-toggle__option');
+      if (wrapper) wrapper.classList.add('active');
+
+      if (this.value === 'link') {
+        linkSection.classList.remove('hidden');
+        cloudSection.classList.add('hidden');
+      } else {
+        linkSection.classList.add('hidden');
+        cloudSection.classList.remove('hidden');
+      }
+    });
+
+    // Kich hoat ngay neu da duoc chon
+    if (radio.checked) {
+      radio.dispatchEvent(new Event('change'));
+    }
+  });
+
+  // ========== DROPZONE DRAG & DROP ==========
+  // Chi bind drag/drop cho dropzone, khong dung ten id vi co the la dropzone hoac upload-area
+  function bindDropzone(dz) {
+    if (!dz) return;
+    dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', function() { dz.classList.remove('drag-over'); });
+    dz.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dz.classList.remove('drag-over');
+      var files = e.dataTransfer.files;
+      var input = dz.querySelector('input[type="file"]');
+      if (input && files.length) {
+        var dt = new DataTransfer();
+        Array.from(files).forEach(function(f) { dt.items.add(f); });
+        input.files = dt.files;
+        input.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+
+  // Bind tat ca cac dropzone
+  document.querySelectorAll('.inst-file-dropzone').forEach(bindDropzone);
+
+  // ========== VIDEO FILE: an dropzone, hien preview ==========
+  var videoInput = document.getElementById('lesson_video_file');
+  if (videoInput) {
+    videoInput.addEventListener('change', function() {
+      if (this.files.length) {
+        var dropzone = document.getElementById('video-upload-area');
+        var previewArea = document.getElementById('video-preview');
+        if (dropzone && previewArea) {
+          // An dropzone, hien preview
+          dropzone.classList.add('hidden');
+          previewArea.classList.remove('hidden');
+          previewArea.classList.add('inst-upload-preview--visible');
+          // Cap nhat ten file
+          var nameEl = previewArea.querySelector('.inst-upload-preview__name');
+          var sizeEl = previewArea.querySelector('.inst-upload-preview__size');
+          if (nameEl) nameEl.textContent = this.files[0].name;
+          if (sizeEl) sizeEl.textContent = formatSize(this.files[0].size);
+        }
+      }
+    });
+  }
+
+  // ========== DOCUMENT FILE: an dropzone, hien preview ==========
+  var docInput = document.getElementById('lesson_document_file');
+  if (docInput) {
+    docInput.addEventListener('change', function() {
+      if (this.files.length) {
+        var dropzone = document.getElementById('doc-upload-area');
+        var previewArea = document.getElementById('doc-preview');
+        if (dropzone && previewArea) {
+          dropzone.classList.add('hidden');
+          previewArea.classList.remove('hidden');
+          previewArea.classList.add('inst-upload-preview--visible');
+          var nameEl = previewArea.querySelector('.inst-upload-preview__name');
+          var sizeEl = previewArea.querySelector('.inst-upload-preview__size');
+          if (nameEl) nameEl.textContent = this.files[0].name;
+          if (sizeEl) sizeEl.textContent = formatSize(this.files[0].size);
+        }
+      }
+    });
+  }
+
+  // ========== REMOVE VIDEO ==========
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-action="remove-video"]');
+    if (btn) {
+      e.preventDefault();
+      var dropzone = document.getElementById('video-upload-area');
+      var previewArea = document.getElementById('video-preview');
+      var input = document.getElementById('lesson_video_file');
+      if (dropzone && previewArea && input) {
+        // An preview, hien dropzone
+        previewArea.classList.add('hidden');
+        previewArea.classList.remove('inst-upload-preview--visible');
+        dropzone.classList.remove('hidden');
+        // Xoa file da chon
+        input.value = '';
+      }
+    }
+
+    // ========== REMOVE DOCUMENT ==========
+    var docBtn = e.target.closest('[data-action="remove-doc"]');
+    if (docBtn) {
+      e.preventDefault();
+      var dropzone = document.getElementById('doc-upload-area');
+      var previewArea = document.getElementById('doc-preview');
+      var input = document.getElementById('lesson_document_file');
+      if (dropzone && previewArea && input) {
+        previewArea.classList.add('hidden');
+        previewArea.classList.remove('inst-upload-preview--visible');
+        dropzone.classList.remove('hidden');
+        input.value = '';
+      }
+    }
+  });
+
+  // ========== ATTACHMENTS: hien ten file ==========
+  var attachInput = document.getElementById('lesson_attachments');
+  if (attachInput) {
+    attachInput.addEventListener('change', function() {
+      if (this.files.length) {
+        var dz = document.getElementById('attach-dropzone');
+        if (dz) {
+          var text = dz.querySelector('.inst-file-dropzone__text');
+          if (text) {
+            text.innerHTML = '<strong>' + this.files.length + ' file(s) selected</strong>';
+          }
+          dz.classList.add('has-file');
+        }
+      }
+    });
+  }
+
+  // Helper format size
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+});
+</script>

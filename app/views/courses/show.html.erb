@@ -22,6 +22,29 @@
 <% has_reviewed   = @course.reviews.exists?(user: current_user) if current_user %>
 <% is_creator     = (current_user == instructor) if current_user %>
 
+<%# Check for course-specific coupon in session %>
+<% session_coupon_code = session[:course_coupons]&.dig(@course.id.to_s) %>
+<% applied_coupon = session_coupon_code.present? ? Coupon.find_by(code: session_coupon_code) : nil %>
+<% if applied_coupon && !applied_coupon.active_and_current? %>
+  <% applied_coupon = nil %>
+<% end %>
+<%# Verify coupon applies to this course %>
+<% if applied_coupon && applied_coupon.specific_course? && applied_coupon.course_id != @course.id %>
+  <% applied_coupon = nil %>
+<% end %>
+
+<%# Calculate discounted price if coupon is applied %>
+<% discounted_price = @course.price %>
+<% if applied_coupon %>
+  <% if applied_coupon.percentage? %>
+    <% discounted_price = @course.price * (1 - applied_coupon.discount_value / 100.0) %>
+  <% else %>
+    <% discounted_price = [@course.price - applied_coupon.discount_value, 0].max %>
+  <% end %>
+<% elsif @course.has_discount? %>
+  <% discounted_price = @course.discounted_price %>
+<% end %>
+
 <%# ─────────────────────────────────────────────────────────── %>
 <%# SECTION 1 — HERO                                            %>
 <%# ─────────────────────────────────────────────────────────── %>
@@ -96,8 +119,18 @@
         <%# Show play overlay if there's a free preview %>
         <% free_lessons = @course.course_modules.flat_map { |m| m.lessons }.select(&:free_preview?) %>
         <% if free_lessons.any? %>
+          <%
+            first_free = free_lessons.first
+            video_src = if first_free.cloudinary_video?
+                          first_free.cloudinary_video_url
+                        elsif first_free.video_url.present?
+                          first_free.video_url
+                        else
+                          nil
+                        end
+          %>
           <button class="cd-hero__thumb-play"
-                  onclick="pmOpen('<%= free_lessons.first.video_url %>', '<%= j free_lessons.first.title %>')">
+                  onclick="pmOpen('<%= video_src %>', '<%= j free_lessons.first.title %>')">
             <div class="play-icon"><i class="bi bi-play-fill"></i></div>
           </button>
         <% end %>
@@ -145,28 +178,20 @@
       </div>
     <% end %>
 
-    <%# ── What you'll learn ─────────────────────────────────── %>
-    <div class="cd-card">
-      <h2 class="cd-section-heading"><i class="bi bi-lightbulb-fill"></i> What You'll Learn</h2>
-      <div class="cd-learn-grid">
-        <% learn_items = [
-          "Master core concepts with hands-on projects",
-          "Build production-ready applications",
-          "Write clean, maintainable code",
-          "Debug and troubleshoot like a professional",
-          "Follow industry best practices",
-          "Apply knowledge to real-world scenarios",
-          "Earn a verifiable completion certificate",
-          "Join a community of #{@course.total_students}+ learners"
-        ] %>
-        <% learn_items.each do |item| %>
-          <div class="cd-learn-item">
-            <i class="bi bi-check2-circle"></i>
-            <span><%= item %></span>
-          </div>
-        <% end %>
+    <%# ── What you'll learn (only show if outcomes exist) ──── %>
+    <% if @course.course_learning_outcomes.any? %>
+      <div class="cd-card">
+        <h2 class="cd-section-heading"><i class="bi bi-lightbulb-fill"></i> What You'll Learn</h2>
+        <div class="cd-learn-grid">
+          <% @course.course_learning_outcomes.ordered.each do |outcome| %>
+            <div class="cd-learn-item">
+              <i class="bi bi-check2-circle"></i>
+              <span><%= outcome.content %></span>
+            </div>
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <%# ── Curriculum / Accordion ────────────────────────────── %>
     <div class="cd-card" id="cd-curriculum">
@@ -217,18 +242,18 @@
               <% l_access   = has_access %>
 
               <%# Determine icon type %>
-              <% lesson_icon = lesson.video_url.present? ? "video" : "text" %>
+              <% lesson_icon = lesson.video? ? "video" : "text" %>
 
               <% if l_access %>
                 <%# ENROLLED: clickable lesson link %>
                 <%= link_to lesson_path(lesson), class: "cd-lesson" do %>
                   <div class="cd-lesson__icon cd-lesson__icon--<%= lesson_icon %>">
-                    <i class="bi bi-<%= lesson.video_url.present? ? 'play-fill' : 'file-text-fill' %>"></i>
+                    <i class="bi bi-<%= lesson.video? ? 'play-fill' : 'file-text-fill' %>"></i>
                   </div>
                   <div class="cd-lesson__info">
                     <div class="cd-lesson__title"><%= lesson.title %></div>
                     <div class="cd-lesson__duration">
-                      <%= lesson.video_url.present? ? "Video" : "Reading" %>
+                      <%= lesson.video? ? "Video" : "Reading" %>
                     </div>
                   </div>
                   <span class="cd-lesson__action"><i class="bi bi-chevron-right"></i></span>
@@ -236,9 +261,18 @@
 
               <% elsif is_free %>
                 <%# FREE PREVIEW: opens preview modal %>
+                <%
+                  video_src = if lesson.cloudinary_video?
+                                lesson.cloudinary_video_url
+                              elsif lesson.video_url.present?
+                                lesson.video_url
+                              else
+                                nil
+                              end
+                %>
                 <div class="cd-lesson"
                      style="cursor:pointer;"
-                     onclick="pmOpen('<%= lesson.video_url %>', '<%= j lesson.title %>')">
+                     onclick="pmOpen('<%= video_src %>', '<%= j lesson.title %>')">
                   <div class="cd-lesson__icon cd-lesson__icon--video">
                     <i class="bi bi-play-fill"></i>
                   </div>
@@ -523,10 +557,11 @@
       <% end %>
 
       <%# Review list %>
-      <div class="cd-review-grid">
-        <% reviews = @course.reviews.recent %>
-        <% if reviews.any? %>
-          <% reviews.each do |review| %>
+      <% initial_reviews = @course.reviews.recent.limit(5) %>
+      <% total_reviews = @course.reviews.count %>
+      <div class="cd-review-grid" id="reviews-list" data-course-id="<%= @course.id %>">
+        <% if initial_reviews.any? %>
+          <% initial_reviews.each do |review| %>
             <div class="cd-review">
               <div class="cd-review__avatar">
                 <% if review.user&.avatar_url.present? %>
@@ -560,6 +595,15 @@
           </div>
         <% end %>
       </div>
+
+      <%# View more button if there are more than 5 reviews %>
+      <% if total_reviews > 5 %>
+        <div class="cd-reviews-more" id="reviews-more-wrapper">
+          <button class="cd-reviews-more-btn" id="load-more-reviews" data-offset="5">
+            <i class="bi bi-chevron-down"></i> View all <%= total_reviews %> reviews
+          </button>
+        </div>
+      <% end %>
     </div>
 
   </div><!-- .cd-main -->
@@ -582,10 +626,23 @@
           <% if @course.free? %>
             <span class="price-free-label">Free</span>
           <% else %>
-            <span class="price-current">
-              <%= number_to_currency(@course.discounted_price, unit: "₫", format: "%n %u", precision: 0) %>
+            <span class="price-current" id="cd-price-display">
+              <%= number_to_currency(discounted_price, unit: "₫", format: "%n %u", precision: 0) %>
             </span>
-            <% if @course.has_discount? %>
+            <% if discounted_price < @course.price %>
+              <span class="price-original" style="text-decoration: line-through; color: #94a3b8; font-size: 1.1rem; font-weight: 500;">
+                <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
+              </span>
+              <% if applied_coupon %>
+                <span class="price-badge" style="background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5; margin-left: 4px;">
+                  <i class="bi bi-tag-fill"></i> <%= applied_coupon.code %>
+                </span>
+              <% elsif @course.has_discount? %>
+                <span class="price-badge" style="background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5; margin-left: 4px;">
+                  <%= @course.discount_label %>
+                </span>
+              <% end %>
+            <% elsif @course.has_discount? %>
               <span class="price-original" style="text-decoration: line-through; color: #94a3b8; font-size: 1.1rem; font-weight: 500;">
                 <%= number_to_currency(@course.price, unit: "₫", format: "%n %u", precision: 0) %>
               </span>
@@ -668,24 +725,40 @@
 
           <% else %>
             <%# PAID COURSE %>
-            <%= button_to create_checkout_session_path(course_id: @course.id),
-                  method: :post,
-                  class: "cd-btn cd-btn--stripe",
-                  data: { turbo: false } do %>
-              <i class="bi bi-credit-card-2-front-fill"></i> Buy Now
-            <% end %>
+            <div class="cd-cta-buttons">
+              <%= button_to create_checkout_session_path(course_id: @course.id),
+                    method: :post,
+                    class: "cd-btn cd-btn--stripe cd-btn--compact",
+                    data: { turbo: false } do %>
+                <i class="bi bi-credit-card-2-front-fill"></i> Buy Now
+              <% end %>
 
-            <% if in_cart %>
-              <%= link_to cart_path, class: "cd-btn cd-btn--outline" do %>
-                <i class="bi bi-cart-check-fill"></i> In Cart — Go to Cart
+              <% if in_cart %>
+                <%= link_to cart_path, class: "cd-btn cd-btn--outline cd-btn--compact" do %>
+                  <i class="bi bi-cart-check-fill"></i> In Cart
+                <% end %>
+              <% else %>
+                <%= link_to cart_items_path(course_id: @course.id),
+                      data: { turbo_method: :post },
+                      class: "cd-btn cd-btn--outline cd-btn--compact" do %>
+                  <i class="bi bi-cart-plus"></i> Add to Cart
+                <% end %>
               <% end %>
-            <% else %>
-              <%= link_to cart_items_path(course_id: @course.id),
-                    data: { turbo_method: :post },
-                    class: "cd-btn cd-btn--outline" do %>
-                <i class="bi bi-cart-plus"></i> Add to Cart
-              <% end %>
-            <% end %>
+            </div>
+
+            <%# Coupon code input %>
+            <div class="cd-coupon-form">
+              <div class="cd-coupon-toggle" onclick="document.getElementById('cd-coupon-input').classList.toggle('is-hidden')">
+                <i class="bi bi-tag-fill"></i>
+                <span>Have a discount code?</span>
+                <i class="bi bi-chevron-down"></i>
+              </div>
+              <div id="cd-coupon-input" class="cd-coupon-input is-hidden">
+                <input type="text" id="coupon-code" class="cd-coupon-field" placeholder="Enter coupon code">
+                <button type="button" class="cd-coupon-apply" onclick="applyCoupon()">Apply</button>
+              </div>
+              <div id="coupon-message" class="cd-coupon-message"></div>
+            </div>
           <% end %>
         <% end %>
 
@@ -774,8 +847,7 @@
 </div>
 
 <%# ─────────────────────────────────────────────────────────── %>
-<%# JAVASCRIPT — Module Accordion Only                          %>
-<%# (Preview modal JS is inside _preview_modal.html.erb)        %>
+<%# JAVASCRIPT — Module Accordion + Load More Reviews           %>
 <%# ─────────────────────────────────────────────────────────── %>
 <script>
 function cdToggleModule(headerEl) {
@@ -788,5 +860,152 @@ function cdToggleModule(headerEl) {
   headerEl.classList.toggle('is-open', !isOpen);
   chevron.classList.toggle('rotated', !isOpen);
   headerEl.setAttribute('aria-expanded', String(!isOpen));
+}
+
+// Load more reviews
+(function() {
+  function timeAgo(timestamp) {
+    var seconds = Math.floor((Date.now() / 1000) - timestamp);
+    if (seconds < 60) return 'just now';
+    var minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + ' minute' + (minutes > 1 ? 's' : '');
+    var hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + ' hour' + (hours > 1 ? 's' : '');
+    var days = Math.floor(hours / 24);
+    if (days < 30) return days + ' day' + (days > 1 ? 's' : '');
+    var months = Math.floor(days / 30);
+    if (months < 12) return months + ' month' + (months > 1 ? 's' : '');
+    return Math.floor(months / 12) + ' year' + (months > 12 ? 's' : '');
+  }
+
+  var loadMoreBtn = document.getElementById('load-more-reviews');
+  if (!loadMoreBtn) return;
+
+  loadMoreBtn.addEventListener('click', function() {
+    var wrapper = document.getElementById('reviews-more-wrapper');
+    var btn = this;
+    var offset = parseInt(btn.dataset.offset, 10);
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Loading...';
+
+    var courseId = document.getElementById('reviews-list').dataset.courseId;
+    var url = '/courses/' + courseId + '/reviews/more?offset=' + offset;
+
+    fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (data.reviews && data.reviews.length > 0) {
+        var grid = document.getElementById('reviews-list');
+        data.reviews.forEach(function(review) {
+          var div = document.createElement('div');
+          div.className = 'cd-review';
+          div.innerHTML =
+            '<div class="cd-review__avatar">' +
+              (review.avatar_url ?
+                '<img src="' + review.avatar_url + '" alt="' + review.user_name + '">' :
+                '<span>' + (review.user_name ? review.user_name.charAt(0).toUpperCase() : '?') + '</span>') +
+            '</div>' +
+            '<div class="cd-review__body">' +
+              '<div class="cd-review__header">' +
+                '<div>' +
+                  '<div class="cd-review__author">' + review.user_name + '</div>' +
+                  '<div class="cd-review__stars">' +
+                    Array(review.rating).fill('<i class="bi bi-star-fill"></i>').join('') +
+                    Array(5 - review.rating).fill('<i class="bi bi-star" style="color:#d1d5db;"></i>').join('') +
+                  '</div>' +
+                '</div>' +
+                '<span class="cd-review__date">' + timeAgo(review.created_at) + ' ago</span>' +
+              '</div>' +
+              '<p class="cd-review__text">' + review.content + '</p>' +
+            '</div>';
+          grid.appendChild(div);
+        });
+
+        var newOffset = offset + data.reviews.length;
+        if (data.has_more) {
+          btn.dataset.offset = newOffset;
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-chevron-down"></i> Load more reviews';
+        } else {
+          wrapper.style.display = 'none';
+        }
+      } else {
+        wrapper.style.display = 'none';
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-chevron-down"></i> Load more reviews';
+    });
+  });
+})();
+
+// Coupon apply function
+function applyCoupon() {
+  var code = document.getElementById('coupon-code').value.trim();
+  var msg = document.getElementById('coupon-message');
+
+  if (!code) {
+    msg.className = 'cd-coupon-message error';
+    msg.textContent = 'Please enter a coupon code.';
+    return;
+  }
+
+  // Get course ID from page
+  var courseId = <%= @course.id %>;
+
+  // Show loading state
+  var applyBtn = document.querySelector('.cd-coupon-apply');
+  applyBtn.disabled = true;
+  applyBtn.textContent = '...';
+
+  // Store coupon in session for this specific course
+  fetch('/cart/apply_coupon_api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+    },
+    body: JSON.stringify({ coupon_code: code, course_id: courseId })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      msg.className = 'cd-coupon-message success';
+      msg.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + data.message;
+      // Dynamically update the price display
+      var priceDisplay = document.getElementById('cd-price-display');
+      if (priceDisplay && data.new_price) {
+        priceDisplay.textContent = data.new_price;
+        priceDisplay.style.color = '#10b981';
+        // Show original price with strikethrough if not shown
+        var priceWrap = priceDisplay.closest('.cd-sidebar-price');
+        if (priceWrap && !priceWrap.querySelector('.price-original')) {
+          var originalPrice = priceWrap.querySelector('.price-current').getAttribute('data-original-price');
+          if (originalPrice) {
+            priceWrap.insertAdjacentHTML('beforeend',
+              '<span class="price-original" style="text-decoration: line-through; color: #94a3b8;">' + originalPrice + '</span>');
+          }
+        }
+      }
+    } else {
+      msg.className = 'cd-coupon-message error';
+      msg.innerHTML = '<i class="bi bi-x-circle-fill"></i> ' + data.message;
+    }
+    applyBtn.disabled = false;
+    applyBtn.textContent = 'Apply';
+  })
+  .catch(function() {
+    msg.className = 'cd-coupon-message error';
+    msg.textContent = 'Failed to apply coupon. Please try again.';
+    applyBtn.disabled = false;
+    applyBtn.textContent = 'Apply';
+  });
 }
 </script>

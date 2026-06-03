@@ -1964,6 +1964,124 @@
   border-top: 1px solid $border;
 }
 
+// Lesson type toggle
+.inst-form__type-toggle {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.inst-form__type-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid $border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  &:hover {
+    border-color: rgba($primary, 0.4);
+    background: rgba($primary, 0.04);
+  }
+
+  &.active {
+    border-color: $primary;
+    background: rgba($primary, 0.08);
+
+    .inst-form__type-icon,
+    .inst-form__type-text {
+      color: $primary;
+    }
+  }
+}
+
+.inst-form__type-icon {
+  font-size: 1.25rem;
+  color: $text-mid;
+}
+
+.inst-form__type-text {
+  font-weight: 700;
+  color: $text-mid;
+  font-size: 0.9rem;
+}
+
+.inst-form__group--conditional {
+  &.hidden {
+    display: none;
+  }
+}
+
+.inst-upload-section.hidden {
+  display: none;
+}
+
+.inst-form__resources {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.inst-form__resource-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.inst-form__resource-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba($danger, 0.3);
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $danger;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba($danger, 0.1);
+  }
+}
+
+.inst-form__add-resource {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px dashed rgba($primary, 0.4);
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $primary;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba($primary, 0.06);
+    border-style: solid;
+  }
+}
+
+.inst-form__resource-single {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
 // ── Curriculum overrides ──────────────────────────────────────
 .curriculum-lesson--empty {
   display: flex;
@@ -2048,10 +2166,6 @@
     grid-template-columns: 1fr;
   }
 }
-
-.inst-form__main {}
-
-.inst-form__sidebar {}
 
 // ── Answer Options ───────────────────────────────────────────
 .answer-options {
@@ -2353,7 +2467,7 @@
 // ── Module Form Grid ───────────────────────────────────────────
 .module-form-grid {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 1fr 340px;
   gap: 1.5rem;
   align-items: flex-start;
 
@@ -3152,5 +3266,316 @@
   &__actions {
     display: flex;
     gap: 0.25rem;
+  }
+}
+
+
+// ── Learning Outcomes Section ──────────────────────────────
+.inst-form__outcomes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.inst-form__outcome-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  padding: 0.5rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+}
+
+.inst-form__outcome-input-wrap {
+  flex: 1;
+  position: relative;
+
+  .inst-form__input {
+    width: 100%;
+    padding-left: 2.25rem;
+    background: transparent;
+    border: none;
+    font-size: 0.88rem;
+
+    &:focus {
+      outline: none;
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+}
+
+.inst-form__outcome-icon {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $success;
+  font-size: 0.95rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.inst-form__outcome-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  cursor: pointer;
+  transition: $t;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+
+  .bi { font-size: 0.9rem; }
+}
+
+// ── Outcomes Section Header ──────────────────────────────
+.inst-form__outcomes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+}
+
+// Small add button for outcomes
+.inst-form__btn-outcome-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border: 1px dashed $border;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $t;
+
+  .bi { font-size: 0.75rem; }
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: rgba($primary, 0.05);
+  }
+}
+
+// ============================================================
+// Upload Toggle (link vs cloudinary)
+// ============================================================
+.inst-upload-toggle {
+  margin-bottom: 1rem;
+
+  &__options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.875rem;
+    border: 1.5px solid $border;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $text-secondary;
+    background: #fff;
+    transition: all 0.2s ease;
+    user-select: none;
+
+    input { display: none; }
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+      background: rgba($primary, 0.04);
+    }
+
+    &.active {
+      border-color: $primary;
+      background: rgba($primary, 0.08);
+      color: $primary;
+      font-weight: 600;
+    }
+  }
+}
+
+.inst-upload-section {
+  margin-top: 1rem;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+// ============================================================
+// File Dropzone
+// ============================================================
+.inst-file-dropzone {
+  border: 2px dashed $border;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &__icon {
+    font-size: 2rem;
+    color: $text-muted;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  &__text {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    margin: 0 0 0.25rem;
+
+    strong { color: $primary; }
+  }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__browse {
+    color: $primary;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  &:hover, &.drag-over {
+    border-color: $primary;
+    background: rgba($primary, 0.04);
+  }
+
+  &.has-file {
+    border-color: $success;
+    background: rgba($success, 0.04);
+
+    .inst-file-dropzone__icon { color: $success; }
+  }
+
+  &--sm {
+    padding: 1rem;
+    .inst-file-dropzone__icon { font-size: 1.4rem; }
+  }
+}
+
+// ============================================================
+// Upload Preview
+// ============================================================
+.inst-upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f0f9f4;
+  border: 1px solid rgba($success, 0.3);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+
+  > i { font-size: 1.5rem; color: $success; }
+
+  &__info { flex: 1; min-width: 0; }
+
+  &__name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__size {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__remove {
+    color: $danger;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover { color: darken($danger, 10%); }
+  }
+}
+
+// ============================================================
+// Attachments List
+// ============================================================
+.inst-attachments-list {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.inst-attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: $text-secondary;
+
+  i { color: $primary; }
+  span { flex: 1; }
+
+  &__size {
+    flex: unset !important;
+    color: $text-muted;
+    font-size: 0.75rem;
   }
 }

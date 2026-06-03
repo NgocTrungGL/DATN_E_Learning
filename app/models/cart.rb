@@ -11,7 +11,7 @@ class Cart < ApplicationRecord
     manual_coupon = active_manual_coupon
     cart_items.sum do |item|
       course = item.course
-      [item_discount(course, manual_coupon), course.price].min
+      [calculate_item_discount(course, manual_coupon), course.price].min
     end
   end
 
@@ -21,8 +21,6 @@ class Cart < ApplicationRecord
 
   delegate :empty?, to: :cart_items
 
-  private
-
   def active_manual_coupon
     return if promo_code.blank?
 
@@ -30,14 +28,20 @@ class Cart < ApplicationRecord
     coupon if coupon&.active_and_current?
   end
 
-  def item_discount course, coupon
-    discount = automatic_discount(course)
-    discount += manual_discount(course, coupon) if coupon
-    discount
+  def item_discount_for(course)
+    calculate_item_discount(course, active_manual_coupon)
   end
+
+  private
 
   def automatic_discount course
     course.has_discount? ? course.price - course.discounted_price : 0
+  end
+
+  def calculate_item_discount(course, coupon)
+    discount = automatic_discount(course)
+    discount += manual_discount(course, coupon) if coupon
+    discount
   end
 
   def manual_discount course, coupon

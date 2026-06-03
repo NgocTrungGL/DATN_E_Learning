@@ -7,7 +7,8 @@
   course_progress = user_signed_in? ? current_user.course_progress_percentage(@lesson.course) : 0
   @big_quizzes    = @lesson.course.quizzes.where(lesson_id: nil).order(:created_at)
 
-  embed_link = @lesson.video_url.present? ? youtube_embed_url(@lesson.video_url) : nil
+  youtube_id = @lesson.link? ? youtube_video_id(@lesson.video_url) : nil
+  cloudinary_url = @lesson.cloudinary? ? @lesson.cloudinary_video_url : nil
 %>
 
 <div class="lesson-page">
@@ -26,12 +27,85 @@
   <%# ── MAIN CONTENT COLUMN ──────────────────────────────────── %>
   <main class="lesson-main" id="lesson-main">
 
-    <%# Video player %>
-    <% if embed_link.present? %>
+    <%# Video player: YouTube (link mode) %>
+    <% if @lesson.video? && @lesson.link? && youtube_id.present? %>
       <div class="lesson-video">
-        <iframe src="<%= embed_link %>" allowfullscreen loading="lazy"
-                title="<%= @lesson.title %>"></iframe>
+        <div id="youtube-player" data-video-id="<%= youtube_id %>"></div>
       </div>
+      <div class="lesson-video-controls">
+        <div class="lesson-speed-control">
+          <label for="speed-select">Toc do:</label>
+          <select id="speed-select" class="lesson-speed-select">
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1" selected>1x</option>
+            <option value="1.25">1.25x</option>
+            <option value="1.5">1.5x</option>
+            <option value="1.75">1.75x</option>
+            <option value="2">2x</option>
+          </select>
+        </div>
+      </div>
+    <% end %>
+
+    <%# Video player: Cloudinary upload %>
+    <% if @lesson.video? && @lesson.cloudinary? && cloudinary_url.present? %>
+      <%
+        # Lay progress tu DB de khoi phuc vi tri
+        saved_progress = user_signed_in? ? current_user.progress_trackings.find_by(lesson: @lesson, progress_type: 'lesson') : nil
+        max_watched = saved_progress ? saved_progress.progress_value.to_i : 0
+      %>
+      <div class="lesson-video">
+        <video id="cloudinary-player" controls controlsList="nodownload"
+               data-lesson-id="<%= @lesson.id %>"
+               data-max-watched="<%= max_watched %>">
+          <source src="<%= cloudinary_url %>" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    <% end %>
+
+    <%# Text content %>
+    <% if @lesson.text? && @lesson.content.present? %>
+      <div class="lesson-text-content">
+        <%= @lesson.content %>
+      </div>
+    <% end %>
+
+    <%# Resources %>
+    <% if @lesson.resources.present? && @lesson.resources.is_a?(Array) && @lesson.resources.any? %>
+      <div class="lesson-resources">
+        <h3 class="lesson-resources__title">
+          <i class="bi bi-link-45deg"></i> Resources
+        </h3>
+        <div class="lesson-resources__list">
+          <% @lesson.resources.each do |res| %>
+            <% if res['url'].present? %>
+              <a href="<%= res['url'] %>" target="_blank" class="lesson-resources__item">
+                <i class="bi bi-file-earmark-link"></i>
+                <span><%= res['title'] || 'Resource' %></span>
+                <i class="bi bi-box-arrow-up-right lesson-resources__external"></i>
+              </a>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%# Attachment %>
+    <% if @lesson.attachment_url.present? %>
+      <%= link_to @lesson.attachment_url, target: "_blank", class: "lesson-attach" do %>
+        <div class="lesson-attach__icon">
+          <i class="bi bi-paperclip"></i>
+        </div>
+        <div class="lesson-attach__text">
+          <span class="lesson-attach__label">
+            Reference material
+            <i class="bi bi-box-arrow-up-right" style="font-size:0.7em; opacity:0.6;"></i>
+          </span>
+          <div class="lesson-attach__hint">Click to view or download the material</div>
+        </div>
+      <% end %>
     <% end %>
 
     <%# Lesson title + description %>
@@ -75,16 +149,19 @@
           </span>
         <% end %>
       </div>
-      <div class="lesson-status__actions">
-        <%= button_to lesson_complete_path(@lesson), method: :post,
-              class: "btn-complete #{current_user.lesson_completed?(@lesson) ? 'btn-complete--done' : 'btn-complete--pending'}" do %>
-          <% if current_user.lesson_completed?(@lesson) %>
-            <i class="bi bi-x-circle"></i> Unmark
-          <% else %>
-            <i class="bi bi-check2-circle"></i> Mark as complete
+      <%# Chi hien thi nut danh dau cho bai text, bai video se tu dong danh dau khi xem > 80% %>
+      <% if @lesson.text? %>
+        <div class="lesson-status__actions">
+          <%= button_to lesson_complete_path(@lesson), method: :post,
+                class: "btn-complete #{current_user.lesson_completed?(@lesson) ? 'btn-complete--done' : 'btn-complete--pending'}" do %>
+            <% if current_user.lesson_completed?(@lesson) %>
+              <i class="bi bi-x-circle"></i> Unmark
+            <% else %>
+              <i class="bi bi-check2-circle"></i> Mark as complete
+            <% end %>
           <% end %>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
     </div>
     <% end %>
 
@@ -187,7 +264,7 @@
                         class: "sb-lesson #{is_active ? 'sb-lesson--active' : ''}" do %>
                     <div class="sb-lesson__inner">
                       <div class="sb-lesson__left">
-                        <i class="bi <%= l.video_url.present? ? 'bi-play-circle' : 'bi-file-text' %> sb-lesson__icon"></i>
+                        <i class="bi <%= l.video? ? 'bi-play-circle' : 'bi-file-text' %> sb-lesson__icon"></i>
                         <span class="sb-lesson__title"><%= l.title %></span>
                       </div>
                       <% if is_completed %>
@@ -242,3 +319,286 @@
   </aside>
 
 </div><%# /lesson-page %>
+
+<% if @lesson.video? && @lesson.link? && youtube_id.present? %>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    var player;
+    var maxWatched = 0;
+    var videoDuration = 0;
+    var hasCompleted = false;
+    var lessonId = <%= @lesson.id %>;
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('youtube-player', {
+        videoId: '<%= youtube_id %>',
+        playerVars: { rel: 0, modestbranding: 1 },
+        events: {
+          'onStateChange': onPlayerStateChange,
+          'onReady': onPlayerReady
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      videoDuration = player.getDuration();
+      console.log('[YouTube] Video duration:', videoDuration);
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        maxWatched = Math.max(maxWatched, player.getCurrentTime());
+      }
+    }
+
+    function markAsCompleted() {
+      if (hasCompleted) return;
+      hasCompleted = true;
+      console.log('[YouTube] Marking as completed at 80%+');
+      fetch('/lessons/' + lessonId + '/auto_complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        }
+      });
+      var statusBadge = document.querySelector('.lesson-status__badge');
+      if (statusBadge) {
+        statusBadge.className = 'lesson-status__badge lesson-status__badge--done';
+        statusBadge.innerHTML = '<i class="bi bi-check-circle-fill"></i> Completed';
+      }
+      // Cap nhat progress bar trong sidebar
+      updateProgressBar();
+      showToast('Hoàn thành bài học', 'Chúc mừng bạn đã hoàn thành bài học này!');
+    }
+
+    function updateProgressBar() {
+      fetch('/lessons/' + lessonId + '/progress')
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+          var barFill = document.querySelector('.sb-header__bar-fill');
+          if (barFill) {
+            barFill.style.width = data.progress + '%';
+          }
+          var progressBadge = document.querySelector('.sb-header__progress-badge');
+          if (progressBadge) {
+            progressBadge.textContent = data.progress + '%';
+          }
+        })
+        .catch(function(err) { console.error('[Progress] Error:', err); });
+    }
+
+    function showToast(title, message) {
+      console.log('[Toast] Showing:', title, message);
+      var container = document.getElementById('toast-container');
+      if (!container) {
+        console.log('[Toast] Creating container');
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none';
+        document.body.appendChild(container);
+      }
+      var toast = document.createElement('div');
+      toast.className = 'toast-custom';
+      toast.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 18px;background:#fff;border-radius:12px;border-left:4px solid #10b981;box-shadow:0 4px 20px rgba(0,0,0,0.12);max-width:500px;margin-top:10px;pointer-events:auto;font-family:Inter,sans-serif';
+      toast.innerHTML =
+        '<div style="width:36px;height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;background:#ecfdf5;color:#10b981;border-radius:50%;font-size:1.1rem"><i class="bi bi-check-lg"></i></div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-weight:700;color:#1e293b;margin-bottom:2px;font-size:0.9rem">' + title + '</div>' +
+          '<div style="color:#64748b;font-size:0.8rem">' + message + '</div>' +
+        '</div>';
+      container.appendChild(toast);
+      console.log('[Toast] Toast added to DOM');
+      setTimeout(function() {
+        toast.classList.add('toast-exit');
+        setTimeout(function() {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 4000);
+    }
+
+    // Kiem tra lien tuc — chan nguoi dung tua qua phan da xem
+    setInterval(function() {
+      if (!player) return;
+      var state = player.getPlayerState();
+      if (state !== YT.PlayerState.PLAYING &&
+          state !== YT.PlayerState.BUFFERING) return;
+
+      var current = player.getCurrentTime();
+      if (current > maxWatched + 0.5) {
+        player.seekTo(maxWatched, true);
+      } else if (current > maxWatched) {
+        maxWatched = current;
+      }
+
+      // Kiem tra > 80% thi danh dau hoan thanh
+      if (videoDuration > 0) {
+        var percent = (current / videoDuration) * 100;
+        if (percent >= 80) {
+          markAsCompleted();
+        }
+      }
+    }, 300);
+
+    // Dieu chinh toc do video
+    var speedSelect = document.getElementById('speed-select');
+    if (speedSelect) {
+      speedSelect.addEventListener('change', function() {
+        if (player && player.setPlaybackRate) {
+          player.setPlaybackRate(parseFloat(this.value));
+        }
+      });
+    }
+  </script>
+<% end %>
+
+<%# Chặn tua video Cloudinary %>
+<% if @lesson.video? && @lesson.cloudinary? && cloudinary_url.present? && user_signed_in? %>
+  <script>
+    (function() {
+      var video = document.getElementById('cloudinary-player');
+      if (!video) return;
+
+      var lessonId = video.dataset.lessonId;
+      var maxWatched = parseInt(video.dataset.maxWatched) || 0;
+      var saveInterval;
+      var hasCompleted = false;
+
+      // Khoi phuc vi tri
+      if (maxWatched > 0) {
+        video.currentTime = maxWatched;
+      }
+
+      // Gui request auto complete
+      function markAsCompleted() {
+        if (hasCompleted) return;
+        hasCompleted = true;
+        fetch('/lessons/' + lessonId + '/auto_complete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          }
+        });
+        // Cap nhat UI
+        var statusBadge = document.querySelector('.lesson-status__badge');
+        if (statusBadge) {
+          statusBadge.className = 'lesson-status__badge lesson-status__badge--done';
+          statusBadge.innerHTML = '<i class="bi bi-check-circle-fill"></i> Completed';
+        }
+        // Cap nhat progress bar trong sidebar
+        updateProgressBar();
+        showToast('Hoàn thành bài học', 'Chúc mừng bạn đã hoàn thành bài học này!');
+      }
+
+      function updateProgressBar() {
+        fetch('/lessons/' + lessonId + '/progress')
+          .then(function(response) { return response.json(); })
+          .then(function(data) {
+            var barFill = document.querySelector('.sb-header__bar-fill');
+            if (barFill) {
+              barFill.style.width = data.progress + '%';
+            }
+            var progressBadge = document.querySelector('.sb-header__progress-badge');
+            if (progressBadge) {
+              progressBadge.textContent = data.progress + '%';
+            }
+          })
+          .catch(function(err) { console.error('[Progress] Error:', err); });
+      }
+
+      function showToast(title, message) {
+        console.log('[Toast] Showing:', title, message);
+        var container = document.getElementById('toast-container');
+        if (!container) {
+          console.log('[Toast] Creating container');
+          container = document.createElement('div');
+          container.id = 'toast-container';
+          container.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none';
+          document.body.appendChild(container);
+        }
+        var toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        toast.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 18px;background:#fff;border-radius:12px;border-left:4px solid #10b981;box-shadow:0 4px 20px rgba(0,0,0,0.12);max-width:500px;margin-top:10px;pointer-events:auto;font-family:Inter,sans-serif';
+        toast.innerHTML =
+          '<div style="width:36px;height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;background:#ecfdf5;color:#10b981;border-radius:50%;font-size:1.1rem"><i class="bi bi-check-lg"></i></div>' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-weight:700;color:#1e293b;margin-bottom:2px;font-size:0.9rem">' + title + '</div>' +
+            '<div style="color:#64748b;font-size:0.8rem">' + message + '</div>' +
+          '</div>';
+        container.appendChild(toast);
+        console.log('[Toast] Toast added to DOM');
+        setTimeout(function() {
+          toast.classList.add('toast-exit');
+          setTimeout(function() {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, 300);
+        }, 4000);
+      }
+
+      // Theo doi thoi gian hien tai
+      video.addEventListener('timeupdate', function() {
+        var current = video.currentTime;
+        if (current > maxWatched + 0.5) {
+          video.currentTime = maxWatched;
+        } else if (current > maxWatched) {
+          maxWatched = current;
+        }
+        // Kiem tra > 80% thi danh dau hoan thanh
+        if (video.duration > 0) {
+          var percent = (video.currentTime / video.duration) * 100;
+          console.log('[Cloudinary] Progress:', percent.toFixed(1) + '%');
+          if (percent >= 80) {
+            console.log('[Cloudinary] Triggering markAsCompleted');
+            markAsCompleted();
+          }
+        }
+      });
+
+      // Luu progress len server
+      function saveProgress(percent) {
+        fetch('/lessons/' + lessonId + '/video_progress', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: 'progress=' + Math.floor(percent)
+        });
+      }
+
+      // Gui progress moi 5 giay
+      video.addEventListener('play', function() {
+        saveInterval = setInterval(function() {
+          if (video.duration > 0) {
+            var percent = (video.currentTime / video.duration) * 100;
+            saveProgress(percent);
+            // Kiem tra > 80%
+            if (percent >= 80) {
+              markAsCompleted();
+            }
+          }
+        }, 5000);
+      });
+
+      video.addEventListener('pause', function() {
+        clearInterval(saveInterval);
+        if (video.duration > 0) {
+          var percent = (video.currentTime / video.duration) * 100;
+          saveProgress(percent);
+          if (percent >= 80) {
+            markAsCompleted();
+          }
+        }
+      });
+
+      // Lưu khi thoat trang
+      window.addEventListener('beforeunload', function() {
+        if (video.duration > 0 && video.currentTime > 0) {
+          var percent = (video.currentTime / video.duration) * 100;
+          saveProgress(percent);
+        }
+      });
+    })();
+  </script>
+<% end %>

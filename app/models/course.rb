@@ -17,6 +17,8 @@ optional: true
   has_many :wishlists, dependent: :destroy
   has_many :wishlisting_users, through: :wishlists, source: :user
   has_many :certificates, dependent: :destroy
+  has_many :course_learning_outcomes, dependent: :destroy, inverse_of: :course
+  accepts_nested_attributes_for :course_learning_outcomes, allow_destroy: true, reject_if: ->(attrs) { attrs[:content].blank? }
   has_one_attached :image
   enum status: {
     draft: 0,
@@ -24,6 +26,8 @@ optional: true
     published: 2,
     rejected: 3
   }
+
+  scope :published, -> { where(status: :published) }
 
   after_commit :notify_status_change, on: :update, if: :saved_change_to_status?
 

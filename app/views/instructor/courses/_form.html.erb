@@ -11,6 +11,7 @@
       </div>
     <% end %>
 
+    <%# Basic Information %>
     <div class="inst-form__section">
       <h3 class="inst-form__section-title">Basic Information</h3>
 
@@ -35,6 +36,7 @@
       </div>
     </div>
 
+    <%# Pricing & Category %>
     <div class="inst-form__section">
       <h3 class="inst-form__section-title">Pricing & Category</h3>
 
@@ -56,6 +58,7 @@
       </div>
     </div>
 
+    <%# Allow Discounts %>
     <div class="inst-form__section">
       <div class="inst-form__checkbox-wrap">
         <label class="inst-form__checkbox">
@@ -69,6 +72,57 @@
       </div>
     </div>
 
+    <%# What You'll Learn Section - Optional, at bottom %>
+    <div class="inst-form__section inst-form__section--outcomes">
+      <h3 class="inst-form__section-title">
+        <i class="bi bi-lightbulb-fill"></i> What You'll Learn
+      </h3>
+      <p class="inst-form__hint">Optional. Add learning outcomes to help students understand course benefits.</p>
+
+      <div class="inst-form__outcomes-list" id="learning-outcomes-list">
+        <% existing_outcomes = @course.course_learning_outcomes.ordered %>
+        <% if existing_outcomes.any? %>
+          <%= f.fields_for :course_learning_outcomes, existing_outcomes do |outcome| %>
+            <div class="inst-form__outcome-item">
+              <div class="inst-form__outcome-input-wrap">
+                <i class="bi bi-check-circle-fill inst-form__outcome-icon"></i>
+                <%= outcome.text_field :content,
+                    class: "inst-form__input",
+                    placeholder: "e.g., Master Ruby on Rails fundamentals..." %>
+                <%= outcome.hidden_field :order_index, class: 'outcome-order-index' %>
+                <%= outcome.check_box :_destroy, class: 'outcome-destroy-checkbox', style: 'display:none;' %>
+              </div>
+              <% unless outcome.object.new_record? %>
+                <%= outcome.hidden_field :id %>
+              <% end %>
+              <button type="button" class="inst-form__outcome-remove" title="Remove">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          <% end %>
+        <% else %>
+          <%# Empty state - one blank field %>
+          <div class="inst-form__outcome-item">
+            <div class="inst-form__outcome-input-wrap">
+              <i class="bi bi-check-circle-fill inst-form__outcome-icon"></i>
+              <input type="text" class="inst-form__input" name="course[course_learning_outcomes_attributes][0][content]"
+                     placeholder="e.g., Master Ruby on Rails fundamentals..." data-new="true">
+              <input type="hidden" name="course[course_learning_outcomes_attributes][0][order_index]" value="0">
+            </div>
+            <button type="button" class="inst-form__outcome-remove" title="Remove">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Add button at bottom %>
+      <button type="button" class="inst-form__btn-outcome-add" id="add-outcome-btn">
+        <i class="bi bi-plus"></i> Add more
+      </button>
+    </div>
+
+    <%# Form Actions %>
     <div class="inst-form__actions">
       <%= f.submit "Save Course", class: "btn btn-primary" %>
       <a href="<%= @course.persisted? ? instructor_course_path(@course) : instructor_courses_path %>" class="btn btn-outline">
@@ -77,3 +131,81 @@
     </div>
   <% end %>
 </div>
+
+<script>
+(function() {
+  function initOutcomes() {
+    var list = document.getElementById('learning-outcomes-list');
+    var addBtn = document.getElementById('add-outcome-btn');
+    if (!list || !addBtn) return;
+
+    var indexCounter = list.querySelectorAll('.inst-form__outcome-item').length;
+
+    function updateOrderIndexes() {
+      var items = list.querySelectorAll('.inst-form__outcome-item');
+      items.forEach(function(item, idx) {
+        var orderInput = item.querySelector('.outcome-order-index, input[name$="[order_index]"]');
+        if (orderInput) orderInput.value = idx;
+      });
+    }
+
+    function addOutcome() {
+      var currentCount = list.querySelectorAll('.inst-form__outcome-item').length;
+      if (currentCount >= 8) {
+        alert('Maximum 8 outcomes allowed.');
+        return;
+      }
+
+      var item = document.createElement('div');
+      item.className = 'inst-form__outcome-item';
+      item.innerHTML =
+        '<div class="inst-form__outcome-input-wrap">' +
+          '<i class="bi bi-check-circle-fill inst-form__outcome-icon"></i>' +
+          '<input type="text" class="inst-form__input" name="course[course_learning_outcomes_attributes][' + indexCounter + '][content]" placeholder="e.g., Master Ruby on Rails fundamentals..." data-new="true">' +
+          '<input type="hidden" name="course[course_learning_outcomes_attributes][' + indexCounter + '][order_index]" value="' + indexCounter + '">' +
+        '</div>' +
+        '<button type="button" class="inst-form__outcome-remove" title="Remove"><i class="bi bi-x"></i></button>';
+
+      list.appendChild(item);
+      indexCounter++;
+      updateOrderIndexes();
+
+      var input = item.querySelector('input[type="text"]');
+      if (input) input.focus();
+    }
+
+    function removeOutcome(item) {
+      var destroyCheckbox = item.querySelector('input[name$="[_destroy]"]');
+      var contentInput = item.querySelector('input[data-new="true"]');
+
+      if (destroyCheckbox) {
+        destroyCheckbox.checked = true;
+        item.style.display = 'none';
+      } else if (contentInput) {
+        item.remove();
+      }
+      updateOrderIndexes();
+    }
+
+    addBtn.addEventListener('click', addOutcome);
+
+    list.addEventListener('click', function(e) {
+      var removeBtn = e.target.closest('.inst-form__outcome-remove');
+      if (removeBtn) {
+        removeOutcome(removeBtn.closest('.inst-form__outcome-item'));
+      }
+    });
+
+    updateOrderIndexes();
+  }
+
+  // Support both regular page load and Turbo navigation
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOutcomes);
+  } else {
+    initOutcomes();
+  }
+  document.addEventListener('turbo:load', initOutcomes);
+  document.addEventListener('turbo:frame-load', initOutcomes);
+})();
+</script>

@@ -20,6 +20,21 @@ class Business::LicensesController < ApplicationController
     end
   end
 
+  def revoke
+    @license = current_user.organization.licenses.find(params[:id])
+    return redirect_no_license unless @license.assigned?
+
+    old_user = @license.user
+    service = LicenseReassignmentService.new(@license, old_user, nil)
+
+    if service.call
+      redirect_to business_licenses_path,
+                  notice: "License for '#{@license.course.title}' has been revoked from #{old_user.name}."
+    else
+      redirect_to business_licenses_path, alert: service.errors.join(", ")
+    end
+  end
+
   private
 
   def require_company_admin!

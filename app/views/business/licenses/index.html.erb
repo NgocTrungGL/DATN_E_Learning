@@ -107,6 +107,13 @@
                       <% end %>
                     </span>
                   </div>
+                  <%= button_to revoke_business_license_path(lic),
+                                method: :post,
+                                form: { style: "display: inline;" },
+                                class: "license-card__list-revoke",
+                                data: { turbo_confirm: "Revoke license from #{lic.user&.name}?" } do %>
+                    <i class="bi bi-x-circle"></i>
+                  <% end %>
                 </li>
               <% end %>
               <% if assigned_count == 0 %>

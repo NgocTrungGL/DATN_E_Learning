@@ -18,4 +18,11 @@ module LessonsHelper
 
     "https://www.youtube.com/embed/#{match[1]}"
   end
+
+  def youtube_video_id url
+    return nil if url.blank?
+
+    match = url.match(YOUTUBE_URL_REGEX)
+    match[1] if match
+  end
 end

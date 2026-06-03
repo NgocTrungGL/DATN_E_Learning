@@ -37,7 +37,14 @@ class CheckoutsController < ApplicationController
     if @session.metadata["type"] == "cart"
       current_user.cart.cart_items.destroy_all
       current_user.cart.update(promo_code: nil)
+    elsif @session.metadata["course_id"].present?
+      # Single course checkout - clear session coupon for this course
+      course_id = @session.metadata["course_id"]
+      session[:course_coupons]&.delete(course_id)
     end
+
+    # Clear all session coupons after successful checkout
+    session[:course_coupons] = nil
 
     redirect_to success_url
   end
@@ -66,6 +73,18 @@ class CheckoutsController < ApplicationController
   def unit_price course
     price = course.price
     price *= 0.9 if license_discount?
+
+    # Apply session coupon if exists for this course
+    course_id = course.id.to_s
+    session_coupon_code = session[:course_coupons]&.dig(course_id)
+    if session_coupon_code.present?
+      coupon = active_manual_coupon(session_coupon_code)
+      if coupon && (coupon.specific_course? && coupon.course_id == course.id || coupon.global?)
+        price -= coupon.percentage? ? course.price * coupon.discount_value / 100.0 : coupon.discount_value
+        price = [price, 0].max
+      end
+    end
+
     price.to_i
   end
 
@@ -132,7 +151,7 @@ class CheckoutsController < ApplicationController
       user_id: current_user.id,
       type: "cart",
       course_ids: current_user.cart.course_ids.join(","),
-      promo_code: current_user.cart.promo_code
+      session_coupons: session[:course_coupons]&.to_json
     }
   end
 
@@ -150,9 +169,11 @@ class CheckoutsController < ApplicationController
   end
 
   def build_line_items cart
-    manual_coupon = active_manual_coupon(cart.promo_code)
     cart.cart_items.map do |item|
-      build_cart_line_item(item, discounted_unit_amount(item.course, manual_coupon))
+      course_id = item.course_id.to_s
+      session_coupon_code = session[:course_coupons]&.dig(course_id)
+      coupon = active_manual_coupon(session_coupon_code)
+      build_cart_line_item(item, discounted_unit_amount(item.course, coupon))
     end
   end
 

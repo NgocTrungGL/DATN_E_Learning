@@ -1,0 +1,155 @@
+// ============================================================
+// BUSINESS INVOICES
+// ============================================================
+
+.invoice-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__main {}
+
+  &__licenses {
+    &-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: $text-dark;
+      margin: 0 0 0.75rem;
+    }
+  }
+}
+
+.invoice-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid $border;
+    background: #fafafa;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  &__org {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    &-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: $radius-md;
+      background: rgba($primary, 0.1);
+      color: $primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    &-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: $text-dark;
+      margin: 0;
+    }
+
+    &-label {
+      font-size: 0.72rem;
+      color: $text-muted;
+      margin: 0;
+    }
+  }
+
+  &__number-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+  }
+
+  &__number-label {
+    font-size: 0.7rem;
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  &__number {
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  &__body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: $text-mid;
+    padding: 0.3rem 0;
+
+    &-value {
+      font-weight: 600;
+      color: $text-dark;
+    }
+
+    &-value--green { color: $success; }
+
+    &--discount {
+      background: rgba($success, 0.05);
+      padding: 0.35rem 0.6rem;
+      border-radius: $radius-sm;
+      color: darken($success, 5%);
+    }
+
+    &--total {
+      padding-top: 0.75rem;
+      border-top: 1px solid $border;
+      font-size: 1rem;
+      font-weight: 700;
+      color: $text-dark;
+    }
+  }
+
+  &__footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid $border;
+    background: #fafafa;
+  }
+
+  &__meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      color: $text-muted;
+
+      i { font-size: 0.85rem; }
+    }
+  }
+}

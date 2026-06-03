@@ -19,39 +19,9 @@
       <div class="collapse navbar-collapse" id="navbarMain">
         <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
           
-          <%# --- COURSES DROPDOWN --- %>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="coursesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Courses
-            </a>
-            <ul class="dropdown-menu border-0 shadow" aria-labelledby="coursesDropdown">
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-code-slash"></i> Web Development
-                <% end %>
-              </li>
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-graph-up"></i> Data Science
-                <% end %>
-              </li>
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-palette"></i> Design & UI/UX
-                <% end %>
-              </li>
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-hdd-network"></i> DevOps & Cloud
-                <% end %>
-              </li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <%= link_to courses_path, class: "dropdown-item fw-bold text-primary" do %>
-                  <i class="bi bi-arrow-right-circle"></i> Browse All Courses
-                <% end %>
-              </li>
-            </ul>
+          <%# --- COURSES LINK --- %>
+          <li class="nav-item">
+            <%= link_to "Courses", courses_path, class: "nav-link" %>
           </li>
 
           <% if request.path.start_with?('/courses') %>

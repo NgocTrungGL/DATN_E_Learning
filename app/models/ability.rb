@@ -92,6 +92,7 @@ class Ability
     instructor_module_lesson_rules
     instructor_quiz_rules
     instructor_enrollment_rules
+    instructor_review_rules
 
     can_access_course_content
 
@@ -131,6 +132,10 @@ class Ability
   def instructor_enrollment_rules
     can :read, Enrollment, course: { created_by: @user.id }
     cannot [:approve, :reject], Enrollment
+  end
+
+  def instructor_review_rules
+    can :read, Review, course: { created_by: @user.id }
   end
 
   #############################################################

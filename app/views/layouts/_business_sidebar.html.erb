@@ -33,5 +33,19 @@
       <i class="bi bi-cart-plus"></i>
       <span>Buy More Licenses</span>
     </a>
+
+    <div class="biz-sidebar__section-label">FINANCE</div>
+
+    <a href="<%= business_invoices_path %>"
+       class="biz-sidebar__link <%= 'biz-sidebar__link--active' if controller_name == 'invoices' %>">
+      <i class="bi bi-receipt"></i>
+      <span>Invoices</span>
+    </a>
+
+    <a href="<%= business_reports_path %>"
+       class="biz-sidebar__link <%= 'biz-sidebar__link--active' if controller_name == 'reports' %>">
+      <i class="bi bi-bar-chart-fill"></i>
+      <span>Reports</span>
+    </a>
   </nav>
 </aside>

@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  namespace :api do
+    namespace :v1 do
+      resources :recommendations, only: [:index]
+      get "categories/:id/subcategories", to: "categories#subcategories"
+    end
+  end
+
   resources :notifications, only: [:index, :update] do
     collection do
       post :mark_all_as_read
@@ -14,6 +21,7 @@ Rails.application.routes.draw do
   post 'webhooks', to: 'webhooks#create'
   resource :cart, only: [:show] do
     post :apply_coupon, on: :member
+    post :apply_coupon_api, on: :member
   end
   post 'checkout-cart', to: 'checkouts#create_from_cart', as: 'checkout_cart'
 
@@ -47,7 +55,11 @@ Rails.application.routes.draw do
   # Gom nhóm resources :courses lại cho gọn
   resources :courses, only: [:index, :show] do
     post :toggle_wishlist, to: "wishlists#toggle", as: "toggle_wishlist"
-    resources :reviews, only: [:create, :destroy]
+    resources :reviews, only: [:create, :destroy] do
+      collection do
+        get :more
+      end
+    end
     resources :enrollments, only: [:create]
     resources :discussion_messages, path: "chat", only: [:index, :create, :destroy] do
       collection do
@@ -72,6 +84,9 @@ Rails.application.routes.draw do
     resources :comments, only: [:create, :destroy]
     resources :notes, only: [:create]
     post :complete, to: "progress_trackings#mark_lesson_complete"
+    post :video_progress, to: "progress_trackings#video_progress"
+    post :auto_complete, to: "progress_trackings#auto_complete"
+    get :progress, to: "progress_trackings#get_progress"
   end
   resources :notes, only: [:update, :destroy]
 
@@ -207,6 +222,9 @@ Rails.application.routes.draw do
     end
     resources :licenses, only: [:index] do
       post :assign, on: :collection
+      member do
+        post :revoke
+      end
     end
     resources :course_market, only: [:index]
 
@@ -217,5 +235,7 @@ Rails.application.routes.draw do
     end
 
     resources :purchases, only: [:new, :create]
+    resources :invoices, only: [:index, :show]
+    resources :reports, only: [:index]
   end
 end
