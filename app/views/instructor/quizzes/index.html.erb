@@ -1,74 +1,79 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="inst-page">
+  <div class="inst-page__header">
     <div>
-      <h2 class="fw-bold">Quản lý bài kiểm tra</h2>
-      <p class="text-muted">Danh sách các đề thi bạn đã tạo.</p>
+      <h1 class="inst-page__title">Quizzes</h1>
+      <p class="inst-page__subtitle">Manage your assessments</p>
     </div>
-    <%= link_to new_instructor_quiz_path, class: "btn btn-primary" do %>
-      <i class="bi bi-plus-lg"></i> Tạo bài kiểm tra mới
-    <% end %>
+    <div class="inst-page__actions">
+      <a href="<%= new_instructor_quiz_path %>" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        New Quiz
+      </a>
+    </div>
   </div>
 
-  <div class="card shadow-sm">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover table-striped align-middle mb-0">
-          <thead class="table-light">
+  <% if @quizzes.any? %>
+    <div class="inst-card">
+      <div class="data-table__wrapper">
+        <table class="data-table">
+          <thead>
             <tr>
-              <th class="ps-4">Tên bài thi</th>
-              <th>Khóa học / Bài học</th>
-              <th class="text-center">Cấu hình</th>
-              <th class="text-center">Trạng thái</th>
-              <th class="text-end pe-4">Thao tác</th>
+              <th style="width: 30%;">Quiz</th>
+              <th>Course / Lesson</th>
+              <th style="text-align: center;">Config</th>
+              <th style="text-align: center;">Mode</th>
+              <th style="width: 120px; text-align: right;">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <% if @quizzes.any? %>
-              <% @quizzes.each do |quiz| %>
-                <tr>
-                  <td class="ps-4">
-                    <div class="fw-bold"><%= quiz.title %></div>
-                    <small class="text-muted d-block text-truncate" style="max-width: 250px;">
-                      <%= quiz.description.presence || "Không có mô tả" %>
-                    </small>
-                  </td>
-                  <td>
-                    <div><%= quiz.course.title %></div>
-                    <% if quiz.lesson %>
-                      <span class="badge bg-light text-dark border mt-1">
-                        Bài: <%= quiz.lesson.title %>
-                      </span>
-                    <% else %>
-                      <small class="text-muted fst-italic">Chung cho khóa học</small>
-                    <% end %>
-                  </td>
-                  <td class="text-center">
-                    <div class="small">
-                      <div><b><%= quiz.total_questions %></b> câu hỏi</div>
-                      <div><b><%= quiz.time_limit || "∞" %></b> phút</div>
-                      <div>Đạt: <b><%= quiz.pass_score %>%</b></div>
-                    </div>
-                  </td>
-                  <td class="text-center">
-                    <% if quiz.random_mode %>
-                      <span class="badge bg-success">Ngẫu nhiên</span>
-                    <% else %>
-                      <span class="badge bg-secondary">Cố định</span>
-                    <% end %>
-                  </td>
-                  <td class="text-end pe-4">
-                    <%= link_to "Sửa", edit_instructor_quiz_path(quiz), class: "btn btn-sm btn-outline-primary me-1" %>
-                    <%= link_to "Xóa", instructor_quiz_path(quiz), data: { turbo_method: :delete, turbo_confirm: "Bạn có chắc muốn xóa?" }, class: "btn btn-sm btn-outline-danger" %>
-                  </td>
-                </tr>
-              <% end %>
-            <% else %>
+            <% @quizzes.each do |quiz| %>
               <tr>
-                <td colspan="5" class="text-center py-5">
-                  <div class="text-muted">
-                    <h5>Chưa có dữ liệu</h5>
-                    <p>Bạn chưa tạo bài kiểm tra nào.</p>
-                    <%= link_to "Tạo ngay", new_instructor_quiz_path, class: "btn btn-sm btn-primary mt-2" %>
+                <td>
+                  <div class="quiz-cell">
+                    <span class="quiz-cell__title"><%= quiz.title %></span>
+                    <span class="quiz-cell__desc">
+                      <%= truncate(quiz.description, length: 60) || "No description" %>
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <% if quiz.course %>
+                    <span class="quiz-cell__course"><%= quiz.course.title %></span>
+                  <% end %>
+                  <% if quiz.lesson %>
+                    <span class="quiz-cell__lesson">
+                      <i class="bi bi-play-circle"></i>
+                      <%= quiz.lesson.title %>
+                    </span>
+                  <% else %>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">Course-wide</span>
+                  <% end %>
+                </td>
+                <td style="text-align: center;">
+                  <div class="quiz-cell__config">
+                    <span><i class="bi bi-puzzle"></i> <%= quiz.total_questions %> Q</span>
+                    <span><i class="bi bi-clock"></i> <%= quiz.time_limit.present? ? "#{quiz.time_limit}m" : "—" %></span>
+                    <span><i class="bi bi-trophy"></i> <%= quiz.pass_score %>%</span>
+                  </div>
+                </td>
+                <td style="text-align: center;">
+                  <% if quiz.random_mode %>
+                    <span class="badge badge--success">Random</span>
+                  <% else %>
+                    <span class="badge badge--secondary">Fixed</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="data-table__cell-actions">
+                    <a href="<%= edit_instructor_quiz_path(quiz) %>" class="btn-icon btn-icon--sm" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <%= button_to instructor_quiz_path(quiz), method: :delete,
+                        class: "btn-icon btn-icon--sm btn-icon--danger",
+                        title: "Delete",
+                        data: { confirm: "Delete this quiz?" } do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
                   </div>
                 </td>
               </tr>
@@ -76,16 +81,27 @@
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
-</div>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%== pagy_bootstrap_nav(@pagy) %>
-  </div>
 
-  <div class="text-center text-muted small mt-2">
-    Hiển thị <b><%= @pagy.items %></b> quiz / trang
-    (Tổng <b><%= @pagy.count %></b> quiz)
-  </div>
-<% end %>
+      <% if @pagy.pages > 1 %>
+        <div class="data-table__footer">
+          <span class="data-table__info">Showing <%= @pagy.items %> of <%= @pagy.count %> quizzes</span>
+          <div class="inst-pagination" style="margin: 0;">
+            <%== pagy_nav(@pagy) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="inst-empty-state">
+      <div class="inst-empty-state__icon">
+        <i class="bi bi-list-check"></i>
+      </div>
+      <h2>No quizzes yet</h2>
+      <p>Create quizzes to assess student learning.</p>
+      <a href="<%= new_instructor_quiz_path %>" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        Create Your First Quiz
+      </a>
+    </div>
+  <% end %>
+</div>

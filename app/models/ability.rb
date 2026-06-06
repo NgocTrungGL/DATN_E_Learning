@@ -92,6 +92,7 @@ class Ability
     instructor_module_lesson_rules
     instructor_quiz_rules
     instructor_enrollment_rules
+    instructor_review_rules
 
     can_access_course_content
 
@@ -112,7 +113,7 @@ class Ability
 
   def instructor_course_rules
     can :create, Course
-    can [:update, :destroy, :submit_for_review], Course, created_by: @user.id
+    can :manage, Course, created_by: @user.id
   end
 
   def instructor_module_lesson_rules
@@ -125,11 +126,16 @@ class Ability
     can :create, Question
     can [:read, :update, :destroy], Question, created_by: @user.id
     can :manage, QuizQuestion, quiz: { created_by: @user.id }
+    can :read, QuizAttempt, quiz: { created_by: @user.id }
   end
 
   def instructor_enrollment_rules
     can :read, Enrollment, course: { created_by: @user.id }
     cannot [:approve, :reject], Enrollment
+  end
+
+  def instructor_review_rules
+    can :read, Review, course: { created_by: @user.id }
   end
 
   #############################################################

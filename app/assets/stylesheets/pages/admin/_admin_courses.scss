@@ -928,4 +928,174 @@
       &:hover { background: $border; color: $text-dark; }
     }
   }
+
+  // ── Learning Outcomes Section ──────────────────────────────
+  &__outcomes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  &__outcome-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: $white;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    padding: 0.5rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus-within {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+  }
+
+  &__outcome-input-wrap {
+    flex: 1;
+    position: relative;
+
+    .crs-form__input {
+      width: 100%;
+      padding-left: 2.25rem;
+      background: transparent;
+      border: none;
+      font-size: 0.88rem;
+
+      &:focus {
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+    }
+  }
+
+  &__outcome-icon {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $success;
+    font-size: 0.95rem;
+    pointer-events: none;
+  }
+
+  &__outcome-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: $radius-sm;
+    color: $text-muted;
+    cursor: pointer;
+    transition: $t;
+    flex-shrink: 0;
+
+    &:hover {
+      background: rgba($danger, 0.1);
+      color: $danger;
+    }
+
+    .bi { font-size: 0.9rem; }
+  }
+
+  // Outcomes section header
+  &__outcomes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+    }
+  }
+
+  &__outcomes-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 0.25rem;
+
+    .bi { color: $primary; }
+  }
+
+  &__outcomes-hint {
+    font-size: 0.78rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__outcome-remove {
+    padding: 0.5rem;
+    background: transparent;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    color: $text-muted;
+    cursor: pointer;
+    transition: $t;
+    flex-shrink: 0;
+
+    &:hover {
+      background: rgba($danger, 0.1);
+      border-color: $danger;
+      color: $danger;
+    }
+  }
+
+  // Add button variant
+  &__btn--add {
+    background: rgba($primary, 0.1);
+    border-color: rgba($primary, 0.3);
+    color: $primary;
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem;
+
+    .bi { font-size: 0.9rem; }
+
+    &:hover {
+      background: rgba($primary, 0.2);
+      border-color: $primary;
+    }
+  }
+
+  // Card body variant for outcomes
+  &__card-body--outcomes {
+    border-top: 1px solid $border;
+    background: rgba($primary, 0.02);
+  }
+
+  // Small add button for outcomes
+  &__btn-outcome-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    background: transparent;
+    border: 1px dashed $border;
+    border-radius: $radius-sm;
+    color: $text-muted;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $t;
+
+    .bi { font-size: 0.75rem; }
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+      background: rgba($primary, 0.05);
+    }
+  }
 }

@@ -22,6 +22,19 @@
               <div class="cart-item__details">
                 <%= link_to item.course.title, course_path(item.course), class: "cart-item__title" %>
                 <p class="cart-item__instructor">Instructor: <%= item.course.creator&.name || "Admin" %></p>
+                <div class="cart-item__rating">
+                  <% avg = item.course.reviews.average(:rating).to_f.round(1) %>
+                  <% if avg > 0 %>
+                    <span class="cart-item__stars">
+                      <% avg.floor.times do %><i class="bi bi-star-fill"></i><% end %>
+                      <% if avg - avg.floor >= 0.5 %><i class="bi bi-star-half"></i><% end %>
+                      <% (5 - avg.ceil).times do %><i class="bi bi-star"></i><% end %>
+                    </span>
+                    <span class="cart-item__rating-text"><%= avg %></span>
+                  <% else %>
+                    <span class="cart-item__rating-text" style="color: #94a3b8;">New</span>
+                  <% end %>
+                </div>
               </div>
 
               <div class="cart-item__actions">
@@ -31,18 +44,43 @@
                 </div>
 
                 <div class="cart-item__price-wrap">
-                  <span class="cart-item__current-price">
-                    <%= number_to_currency(item.course.discounted_price, unit: "VND", precision: 0, format: "%n %u") %>
-                  </span>
-                  <% if item.course.has_discount? %>
+                  <%# Get coupon from session for this course %>
+                  <% course_id_str = item.course.id.to_s %>
+                  <% session_coupon_code = session[:course_coupons]&.dig(course_id_str) %>
+                  <% session_coupon = session_coupon_code.present? ? Coupon.find_by(code: session_coupon_code) : nil %>
+                  <% session_coupon = nil if session_coupon && !session_coupon.active_and_current? %>
+
+                  <%# Calculate discount from both auto and session coupon %>
+                  <% auto_discount = item.course.has_discount? ? item.course.price - item.course.discounted_price : 0 %>
+                  <% coupon_discount = 0 %>
+                  <% if session_coupon && (session_coupon.specific_course? && session_coupon.course_id == item.course.id || session_coupon.global?) %>
+                    <% coupon_discount = session_coupon.percentage? ? item.course.price * session_coupon.discount_value / 100.0 : session_coupon.discount_value %>
+                  <% end %>
+                  <% total_item_discount = auto_discount + coupon_discount %>
+                  <% final_item_price = item.course.price - total_item_discount %>
+
+                  <% if total_item_discount > 0 %>
+                    <span class="cart-item__current-price" style="color: #10b981; font-weight: 700;">
+                      <%= number_to_currency(final_item_price, unit: "VND", precision: 0, format: "%n %u") %>
+                    </span>
                     <div class="cart-item__original-price-row">
-                      <span class="cart-item__original-price">
+                      <span class="cart-item__original-price" style="text-decoration: line-through; color: #94a3b8;">
                         <%= number_to_currency(item.course.price, unit: "VND", precision: 0, format: "%n %u") %>
                       </span>
-                      <span class="cart-item__discount-badge">
-                        <%= item.course.discount_label %>
-                      </span>
+                      <% if item.course.has_discount? %>
+                        <span class="cart-item__discount-badge" style="background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5;">
+                          <%= item.course.discount_label %>
+                        </span>
+                      <% elsif session_coupon %>
+                        <span class="cart-item__discount-badge" style="background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5;">
+                          <i class="bi bi-tag-fill"></i> <%= session_coupon.code %>
+                        </span>
+                      <% end %>
                     </div>
+                  <% else %>
+                    <span class="cart-item__current-price">
+                      <%= number_to_currency(item.course.price, unit: "VND", precision: 0, format: "%n %u") %>
+                    </span>
                   <% end %>
                 </div>
               </div>
@@ -56,26 +94,36 @@
         <div class="cart-summary">
           <h2 class="cart-summary__title">Order summary</h2>
 
-          <div class="cart-summary__promo">
-            <label>Promo code</label>
-            <%= form_with(url: apply_coupon_cart_path, method: :post, class: "promo-form") do |f| %>
-              <%= f.text_field :promo_code, value: @cart.promo_code, placeholder: "Enter code..." %>
-              <%= f.submit "Apply" %>
+          <%# Promo code section removed - coupons are applied per course on course pages %>
+
+          <%# Calculate total discount from session coupons %>
+          <% total_session_discount = 0 %>
+          <% @items.each do |item| %>
+            <% course_id_str = item.course.id.to_s %>
+            <% session_coupon_code = session[:course_coupons]&.dig(course_id_str) %>
+            <% session_coupon = session_coupon_code.present? ? Coupon.find_by(code: session_coupon_code) : nil %>
+            <% if session_coupon && (session_coupon.specific_course? && session_coupon.course_id == item.course.id || session_coupon.global?) %>
+              <% total_session_discount += session_coupon.percentage? ? item.course.price * session_coupon.discount_value / 100.0 : session_coupon.discount_value %>
             <% end %>
-          </div>
+          <% end %>
+
+          <%# Total discount = auto discount + session coupon discount %>
+          <% total_auto_discount = @items.sum { |item| item.course.has_discount? ? item.course.price - item.course.discounted_price : 0 } %>
+          <% total_discount = total_auto_discount + total_session_discount %>
+          <% final_total = @cart.total_price - total_discount %>
 
           <div class="cart-summary__row">
             <span class="label">Subtotal:</span>
             <span class="value"><%= number_to_currency(@cart.total_price, unit: "VND", precision: 0, format: "%n %u") %></span>
           </div>
 
-          <% if @cart.discount_amount > 0 %>
+          <% if total_discount > 0 %>
             <div class="cart-summary__row cart-summary__row--discount">
               <span class="label">Discount:</span>
-              <span class="value">- <%= number_to_currency(@cart.discount_amount, unit: "VND", precision: 0, format: "%n %u") %></span>
+              <span class="value">- <%= number_to_currency(total_discount, unit: "VND", precision: 0, format: "%n %u") %></span>
             </div>
-            
-            <% percentage_saved = ((@cart.discount_amount.to_f / @cart.total_price) * 100).round %>
+
+            <% percentage_saved = ((total_discount.to_f / @cart.total_price) * 100).round %>
             <div class="cart-summary__row">
               <span class="label">Saved:</span>
               <span class="value" style="color: #10b981; background: #d1fae5; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem;"><%= percentage_saved %>%</span>
@@ -86,7 +134,7 @@
 
           <div class="cart-summary__total">
             <span class="label">Total:</span>
-            <span class="value"><%= number_to_currency(@cart.final_total, unit: "VND", precision: 0, format: "%n %u") %></span>
+            <span class="value"><%= number_to_currency([final_total, 0].max, unit: "VND", precision: 0, format: "%n %u") %></span>
           </div>
 
           <%= button_to checkout_cart_path, method: :post, data: { turbo: false }, class: "cart-summary__checkout-btn" do %>
@@ -201,15 +249,22 @@
                 </div>
                 
                 <div class="cart-item__price-wrap">
-                  <span class="cart-item__current-price" style="font-size: 1.1rem;">
-                    <%= number_to_currency(course.discounted_price, unit: "₫", precision: 0, format: "%n %u") %>
-                  </span>
                   <% if course.has_discount? %>
+                    <span class="cart-item__current-price" style="color: #10b981; font-weight: 700; font-size: 1.1rem;">
+                      <%= number_to_currency(course.discounted_price, unit: "₫", precision: 0, format: "%n %u") %>
+                    </span>
                     <div class="cart-item__original-price-row">
-                      <span class="cart-item__original-price">
+                      <span class="cart-item__original-price" style="text-decoration: line-through; color: #94a3b8;">
                         <%= number_to_currency(course.price, unit: "₫", precision: 0, format: "%n %u") %>
                       </span>
+                      <span class="cart-item__discount-badge" style="background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5;">
+                        <%= course.discount_label %>
+                      </span>
                     </div>
+                  <% else %>
+                    <span class="cart-item__current-price" style="font-size: 1.1rem;">
+                      <%= number_to_currency(course.price, unit: "₫", precision: 0, format: "%n %u") %>
+                    </span>
                   <% end %>
                 </div>
               </div>

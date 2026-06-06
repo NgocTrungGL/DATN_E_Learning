@@ -1,9 +1,8 @@
-<%# Admin Courses Form Partial — Premium BEM Redesign %>
-<%# Preserves: form_with model, local:true, collection_select Category, input-group price %>
+<%# Admin Courses Form Partial - Premium BEM Redesign %>
 
 <%= form_with(model: [:admin, @course], local: true) do |form| %>
 
-  <%# ── Validation errors ──────────────────────────────────────── %>
+  <%# Validation errors %>
   <% if @course.errors.any? %>
     <div class="crs-form__errors">
       <i class="bi bi-exclamation-triangle-fill crs-form__errors-icon"></i>
@@ -20,7 +19,7 @@
     </div>
   <% end %>
 
-  <%# ── Form card ─────────────────────────────────────────────── %>
+  <%# Main form card %>
   <div class="crs-form__card">
     <div class="crs-form__card-header">
       <div class="crs-form__card-icon">
@@ -33,8 +32,6 @@
     </div>
 
     <div class="crs-form__card-body">
-
-      <%# 2-column grid for main fields %>
       <div class="crs-form__grid">
 
         <%# Title %>
@@ -47,7 +44,7 @@
               class: 'crs-form__input',
               required: true,
               placeholder: "e.g., Ruby on Rails from scratch..." %>
-            <span class="crs-form__hint">The course title will be shown publicly.</span>
+          <span class="crs-form__hint">The course title will be shown publicly.</span>
         </div>
 
         <%# Category %>
@@ -105,7 +102,60 @@
       </div>
     </div>
 
-    <%# ── Form actions ─────────────────────────────────────────  %>
+    <%# What You'll Learn Section - Bottom of card, optional %>
+    <div class="crs-form__card-body crs-form__card-body--outcomes">
+      <div class="crs-form__outcomes-header">
+        <h3 class="crs-form__outcomes-title">
+          <i class="bi bi-lightbulb-fill"></i>
+          What You'll Learn
+        </h3>
+        <p class="crs-form__outcomes-hint">Optional. Add learning outcomes to help students understand course benefits.</p>
+      </div>
+
+      <div class="crs-form__outcomes-list" id="learning-outcomes-list">
+        <% existing_outcomes = @course.course_learning_outcomes.ordered %>
+        <% if existing_outcomes.any? %>
+          <%= form.fields_for :course_learning_outcomes, existing_outcomes do |outcome| %>
+            <div class="crs-form__outcome-item">
+              <div class="crs-form__outcome-input-wrap">
+                <i class="bi bi-check-circle-fill crs-form__outcome-icon"></i>
+                <%= outcome.text_field :content,
+                    class: 'crs-form__input',
+                    placeholder: "e.g., Master Ruby on Rails fundamentals..." %>
+                <%= outcome.hidden_field :order_index, class: 'outcome-order-index' %>
+                <%= outcome.check_box :_destroy, class: 'outcome-destroy-checkbox', style: 'display:none;' %>
+              </div>
+              <% unless outcome.object.new_record? %>
+                <%= outcome.hidden_field :id %>
+              <% end %>
+              <button type="button" class="crs-form__outcome-remove" title="Remove">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          <% end %>
+        <% else %>
+          <%# Empty state - one blank field %>
+          <div class="crs-form__outcome-item">
+            <div class="crs-form__outcome-input-wrap">
+              <i class="bi bi-check-circle-fill crs-form__outcome-icon"></i>
+              <input type="text" class="crs-form__input" name="course[course_learning_outcomes_attributes][0][content]"
+                     placeholder="e.g., Master Ruby on Rails fundamentals..." data-new="true">
+              <input type="hidden" name="course[course_learning_outcomes_attributes][0][order_index]" value="0">
+            </div>
+            <button type="button" class="crs-form__outcome-remove" title="Remove">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Add button at bottom %>
+      <button type="button" class="crs-form__btn-outcome-add" id="add-outcome-btn">
+        <i class="bi bi-plus"></i> Add more
+      </button>
+    </div>
+
+    <%# Form actions %>
     <div class="crs-form__actions">
       <%= link_to admin_courses_path, class: 'crs-form__btn crs-form__btn--cancel' do %>
         <i class="bi bi-x-lg"></i>
@@ -116,3 +166,81 @@
   </div>
 
 <% end %>
+
+<script>
+(function() {
+  function initOutcomes() {
+    var list = document.getElementById('learning-outcomes-list');
+    var addBtn = document.getElementById('add-outcome-btn');
+    if (!list || !addBtn) return;
+
+    var indexCounter = list.querySelectorAll('.crs-form__outcome-item').length;
+
+    function updateOrderIndexes() {
+      var items = list.querySelectorAll('.crs-form__outcome-item');
+      items.forEach(function(item, idx) {
+        var orderInput = item.querySelector('.outcome-order-index, input[name$="[order_index]"]');
+        if (orderInput) orderInput.value = idx;
+      });
+    }
+
+    function addOutcome() {
+      var currentCount = list.querySelectorAll('.crs-form__outcome-item').length;
+      if (currentCount >= 8) {
+        alert('Maximum 8 outcomes allowed.');
+        return;
+      }
+
+      var item = document.createElement('div');
+      item.className = 'crs-form__outcome-item';
+      item.innerHTML =
+        '<div class="crs-form__outcome-input-wrap">' +
+          '<i class="bi bi-check-circle-fill crs-form__outcome-icon"></i>' +
+          '<input type="text" class="crs-form__input" name="course[course_learning_outcomes_attributes][' + indexCounter + '][content]" placeholder="e.g., Master Ruby on Rails fundamentals..." data-new="true">' +
+          '<input type="hidden" name="course[course_learning_outcomes_attributes][' + indexCounter + '][order_index]" value="' + indexCounter + '">' +
+        '</div>' +
+        '<button type="button" class="crs-form__outcome-remove" title="Remove"><i class="bi bi-x"></i></button>';
+
+      list.appendChild(item);
+      indexCounter++;
+      updateOrderIndexes();
+
+      var input = item.querySelector('input[type="text"]');
+      if (input) input.focus();
+    }
+
+    function removeOutcome(item) {
+      var destroyCheckbox = item.querySelector('input[name$="[_destroy]"]');
+      var contentInput = item.querySelector('input[data-new="true"]');
+
+      if (destroyCheckbox) {
+        destroyCheckbox.checked = true;
+        item.style.display = 'none';
+      } else if (contentInput) {
+        item.remove();
+      }
+      updateOrderIndexes();
+    }
+
+    addBtn.addEventListener('click', addOutcome);
+
+    list.addEventListener('click', function(e) {
+      var removeBtn = e.target.closest('.crs-form__outcome-remove');
+      if (removeBtn) {
+        removeOutcome(removeBtn.closest('.crs-form__outcome-item'));
+      }
+    });
+
+    updateOrderIndexes();
+  }
+
+  // Support both regular page load and Turbo navigation
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOutcomes);
+  } else {
+    initOutcomes();
+  }
+  document.addEventListener('turbo:load', initOutcomes);
+  document.addEventListener('turbo:frame-load', initOutcomes);
+})();
+</script>

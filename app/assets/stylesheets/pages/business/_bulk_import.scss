@@ -1,0 +1,98 @@
+// ============================================================
+// BULK IMPORT
+// ============================================================
+
+.biz-breadcrumb {
+  margin-bottom: 0.75rem;
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+
+    i { font-size: 0.9rem; }
+
+    &:hover { color: #0ea5e9; }
+  }
+}
+
+.bulk-import {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 900px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__info,
+  &__form {
+    background: $surface;
+    border-radius: $radius-lg;
+    padding: 1.75rem;
+    box-shadow: $shadow-sm;
+    border: 1px solid $border;
+  }
+
+  &__info-title,
+  &__form-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 1rem;
+  }
+
+  &__steps {
+    padding-left: 1.5rem;
+    margin: 0 0 1.5rem;
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      color: $text-mid;
+    }
+  }
+
+  &__field {
+    margin-bottom: 1.5rem;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin-bottom: 0.5rem;
+  }
+
+  &__file-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    font-size: 0.875rem;
+    background: $bg;
+    color: $text-dark;
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus { border-color: $primary; }
+  }
+
+  &__hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+}

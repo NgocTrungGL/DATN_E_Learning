@@ -1,7 +1,34 @@
 class ReviewsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:more]
   before_action :check_enrollment, only: [:create]
   before_action :check_eligibility, only: [:create]
+
+  def more
+    course = Course.find_by(id: params[:course_id])
+    return head :not_found unless course
+
+    offset = params[:offset].to_i
+    per_page = 5
+
+    reviews = course.reviews.recent.offset(offset).limit(per_page + 1).to_a
+    has_more = reviews.size > per_page
+    reviews = reviews.first(per_page)
+
+    render json: {
+      reviews: reviews.map { |r|
+        {
+          id: r.id,
+          user_name: r.user&.name || "Student",
+          avatar_url: r.user&.avatar_url,
+          rating: r.rating,
+          content: r.content,
+          created_at: r.created_at.to_i
+        }
+      },
+      has_more: has_more
+    }
+  end
+
   def create
     @course = find_course or return redirect_missing_course
 

@@ -1,0 +1,99 @@
+<div class="inst-page">
+  <%# Page Header %>
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title">Activity Feed</h1>
+      <p class="inst-page__subtitle">All recent activities across your courses</p>
+    </div>
+  </div>
+
+  <%# Filter Tabs %>
+  <div class="filter-tabs" style="margin-bottom: 1.5rem;">
+    <%= link_to instructor_activities_path, class: "filter-tabs__btn #{'filter-tabs__btn--active' if @filter == 'all'}" do %>
+      All
+    <% end %>
+    <%= link_to instructor_activities_path(filter: "7d"), class: "filter-tabs__btn #{'filter-tabs__btn--active' if @filter == '7d'}" do %>
+      Last 7 days
+    <% end %>
+    <%= link_to instructor_activities_path(filter: "30d"), class: "filter-tabs__btn #{'filter-tabs__btn--active' if @filter == '30d'}" do %>
+      Last 30 days
+    <% end %>
+  </div>
+
+  <%# Activity List %>
+  <div class="inst-card">
+    <div class="inst-card__body" style="padding: 0;">
+      <% if @activities.any? %>
+        <ul class="activity-list">
+          <% @activities.each do |activity| %>
+            <li class="activity-list__item">
+              <div class="activity-list__avatar">
+                <% first_letter = activity[:user_name][0].upcase if activity[:user_name].present? %>
+                <%= first_letter || "?" %>
+              </div>
+              <div class="activity-list__icon activity-list__icon--<%= activity[:type] %>">
+                <% case activity[:type] %>
+                <% when :enrollment %>
+                  <i class="bi bi-person-plus"></i>
+                <% when :quiz_completion %>
+                  <i class="bi bi-check-circle"></i>
+                <% when :review %>
+                  <i class="bi bi-star"></i>
+                <% else %>
+                  <i class="bi bi-activity"></i>
+                <% end %>
+              </div>
+              <div class="activity-list__content">
+                <div class="activity-list__header">
+                  <span class="activity-list__user"><%= activity[:user_name] %></span>
+                  <span class="activity-list__action"><%= activity[:description] %></span>
+                  <a href="<%= instructor_course_path(activity[:course_id]) %>" class="activity-list__course">
+                    <%= activity[:course_title] %>
+                  </a>
+                  <% if activity[:type] == :quiz_completion && activity[:data]&.dig(:score) %>
+                    <span class="activity-list__badge">
+                      <i class="bi bi-trophy"></i>
+                      Score: <%= activity[:data][:score] %>%
+                    </span>
+                  <% end %>
+                  <% if activity[:type] == :review && activity[:data]&.dig(:rating) %>
+                    <span class="activity-list__badge activity-list__badge--review">
+                      <% activity[:data][:rating].times do %>
+                        <i class="bi bi-star-fill"></i>
+                      <% end %>
+                    </span>
+                  <% end %>
+                </div>
+                <% if activity[:type] == :review && activity[:data]&.dig(:content) %>
+                  <p class="activity-list__review-text">"<%= truncate(activity[:data][:content], length: 150) %>"</p>
+                <% end %>
+                <div class="activity-list__meta">
+                  <span class="activity-list__email"><%= activity[:user_email] %></span>
+                  <span class="activity-list__sep">·</span>
+                  <span class="activity-list__time"><%= time_ago_in_words(activity[:created_at]) %> ago</span>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+
+        <% if @pagy.pages > 1 %>
+          <div class="inst-card__footer" style="padding: 1rem 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
+            <% if @pagy.page > 1 %>
+              <a href="<%= instructor_activities_path(filter: @filter, page: @pagy.page - 1) %>" class="btn btn-sm btn-outline-secondary">Prev</a>
+            <% end %>
+            <span class="btn btn-sm btn-light" style="cursor: default;">Page <%= @pagy.page %> of <%= @pagy.pages %></span>
+            <% if @pagy.page < @pagy.pages %>
+              <a href="<%= instructor_activities_path(filter: @filter, page: @pagy.page + 1) %>" class="btn btn-sm btn-outline-secondary">Next</a>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="inst-empty" style="padding: 3rem; text-align: center;">
+          <i class="bi bi-activity"></i>
+          <p>No activity found</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

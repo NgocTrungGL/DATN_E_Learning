@@ -1,164 +1,258 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h2 class="fw-bold mb-0"><%= @course.title %></h2>
-    <span class="badge bg-warning text-dark">Giảng viên: <%= @course.creator.name %></span>
+<div class="inst-page">
+  <%# Breadcrumb %>
+  <div class="inst-breadcrumb">
+    <a href="<%= instructor_courses_path %>">Courses</a>
+    <i class="bi bi-chevron-right"></i>
+    <span><%= truncate(@course.title, length: 30) %></span>
   </div>
-  <div>
-    <%= link_to "Xem trang chủ", course_path(@course), class: "btn btn-outline-info btn-sm me-2", target: "_blank" %>
-    <%= link_to "Quay lại", instructor_courses_path, class: "btn btn-outline-secondary btn-sm" %>
+
+  <%# Page Header %>
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title"><%= @course.title %></h1>
+      <p class="inst-page__subtitle">
+        <span class="badge badge--<%= @course.status %>"><%= @course.status.titleize %></span>
+        <span class="inst-page__subtitle-sep">by</span>
+        <%= @course.creator.name %>
+      </p>
+    </div>
+    <div class="inst-page__actions">
+      <a href="<%= course_path(@course) %>" class="btn btn-outline" target="_blank">
+        <i class="bi bi-box-arrow-up-right"></i>
+        Preview
+      </a>
+      <a href="<%= instructor_courses_path %>" class="btn btn-outline">
+        <i class="bi bi-arrow-left"></i>
+        Back
+      </a>
+    </div>
+  </div>
+
+  <div class="course-detail-grid">
+    <%# Left: Course Info Card %>
+    <div class="course-detail-grid__sidebar">
+      <div class="course-detail-card">
+        <div class="course-detail-card__thumb-wrap">
+          <img src="<%= @course.thumbnail_url.presence || 'https://via.placeholder.com/400x225/f0f2f5/aaa?text=No+Image' %>"
+               alt="<%= @course.title %>"
+               class="course-detail-card__thumb">
+        </div>
+
+        <div class="course-detail-card__body">
+          <div class="course-detail-card__info-row">
+            <span class="course-detail-card__info-label">Category</span>
+            <span class="course-detail-card__info-value"><%= @course.category&.name || "—" %></span>
+          </div>
+          <div class="course-detail-card__info-row">
+            <span class="course-detail-card__info-label">Price</span>
+            <span class="course-detail-card__info-value">
+              <%= @course.price.zero? ? 'Free' : number_to_currency(@course.price, unit: '', precision: 0) + ' VND' %>
+            </span>
+          </div>
+          <div class="course-detail-card__info-row">
+            <span class="course-detail-card__info-label">Modules</span>
+            <span class="course-detail-card__info-value"><%= @course.course_modules.count %></span>
+          </div>
+          <div class="course-detail-card__info-row">
+            <span class="course-detail-card__info-label">Students</span>
+            <span class="course-detail-card__info-value"><%= @course.enrollments.count %></span>
+          </div>
+          <div class="course-detail-card__info-row">
+            <span class="course-detail-card__info-label">Discounts</span>
+            <span class="course-detail-card__info-value">
+              <%= @course.allow_admin_discounts ? 'Allowed' : 'Not allowed' %>
+            </span>
+          </div>
+        </div>
+
+        <%# Status Action Button %>
+        <div class="course-detail-card__action">
+          <% if @course.draft? || @course.rejected? %>
+            <%= button_to submit_for_review_instructor_course_path(@course), method: :patch,
+                class: "btn btn-primary",
+                style: "width: 100%;",
+                data: { confirm: "Are you ready to submit? You cannot edit until admin approves." } do %>
+              <i class="bi bi-send"></i>
+              Submit for Review
+            <% end %>
+          <% elsif @course.pending? %>
+            <button class="btn" style="width: 100%; background: #e2e8f0; cursor: default;" disabled>
+              <i class="bi bi-hourglass-split"></i>
+              Pending Admin Review
+            </button>
+          <% elsif @course.published? %>
+            <button class="btn btn-success" style="width: 100%;" disabled>
+              <i class="bi bi-check-circle-fill"></i>
+              Published
+            </button>
+          <% end %>
+        </div>
+
+        <%# Action Buttons %>
+        <div class="course-detail-card__actions">
+          <a href="<%= instructor_course_builder_path(@course) %>" class="btn btn-primary" style="flex: 1;">
+            <i class="bi bi-puzzle"></i>
+            Builder
+          </a>
+          <a href="<%= edit_instructor_course_path(@course) %>" class="btn btn-outline" style="flex: 1;">
+            <i class="bi bi-pencil"></i>
+            Edit Info
+          </a>
+        </div>
+        <div class="course-detail-card__actions" style="margin-top: 0.5rem;">
+          <a href="<%= students_instructor_course_path(@course) %>" class="btn btn-outline" style="flex: 1;">
+            <i class="bi bi-people"></i>
+            Students
+          </a>
+          <a href="<%= instructor_course_performance_path(@course) %>" class="btn btn-outline" style="flex: 1;">
+            <i class="bi bi-star"></i>
+            Reviews
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <%# Right: Course Content %>
+    <div class="course-detail-grid__content">
+      <%# Modules List %>
+      <div class="inst-card">
+        <div class="inst-card__header">
+          <h2 class="inst-card__title">Course Content</h2>
+          <div style="display: flex; gap: 0.5rem;">
+            <a href="<%= instructor_course_builder_path(@course) %>" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-puzzle"></i>
+              Builder
+            </a>
+            <% unless @course.pending? %>
+              <a href="<%= new_instructor_course_course_module_path(@course) %>" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-lg"></i>
+                Add Module
+              </a>
+            <% end %>
+          </div>
+        </div>
+        <div class="inst-card__body">
+          <% if @course_modules.any? %>
+            <div class="curriculum__list">
+              <% @course_modules.each do |mod| %>
+                <div class="curriculum-module">
+                  <div class="curriculum-module__header">
+                    <div class="curriculum-module__info">
+                      <h3 class="curriculum-module__title"><%= mod.title %></h3>
+                      <span class="curriculum-module__count">
+                        <%= mod.lessons.count %> lessons
+                      </span>
+                    </div>
+                    <% unless @course.pending? %>
+                      <div class="curriculum-module__actions">
+                        <a href="<%= edit_instructor_course_module_path(mod) %>" class="btn-icon btn-icon--sm">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <%= button_to instructor_course_module_path(mod), method: :delete,
+                            class: "btn-icon btn-icon--sm btn-icon--danger",
+                            data: { confirm: "Delete this module and all its lessons?" } do %>
+                          <i class="bi bi-trash"></i>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <div class="curriculum-module__lessons">
+                    <% mod.lessons.order(:order_index).each do |lesson| %>
+                      <div class="curriculum-lesson">
+                        <div class="curriculum-lesson__icon">
+                          <i class="bi <%= lesson.video? ? 'bi-play-circle-fill' : 'bi-file-text-fill' %>"></i>
+                        </div>
+                        <div class="curriculum-lesson__info">
+                          <span class="curriculum-lesson__title"><%= lesson.title %></span>
+                          <div class="curriculum-lesson__meta">
+                            <% if lesson.video? %>
+                              <span><i class="bi bi-play-btn"></i> Video</span>
+                            <% else %>
+                              <span><i class="bi bi-file-text"></i> Text</span>
+                            <% end %>
+                          </div>
+                        </div>
+                        <% unless @course.pending? %>
+                          <div class="curriculum-lesson__actions">
+                            <a href="<%= edit_instructor_lesson_path(lesson) %>" class="btn-icon btn-icon--sm">
+                              <i class="bi bi-pencil"></i>
+                            </a>
+                            <%= button_to instructor_lesson_path(lesson), method: :delete,
+                                class: "btn-icon btn-icon--sm btn-icon--danger",
+                                data: { confirm: "Delete this lesson?" } do %>
+                              <i class="bi bi-trash"></i>
+                            <% end %>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+
+                    <% if mod.lessons.empty? %>
+                      <div class="curriculum-lesson curriculum-lesson--empty">
+                        <span>No lessons yet</span>
+                      </div>
+                    <% end %>
+
+                    <% unless @course.pending? %>
+                      <a href="<%= new_instructor_course_module_lesson_path(mod) %>" class="curriculum-lesson curriculum-lesson--add">
+                        <i class="bi bi-plus"></i>
+                        Add Lesson
+                      </a>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="inst-empty-state">
+              <div class="inst-empty-state__icon">
+                <i class="bi bi-collection"></i>
+              </div>
+              <h2>No content yet</h2>
+              <p>Add modules and lessons to build your course.</p>
+              <% unless @course.pending? %>
+                <a href="<%= new_instructor_course_course_module_path(@course) %>" class="btn btn-primary">
+                  <i class="bi bi-plus-lg"></i>
+                  Add First Module
+                </a>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Big Quizzes %>
+      <% if @big_quizzes.any? %>
+        <div class="inst-card" style="margin-top: 1.5rem;">
+          <div class="inst-card__header">
+            <h2 class="inst-card__title">
+              <i class="bi bi-trophy" style="color: #d97706;"></i>
+              Final Quizzes
+            </h2>
+          </div>
+          <div class="inst-card__body">
+            <% @big_quizzes.each do |quiz| %>
+              <div class="quiz-item">
+                <div class="quiz-item__icon">
+                  <i class="bi bi-list-check"></i>
+                </div>
+                <div class="quiz-item__info">
+                  <span class="quiz-item__title"><%= quiz.title %></span>
+                  <div class="quiz-item__meta">
+                    <span><i class="bi bi-puzzle"></i> <%= quiz.total_questions %> questions</span>
+                    <span><i class="bi bi-clock"></i> <%= quiz.time_limit %> min</span>
+                  </div>
+                </div>
+                <a href="<%= instructor_quiz_path(quiz) %>" class="btn btn-outline btn-sm">
+                  <i class="bi bi-gear"></i>
+                  Manage
+                </a>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
-
-<div class="row">
-  <div class="col-md-4 mb-4">
-    <div class="card shadow-sm mb-3">
-      <img src="<%= @course.thumbnail_url.presence || 'https://via.placeholder.com/400x225' %>" class="card-img-top" style="object-fit: cover; height: 200px;">
-
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="fw-bold text-muted small text-uppercase">Trạng thái:</span>
-          <% case @course.status %>
-          <% when 'draft' %>
-            <span class="badge bg-secondary">Bản nháp</span>
-          <% when 'pending' %>
-            <span class="badge bg-warning text-dark">⏳ Đang chờ duyệt</span>
-          <% when 'published' %>
-            <span class="badge bg-success">✅ Đang hoạt động</span>
-          <% when 'rejected' %>
-            <span class="badge bg-danger">❌ Bị từ chối</span>
-          <% end %>
-        </div>
-
-        <p class="card-text text-muted"><%= truncate(@course.description, length: 150) %></p>
-
-        <div class="d-grid gap-2 mb-3">
-          <% if @course.draft? || @course.rejected? %>
-            <%= button_to submit_for_review_instructor_course_path(@course),
-                method: :patch,
-                class: "btn btn-primary fw-bold shadow-sm",
-                data: { turbo_confirm: "Bạn đã kiểm tra kỹ nội dung chưa? Sau khi gửi, bạn sẽ không thể chỉnh sửa cho đến khi Admin duyệt xong." } do %>
-              <i class="bi bi-send-fill me-2"></i> Gửi duyệt ngay
-            <% end %>
-
-          <% elsif @course.pending? %>
-            <button class="btn btn-secondary disabled" type="button">
-              <i class="bi bi-hourglass-split me-2"></i> Đang chờ Admin xử lý
-            </button>
-
-          <% elsif @course.published? %>
-            <button class="btn btn-success disabled" type="button">
-              <i class="bi bi-check-circle-fill me-2"></i> Đã xuất bản
-            </button>
-          <% end %>
-        </div>
-
-        <hr>
-
-        <div class="d-grid gap-2">
-          <%= link_to edit_instructor_course_path(@course), class: "btn btn-outline-warning text-dark" do %>
-            <i class="bi bi-pencil-square"></i> Sửa thông tin chung
-          <% end %>
-
-          <%= link_to students_instructor_course_path(@course), class: "btn btn-outline-info text-dark" do %>
-            <i class="bi bi-people-fill"></i> Danh sách học viên
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-8">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4 class="mb-0">Nội dung khóa học</h4>
-
-      <% unless @course.pending? %>
-        <%= link_to new_instructor_course_course_module_path(@course), class: "btn btn-success btn-sm" do %>
-          <i class="bi bi-plus-lg"></i> Thêm Chương mới
-        <% end %>
-      <% end %>
-    </div>
-
-    <div class="accordion" id="accordionModules">
-      <% if @course_modules.any? %>
-        <% @course_modules.each do |mod| %>
-          <div class="accordion-item mb-3 border shadow-sm">
-            <h2 class="accordion-header" id="heading<%= mod.id %>">
-              <div class="accordion-button collapsed d-flex justify-content-between align-items-center p-3 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= mod.id %>">
-                <span class="fw-bold me-auto"><%= mod.title %></span>
-
-                <% unless @course.pending? %>
-                  <div class="z-index-high ms-3 d-flex gap-2" onclick="event.stopPropagation();">
-                    <%= link_to edit_instructor_course_module_path(mod), class: "btn btn-sm btn-outline-secondary", title: "Sửa chương" do %>
-                      <i class="bi bi-pencil"></i>
-                    <% end %>
-                    <%= button_to instructor_course_module_path(mod), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Xóa chương", data: { confirm: "Xóa chương này sẽ xóa hết bài học bên trong. Bạn chắc chứ?" } do %>
-                      <i class="bi bi-trash"></i>
-                    <% end %>
-                  </div>
-                <% end %>
-
-              </div>
-            </h2>
-            <div id="collapse<%= mod.id %>" class="accordion-collapse collapse" data-bs-parent="#accordionModules">
-              <div class="accordion-body p-0">
-
-                <% unless @course.pending? %>
-                  <div class="p-2 bg-light border-bottom text-end">
-                    <%= link_to new_instructor_course_module_lesson_path(mod), class: "btn btn-sm btn-primary" do %>
-                      <i class="bi bi-plus-circle"></i> Thêm bài học
-                    <% end %>
-                  </div>
-                <% end %>
-
-                <ul class="list-group list-group-flush">
-                  <% mod.lessons.order(:order_index).each do |lesson| %>
-                    <li class="list-group-item d-flex justify-content-between align-items-center ps-4">
-                      <div class="text-truncate">
-                        <i class="bi <%= lesson.video_url.present? ? 'bi-play-circle-fill text-danger' : 'bi-file-text-fill text-primary' %> me-2"></i>
-                        <%= lesson.title %>
-                      </div>
-
-                      <% unless @course.pending? %>
-                        <div class="btn-group">
-                          <%= link_to edit_instructor_lesson_path(lesson), class: "btn btn-sm btn-light text-primary", title: "Sửa bài" do %>
-                            <i class="bi bi-pencil"></i>
-                          <% end %>
-                          <%= button_to instructor_lesson_path(lesson), method: :delete, class: "btn btn-sm btn-light text-danger", title: "Xóa bài", data: { confirm: "Xóa bài học này?" } do %>
-                            <i class="bi bi-trash"></i>
-                          <% end %>
-                        </div>
-                      <% end %>
-
-                    </li>
-                  <% end %>
-                  <% if mod.lessons.empty? %>
-                    <li class="list-group-item text-muted fst-italic text-center py-3 small">Chưa có bài học nào.</li>
-                  <% end %>
-                </ul>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      <% else %>
-        <div class="alert alert-info text-center">
-          Khóa học chưa có nội dung. Hãy bấm <strong>Thêm Chương mới</strong> để bắt đầu.
-        </div>
-      <% end %>
-    </div>
-
-    <% if @big_quizzes.any? %>
-      <h5 class="mt-4 mb-3 text-warning"><i class="bi bi-trophy"></i> Bài kiểm tra cuối khóa</h5>
-      <div class="list-group shadow-sm">
-        <% @big_quizzes.each do |quiz| %>
-          <div class="list-group-item d-flex justify-content-between align-items-center border-warning">
-            <div>
-              <strong><%= quiz.title %></strong>
-              <small class="text-muted ms-2">(<%= quiz.total_questions %> câu hỏi)</small>
-            </div>
-            <%= link_to "Quản lý câu hỏi", instructor_quiz_path(quiz), class: "btn btn-sm btn-warning text-dark fw-bold" %>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
-</div>s

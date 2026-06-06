@@ -1,0 +1,78 @@
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <h1 class="business-page__title">Invoices</h1>
+      <p class="business-page__subtitle">Payment history and billing records</p>
+    </div>
+  </div>
+
+  <% if @invoices.any? %>
+    <div class="biz-card">
+      <div class="data-table__wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Invoice No.</th>
+              <th>Course</th>
+              <th>Quantity</th>
+              <th style="text-align: right;">Total Amount</th>
+              <th style="text-align: center;">Status</th>
+              <th>Date</th>
+              <th style="text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @invoices.each do |inv| %>
+              <tr>
+                <td>
+                  <span style="font-family: monospace; font-size: 0.82rem; color: #475569;">
+                    <%= inv.invoice_number %>
+                  </span>
+                </td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 0.625rem;">
+                    <div style="width: 32px; height: 20px; border-radius: 4px; overflow: hidden; background: #f1f5f9; flex-shrink: 0;">
+                      <img src="<%= inv.course.thumbnail_url.presence || 'https://via.placeholder.com/32x20/f1f5f9/aaa?text=No+Img' %>"
+                           alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <span style="font-weight: 600; font-size: 0.875rem; color: #0f172a;">
+                      <%= inv.course.title %>
+                    </span>
+                  </div>
+                </td>
+                <td style="text-align: center; color: #475569; font-size: 0.875rem;">
+                  <%= inv.quantity %> seats
+                </td>
+                <td style="text-align: right; font-weight: 700; font-size: 0.9rem; color: #0f172a;">
+                  <%= number_to_currency(inv.total_amount) %>
+                </td>
+                <td style="text-align: center;">
+                  <span class="badge <%= inv.paid? ? 'badge--success' : (inv.pending? ? 'badge--warning' : 'badge--danger') %>">
+                    <%= inv.status.capitalize %>
+                  </span>
+                </td>
+                <td style="color: #64748b; font-size: 0.82rem; white-space: nowrap;">
+                  <%= inv.created_at.strftime("%d %b %Y") %>
+                </td>
+                <td style="text-align: center;">
+                  <a href="<%= business_invoice_path(inv) %>"
+                     class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-eye"></i>
+                    View
+                  </a>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% else %>
+    <div class="biz-card">
+      <div class="inst-empty" style="padding: 3rem; text-align: center;">
+        <i class="bi bi-receipt" style="font-size: 3rem;"></i>
+        <p style="margin-top: 1rem; color: #94a3b8;">No invoices yet. Purchase licenses to see your billing history here.</p>
+      </div>
+    </div>
+  <% end %>
+</div>

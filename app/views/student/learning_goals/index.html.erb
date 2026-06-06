@@ -1,0 +1,190 @@
+<%# ============================================================ %>
+<%# LEARNING GOALS — Premium App-Style                           %>
+<%# ============================================================ %>
+
+<% content_for :title, "Learning Goals" %>
+<% content_for :full_width, true %>
+
+<%
+  def goal_icon(goal_type)
+    case goal_type
+    when "lessons_per_week"
+      raw '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#10b981" stroke-width="2" stroke-linecap="round"/><path d="M6.5 2H20V22H6.5A2.5 2.5 0 0 1 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2Z" stroke="#10b981" stroke-width="2"/><path d="M8 7H16M8 11H16M8 15H13" stroke="#10b981" stroke-width="2" stroke-linecap="round"/></svg>'
+    when "hours_per_week"
+      raw '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#7c3aed" stroke-width="2"/><path d="M12 7V12L15 15" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/></svg>'
+    when "courses_per_month"
+      raw '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22 10V20H2V10" stroke="#10b981" stroke-width="2" stroke-linecap="round"/><path d="M6 6H18L22 10H2L6 6Z" stroke="#10b981" stroke-width="2"/><path d="M12 2V6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/></svg>'
+    when "quiz_score"
+      raw '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 11L12 14L22 4" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H16" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>'
+    else
+      ""
+    end
+  end
+
+  def goal_icon_class(goal_type)
+    case goal_type
+    when "lessons_per_week" then "lessons"
+    when "hours_per_week" then "hours"
+    when "courses_per_month" then "courses"
+    when "quiz_score" then "quiz"
+    else ""
+    end
+  end
+%>
+
+<div class="goal-root">
+
+  <%# ── Topbar ──────────────────────────────────────────────── %>
+  <div class="goal-topbar">
+    <a href="/" class="goal-topbar__brand">
+      <div class="brand-dot"></div>
+      E-Learning
+    </a>
+  </div>
+
+  <%# ── Container ───────────────────────────────────────────── %>
+  <div class="goal-container">
+
+    <%# ── Page Title ──────────────────────────────────────────── %>
+    <div class="goal-title">
+      <p class="goal-title__label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:4px">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+        Learning Goals
+      </p>
+      <h1 class="goal-title__h1">Muc tieu hoc tap</h1>
+      <p class="goal-title__sub">Dat muc tieu va theo doi tien do hoc tap cua ban moi tuan.</p>
+    </div>
+
+    <%# ── Layout ────────────────────────────────────────────── %>
+    <div class="goal-layout">
+
+      <%# ── Left Column ───────────────────────────────────────── %>
+      <div class="goal-main">
+
+        <%# Active Goal %>
+        <div class="goal-card">
+          <div class="goal-card__head">
+            <div class="goal-card__dot" style="background:#10b981;"></div>
+            <h3 class="goal-card__title">Muc tieu hien tai</h3>
+          </div>
+
+          <% if @active_goal %>
+            <div class="goal-row">
+              <div class="goal-row__icon goal-row__icon--<%= goal_icon_class(@active_goal.goal_type) %>">
+                <%= goal_icon(@active_goal.goal_type) %>
+              </div>
+              <div class="goal-row__info">
+                <p class="goal-row__type"><%= LearningGoal.goal_type_labels[@active_goal.goal_type] %></p>
+                <p class="goal-row__week">
+                  Tuan:
+                  <%= @active_goal.week_start.strftime("%d/%m/%Y") %>
+                  —
+                  <%= (@active_goal.week_start + 6.days).strftime("%d/%m/%Y") %>
+                </p>
+              </div>
+              <div class="goal-row__vals">
+                <div class="goal-row__cur"><%= @active_goal.current_value %></div>
+                <div class="goal-row__tgt">/ <%= @active_goal.target_value %></div>
+              </div>
+              <div class="goal-row__bar">
+                <div class="goal-row__fill <%= 'goal-row__fill--done' if @active_goal.progress_percentage >= 100 %>"
+                     style="width: <%= @active_goal.progress_percentage %>%"></div>
+              </div>
+            </div>
+          <% else %>
+            <div class="goal-card__empty">
+              Ban chua co muc tieu tuan nay. Dat muc tieu ngay ben phai!
+            </div>
+          <% end %>
+        </div>
+
+        <%# History %>
+        <div class="goal-card">
+          <div class="goal-card__head">
+            <div class="goal-card__dot" style="background:#78716c;"></div>
+            <h3 class="goal-card__title">Lich su muc tieu</h3>
+          </div>
+
+          <% past_goals = @goals.reject(&:is_active?) %>
+          <% if past_goals.any? %>
+            <% past_goals.each do |goal| %>
+              <div class="goal-row">
+                <div class="goal-row__icon goal-row__icon--<%= goal_icon_class(goal.goal_type) %>">
+                  <%= goal_icon(goal.goal_type) %>
+                </div>
+                <div class="goal-row__info">
+                  <p class="goal-row__type"><%= LearningGoal.goal_type_labels[goal.goal_type] %></p>
+                  <p class="goal-row__week">
+                    <%= goal.week_start.strftime("%d/%m/%Y") %>
+                    —
+                    <%= (goal.week_start + 6.days).strftime("%d/%m/%Y") %>
+                    <% if goal.current_value >= goal.target_value %>
+                      <span class="status s--done"> — Dat!</span>
+                    <% else %>
+                      <span class="status s--fail"> — Chua dat</span>
+                    <% end %>
+                  </p>
+                </div>
+                <div class="goal-row__vals">
+                  <div class="goal-row__cur"><%= goal.current_value %></div>
+                  <div class="goal-row__tgt">/ <%= goal.target_value %></div>
+                </div>
+                <div class="goal-row__bar">
+                  <div class="goal-row__fill <%= 'goal-row__fill--done' if goal.current_value >= goal.target_value %>"
+                       style="width: <%= goal.progress_percentage %>%"></div>
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="goal-card__empty">Chua co lich su muc tieu.</div>
+          <% end %>
+        </div>
+
+      </div>
+
+      <%# ── Right: Form ──────────────────────────────────────── %>
+      <div class="goal-form-card">
+        <div class="goal-form-card__title">
+          <%= @active_goal ? "Cap nhat muc tieu" : "Dat muc tieu tuan nay" %>
+        </div>
+
+        <% if @active_goal %>
+          <div class="goal-form-card__hint">
+            Ban dang co muc tieu:
+            <strong><%= LearningGoal.goal_type_labels[@active_goal.goal_type] %></strong>.
+            Hoan thanh: <%= @active_goal.current_value %>/<%= @active_goal.target_value %>
+            (<%= @active_goal.progress_percentage %>%).
+            Muc tieu moi se thay the muc tieu hien tai.
+          </div>
+        <% end %>
+
+        <%= form_with model: [:student, @new_goal], local: true do |f| %>
+          <div>
+            <label class="goal-form-card__label">Loai muc tieu</label>
+            <%= f.select :goal_type,
+              options_for_select(LearningGoal.goal_type_labels.map { |k, v| [v, k] }),
+              {},
+              class: "goal-form-card__field" %>
+            <span class="goal-form-card__sublabel">Chon loai muc tieu ban muon theo doi.</span>
+          </div>
+
+          <div>
+            <label class="goal-form-card__label">Muc tieu</label>
+            <%= f.number_field :target_value,
+              class: "goal-form-card__field",
+              min: 1,
+              placeholder: "VD: 5",
+              required: true %>
+            <span class="goal-form-card__sublabel">Nhap so luong mong muon dat duoc trong tuan.</span>
+          </div>
+
+          <%= f.submit @active_goal ? "Cap nhat muc tieu" : "Dat muc tieu",
+            class: "goal-form-card__btn" %>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

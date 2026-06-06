@@ -1,0 +1,333 @@
+// ============================================================
+// STUDENT ANALYTICS PAGE
+// ============================================================
+
+// ── Stats Grid ────────────────────────────────────────────────
+.analytics-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analytics-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: 1.25rem;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-dark;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: $text-muted;
+    font-weight: 500;
+  }
+}
+
+// ── Charts Grid ───────────────────────────────────────────────
+.analytics-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Student List Controls ──────────────────────────────────────
+.student-list-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.student-search-form {
+  margin: 0;
+}
+
+.student-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.student-search-icon {
+  position: absolute;
+  left: 0.625rem;
+  color: $text-muted;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.student-search-input {
+  padding: 0.4rem 0.75rem 0.4rem 2rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  background: $bg;
+  color: $text-dark;
+  width: 220px;
+  transition: border-color 0.15s;
+  outline: none;
+
+  &:focus {
+    border-color: $primary;
+  }
+
+  &::placeholder { color: $text-muted; }
+}
+
+.student-filter-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: $bg;
+  padding: 0.25rem;
+  border-radius: $radius-md;
+  border: 1.5px solid $border;
+}
+
+.student-filter-tab {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $text-muted;
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    color: $primary;
+    background: rgba($primary, 0.05);
+  }
+
+  &--active {
+    background: $primary;
+    color: white;
+
+    &:hover {
+      background: darken($primary, 5%);
+      color: white;
+    }
+  }
+}
+
+// ── Data Table Enhancements ───────────────────────────────────
+.data-table {
+  &__cell-user {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  &__cell-user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba($primary, 0.15);
+    color: $primary;
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__cell-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  &__cell-user-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: $text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: block;
+  }
+
+  &__cell-user-email {
+    font-size: 0.78rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: block;
+  }
+
+  &__cell-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 140px;
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+    }
+
+    span {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: $text-mid;
+      white-space: nowrap;
+      min-width: 32px;
+    }
+  }
+}
+
+// ── Course Analytics Cards ──────────────────────────────────────
+.analytics-course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+}
+
+.analytics-course-card {
+  display: block;
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1.5px solid $border;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem;
+  }
+
+  &__thumb {
+    width: 80px;
+    height: 45px;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: $bg;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__title-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__category {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: $primary;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__arrow {
+    color: $text-muted;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid $border;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    text-align: center;
+
+    i {
+      font-size: 1rem;
+      color: $primary;
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: $text-muted;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+}

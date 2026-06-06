@@ -7,6 +7,7 @@
 // Bootstrap is kept until ALL public/instructor pages are migrated to custom BEM.
 // It will be removed in the final phase once migration is 100% complete.
 @import "bootstrap";
+@import "actiontext";
 
 
 // 2. Abstracts
@@ -32,6 +33,8 @@
 @import "pages/layout_business";
 
 // 6. Pages
+@import "pages/instructor";
+@import "pages/business";
 @import "pages/login";
 @import "pages/auth";
 @import "pages/landing";
@@ -65,3 +68,6 @@
 @import "pages/quiz_attempts";
 @import "pages/quiz_review";
 @import "pages/cart";
+@import "pages/public_instructor";
+@import "pages/student/dashboard";
+@import "pages/student/study_plans";

@@ -1,80 +1,99 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 border-bottom">
-          <h4 class="mb-0 fw-bold">
-            <i class="bi bi-ticket-perforated text-success me-2"></i>
-            <%= @coupon.new_record? ? "Tạo mã giảm giá mới" : "Chỉnh sửa mã: #{@coupon.code}" %>
-          </h4>
-        </div>
-        <div class="card-body p-4">
-          <%= form_with(model: [:instructor, @coupon]) do |f| %>
-            <% if @coupon.errors.any? %>
-              <div class="alert alert-danger border-0 shadow-sm mb-4">
-                <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Có lỗi xảy ra:</h6>
-                <ul class="mb-0 small">
-                  <% @coupon.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
-                  <% end %>
-                </ul>
-              </div>
-            <% end %>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label :code, "Mã giảm giá (Code)", class: "form-label fw-bold" %>
-                <%= f.text_field :code, class: "form-control", placeholder: "Ví dụ: KHUYENMAI20", required: true %>
-              </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label :status, "Trạng thái", class: "form-label fw-bold" %>
-                <%= f.select :status, Coupon.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "form-select" } %>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label :discount_type, "Loại giảm giá", class: "form-label fw-bold" %>
-                <%= f.select :discount_type, Coupon.discount_types.keys.map { |k| [k.humanize, k] }, {}, { class: "form-select" } %>
-              </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label :discount_value, "Giá trị giảm", class: "form-label fw-bold" %>
-                <div class="input-group">
-                  <%= f.number_field :discount_value, class: "form-control", step: :any, required: true %>
-                  <span class="input-group-text">%/₫</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label :start_at, "Thời gian bắt đầu", class: "form-label fw-bold" %>
-                <%= f.datetime_local_field :start_at, class: "form-control", required: true %>
-              </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label :end_at, "Thời gian kết thúc", class: "form-label fw-bold" %>
-                <%= f.datetime_local_field :end_at, class: "form-control", required: true %>
-              </div>
-            </div>
-
-            <div class="mb-4">
-              <%= f.label :course_id, "Chọn khóa học áp dụng", class: "form-label fw-bold" %>
-              <%= f.collection_select :course_id, @courses, :id, :title, { include_blank: "--- Chọn khóa học ---" }, { class: "form-select", required: true } %>
-              <div class="form-text small text-muted">Giảng viên chỉ có thể tạo mã cho từng khóa học riêng biệt.</div>
-            </div>
-
-            <div class="mb-4">
-              <%= f.label :usage_limit, "Giới hạn lượt dùng (0 = Không giới hạn)", class: "form-label fw-bold" %>
-              <%= f.number_field :usage_limit, class: "form-control", min: 0 %>
-            </div>
-
-            <div class="d-flex gap-2 mt-4">
-              <%= f.submit "Lưu thông tin", class: "btn btn-success px-4 fw-bold text-white" %>
-              <%= link_to "Hủy", instructor_coupons_path, class: "btn btn-outline-secondary px-4" %>
-            </div>
+<div class="inst-form">
+  <%= form_with(model: [:instructor, @coupon]) do |f| %>
+    <% if @coupon.errors.any? %>
+      <div class="inst-alert inst-alert--danger">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <ul style="margin: 0; padding-left: 1.25rem;">
+          <% @coupon.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
           <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="inst-form__two-col">
+      <div class="inst-form__main">
+        <div class="inst-form__section">
+          <h3 class="inst-form__section-title">Coupon Details</h3>
+
+          <div class="inst-form__row">
+            <div class="inst-form__group">
+              <%= f.label :code, "Coupon Code", class: "inst-form__label" %>
+              <%= f.text_field :code, class: "inst-form__input", required: true,
+                  placeholder: "e.g. SUMMER30", style: "font-family: monospace; letter-spacing: 1px;" %>
+            </div>
+            <div class="inst-form__group">
+              <%= f.label :status, "Status", class: "inst-form__label" %>
+              <%= f.select :status, Coupon.statuses.keys.map { |k| [k.humanize.titleize, k] }, {},
+                  class: "inst-form__select" %>
+            </div>
+          </div>
+
+          <div class="inst-form__row">
+            <div class="inst-form__group">
+              <%= f.label :discount_type, "Discount Type", class: "inst-form__label" %>
+              <%= f.select :discount_type, Coupon.discount_types.keys.map { |k| [k.humanize.titleize, k] }, {},
+                  class: "inst-form__select" %>
+            </div>
+            <div class="inst-form__group">
+              <%= f.label :discount_value, "Discount Value", class: "inst-form__label" %>
+              <div class="inst-form__input-group">
+                <%= f.number_field :discount_value, class: "inst-form__input", step: :any, required: true %>
+                <span class="inst-form__input-prefix">% / VND</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="inst-form__row">
+            <div class="inst-form__group">
+              <%= f.label :start_at, "Start Date", class: "inst-form__label" %>
+              <%= f.datetime_local_field :start_at, class: "inst-form__input", required: true %>
+            </div>
+            <div class="inst-form__group">
+              <%= f.label :end_at, "End Date", class: "inst-form__label" %>
+              <%= f.datetime_local_field :end_at, class: "inst-form__input", required: true %>
+            </div>
+          </div>
+
+          <div class="inst-form__group">
+            <%= f.label :course_id, "Course", class: "inst-form__label" %>
+            <%= f.collection_select :course_id, @courses, :id, :title,
+                { include_blank: "Select a course" }, class: "inst-form__select" %>
+            <span class="inst-form__hint">Instructors can only create coupons for their own courses.</span>
+          </div>
+
+          <div class="inst-form__group">
+            <%= f.label :usage_limit, "Usage Limit", class: "inst-form__label" %>
+            <%= f.number_field :usage_limit, class: "inst-form__input", min: 0, placeholder: "0 = unlimited" %>
+            <span class="inst-form__hint">Enter 0 for unlimited usage.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="inst-form__sidebar">
+        <div class="coupon-preview">
+          <div class="coupon-preview__label">Preview</div>
+          <div class="coupon-preview__card">
+            <div class="coupon-preview__discount">
+              <i class="bi bi-tag-fill"></i>
+            </div>
+            <div class="coupon-preview__info">
+              <span class="coupon-preview__code"><%= @coupon.code.presence || "SUMMER30" %></span>
+              <span class="coupon-preview__value">
+                <%= @coupon.discount_value.presence || "20" %>% Off
+              </span>
+              <span class="coupon-preview__course"><%= @coupon.course&.title || "Selected course" %></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inst-form__actions">
+          <%= f.submit "Save Coupon", class: "btn btn-primary", style: "width: 100%;" %>
+          <a href="<%= instructor_coupons_path %>" class="btn btn-outline" style="width: 100%;">
+            Cancel
+          </a>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 </div>

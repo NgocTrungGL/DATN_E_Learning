@@ -2,50 +2,50 @@
 <html>
   <head>
     <title><%= current_user.organization&.name %> | Business Portal</title>
+    <%= favicon_link_tag 'favicon.ico' %>
+    <%= favicon_link_tag 'favicon.png', type: 'image/png' %>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   </head>
 
-  <body class="bg-light layout-business">
-    <div class="d-flex" id="wrapper">
-
+  <body class="biz-body">
+    <div class="biz-layout">
       <%= render 'layouts/business_sidebar' %>
 
-      <div id="page-content-wrapper" class="w-100">
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 py-3 shadow-sm">
-          <div class="d-flex align-items-center w-100 justify-content-between">
-            <h5 class="mb-0 fw-bold text-primary">
-              <i class="bi bi-building me-2"></i> <%= current_user.organization&.name %>
-            </h5>
-
-            <div class="dropdown">
-              <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" id="dropdownUser" data-bs-toggle="dropdown">
-                <img src="https://ui-avatars.com/api/?name=<%= current_user.name %>&background=random" width="32" height="32" class="rounded-circle me-2">
-                <span class="fw-bold"><%= current_user.name %></span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                <li><%= link_to "Sign out", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item text-danger" %></li>
-              </ul>
+      <div class="biz-main">
+        <header class="biz-topbar">
+          <div class="biz-topbar__left">
+            <i class="bi bi-building" style="color: #0ea5e9;"></i>
+            <h1 class="biz-topbar__title"><%= current_user.organization&.name %></h1>
+          </div>
+          <div class="biz-topbar__right">
+            <div class="biz-user-menu">
+              <div class="biz-user-avatar">
+                <%= current_user.name[0].upcase %>
+              </div>
+              <span class="biz-user-name"><%= current_user.name %></span>
+              <div class="biz-user-dropdown">
+                <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "biz-user-dropdown__item biz-user-dropdown__item--danger" do %>
+                  <i class="bi bi-box-arrow-right"></i>
+                  Sign out
+                <% end %>
+              </div>
             </div>
           </div>
-        </nav>
+        </header>
 
-        <div class="container-fluid py-4 px-4">
+        <main class="biz-content">
           <%= render 'layouts/flash_messages' %>
           <%= yield %>
-        </div>
+        </main>
       </div>
     </div>
-
-
   </body>
 </html>

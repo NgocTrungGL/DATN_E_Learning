@@ -1,0 +1,247 @@
+<div class="inst-page">
+  <%# Breadcrumb %>
+  <div class="inst-breadcrumb">
+    <a href="<%= instructor_student_analytics_path %>">Student Analytics</a>
+    <i class="bi bi-chevron-right"></i>
+    <span><%= truncate(@course.title, length: 30) %></span>
+  </div>
+
+  <%# Page Header %>
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title"><%= @course.title %></h1>
+      <p class="inst-page__subtitle">
+        Student Analytics
+        <span class="inst-page__subtitle-sep">—</span>
+        <%= @total_students %> enrolled
+      </p>
+    </div>
+    <a href="<%= instructor_student_analytics_path %>" class="btn btn-outline">
+      <i class="bi bi-arrow-left"></i>
+      Back
+    </a>
+  </div>
+
+  <%# Stats Cards %>
+  <div class="analytics-stats-grid">
+    <div class="analytics-stat-card">
+      <div class="analytics-stat-card__icon" style="background: rgba(37,99,235,0.1); color: #2563eb;">
+        <i class="bi bi-people"></i>
+      </div>
+      <div class="analytics-stat-card__body">
+        <span class="analytics-stat-card__value"><%= @total_students %></span>
+        <span class="analytics-stat-card__label">Total Students</span>
+      </div>
+    </div>
+
+    <div class="analytics-stat-card">
+      <div class="analytics-stat-card__icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
+        <i class="bi bi-check-circle"></i>
+      </div>
+      <div class="analytics-stat-card__body">
+        <span class="analytics-stat-card__value"><%= @completed_students %></span>
+        <span class="analytics-stat-card__label">Completed</span>
+      </div>
+    </div>
+
+    <div class="analytics-stat-card">
+      <div class="analytics-stat-card__icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+      <div class="analytics-stat-card__body">
+        <span class="analytics-stat-card__value"><%= @avg_progress > 0 ? "#{@avg_progress.round}%" : "—" %></span>
+        <span class="analytics-stat-card__label">Avg Progress</span>
+      </div>
+    </div>
+
+    <div class="analytics-stat-card">
+      <div class="analytics-stat-card__icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
+        <i class="bi bi-trophy"></i>
+      </div>
+      <div class="analytics-stat-card__body">
+        <span class="analytics-stat-card__value"><%= @avg_quiz_score > 0 ? @avg_quiz_score : "—" %></span>
+        <span class="analytics-stat-card__label">Avg Quiz Score</span>
+      </div>
+    </div>
+  </div>
+
+  <%# Charts Row %>
+  <div class="analytics-charts-grid">
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Enrollment Trend (12 weeks)</h2>
+      </div>
+      <div class="inst-card__body">
+        <% if @enrollment_trend.values.sum > 0 %>
+          <%= line_chart @enrollment_trend,
+              height: "220px",
+              colors: ["#2563eb"],
+              messages: { empty: "No enrollment data" } %>
+        <% else %>
+          <div class="inst-empty" style="padding: 2rem; text-align: center; color: #94a3b8;">
+            <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
+            <p style="margin-top: 0.5rem;">No enrollment data yet</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="inst-card">
+      <div class="inst-card__header">
+        <h2 class="inst-card__title">Completion Rate</h2>
+      </div>
+      <div class="inst-card__body">
+        <% chart_sum = @completion_chart.values.sum %>
+        <% if chart_sum > 0 %>
+          <%= pie_chart @completion_chart,
+              height: "220px",
+              colors: ["#10b981", "#f59e0b", "#94a3b8"],
+              legend: "bottom",
+              messages: { empty: "No data" } %>
+        <% else %>
+          <div class="inst-empty" style="padding: 2rem; text-align: center; color: #94a3b8;">
+            <i class="bi bi-pie-chart" style="font-size: 2rem;"></i>
+            <p style="margin-top: 0.5rem;">No data yet</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Student List %>
+  <div class="inst-card" style="margin-top: 1.5rem;">
+    <div class="inst-card__header">
+      <h2 class="inst-card__title">Student List (<%= @pagy.count %>)</h2>
+      <div class="student-list-controls">
+        <%# Search %>
+        <%= form_tag instructor_student_analytic_path(@course), method: :get, class: "student-search-form" do %>
+          <div class="student-search-wrap">
+            <i class="bi bi-search student-search-icon"></i>
+            <input type="text" name="q" value="<%= @search %>" placeholder="Search name or email..."
+                   class="student-search-input">
+          </div>
+          <% if @status_filter.present? %>
+            <input type="hidden" name="status" value="<%= @status_filter %>">
+          <% end %>
+        <% end %>
+
+        <%# Status Filter %>
+        <div class="student-filter-tabs">
+          <%= link_to "All",
+                      instructor_student_analytic_path(@course, q: @search),
+                      class: "student-filter-tab #{'student-filter-tab--active' if @status_filter.blank?}" %>
+          <%= link_to "Active",
+                      instructor_student_analytic_path(@course, q: @search, status: :active),
+                      class: "student-filter-tab #{'student-filter-tab--active' if @status_filter == 'active'}" %>
+          <%= link_to "Completed",
+                      instructor_student_analytic_path(@course, q: @search, status: :completed),
+                      class: "student-filter-tab #{'student-filter-tab--active' if @status_filter == 'completed'}" %>
+          <%= link_to "Inactive",
+                      instructor_student_analytic_path(@course, q: @search, status: :inactive),
+                      class: "student-filter-tab #{'student-filter-tab--active' if @status_filter == 'inactive'}" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="data-table__wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Enrolled</th>
+            <th>Progress</th>
+            <th style="text-align: center;">Quiz Avg</th>
+            <th style="text-align: center;">Review</th>
+            <th style="text-align: center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @enrollments.any? %>
+            <% @enrollments.each do |enrollment| %>
+              <% user = enrollment.user %>
+              <% progress = user.course_progress_percentage(@course) %>
+              <% quiz_attempts = user.quiz_attempts.where(quiz: @course.quizzes).completed %>
+              <% quiz_avg = quiz_attempts.any? ? quiz_attempts.average(:score)&.round(1) : nil %>
+              <% review = @course.reviews.find_by(user: user) %>
+              <tr>
+                <td>
+                  <div class="data-table__cell-user">
+                    <div class="data-table__cell-user-avatar">
+                      <%= user.name[0].upcase %>
+                    </div>
+                    <div class="data-table__cell-user-info">
+                      <span class="data-table__cell-user-name"><%= user.name %></span>
+                      <span class="data-table__cell-user-email"><%= user.email %></span>
+                    </div>
+                  </div>
+                </td>
+                <td style="color: #64748b; font-size: 0.85rem; white-space: nowrap;">
+                  <%= enrollment.created_at.strftime("%d %b %Y") %>
+                </td>
+                <td>
+                  <div class="data-table__cell-progress">
+                    <div class="progress-bar">
+                      <div class="progress-bar__fill" style="width: <%= progress %>%;"></div>
+                    </div>
+                    <span><%= progress %>%</span>
+                  </div>
+                </td>
+                <td style="text-align: center;">
+                  <% if quiz_avg %>
+                    <span class="badge badge--info"><%= quiz_avg %></span>
+                  <% else %>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">—</span>
+                  <% end %>
+                </td>
+                <td style="text-align: center;">
+                  <% if review %>
+                    <span style="color: #f59e0b; font-size: 0.85rem;">
+                      <i class="bi bi-star-fill"></i>
+                      <%= review.rating %>
+                    </span>
+                  <% else %>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">—</span>
+                  <% end %>
+                </td>
+                <td style="text-align: center;">
+                  <% if progress >= 100 %>
+                    <span class="badge badge--published">Hoan thanh</span>
+                  <% elsif progress > 0 %>
+                    <span class="badge badge--pending">Dang hoc</span>
+                  <% else %>
+                    <span class="badge badge--draft">Chua hoc</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6">
+                <div class="inst-empty" style="padding: 2.5rem; text-align: center;">
+                  <i class="bi bi-people" style="font-size: 2.5rem;"></i>
+                  <p style="margin-top: 0.75rem;">No students found</p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @pagy.pages > 1 %>
+      <div style="padding: 1rem 1.5rem; display: flex; justify-content: center;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <% if @pagy.page > 1 %>
+            <a href="<%= instructor_student_analytic_path(@course, page: @pagy.page - 1, q: @search, status: @status_filter) %>"
+               class="btn btn-outline-secondary btn-sm">Prev</a>
+          <% end %>
+          <span class="btn btn-sm btn-light" style="cursor: default;">Page <%= @pagy.page %> / <%= @pagy.pages %></span>
+          <% if @pagy.page < @pagy.pages %>
+            <a href="<%= instructor_student_analytic_path(@course, page: @pagy.page + 1, q: @search, status: @status_filter) %>"
+               class="btn btn-outline-secondary btn-sm">Next</a>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

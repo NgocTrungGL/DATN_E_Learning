@@ -19,39 +19,9 @@
       <div class="collapse navbar-collapse" id="navbarMain">
         <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
           
-          <%# --- COURSES DROPDOWN --- %>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="coursesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Courses
-            </a>
-            <ul class="dropdown-menu border-0 shadow" aria-labelledby="coursesDropdown">
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-code-slash"></i> Web Development
-                <% end %>
-              </li>
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-graph-up"></i> Data Science
-                <% end %>
-              </li>
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-palette"></i> Design & UI/UX
-                <% end %>
-              </li>
-              <li>
-                <%= link_to categories_path, class: "dropdown-item" do %>
-                  <i class="bi bi-hdd-network"></i> DevOps & Cloud
-                <% end %>
-              </li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <%= link_to courses_path, class: "dropdown-item fw-bold text-primary" do %>
-                  <i class="bi bi-arrow-right-circle"></i> Browse All Courses
-                <% end %>
-              </li>
-            </ul>
+          <%# --- COURSES LINK --- %>
+          <li class="nav-item">
+            <%= link_to "Courses", courses_path, class: "nav-link" %>
           </li>
 
           <% if request.path.start_with?('/courses') %>
@@ -113,7 +83,14 @@
                 <div class="fw-bold text-dark text-truncate"><%= current_user.name %></div>
                 <div class="small text-muted text-truncate"><%= current_user.email %></div>
               </li>
-              
+
+              <li>
+                <%= link_to student_dashboard_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-bar-chart-line"></i>
+                  Bang phan tich ca nhan
+                <% end %>
+              </li>
+              <li><hr class="dropdown-divider"></li>
               <li><%= link_to "My Courses", my_courses_path, class: "dropdown-item mt-2" %></li>
               <li><%= link_to "My Wishlist", wishlists_path, class: "dropdown-item" %></li>
               <li><%= link_to "My Certificates", certificates_path, class: "dropdown-item" %></li>

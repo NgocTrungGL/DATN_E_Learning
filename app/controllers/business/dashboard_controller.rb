@@ -12,7 +12,38 @@ class Business::DashboardController < ApplicationController
       return
     end
 
-    @total_employees = @organization.users.where(role: :employee).count
+    # License Stats
+    @license_stats = {
+      total: @organization.licenses.count,
+      assigned: @organization.licenses.where(status: :assigned).count,
+      available: @organization.licenses.where(status: :available).count,
+      expiring_soon: @organization.licenses.where("expires_at IS NOT NULL AND expires_at <= ? AND expires_at > ?", 7.days.from_now, Time.current).count,
+      expired: @organization.licenses.where(status: :expired).count
+    }
+
+    # Employee Progress Stats (role: student in org are employees)
+    @employees = @organization.users.where(role: :student)
+    @employee_stats = {
+      total: @employees.count,
+      active: @employees.joins(:enrollments).distinct.count(:id),
+      completed_courses: Enrollment.joins(:user).where(users: { organization_id: @organization.id, role: :student }).where(status: :completed).count,
+      in_progress: @employees.count - @employees.where.missing(:enrollments).count
+    }
+
+    # Training ROI
+    @total_spent = @organization.licenses.sum(:price).to_f
+    @avg_completion_rate = calculate_avg_completion_rate
+    @training_cost_per_employee = @employees.count.positive? ? (@total_spent / @employees.count) : 0
+
+    # Monthly enrollment trend (without group_by_month due to MySQL timezone issue)
+    @monthly_enrollments = {}
+
+    # Top courses
+    @top_courses = Course.joins(:licenses)
+                         .where(licenses: { organization_id: @organization.id })
+                         .group("courses.id")
+                         .order("COUNT(licenses.id) DESC")
+                         .limit(5)
   end
 
   private
@@ -22,5 +53,20 @@ class Business::DashboardController < ApplicationController
 
     redirect_to root_path,
                 alert: "Bạn không có quyền truy cập khu vực Doanh nghiệp."
+  end
+
+  def calculate_avg_completion_rate
+    return 0 if @employees.empty?
+
+    total_progress = @employees.sum do |u|
+      courses = u.enrollments.pluck(:course_id)
+      next 0 if courses.empty?
+
+      completed = ProgressTracking.where(user: u, status: :completed)
+                                  .where(course_id: courses).distinct.count(:course_id)
+      completed.to_f / courses.count * 100
+    end
+
+    (total_progress / @employees.count).round(1)
   end
 end

@@ -1,0 +1,128 @@
+<%# Study Plans Index — index.html.erb %>
+<div class="study-plan-page">
+  <div class="study-plan-page__container">
+
+    <%# Hero header %>
+    <header class="study-plan-hero">
+      <div>
+        <p class="study-plan-hero__eyebrow">Learning planner</p>
+        <h1 class="study-plan-hero__title">Study Plans</h1>
+        <p class="study-plan-hero__subtitle">Create a clean weekly learning schedule and keep your progress on track.</p>
+      </div>
+      <div class="study-plan-hero__actions">
+        <%= link_to new_student_study_plan_path, class: "study-plan-button study-plan-button--primary" do %>
+          <i class="bi bi-plus-lg"></i> New plan
+        <% end %>
+      </div>
+    </header>
+
+    <% if @study_plans.any? %>
+      <section class="study-plan-list">
+        <% @study_plans.each do |plan| %>
+          <%# Add status modifier class for left accent color %>
+          <article class="study-plan-card study-plan-card--<%= plan.status %>">
+
+            <div class="study-plan-card__top">
+              <div>
+                <p class="study-plan-card__label">Course</p>
+                <h2 class="study-plan-card__title"><%= plan.course.title %></h2>
+              </div>
+              <span class="study-plan-status study-plan-status--<%= plan.status %>">
+                <%= plan.status.humanize %>
+              </span>
+            </div>
+
+            <div class="study-plan-card__meta">
+              <div class="study-plan-meta">
+                <span class="study-plan-meta__label">
+                  <i class="bi bi-calendar3"></i> Deadline
+                </span>
+                <span class="study-plan-meta__value">
+                  <%= plan.goal_deadline ? l(plan.goal_deadline, format: :short) : "—" %>
+                </span>
+              </div>
+              <div class="study-plan-meta">
+                <span class="study-plan-meta__label">
+                  <i class="bi bi-bullseye"></i> Target
+                </span>
+                <span class="study-plan-meta__value"><%= plan.target_days %> days</span>
+              </div>
+              <div class="study-plan-meta">
+                <span class="study-plan-meta__label">
+                  <i class="bi bi-collection-play"></i> Lessons
+                </span>
+                <span class="study-plan-meta__value"><%= plan.study_plan_items.count %></span>
+              </div>
+            </div>
+
+            <div class="study-plan-progress">
+              <div class="study-plan-progress__row">
+                <span>Progress</span>
+                <strong><%= plan.progress_percentage %>%</strong>
+              </div>
+              <div class="study-plan-progress__track">
+                <div class="study-plan-progress__fill <%= plan.progress_percentage >= 100 ? 'study-plan-progress__fill--success' : '' %>"
+                     style="width: <%= plan.progress_percentage %>%"></div>
+              </div>
+            </div>
+
+            <% if plan.active? && plan.days_remaining.positive? %>
+              <p class="study-plan-note">
+                <i class="bi bi-clock"></i>
+                <%= plan.days_remaining %> days remaining
+              </p>
+            <% elsif plan.completed? %>
+              <p class="study-plan-note study-plan-note--success">
+                <i class="bi bi-check-circle-fill"></i>
+                Completed <%= plan.completed_at ? "on #{l(plan.completed_at.to_date, format: :short)}" : "" %>
+              </p>
+            <% end %>
+
+            <div class="study-plan-card__actions">
+              <%= link_to student_study_plan_path(plan), class: "study-plan-button study-plan-button--primary" do %>
+                <i class="bi bi-eye"></i> View plan
+              <% end %>
+              <% if plan.active? %>
+                <%= button_to pause_student_study_plan_path(plan), method: :post,
+                    class: "study-plan-button study-plan-button--secondary" do %>
+                  <i class="bi bi-pause-fill"></i> Pause
+                <% end %>
+              <% elsif plan.paused? %>
+                <%= button_to resume_student_study_plan_path(plan), method: :post,
+                    class: "study-plan-button study-plan-button--primary" do %>
+                  <i class="bi bi-play-fill"></i> Resume
+                <% end %>
+              <% end %>
+              <%= button_to student_study_plan_path(plan), method: :delete,
+                  class: "study-plan-button study-plan-button--ghost",
+                  form: { data: { turbo_confirm: "Delete this plan? This cannot be undone." } } do %>
+                <i class="bi bi-trash3"></i>
+              <% end %>
+            </div>
+
+          </article>
+        <% end %>
+      </section>
+
+    <% else %>
+      <%# Empty state %>
+      <section class="study-plan-empty">
+        <span class="study-plan-empty__icon"><i class="bi bi-calendar-plus"></i></span>
+        <h2 class="study-plan-empty__title">No study plans yet</h2>
+        <p class="study-plan-empty__text">
+          Start by creating a study plan for one of your enrolled courses.
+          A plan helps you stay consistent and hit your learning goals.
+        </p>
+        <div class="study-plan-empty__actions">
+          <%= link_to new_student_study_plan_path, class: "study-plan-button study-plan-button--primary" do %>
+            <i class="bi bi-plus-lg"></i> Create plan
+          <% end %>
+          <%= link_to courses_path, class: "study-plan-button study-plan-button--secondary" do %>
+            <i class="bi bi-search"></i> Browse courses
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+  </div>
+</div>

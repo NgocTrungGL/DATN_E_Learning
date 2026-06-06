@@ -1,0 +1,57 @@
+<%# Edit Study Plan %>
+<div class="study-plan-page">
+  <div class="study-plan-page__container study-plan-page__container--narrow">
+    <header class="study-plan-hero">
+      <div>
+        <p class="study-plan-hero__eyebrow">Learning planner</p>
+        <h1 class="study-plan-hero__title">Edit Study Plan</h1>
+        <p class="study-plan-hero__subtitle">Adjust your schedule without changing the course structure.</p>
+      </div>
+      <div class="study-plan-hero__actions">
+        <%= link_to "Back", student_study_plan_path(@study_plan), class: "study-plan-button study-plan-button--secondary" %>
+      </div>
+    </header>
+
+    <section class="study-plan-panel">
+      <div class="study-plan-panel__header">
+        <h2 class="study-plan-panel__title"><%= @study_plan.course.title %></h2>
+        <p class="study-plan-panel__text">Update the target date and weekly time slots for this plan.</p>
+      </div>
+
+      <%= form_with model: @study_plan, url: student_study_plan_path(@study_plan), local: true, class: "study-plan-form" do |f| %>
+        <div class="study-plan-field">
+          <%= f.label :goal_deadline, "Target completion date", class: "study-plan-field__label" %>
+          <%= f.date_field :goal_deadline,
+              min: Date.today,
+              class: "study-plan-field__control", required: true %>
+        </div>
+
+        <div class="study-plan-field">
+          <label class="study-plan-field__label">Preferred study times</label>
+          <p class="study-plan-field__hint">Use the format <code>19:00-21:00</code>.</p>
+
+          <div class="study-plan-times">
+            <% day_names = %w[monday tuesday wednesday thursday friday saturday sunday] %>
+            <% day_labels = { monday: "Mon", tuesday: "Tue", wednesday: "Wed", thursday: "Thu", friday: "Fri", saturday: "Sat", sunday: "Sun" } %>
+
+            <% day_names.each do |day| %>
+              <div class="study-plan-times__row">
+                <div class="study-plan-times__day"><%= day_labels[day.to_sym] %></div>
+                <input type="text"
+                       name="study_plan[preferred_study_times][<%= day %>][]"
+                       class="study-plan-field__control"
+                       placeholder="19:00-21:00"
+                       value="<%= @study_plan.preferred_study_times&.dig(day)&.first || '19:00-21:00' %>">
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="study-plan-actions">
+          <%= link_to "Cancel", student_study_plan_path(@study_plan), class: "study-plan-button study-plan-button--secondary" %>
+          <%= f.submit "Update plan", class: "study-plan-button study-plan-button--primary" %>
+        </div>
+      <% end %>
+    </section>
+  </div>
+</div>

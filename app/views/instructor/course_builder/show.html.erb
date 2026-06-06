@@ -1,0 +1,192 @@
+<div class="inst-page">
+  <%# Page Header %>
+  <div class="inst-page__header">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+        <%= link_to "My Courses", instructor_courses_path, class: "breadcrumb-link" %>
+        <i class="bi bi-chevron-right breadcrumb-sep"></i>
+        <span class="breadcrumb-current"><%= @course.title %></span>
+      </div>
+      <h1 class="inst-page__title">Course Builder</h1>
+    </div>
+    <div class="inst-page__actions">
+      <%= link_to course_path(@course), class: "btn btn-outline-secondary", target: "_blank" do %>
+        <i class="bi bi-eye"></i>
+        <span>Preview</span>
+      <% end %>
+      <span class="badge badge--<%= @course.status %>" style="align-self: center;">
+        <%= @course.status.titleize %>
+      </span>
+    </div>
+  </div>
+
+  <%# Builder Layout %>
+  <div class="builder-layout">
+    <%# Left: Sidebar %>
+    <div class="builder-sidebar">
+      <h3 class="builder-sidebar__title">Add Content</h3>
+
+      <%= link_to new_instructor_course_course_module_path(@course),
+                  class: "builder-add-btn" do %>
+        <i class="bi bi-folder-plus"></i>
+        <span>New Module</span>
+      <% end %>
+
+      <div class="builder-sidebar__info">
+        <div class="builder-stat">
+          <i class="bi bi-layers"></i>
+          <span><%= @modules.count %> modules</span>
+        </div>
+        <div class="builder-stat">
+          <i class="bi bi-file-earmark-text"></i>
+          <span><%= @modules.sum { |m| m.lessons.count } %> lessons</span>
+        </div>
+      </div>
+
+      <hr class="builder-divider">
+
+      <div class="builder-sidebar__tips">
+        <p class="builder-sidebar__tips-title">Tips</p>
+        <ul>
+          <li>Drag modules to reorder</li>
+          <li>Drag lessons between modules</li>
+          <li>Use handle icon to drag</li>
+        </ul>
+      </div>
+    </div>
+
+    <%# Right: Module Tree %>
+    <div class="builder-main">
+      <% if @modules.any? %>
+        <div class="modules-tree"
+             data-controller="sortable"
+             data-sortable-url-value="<%= instructor_sort_modules_path(course_id: @course.id) %>"
+             data-sortable-handle-value=".module-drag-handle"
+             data-sortable-nested-value="true"
+             data-sortable-container="course-<%= @course.id %>">
+
+          <% @modules.each do |mod| %>
+            <div class="module-block"
+                 data-id="<%= mod.id %>"
+                 data-module-id="<%= mod.id %>">
+
+              <%# Module Header %>
+              <div class="module-block__header">
+                <div class="module-drag-handle">
+                  <i class="bi bi-grip-vertical"></i>
+                </div>
+                <div class="module-block__info">
+                  <h3 class="module-block__title"><%= mod.title %></h3>
+                  <span class="module-block__meta">
+                    <%= mod.lessons.count %> lessons
+                    <% if mod.description.present? %>
+                      · <%= truncate(mod.description, length: 40) %>
+                    <% end %>
+                  </span>
+                </div>
+                <div class="module-block__actions">
+                  <%= link_to edit_instructor_course_module_path(mod),
+                              class: "btn-icon btn-icon--sm", title: "Edit module" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <%= button_to instructor_course_module_path(mod),
+                               method: :delete,
+                               class: "btn-icon btn-icon--sm btn-icon--danger",
+                               title: "Delete module",
+                               data: { confirm: "Delete \"#{mod.title}\" and all its lessons?" } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </div>
+
+              <%# Lessons List %>
+              <div class="lessons-tree"
+                   data-controller="sortable"
+                   data-sortable-url-value="<%= instructor_sort_lessons_path(course_id: @course.id) %>"
+                   data-sortable-handle-value=".lesson-drag-handle"
+                   data-sortable-nested-value="true"
+                   data-sortable-container="module-<%= mod.id %>">
+
+                <% mod.lessons.order(:order_index).each do |lesson| %>
+                  <div class="lesson-item"
+                       data-id="<%= lesson.id %>"
+                       data-lesson-id="<%= lesson.id %>">
+                    <div class="lesson-drag-handle">
+                      <i class="bi bi-grip-vertical"></i>
+                    </div>
+                    <div class="lesson-item__icon">
+                      <% if lesson.video? %>
+                        <i class="bi bi-play-circle"></i>
+                      <% else %>
+                        <i class="bi bi-file-text"></i>
+                      <% end %>
+                    </div>
+                    <div class="lesson-item__info">
+                      <span class="lesson-item__title"><%= lesson.title %></span>
+                      <span class="lesson-item__meta">
+                        <% if lesson.video? %>
+                          <i class="bi bi-play-circle"></i> Video
+                        <% else %>
+                          <i class="bi bi-file-text"></i> Text
+                        <% end %>
+                        <% if lesson.free_preview? %>
+                          <span class="badge badge--info" style="font-size: 0.65rem;">Preview</span>
+                        <% end %>
+                      </span>
+                    </div>
+                    <div class="lesson-item__actions">
+                      <%= link_to edit_instructor_lesson_path(lesson),
+                                  class: "btn-icon btn-icon--sm", title: "Edit lesson" do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                      <%# Duplicate %>
+                      <%= link_to new_instructor_course_module_lesson_path(mod, duplicate: lesson.id),
+                                  class: "btn-icon btn-icon--sm", title: "Duplicate" do %>
+                        <i class="bi bi-copy"></i>
+                      <% end %>
+                      <%= button_to instructor_lesson_path(lesson),
+                                   method: :delete,
+                                   class: "btn-icon btn-icon--sm btn-icon--danger",
+                                   title: "Delete lesson",
+                                   data: { confirm: "Delete \"#{lesson.title}\"?" } do %>
+                        <i class="bi bi-trash"></i>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+
+                <% if mod.lessons.empty? %>
+                  <div class="lesson-empty">
+                    No lessons yet
+                  </div>
+                <% end %>
+              </div>
+
+              <%# Add Lesson Button %>
+              <%= link_to new_instructor_course_module_lesson_path(mod),
+                          class: "add-lesson-btn" do %>
+                <i class="bi bi-plus"></i>
+                Add lesson
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="inst-card">
+          <div class="inst-card__body" style="padding: 3rem; text-align: center;">
+            <div class="inst-empty">
+              <i class="bi bi-layers" style="font-size: 3rem;"></i>
+              <p style="margin-top: 1rem; font-size: 1rem;">No modules yet</p>
+              <p style="color: #94a3b8; margin-bottom: 1.5rem;">Start by adding your first module</p>
+              <%= link_to new_instructor_course_course_module_path(@course),
+                          class: "btn btn-primary" do %>
+                <i class="bi bi-plus-lg"></i>
+                Add First Module
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,73 +1,86 @@
-<%= form_with(model: [:instructor, @question]) do |f| %>
-  <% if @question.errors.any? %>
-    <div class="alert alert-danger">
-      <ul class="mb-0"><% @question.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
-    </div>
-  <% end %>
+<div class="inst-form">
+  <%= form_with(model: [:instructor, @question]) do |f| %>
+    <% if @question.errors.any? %>
+      <div class="inst-alert inst-alert--danger">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <ul style="margin: 0; padding-left: 1.25rem;">
+          <% @question.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
-  <div class="row">
-    <div class="col-md-8">
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-white fw-bold">Question content</div>
-        <div class="card-body">
-          <div class="mb-3">
-            <%= f.label :question_text, "Question", class: "form-label" %>
-            <%= f.text_area :question_text, rows: 3, class: "form-control", required: true %>
+    <div class="inst-form__two-col">
+      <%# Left Column: Question Details %>
+      <div class="inst-form__main">
+        <div class="inst-form__section">
+          <h3 class="inst-form__section-title">Question Content</h3>
+
+          <div class="inst-form__group">
+            <%= f.label :question_text, "Question Text", class: "inst-form__label" %>
+            <%= f.text_area :question_text, rows: 3, class: "inst-form__textarea", required: true,
+                placeholder: "Enter your question here..." %>
           </div>
 
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <%= f.label :question_type, "Type", class: "form-label" %>
-              <%= f.select :question_type, Question.question_types.keys, {}, class: "form-select" %>
+          <div class="inst-form__row">
+            <div class="inst-form__group">
+              <%= f.label :question_type, "Question Type", class: "inst-form__label" %>
+              <%= f.select :question_type, Question.question_types.keys, {},
+                  class: "inst-form__select" %>
             </div>
-            <div class="col-md-6 mb-3">
-              <%= f.label :difficulty, "Difficulty", class: "form-label" %>
-              <%= f.select :difficulty, Question.difficulties.keys, {}, class: "form-select" %>
+            <div class="inst-form__group">
+              <%= f.label :difficulty, "Difficulty", class: "inst-form__label" %>
+              <%= f.select :difficulty, Question.difficulties.keys, {},
+                  class: "inst-form__select" %>
             </div>
           </div>
 
-          <hr>
-
-          <div class="row">
-             <div class="col-md-6 mb-3">
-               <%= f.label :course_id, "Attach to course (mine)", class: "form-label" %>
-               <%= f.collection_select :course_id, @courses, :id, :title, { prompt: "Select course" }, { class: "form-select", required: true } %>
-             </div>
-             <div class="col-md-6 mb-3">
-               <%= f.label :lesson_id, "Attach to lesson (optional)", class: "form-label" %>
-               <%= f.number_field :lesson_id, class: "form-control", placeholder: "Enter lesson ID" %>
-             </div>
+          <div class="inst-form__row">
+            <div class="inst-form__group">
+              <%= f.label :course_id, "Course", class: "inst-form__label" %>
+              <%= f.collection_select :course_id, @courses, :id, :title,
+                  { include_blank: "Select a course" }, class: "inst-form__select" %>
+            </div>
+            <div class="inst-form__group">
+              <%= f.label :lesson_id, "Lesson (optional)", class: "inst-form__label" %>
+              <%# Lesson selector would ideally be dynamic based on selected course %>
+              <%= f.number_field :lesson_id, class: "inst-form__input",
+                  placeholder: "Enter lesson ID" %>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-header bg-white fw-bold">Options</div>
-        <div class="card-body p-0">
-          <div class="list-group list-group-flush">
+      <%# Right Column: Answer Options %>
+      <div class="inst-form__sidebar">
+        <div class="inst-form__section">
+          <h3 class="inst-form__section-title">Answer Options</h3>
+          <p class="inst-form__hint" style="margin-bottom: 1rem;">
+            Check the box next to the correct answer.
+          </p>
+
+          <div class="answer-options">
             <%= f.fields_for :question_options do |o_form| %>
-              <div class="list-group-item">
-                <div class="input-group">
-                  <div class="input-group-text">
-                    <%= o_form.check_box :is_correct, class: "form-check-input mt-0" %>
-                  </div>
-                  <%= o_form.text_field :option_text, class: "form-control", placeholder: "Enter answer..." %>
-                </div>
+              <div class="answer-option">
+                <label class="answer-option__check">
+                  <%= o_form.check_box :is_correct, class: "answer-option__checkbox" %>
+                  <span class="answer-option__box"></span>
+                </label>
+                <%= o_form.text_field :option_text, class: "answer-option__input",
+                    placeholder: "Enter answer option..." %>
               </div>
             <% end %>
           </div>
-          <div class="p-3 text-muted small">
-            * Check the box to mark the correct answer.
-          </div>
+        </div>
+
+        <div class="inst-form__actions">
+          <%= f.submit "Save Question", class: "btn btn-primary", style: "width: 100%;" %>
+          <a href="<%= instructor_questions_path %>" class="btn btn-outline" style="width: 100%;">
+            Cancel
+          </a>
         </div>
       </div>
-
-      <div class="d-grid gap-2 mt-3">
-        <%= f.submit "Save question", class: "btn btn-primary fw-bold" %>
-        <%= link_to "Cancel", instructor_questions_path, class: "btn btn-outline-secondary" %>
-      </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>

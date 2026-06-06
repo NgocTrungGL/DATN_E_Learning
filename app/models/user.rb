@@ -59,8 +59,35 @@ dependent: :nullify
   after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}
 
+  has_one :learning_streak, dependent: :destroy
+  has_many :learning_activities, dependent: :destroy
+  has_many :learning_goals, dependent: :destroy
+  has_many :study_plans, dependent: :destroy
+
   def unread_notifications_count
     notifications.unread.count
+  end
+
+  def learning_streak_record
+    record = learning_streak || create_learning_streak!
+    record.reset_weekly_if_new_week!(Date.current)
+    record
+  end
+
+  def total_study_seconds(from_date: nil, to_date: nil)
+    query = learning_activities
+    query = query.where(activity_date: from_date..to_date) if from_date && to_date
+    query.sum(:duration_seconds)
+  end
+
+  def lesson_completions_count(from_date: nil, to_date: nil)
+    query = learning_activities.lesson_completions
+    query = query.where(activity_date: from_date..to_date) if from_date && to_date
+    query.count
+  end
+
+  def active_goal
+    learning_goals.active.current_week.first
   end
 
   def enrolled_in? course

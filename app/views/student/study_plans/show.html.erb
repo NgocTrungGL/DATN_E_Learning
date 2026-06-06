@@ -1,0 +1,243 @@
+<%# Study Plan Show Page — show.html.erb %>
+<div class="study-plan-page">
+  <div class="study-plan-page__container">
+
+    <%# Hero header %>
+    <header class="study-plan-hero">
+      <div>
+        <p class="study-plan-hero__eyebrow">Study plan</p>
+        <h1 class="study-plan-hero__title"><%= @study_plan.course.title %></h1>
+        <% if @study_plan.goal_deadline %>
+          <p class="study-plan-hero__subtitle">
+            <i class="bi bi-calendar3" style="margin-right: 5px;"></i>
+            Deadline: <%= l(@study_plan.goal_deadline, format: :long) %>
+          </p>
+        <% end %>
+      </div>
+      <div class="study-plan-hero__actions">
+        <% if @study_plan.active? %>
+          <%= button_to regenerate_student_study_plan_path(@study_plan),
+              method: :post,
+              class: "study-plan-button study-plan-button--secondary",
+              data: { confirm: "This will reset your schedule. Continue?" } do %>
+            <i class="bi bi-arrow-clockwise"></i> Regenerate
+          <% end %>
+        <% end %>
+        <%= link_to student_study_plans_path, class: "study-plan-button study-plan-button--secondary" do %>
+          <i class="bi bi-arrow-left"></i> Back
+        <% end %>
+        <%= button_to student_study_plan_path(@study_plan), method: :delete,
+            class: "study-plan-button study-plan-button--ghost",
+            form: { data: { turbo_confirm: "Delete this study plan? This cannot be undone." } } do %>
+          <i class="bi bi-trash3"></i>
+        <% end %>
+      </div>
+    </header>
+
+    <%# Overview + Status panels %>
+    <section class="study-plan-summary-grid">
+
+      <%# Overview panel %>
+      <article class="study-plan-panel">
+        <div class="study-plan-panel__header">
+          <h2 class="study-plan-panel__title">Overview</h2>
+          <p class="study-plan-panel__text">A quick summary of your current study plan.</p>
+        </div>
+
+        <div class="study-plan-stats">
+          <div class="study-plan-stat">
+            <span class="study-plan-stat__label">Target days</span>
+            <strong class="study-plan-stat__value"><%= @study_plan.target_days %></strong>
+          </div>
+          <div class="study-plan-stat">
+            <span class="study-plan-stat__label">Lessons</span>
+            <strong class="study-plan-stat__value"><%= @study_plan.study_plan_items.count %></strong>
+          </div>
+          <div class="study-plan-stat">
+            <span class="study-plan-stat__label">Progress</span>
+            <strong class="study-plan-stat__value"><%= @study_plan.progress_percentage %>%</strong>
+          </div>
+          <div class="study-plan-stat">
+            <span class="study-plan-stat__label">Hours/day</span>
+            <strong class="study-plan-stat__value"><%= @learning_speed[:hours_per_day] || 0 %></strong>
+          </div>
+        </div>
+      </article>
+
+      <%# Status panel %>
+      <article class="study-plan-panel">
+        <div class="study-plan-panel__header">
+          <h2 class="study-plan-panel__title">Status</h2>
+          <p class="study-plan-panel__text">Check whether the current pace is realistic.</p>
+        </div>
+
+        <div class="study-plan-status-box">
+          <div class="study-plan-status-box__row">
+            <span>Plan status</span>
+            <span class="study-plan-status study-plan-status--<%= @study_plan.status %>">
+              <%= @study_plan.status.humanize %>
+            </span>
+          </div>
+          <div class="study-plan-status-box__row">
+            <span>Days remaining</span>
+            <strong><%= @study_plan.days_remaining %></strong>
+          </div>
+          <div class="study-plan-status-box__row">
+            <span>Daily pace</span>
+            <strong><%= @learning_speed[:daily_capacity_minutes] || 0 %> min/day</strong>
+          </div>
+        </div>
+
+        <% if @feasibility && !@feasibility[:feasible] %>
+          <div class="study-plan-warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+              <strong>Current schedule is overloaded.</strong>
+              <p>You need <%= @feasibility[:required_per_day] %> items/day, but your capacity is <%= @feasibility[:daily_capacity] %> items/day.</p>
+              <% if @feasibility[:suggested_deadline] %>
+                <p>Suggested deadline: <%= l(@feasibility[:suggested_deadline], format: :long) %></p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </article>
+
+    </section>
+
+    <%# Schedule timeline %>
+    <section class="study-plan-panel">
+      <div class="study-plan-panel__header">
+        <h2 class="study-plan-panel__title">Schedule</h2>
+        <p class="study-plan-panel__text">Lessons are grouped by date so you can scan the week quickly.</p>
+      </div>
+
+      <% if @grouped_items.any? %>
+        <div class="study-plan-timeline">
+          <% @grouped_items.each do |date, items| %>
+            <section class="study-plan-day <%= 'study-plan-day--today' if date == Date.today %> <%= 'study-plan-day--past' if date < Date.today %>">
+
+              <div class="study-plan-day__date">
+                <span class="study-plan-day__weekday"><%= date.strftime("%a") %></span>
+                <strong class="study-plan-day__number"><%= date.day %></strong>
+                <span class="study-plan-day__month"><%= date.strftime("%b") %></span>
+              </div>
+
+              <div class="study-plan-day__items">
+                <% items.sort_by(&:scheduled_start_time).each do |item| %>
+                  <article class="study-plan-lesson study-plan-lesson--<%= item.status %> <%= 'study-plan-lesson--overdue' if item.overdue? %>"
+                           data-item-id="<%= item.id %>">
+
+                    <div class="study-plan-lesson__main">
+                      <div class="study-plan-lesson__status-dot"></div>
+                      <div class="study-plan-lesson__content">
+                        <div class="study-plan-lesson__top">
+                          <h3 class="study-plan-lesson__title">
+                            <%= link_to item.lesson.title, lesson_path(item.lesson), target: "_blank" %>
+                          </h3>
+                          <% if item.lesson.quizzes.any? %>
+                            <span class="study-plan-pill study-plan-pill--quiz">
+                              <i class="bi bi-patch-question"></i> Quiz
+                            </span>
+                          <% end %>
+                        </div>
+                        <p class="study-plan-lesson__meta">
+                          <span><i class="bi bi-clock"></i> <%= item.estimated_duration_minutes %> min</span>
+                          <span>•</span>
+                          <span><%= item.lesson.course_module.title %></span>
+                          <% if item.overdue? && !item.completed? && item.status != 'skipped' %>
+                            <span class="study-plan-pill study-plan-pill--muted">Overdue</span>
+                          <% end %>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="study-plan-lesson__actions">
+                      <% unless item.completed? || item.status == 'skipped' %>
+                        <button class="study-plan-button study-plan-button--ghost complete-btn"
+                                data-item-id="<%= item.id %>"
+                                type="button">
+                          <i class="bi bi-check2"></i> Complete
+                        </button>
+                        <button class="study-plan-button study-plan-button--ghost skip-btn"
+                                data-item-id="<%= item.id %>"
+                                type="button">
+                          <i class="bi bi-skip-forward"></i> Skip
+                        </button>
+                      <% else %>
+                        <span class="study-plan-pill study-plan-pill--<%= item.completed? ? 'success' : 'muted' %>">
+                          <% if item.completed? %>
+                            <i class="bi bi-check2-circle"></i>
+                          <% end %>
+                          <%= item.status.humanize %>
+                        </span>
+                      <% end %>
+                    </div>
+
+                  </article>
+                <% end %>
+              </div>
+
+            </section>
+          <% end %>
+        </div>
+
+      <% else %>
+        <div class="study-plan-empty study-plan-empty--subtle">
+          <span class="study-plan-empty__icon"><i class="bi bi-calendar-x"></i></span>
+          <h2 class="study-plan-empty__title">No lessons scheduled</h2>
+          <p class="study-plan-empty__text">This plan does not have scheduled lessons yet.</p>
+        </div>
+      <% end %>
+
+    </section>
+
+  </div>
+</div>
+
+<%# JS: use turbo:load instead of DOMContentLoaded (Turbo gotcha fix) %>
+<script>
+  (function() {
+    function initStudyPlanActions() {
+      document.querySelectorAll('.complete-btn').forEach(function(btn) {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', function() {
+          var itemId = this.dataset.itemId;
+          var csrfToken = document.querySelector('meta[name="csrf-token"]');
+          if (!csrfToken) return;
+          fetch('/student/study_plan_items/' + itemId + '/complete', {
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': csrfToken.content,
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(data) { if (data.success) location.reload(); });
+        });
+      });
+
+      document.querySelectorAll('.skip-btn').forEach(function(btn) {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', function() {
+          var itemId = this.dataset.itemId;
+          var csrfToken = document.querySelector('meta[name="csrf-token"]');
+          if (!csrfToken) return;
+          fetch('/student/study_plan_items/' + itemId + '/skip', {
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': csrfToken.content,
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(data) { if (data.success) location.reload(); });
+        });
+      });
+    }
+
+    // turbo:load fires on both initial load and Turbo navigation
+    document.addEventListener('turbo:load', initStudyPlanActions);
+  })();
+</script>

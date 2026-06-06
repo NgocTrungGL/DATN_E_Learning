@@ -1,71 +1,98 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 class="fw-bold"><i class="bi bi-question-square me-2"></i> Question Bank</h2>
-  <%= link_to new_instructor_question_path, class: "btn btn-primary" do %>
-    <i class="bi bi-plus-circle"></i> Create new question
+<div class="inst-page">
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title">Question Bank</h1>
+      <p class="inst-page__subtitle">Manage your quiz questions</p>
+    </div>
+    <div class="inst-page__actions">
+      <a href="<%= new_instructor_question_path %>" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        New Question
+      </a>
+    </div>
+  </div>
+
+  <% if @questions.any? %>
+    <div class="inst-card">
+      <div class="data-table__wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 40%;">Question</th>
+              <th>Type / Difficulty</th>
+              <th>Course / Lesson</th>
+              <th style="width: 120px; text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @questions.each do |question| %>
+              <tr>
+                <td>
+                  <div class="question-cell">
+                    <span class="question-cell__text"><%= question.question_text %></span>
+                    <span class="question-cell__correct">
+                      <i class="bi bi-check-circle"></i>
+                      <%= question.question_options.find { |o| o.is_correct }&.option_text || "Not set" %>
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge badge--secondary"><%= question.question_type.titleize %></span>
+                  <span class="badge badge--<%= question.difficulty %>"><%= question.difficulty.titleize %></span>
+                </td>
+                <td>
+                  <% if question.course %>
+                    <span class="question-cell__course"><%= question.course.title %></span>
+                  <% end %>
+                  <% if question.lesson %>
+                    <span class="question-cell__lesson">
+                      <i class="bi bi-play-circle"></i>
+                      <%= question.lesson.title %>
+                    </span>
+                  <% end %>
+                  <% unless question.course || question.lesson %>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">Unassigned</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="data-table__cell-actions">
+                    <a href="<%= edit_instructor_question_path(question) %>" class="btn-icon btn-icon--sm" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <%= button_to instructor_question_path(question), method: :delete,
+                        class: "btn-icon btn-icon--sm btn-icon--danger",
+                        title: "Delete",
+                        data: { confirm: "Delete this question?" } do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if @pagy.pages > 1 %>
+        <div class="data-table__footer">
+          <span class="data-table__info">Showing <%= @pagy.items %> of <%= @pagy.count %> questions</span>
+          <div class="inst-pagination" style="margin: 0;">
+            <%== pagy_nav(@pagy) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="inst-empty-state">
+      <div class="inst-empty-state__icon">
+        <i class="bi bi-puzzle"></i>
+      </div>
+      <h2>No questions yet</h2>
+      <p>Create questions to build your quiz question bank.</p>
+      <a href="<%= new_instructor_question_path %>" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        Create Your First Question
+      </a>
+    </div>
   <% end %>
 </div>
-
-<div class="card shadow-sm">
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th style="width: 40%;">Question</th>
-          <th>Type / Difficulty</th>
-          <th>Belongs to</th>
-          <th class="text-end">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @questions.each do |question| %>
-          <tr>
-            <td>
-              <div class="fw-bold text-truncate" style="max-width: 400px;" title="<%= question.question_text %>">
-                <%= question.question_text %>
-              </div>
-              <small class="text-muted">
-                Correct: <span class="text-success"><%= question.question_options.find { |o| o.is_correct }&.option_text || "Not set" %></span>
-              </small>
-            </td>
-            <td>
-              <span class="badge bg-secondary"><%= question.question_type %></span>
-              <span class="badge <%= question.difficulty == 'hard' ? 'bg-danger' : (question.difficulty == 'medium' ? 'bg-warning text-dark' : 'bg-success') %>">
-                <%= question.difficulty %>
-              </span>
-            </td>
-            <td>
-              <% if question.course %>
-                <div class="small fw-bold text-primary"><%= question.course.title %></div>
-              <% end %>
-              <% if question.lesson %>
-                <div class="small text-muted"><i class="bi bi-play-circle"></i> <%= question.lesson.title %></div>
-              <% end %>
-            </td>
-            <td class="text-end">
-              <%= link_to edit_instructor_question_path(question), class: "btn btn-sm btn-outline-secondary me-1" do %>
-                <i class="bi bi-pencil"></i>
-              <% end %>
-              <%= button_to instructor_question_path(question), method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: "Delete this question?" } do %>
-                <i class="bi bi-trash"></i>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-
-        <% if @questions.empty? %>
-          <tr><td colspan="4" class="text-center py-5 text-muted">You have not created any questions yet.</td></tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-</div>
-<% if @pagy.pages > 1 %>
-  <div class="d-flex justify-content-center mt-4">
-    <%== pagy_bootstrap_nav(@pagy) %>
-  </div>
-
-  <div class="text-center text-muted small mt-2">
-    Showing <b><%= @pagy.items %></b> questions / page
-    (Total <b><%= @pagy.count %></b> questions)
-  </div>
-<% end %>

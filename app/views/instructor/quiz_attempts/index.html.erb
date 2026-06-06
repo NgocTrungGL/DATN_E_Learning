@@ -1,0 +1,137 @@
+<div class="inst-page">
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title">Quiz History</h1>
+      <p class="inst-page__subtitle">Review student quiz attempts across your courses</p>
+    </div>
+  </div>
+
+  <%# Course Filter %>
+  <div style="margin-bottom: 1.5rem;">
+    <label style="font-size: 0.82rem; color: #64748b; font-weight: 500;">Course:</label>
+    <select onchange="window.location.href = '?course=' + this.value"
+            class="qa-course-select" style="display: inline-block; vertical-align: middle; margin-left: 0.5rem;">
+      <option value="">All Courses</option>
+      <% @courses.each do |course| %>
+        <option value="<%= course.id %>" <%= 'selected' if @course_filter == course.id.to_s %>>
+          <%= course.title %>
+        </option>
+      <% end %>
+    </select>
+  </div>
+
+  <%# Table %>
+  <div class="inst-card">
+    <div class="data-table__wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Quiz</th>
+            <th>Course</th>
+            <th style="text-align: center;">Score</th>
+            <th style="text-align: center;">Status</th>
+            <th>Started</th>
+            <th style="text-align: center;">Duration</th>
+            <th style="text-align: center;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @attempts.any? %>
+            <% @attempts.each do |attempt| %>
+              <tr>
+                <td>
+                  <div class="data-table__cell-user">
+                    <div class="data-table__cell-user-avatar">
+                      <%= attempt.user.name[0].upcase %>
+                    </div>
+                    <div class="data-table__cell-user-info">
+                      <span class="data-table__cell-user-name"><%= attempt.user.name %></span>
+                      <span class="data-table__cell-user-email"><%= attempt.user.email %></span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span style="font-weight: 600; font-size: 0.875rem; color: #0f172a;">
+                    <%= attempt.quiz.title %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge badge--secondary" style="font-size: 0.72rem;">
+                    <%= attempt.quiz.course.title %>
+                  </span>
+                </td>
+                <td style="text-align: center;">
+                  <% if attempt.score.present? %>
+                    <span class="badge <%= attempt.is_passed? ? 'badge--success' : 'badge--danger' %>">
+                      <%= number_to_percentage(attempt.score, precision: 0) %>
+                    </span>
+                  <% else %>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">—</span>
+                  <% end %>
+                </td>
+                <td style="text-align: center;">
+                  <% if attempt.status == "completed" %>
+                    <span class="badge badge--success">Completed</span>
+                  <% elsif attempt.status == "in_progress" %>
+                    <span class="badge badge--warning">In Progress</span>
+                  <% else %>
+                    <span class="badge badge--secondary"><%= attempt.status.titleize %></span>
+                  <% end %>
+                </td>
+                <td style="color: #64748b; font-size: 0.82rem; white-space: nowrap;">
+                  <%= attempt.started_at.strftime("%d %b %Y %H:%M") %>
+                </td>
+                <td style="text-align: center;">
+                  <% if attempt.duration_seconds.present? %>
+                    <span style="font-size: 0.82rem; color: #64748b;">
+                      <%= attempt.duration_seconds / 60 %>m <%= attempt.duration_seconds % 60 %>s
+                    </span>
+                  <% else %>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">—</span>
+                  <% end %>
+                </td>
+                <td style="text-align: center;">
+                  <% if attempt.status == "completed" %>
+                    <a href="<%= review_quiz_attempt_path(attempt) %>"
+                       target="_blank"
+                       class="btn btn-outline-secondary btn-sm">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                  <% else %>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">—</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8">
+                <div class="inst-empty" style="padding: 2.5rem; text-align: center;">
+                  <i class="bi bi-clock-history" style="font-size: 2.5rem;"></i>
+                  <p style="margin-top: 0.75rem; color: #94a3b8;">No quiz attempts yet</p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @pagy.pages > 1 %>
+      <div style="padding: 1rem 1.5rem; display: flex; justify-content: center;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <% if @pagy.page > 1 %>
+            <a href="<%= instructor_quiz_attempts_path(page: @pagy.page - 1, course: @course_filter) %>"
+               class="btn btn-outline-secondary btn-sm">Prev</a>
+          <% end %>
+          <span class="btn btn-sm btn-light" style="cursor: default;">Page <%= @pagy.page %> / <%= @pagy.pages %></span>
+          <% if @pagy.page < @pagy.pages %>
+            <a href="<%= instructor_quiz_attempts_path(page: @pagy.page + 1, course: @course_filter) %>"
+               class="btn btn-outline-secondary btn-sm">Next</a>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

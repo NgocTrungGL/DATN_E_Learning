@@ -17,6 +17,9 @@ optional: true
   has_many :wishlists, dependent: :destroy
   has_many :wishlisting_users, through: :wishlists, source: :user
   has_many :certificates, dependent: :destroy
+  has_many :course_learning_outcomes, dependent: :destroy, inverse_of: :course
+  accepts_nested_attributes_for :course_learning_outcomes, allow_destroy: true, reject_if: ->(attrs) { attrs[:content].blank? }
+  has_many :study_plans, dependent: :destroy
   has_one_attached :image
   enum status: {
     draft: 0,
@@ -24,6 +27,8 @@ optional: true
     published: 2,
     rejected: 3
   }
+
+  scope :published, -> { where(status: :published) }
 
   after_commit :notify_status_change, on: :update, if: :saved_change_to_status?
 
@@ -81,6 +86,20 @@ optional: true
     [:min_rating_filter, :price_filter]
   end
 
+  def average_progress_percentage
+    total_items = lessons.count + quizzes.count
+    return 0 if total_items.zero?
+
+    progress_trackings.completed.count.to_f / (enrollments.active.count * total_items) * 100
+  end
+
+  def average_quiz_score
+    return 0 if quizzes.empty?
+
+    attempts = QuizAttempt.where(quiz: quizzes).completed
+    attempts.average(:score).to_f.round(1)
+  end
+
   def free?
     price.to_f.zero?
   end
@@ -117,6 +136,38 @@ optional: true
       "-#{ActionController::Base.helpers.number_to_currency(
         coupon.discount_value, unit: '₫', precision: 0
       )}"
+    end
+  end
+
+  # Tong so giay tu tat ca lessons
+  def total_duration_seconds
+    lessons.sum(:cached_duration_seconds).to_i
+  end
+
+  # Tong so phut (lam tron len)
+  # VD: 4.3 phut -> 5
+  def total_duration_minutes
+    return 0 if total_duration_seconds.zero?
+
+    (total_duration_seconds.to_f / 60).ceil
+  end
+
+  # Dinh dang tong duration thanh chuoi
+  # VD: "45m", "1h 30m", "2h 15m"
+  def formatted_duration
+    total_seconds = total_duration_seconds
+    return nil if total_seconds.zero?
+
+    total_mins = total_duration_minutes
+    return nil if total_mins.zero?
+
+    hours = total_mins / 60
+    mins = total_mins % 60
+
+    if hours.positive?
+      mins.positive? ? "#{hours}h #{mins}m" : "#{hours}h"
+    else
+      "#{mins}m"
     end
   end
 end

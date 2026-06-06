@@ -1,0 +1,20 @@
+// ============================================================
+// QUIZ HISTORY PAGE
+// ============================================================
+
+.qa-course-select {
+  padding: 0.4rem 0.875rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  background: $surface;
+  color: $text-dark;
+  outline: none;
+  min-width: 220px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: $primary;
+  }
+}

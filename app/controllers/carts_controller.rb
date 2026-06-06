@@ -26,4 +26,59 @@ class CartsController < ApplicationController
       redirect_to cart_path, alert: "Mã giảm giá không hợp lệ hoặc đã hết hạn."
     end
   end
+
+  # API endpoint for applying coupon from course page (returns JSON)
+  def apply_coupon_api
+    code = params[:coupon_code].to_s.strip.upcase
+    course_id = params[:course_id]
+
+    if code.blank?
+      render json: { success: false, message: "Please enter a coupon code." }
+      return
+    end
+
+    coupon = Coupon.find_by(code: code)
+
+    if coupon&.active_and_current?
+      # Check if coupon applies to this course
+      if coupon.specific_course? && coupon.course_id != course_id.to_i
+        render json: {
+          success: false,
+          message: "This coupon is only valid for a different course."
+        }
+        return
+      end
+
+      # Check if this is a global coupon and course already has discount
+      if coupon.global? && Course.find_by(id: course_id)&.has_discount?
+        render json: {
+          success: false,
+          message: "This course already has its own discount."
+        }
+        return
+      end
+
+      # Store coupon in session with course_id
+      session[:course_coupons] ||= {}
+      session[:course_coupons][course_id] = code
+
+      # Calculate new price
+      course = Course.find_by(id: course_id)
+      if coupon.percentage?
+        new_price = course.price * (1 - coupon.discount_value / 100.0)
+      else
+        new_price = [course.price - coupon.discount_value, 0].max
+      end
+      # Format price manually
+      new_price_display = "#{new_price.round.to_s.reverse.gsub(/...(?=.)/, '\&.').reverse} ₫"
+
+      render json: {
+        success: true,
+        message: "Coupon applied successfully!",
+        new_price: new_price_display
+      }
+    else
+      render json: { success: false, message: "Invalid or expired coupon code." }
+    end
+  end
 end

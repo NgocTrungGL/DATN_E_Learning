@@ -1,0 +1,83 @@
+<div class="inst-page">
+  <div class="inst-page__header">
+    <div>
+      <h1 class="inst-page__title">My Discussions</h1>
+      <p class="inst-page__subtitle">Manage discussions for your courses</p>
+    </div>
+  </div>
+
+  <%# Course Filter %>
+  <div style="margin-bottom: 1.25rem;">
+    <label style="font-size: 0.82rem; color: #64748b; font-weight: 500;">Course:</label>
+    <select onchange="window.location.href = '?course=' + this.value"
+            class="disc-course-select" style="display: inline-block; vertical-align: middle; margin-left: 0.5rem;">
+      <option value="">All Courses</option>
+      <% current_user.created_courses.order(:title).each do |course| %>
+        <option value="<%= course.id %>" <%= 'selected' if @course_filter == course.id.to_s %>>
+          <%= course.title %>
+        </option>
+      <% end %>
+    </select>
+  </div>
+
+  <%# Course Cards Grid %>
+  <% if @courses.any? %>
+    <div class="disc-course-grid">
+      <% @courses.each do |course| %>
+        <div class="disc-course-card">
+          <div class="disc-course-card__header">
+            <div class="disc-course-card__thumb">
+              <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/80x45/f0f2f5/aaa?text=No+Img' %>"
+                   alt="<%= course.title %>">
+            </div>
+            <div class="disc-course-card__info">
+              <span class="disc-course-card__category"><%= course.category&.name || "Uncategorized" %></span>
+              <h3 class="disc-course-card__title"><%= course.title %></h3>
+              <span class="badge badge--secondary" style="font-size: 0.72rem;">
+                <i class="bi bi-people"></i>
+                <%= course.enrollments.count %> enrolled
+              </span>
+            </div>
+          </div>
+          <div class="disc-course-card__actions">
+            <a href="<%= course_discussion_posts_path(course) %>"
+               target="_blank"
+               class="disc-course-card__action">
+              <i class="bi bi-layout-text-sidebar-reverse"></i>
+              <span>Forum</span>
+            </a>
+            <a href="<%= course_discussion_messages_path(course) %>"
+               target="_blank"
+               class="disc-course-card__action disc-course-card__action--chat">
+              <i class="bi bi-chat-right-text"></i>
+              <span>Group Chat</span>
+            </a>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="inst-card">
+      <div class="inst-empty" style="padding: 3rem; text-align: center;">
+        <i class="bi bi-chat-dots" style="font-size: 3rem;"></i>
+        <p style="margin-top: 1rem; color: #94a3b8;">No courses found</p>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @pagy.pages > 1 %>
+    <div style="padding: 1.5rem 0; display: flex; justify-content: center;">
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <% if @pagy.page > 1 %>
+          <a href="<%= instructor_discussions_path(page: @pagy.page - 1, course: @course_filter) %>"
+             class="btn btn-outline-secondary btn-sm">Prev</a>
+        <% end %>
+        <span class="btn btn-sm btn-light" style="cursor: default;">Page <%= @pagy.page %> / <%= @pagy.pages %></span>
+        <% if @pagy.page < @pagy.pages %>
+          <a href="<%= instructor_discussions_path(page: @pagy.page + 1, course: @course_filter) %>"
+             class="btn btn-outline-secondary btn-sm">Next</a>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

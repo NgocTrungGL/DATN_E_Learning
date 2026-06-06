@@ -20,6 +20,21 @@ class Business::LicensesController < ApplicationController
     end
   end
 
+  def revoke
+    @license = current_user.organization.licenses.find(params[:id])
+    return redirect_no_license unless @license.assigned?
+
+    old_user = @license.user
+    service = LicenseReassignmentService.new(@license, old_user, nil)
+
+    if service.call
+      redirect_to business_licenses_path,
+                  notice: "License for '#{@license.course.title}' has been revoked from #{old_user.name}."
+    else
+      redirect_to business_licenses_path, alert: service.errors.join(", ")
+    end
+  end
+
   private
 
   def require_company_admin!
@@ -38,13 +53,24 @@ class Business::LicensesController < ApplicationController
   end
 
   def assign_license license, user
-    license.update(user:, status: :assigned)
+    ActiveRecord::Base.transaction do
+      license.update!(user: user, status: :assigned)
+      Enrollment.find_or_create_by!(
+        user: user,
+        course: license.course
+      ) do |e|
+        e.price = license.price
+        e.enrolled_at = Time.current
+      end
+    end
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
   end
 
   def redirect_success license, user
     redirect_to business_licenses_path,
-                notice: "Đã cấp khóa
-                học '#{license.course.title}' cho #{user.name}."
+                notice: "Đã cấp khóa học '#{license.course.title}' cho #{user.name}."
   end
 
   def redirect_no_license

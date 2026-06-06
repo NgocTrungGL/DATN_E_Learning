@@ -19,3 +19,5 @@ pin "date-fns", to: "https://ga.jspm.io/npm:date-fns@2.30.0/index.js"
 
 # 3. Cầu nối (Adapter) để Chart.js hiểu được ngày tháng
 pin "chartjs-adapter-date-fns", to: "https://ga.jspm.io/npm:chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.mjs"
+pin "trix"
+pin "@rails/actiontext", to: "actiontext.js"

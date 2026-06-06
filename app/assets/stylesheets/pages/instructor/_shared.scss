@@ -1,0 +1,3580 @@
+// ============================================================
+// INSTRUCTOR SHARED STYLES
+// BEM-style, reusable patterns for all instructor pages
+// ============================================================
+
+// ── Page Wrapper ────────────────────────────────────────────
+.inst-page {
+  max-width: 1200px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  &__subtitle {
+    font-size: 0.9rem;
+    color: $text-muted;
+    margin: 0.25rem 0 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  &__kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+}
+
+// ── KPI Card ───────────────────────────────────────────────
+.kpi-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  box-shadow: $shadow-sm;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+
+    &--primary {
+      background: rgba($primary, 0.1);
+      color: $primary;
+    }
+
+    &--success {
+      background: rgba($success, 0.1);
+      color: $success;
+    }
+
+    &--warning {
+      background: $warning-light;
+      color: darken($warning, 10%);
+    }
+
+    &--accent {
+      background: rgba($accent, 0.1);
+      color: $accent;
+    }
+
+    &--danger {
+      background: rgba($danger, 0.1);
+      color: $danger;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-dark;
+    line-height: 1.2;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.8rem;
+    color: $text-muted;
+    margin: 0.25rem 0;
+  }
+
+  &__change {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &--up {
+      color: $success;
+    }
+
+    &--down {
+      color: $danger;
+    }
+
+    i {
+      font-size: 0.65rem;
+    }
+  }
+
+  &__meta {
+    display: block;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+}
+
+// ── Card ───────────────────────────────────────────────────
+.inst-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid $border;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.8rem;
+    color: $text-muted;
+    margin: 0.25rem 0 0;
+  }
+
+  &__link {
+    font-size: 0.85rem;
+    color: $primary;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__body {
+    padding: 1rem 1.5rem;
+  }
+
+  &__footer {
+    padding: 1rem 1.5rem;
+    background: $bg;
+    border-top: 1px solid $border;
+  }
+}
+
+// ── Filter Tabs ────────────────────────────────────────────
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  &__btn {
+    padding: 0.5rem 1rem;
+    border-radius: $radius-md;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $text-mid;
+    text-decoration: none;
+    background: $surface;
+    border: 1.5px solid $border;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &--active {
+      background: $primary;
+      color: white;
+      border-color: $primary;
+
+      &:hover {
+        color: white;
+      }
+    }
+  }
+}
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px $primary-ring;
+  }
+
+  i {
+    color: $text-muted;
+    font-size: 0.9rem;
+  }
+
+  &__input {
+    border: none;
+    outline: none;
+    font-size: 0.85rem;
+    background: transparent;
+    width: 200px;
+
+    &::placeholder {
+      color: $text-muted;
+    }
+  }
+}
+
+// ── Course Card ─────────────────────────────────────────────
+.course-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &__thumb-wrap {
+    position: relative;
+    height: 140px;
+    overflow: hidden;
+  }
+
+  &__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__status {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    text-transform: capitalize;
+
+    &--published {
+      background: rgba($success, 0.9);
+      color: white;
+    }
+
+    &--draft {
+      background: rgba($text-muted, 0.9);
+      color: white;
+    }
+
+    &--pending {
+      background: rgba($warning, 0.9);
+      color: darken($warning, 20%);
+    }
+  }
+
+  &__body {
+    padding: 1rem;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0 0 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__category {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin: 0 0 0.75rem;
+  }
+
+  &__stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.78rem;
+    color: $text-mid;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    i {
+      font-size: 0.85rem;
+    }
+  }
+
+  &__progress {
+    margin-top: 0.75rem;
+
+    .progress-bar {
+      margin-bottom: 0.25rem;
+    }
+
+    span {
+      font-size: 0.7rem;
+      color: $text-muted;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: $bg;
+    border-top: 1px solid $border;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+  }
+}
+
+// ── Tabs ───────────────────────────────────────────────────
+.inst-tabs {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  &__nav {
+    display: flex;
+    border-bottom: 1px solid $border;
+    padding: 0 1rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+
+    &::-webkit-scrollbar {
+      height: 0;
+    }
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $text-muted;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-bottom: -1px;
+    white-space: nowrap;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      color: $text-dark;
+    }
+
+    &--active {
+      color: $primary;
+      border-bottom-color: $primary;
+    }
+  }
+
+  &__panel {
+    display: none;
+    padding: 1.5rem;
+
+    &--active {
+      display: block;
+    }
+  }
+}
+
+// ── Breadcrumb ─────────────────────────────────────────────
+.inst-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+
+  a {
+    color: $text-muted;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  i {
+    font-size: 0.7rem;
+    color: $text-muted;
+  }
+
+  span {
+    color: $text-dark;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ── Badges ─────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &--success {
+    background: rgba($success, 0.1);
+    color: $success;
+  }
+
+  &--warning {
+    background: $warning-light;
+    color: darken($warning, 10%);
+  }
+
+  &--danger {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+
+  &--primary {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+
+  &--secondary {
+    background: rgba($text-muted, 0.1);
+    color: $text-mid;
+  }
+
+  &--accent {
+    background: rgba($accent, 0.1);
+    color: $accent;
+  }
+
+  &--published {
+    background: rgba($success, 0.1);
+    color: $success;
+  }
+
+  &--draft {
+    background: rgba($text-muted, 0.1);
+    color: $text-mid;
+  }
+
+  &--pending {
+    background: $warning-light;
+    color: darken($warning, 10%);
+  }
+
+  &--free {
+    background: rgba($accent, 0.1);
+    color: $accent;
+  }
+}
+
+// ── Progress Bar ────────────────────────────────────────────
+.progress-bar {
+  height: 6px;
+  background: $border;
+  border-radius: 3px;
+  overflow: hidden;
+
+  &__fill {
+    height: 100%;
+    background: $primary;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  &--success &__fill {
+    background: $success;
+  }
+}
+
+// ── Buttons ────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: $radius-md;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: $primary;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: darken($primary, 6%);
+      box-shadow: 0 4px 12px rgba($primary, 0.3);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--success {
+    background: $success;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: darken($success, 6%);
+      box-shadow: 0 4px 12px rgba($success, 0.3);
+    }
+  }
+
+  &--danger {
+    background: $danger;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: darken($danger, 6%);
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: $text-mid;
+    border: 1.5px solid $border;
+
+    &:hover:not(:disabled) {
+      border-color: $primary;
+      color: $primary;
+      background: rgba($primary, 0.04);
+    }
+  }
+
+  &--sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  &--lg {
+    padding: 0.85rem 1.75rem;
+    font-size: 1rem;
+  }
+}
+
+// ── Icon Buttons ────────────────────────────────────────────
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1.5px solid $border;
+  color: $text-mid;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: rgba($primary, 0.05);
+  }
+
+  &--sm {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  &--danger {
+    &:hover {
+      border-color: $danger;
+      color: $danger;
+      background: rgba($danger, 0.05);
+    }
+  }
+}
+
+// ── Pagination ─────────────────────────────────────────────
+.inst-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+  .pagy {
+    display: flex;
+    gap: 0.5rem;
+
+    a,
+    .current {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 36px;
+      padding: 0 0.75rem;
+      border-radius: $radius-md;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    a {
+      background: $surface;
+      border: 1.5px solid $border;
+      color: $text-mid;
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &--active {
+      background: $primary;
+      border-color: $primary;
+      color: white;
+
+      &:hover {
+        background: darken($primary, 5%);
+        color: white;
+      }
+    }
+  }
+
+    .current {
+      background: $primary;
+      color: white;
+      border: 1.5px solid $primary;
+    }
+  }
+}
+
+// ── Empty States ───────────────────────────────────────────
+.inst-empty,
+.inst-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: $text-muted;
+
+  i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    color: $text-dark;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.inst-empty-state {
+  padding: 5rem 2rem;
+  background: $surface;
+  border-radius: $radius-lg;
+  border: 2px dashed $border;
+
+  &__icon {
+    width: 80px;
+    height: 80px;
+    border-radius: $radius-xl;
+    background: rgba($primary, 0.08);
+    color: $primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.5rem;
+  }
+}
+
+// ── Data Table ─────────────────────────────────────────────
+.data-table {
+  width: 100%;
+  background: $surface;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  &__wrapper {
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+  }
+
+  th {
+    background: $bg;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: $text-muted;
+    letter-spacing: 0.3px;
+  }
+
+  tr {
+    border-bottom: 1px solid $border;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: $bg;
+    }
+  }
+
+  &__cell-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    &-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba($primary, 0.1);
+      color: $primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    &-info {
+      min-width: 0;
+    }
+
+    &-name {
+      font-weight: 600;
+      color: $text-dark;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &-email {
+      font-size: 0.78rem;
+      color: $text-muted;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__cell-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .progress-bar {
+      flex: 1;
+      min-width: 80px;
+    }
+
+    span {
+      font-size: 0.8rem;
+      color: $text-muted;
+      min-width: 35px;
+    }
+  }
+
+  &__cell-actions {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  &__footer {
+    padding: 0.875rem 1rem;
+    background: $bg;
+    border-top: 1px solid $border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__info {
+    font-size: 0.8rem;
+    color: $text-muted;
+  }
+}
+
+// ── Alerts / Flash Messages ─────────────────────────────────
+.inst-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: $radius-md;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+
+  i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  &--success {
+    background: rgba($success, 0.08);
+    color: $success;
+    border-left: 3px solid $success;
+  }
+
+  &--danger {
+    background: rgba($danger, 0.08);
+    color: $danger;
+    border-left: 3px solid $danger;
+  }
+
+  &--warning {
+    background: $warning-light;
+    color: darken($warning, 15%);
+    border-left: 3px solid $warning;
+  }
+
+  &--info {
+    background: rgba($primary, 0.08);
+    color: $primary;
+    border-left: 3px solid $primary;
+  }
+}
+
+// ── Curriculum ─────────────────────────────────────────────
+.curriculum {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.curriculum-module {
+  background: $surface;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: $bg;
+    border-bottom: 1px solid $border;
+  }
+
+  &__drag {
+    color: $text-muted;
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+  }
+
+  &__count {
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  &__lessons {
+    padding: 0.5rem;
+  }
+}
+
+.curriculum-lesson {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: $radius-md;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: $bg;
+
+    .curriculum-lesson__actions {
+      opacity: 1;
+    }
+  }
+
+  &__drag {
+    color: $text-muted;
+    cursor: grab;
+    flex-shrink: 0;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba($primary, 0.08);
+    color: $primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  &--add {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    color: $text-muted;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px dashed $border;
+    border-radius: $radius-md;
+    margin: 0.25rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+
+    &:hover {
+      color: $primary;
+      border-color: $primary;
+      background: rgba($primary, 0.04);
+    }
+  }
+}
+
+// ── Revenue / Finance ─────────────────────────────────────
+.revenue-chart {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0;
+    }
+  }
+
+  &__range {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__range-btn {
+    padding: 0.35rem 0.75rem;
+    border-radius: $radius-sm;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $text-muted;
+    text-decoration: none;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: $bg;
+      color: $text-dark;
+    }
+
+    &--active {
+      background: $primary;
+      color: white;
+
+      &:hover {
+        color: white;
+      }
+    }
+  }
+}
+
+.transaction-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid $border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+
+    &--commission {
+      background: rgba($success, 0.1);
+      color: $success;
+    }
+
+    &--withdrawal {
+      background: rgba($danger, 0.1);
+      color: $danger;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $text-dark;
+  }
+
+  &__meta {
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  &__amount {
+    font-size: 0.9rem;
+    font-weight: 700;
+    flex-shrink: 0;
+
+    &--positive {
+      color: $success;
+    }
+
+    &--negative {
+      color: $danger;
+    }
+  }
+
+  &__time {
+    font-size: 0.75rem;
+    color: $text-muted;
+    flex-shrink: 0;
+  }
+}
+
+// ── Coupon Card ────────────────────────────────────────────
+.coupon-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: $surface;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
+
+  &__code {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    padding: 0.5rem 0.75rem;
+    background: rgba($primary, 0.08);
+    color: $primary;
+    border-radius: $radius-sm;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  &__meta {
+    font-size: 0.78rem;
+    color: $text-muted;
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// ── Question / Quiz Item ───────────────────────────────────
+// ── Dashboard Course Item ────────────────────────────────────
+.dashboard-course-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid $border;
+  text-decoration: none;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $bg;
+    margin: 0 -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.dashboard-course-item__thumb {
+  width: 72px;
+  height: 40px;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.dashboard-course-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-course-item__title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-course-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: $text-muted;
+  margin-top: 0.2rem;
+}
+
+.dashboard-course-item__sep {
+  color: $border;
+}
+
+// ── Enrollment Item ─────────────────────────────────────────
+.enrollment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid $border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.enrollment-item__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.enrollment-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.enrollment-item__name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enrollment-item__course {
+  display: block;
+  font-size: 0.75rem;
+  color: $text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enrollment-item__time {
+  font-size: 0.75rem;
+  color: $text-muted;
+  flex-shrink: 0;
+}
+
+// ── Quick Actions ───────────────────────────────────────────
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.quick-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  border-radius: $radius-lg;
+  background: $bg;
+  border: 1.5px solid $border;
+  text-decoration: none;
+  color: $text-mid;
+  transition: all 0.15s ease;
+  text-align: center;
+
+  i {
+    font-size: 1.5rem;
+    color: $primary;
+  }
+
+  &:hover {
+    border-color: $primary;
+    background: rgba($primary, 0.05);
+    color: $primary;
+    transform: translateY(-2px);
+    box-shadow: $shadow-sm;
+  }
+}
+
+.quick-action-card__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text-dark;
+
+  .quick-action-card:hover & {
+    color: $primary;
+  }
+}
+
+// ── Courses Grid ──────────────────────────────────────────────
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.courses-grid__item {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.courses-grid__thumb-wrap {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+
+.courses-grid__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+
+  .courses-grid__item:hover & {
+    transform: scale(1.03);
+  }
+}
+
+.courses-grid__status {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &--published {
+    background: rgba($success, 0.9);
+    color: white;
+  }
+
+  &--draft {
+    background: rgba($text-muted, 0.9);
+    color: white;
+  }
+
+  &--pending {
+    background: rgba($warning, 0.9);
+    color: darken($warning, 20%);
+  }
+
+  &--rejected {
+    background: rgba($danger, 0.9);
+    color: white;
+  }
+}
+
+.courses-grid__body {
+  padding: 1rem;
+}
+
+.courses-grid__category {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.courses-grid__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $text-dark;
+  margin: 0 0 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.courses-grid__desc {
+  font-size: 0.82rem;
+  color: $text-muted;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.courses-grid__stats {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid $border;
+  background: $bg;
+  font-size: 0.78rem;
+  color: $text-muted;
+}
+
+.courses-grid__stat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  i {
+    font-size: 0.85rem;
+    color: $text-mid;
+  }
+}
+
+.courses-grid__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid $border;
+}
+
+.courses-grid__dropdown {
+  position: relative;
+  margin-left: auto;
+}
+
+.courses-grid__dropdown-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 4px);
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  min-width: 160px;
+  padding: 0.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: all 0.15s ease;
+  z-index: 50;
+
+  .courses-grid__dropdown:hover & {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+.courses-grid__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $text-mid;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s ease;
+
+  i {
+    font-size: 0.9rem;
+    color: $text-muted;
+  }
+
+  &:hover {
+    background: $bg;
+    color: $primary;
+
+    i {
+      color: $primary;
+    }
+  }
+
+  &--danger {
+    color: $danger;
+
+    &:hover {
+      background: rgba($danger, 0.08);
+      color: $danger;
+
+      i {
+        color: $danger;
+      }
+    }
+  }
+}
+
+.courses-grid__dropdown-divider {
+  height: 1px;
+  background: $border;
+  margin: 0.25rem 0;
+}
+
+.courses-pagination-info {
+  text-align: center;
+  font-size: 0.8rem;
+  color: $text-muted;
+  margin-top: -1rem;
+}
+
+// ── Course Detail ─────────────────────────────────────────────
+.course-detail-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.course-detail-grid__sidebar {
+  position: sticky;
+  top: 80px;
+}
+
+.course-detail-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.course-detail-card__thumb-wrap {
+  height: 160px;
+  overflow: hidden;
+}
+
+.course-detail-card__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-detail-card__body {
+  padding: 1rem;
+}
+
+.course-detail-card__info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid $border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.course-detail-card__info-label {
+  font-size: 0.8rem;
+  color: $text-muted;
+  font-weight: 500;
+}
+
+.course-detail-card__info-value {
+  font-size: 0.85rem;
+  color: $text-dark;
+  font-weight: 600;
+}
+
+.course-detail-card__action {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid $border;
+}
+
+.course-detail-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid $border;
+  background: $bg;
+}
+
+.course-detail-grid__content {
+  min-width: 0;
+}
+
+// ── Form ─────────────────────────────────────────────────────
+.inst-form {
+  max-width: 640px;
+}
+
+.inst-form__section {
+  margin-bottom: 2rem;
+}
+
+.inst-form__section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid $border;
+}
+
+.inst-form__group {
+  margin-bottom: 1.25rem;
+}
+
+.inst-form__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: 0.5rem;
+}
+
+.inst-form__input,
+.inst-form__textarea,
+.inst-form__select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  color: $text-dark;
+  background: $surface;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+
+  &::placeholder {
+    color: $text-muted;
+  }
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px $primary-ring;
+  }
+}
+
+.inst-form__textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.inst-form__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.inst-form__input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.inst-form__input-prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  background: $bg;
+  border: 1.5px solid $border;
+  border-right: none;
+  border-radius: $radius-md 0 0 $radius-md;
+  font-size: 0.85rem;
+  color: $text-muted;
+  font-weight: 600;
+}
+
+.inst-form__input-group .inst-form__input {
+  border-radius: 0 $radius-md $radius-md 0;
+  flex: 1;
+}
+
+.inst-form__hint {
+  display: block;
+  font-size: 0.78rem;
+  color: $text-muted;
+  margin-top: 0.35rem;
+}
+
+.inst-form__thumbnail-preview {
+  margin-top: 0.75rem;
+  border-radius: $radius-md;
+  overflow: hidden;
+  height: 80px;
+  width: 160px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.inst-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inst-form__checkbox-wrap {
+  padding: 1rem;
+  background: $bg;
+  border-radius: $radius-md;
+  border: 1px solid $border;
+}
+
+.inst-form__checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+
+  &-input {
+    display: none;
+  }
+
+  &-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid $border;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.15s ease;
+    position: relative;
+
+    .inst-form__checkbox-input:checked + & {
+      background: $primary;
+      border-color: $primary;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 2px;
+        width: 5px;
+        height: 9px;
+        border: 2px solid white;
+        border-top: none;
+        border-left: none;
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  &-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    strong {
+      font-size: 0.9rem;
+      color: $text-dark;
+    }
+
+    small {
+      font-size: 0.78rem;
+      color: $text-muted;
+    }
+  }
+}
+
+.inst-form__actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border;
+}
+
+// Lesson type toggle
+.inst-form__type-toggle {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.inst-form__type-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid $border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  &:hover {
+    border-color: rgba($primary, 0.4);
+    background: rgba($primary, 0.04);
+  }
+
+  &.active {
+    border-color: $primary;
+    background: rgba($primary, 0.08);
+
+    .inst-form__type-icon,
+    .inst-form__type-text {
+      color: $primary;
+    }
+  }
+}
+
+.inst-form__type-icon {
+  font-size: 1.25rem;
+  color: $text-mid;
+}
+
+.inst-form__type-text {
+  font-weight: 700;
+  color: $text-mid;
+  font-size: 0.9rem;
+}
+
+.inst-form__group--conditional {
+  &.hidden {
+    display: none;
+  }
+}
+
+.inst-upload-section.hidden {
+  display: none;
+}
+
+.inst-form__resources {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.inst-form__resource-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.inst-form__resource-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba($danger, 0.3);
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $danger;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba($danger, 0.1);
+  }
+}
+
+.inst-form__add-resource {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px dashed rgba($primary, 0.4);
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $primary;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba($primary, 0.06);
+    border-style: solid;
+  }
+}
+
+.inst-form__resource-single {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+// ── Curriculum overrides ──────────────────────────────────────
+.curriculum-lesson--empty {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  color: $text-muted;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+// ── Page subtitle separator ───────────────────────────────────
+.inst-page__subtitle-sep {
+  color: $text-muted;
+  margin: 0 0.25rem;
+}
+
+.inst-page__subtitle .badge {
+  vertical-align: middle;
+}
+
+// ── Question Cell ─────────────────────────────────────────────
+.question-cell {
+  &__text {
+    display: block;
+    font-weight: 600;
+    color: $text-dark;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  &__correct {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: $success;
+    margin-top: 0.2rem;
+
+    i {
+      font-size: 0.7rem;
+    }
+  }
+
+  &__course {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__lesson {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    i {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// ── Form Two Column ───────────────────────────────────────────
+.inst-form__two-col {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+  align-items: flex-start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Answer Options ───────────────────────────────────────────
+.answer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: $bg;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  transition: border-color 0.15s ease;
+
+  &:focus-within {
+    border-color: $primary;
+  }
+}
+
+.answer-option__check {
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.answer-option__checkbox {
+  display: none;
+
+  &:checked + .answer-option__box {
+    background: $primary;
+    border-color: $primary;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 6px;
+      height: 10px;
+      border: 2px solid white;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+  }
+}
+
+.answer-option__box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid $border;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.15s ease;
+  display: block;
+}
+
+.answer-option__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  color: $text-dark;
+  background: transparent;
+
+  &::placeholder {
+    color: $text-muted;
+  }
+}
+
+// ── Quiz Cell ─────────────────────────────────────────────────
+.quiz-cell {
+  &__title {
+    display: block;
+    font-weight: 600;
+    color: $text-dark;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__desc {
+    display: block;
+    font-size: 0.75rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 0.2rem;
+  }
+
+  &__course {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $primary;
+  }
+
+  &__lesson {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin-top: 0.2rem;
+
+    i {
+      font-size: 0.8rem;
+    }
+  }
+
+  &__config {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    color: $text-mid;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      justify-content: center;
+    }
+
+    i {
+      font-size: 0.8rem;
+      color: $text-muted;
+    }
+  }
+}
+
+// ── Quiz Config Input ─────────────────────────────────────────
+.quiz-config-input {
+  display: flex;
+  align-items: center;
+
+  .inst-form__input {
+    border-radius: $radius-md 0 0 $radius-md;
+    border-right: none;
+  }
+}
+
+.quiz-config-input__suffix {
+  padding: 0 0.75rem;
+  height: 100%;
+  background: $bg;
+  border: 1.5px solid $border;
+  border-left: none;
+  border-radius: 0 $radius-md $radius-md 0;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: $text-muted;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+// ── Revenue Amount ─────────────────────────────────────────────
+.revenue-amount {
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  &--positive {
+    color: $success;
+  }
+
+  &--negative {
+    color: $danger;
+  }
+}
+
+// ── Inst Alert Info ───────────────────────────────────────────
+.inst-alert--info {
+  background: rgba($primary, 0.08);
+  color: $primary;
+  border-left: 3px solid $primary;
+
+  i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+}
+
+// ── Coupon Code Badge ───────────────────────────────────────────
+.coupon-code {
+  background: rgba($primary, 0.08);
+  color: $primary;
+  padding: 0.25rem 0.6rem;
+  border-radius: $radius-sm;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+.coupon-discount {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: $text-dark;
+}
+
+.coupon-course {
+  font-size: 0.85rem;
+  color: $text-dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  display: block;
+}
+
+.coupon-date {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: $text-muted;
+
+  i {
+    font-size: 0.85rem;
+  }
+}
+
+// ── Coupon Preview ─────────────────────────────────────────────
+.coupon-preview {
+  margin-bottom: 1.5rem;
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba($primary, 0.05);
+    border: 2px dashed rgba($primary, 0.3);
+    border-radius: $radius-lg;
+  }
+
+  &__discount {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    background: $primary;
+    color: white;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__code {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $text-dark;
+    font-family: monospace;
+    letter-spacing: 1px;
+  }
+
+  &__value {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $primary;
+  }
+
+  &__course {
+    display: block;
+    font-size: 0.75rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+}
+
+// ── Module Form Grid ───────────────────────────────────────────
+.module-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.5rem;
+  align-items: flex-start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Module List ───────────────────────────────────────────────
+.module-list {
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid $border;
+    transition: background 0.15s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: $bg;
+
+      .module-list__actions {
+        opacity: 1;
+      }
+    }
+
+    &--active {
+      background: rgba($primary, 0.05);
+      border-left: 3px solid $primary;
+      margin-left: -1px;
+    }
+  }
+
+  &__drag {
+    color: $text-muted;
+    cursor: grab;
+    flex-shrink: 0;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    background: rgba($primary, 0.08);
+    color: $primary;
+
+    .bi-play-circle-fill {
+      color: $danger;
+      background: rgba($danger, 0.08);
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__title {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__count {
+    display: block;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    flex-shrink: 0;
+
+    .module-list__item:hover & {
+      opacity: 1;
+    }
+  }
+}
+
+// ── KPI Change Indicators ─────────────────────────────────────
+.kpi-card__change {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 0.35rem;
+
+  &--up {
+    color: $success;
+  }
+
+  &--down {
+    color: $danger;
+  }
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+.kpi-card__meta--warning {
+  color: darken($warning, 10%);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+// ── Activity Feed ───────────────────────────────────────────
+.activity-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.activity-feed__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid $border;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $bg;
+  }
+}
+
+.activity-feed__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+
+  &--enrollment {
+    background: rgba($success, 0.1);
+    color: $success;
+  }
+
+  &--quiz_completion {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+
+  &--review {
+    background: rgba(#f59e0b, 0.1);
+    color: #f59e0b;
+  }
+
+  &--course_created {
+    background: rgba($accent, 0.1);
+    color: $accent;
+  }
+}
+
+.activity-feed__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.activity-feed__text {
+  font-size: 0.85rem;
+  color: $text-mid;
+  line-height: 1.4;
+
+  strong {
+    color: $text-dark;
+    font-weight: 600;
+  }
+}
+
+.activity-feed__time {
+  font-size: 0.75rem;
+  color: $text-muted;
+}
+
+.activity-feed__rating {
+  display: inline-flex;
+  gap: 1px;
+  margin-left: 0.25rem;
+}
+
+// ── Dashboard Right Column ──────────────────────────────────
+.dashboard-right-col {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Top Course Widget ───────────────────────────────────────
+.top-course-widget {
+  display: flex;
+  gap: 0.875rem;
+  align-items: center;
+}
+
+.top-course-widget__thumb {
+  width: 80px;
+  height: 45px;
+  border-radius: $radius-md;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.top-course-widget__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.top-course-widget__title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-course-widget__stat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: $text-muted;
+
+  i {
+    font-size: 0.8rem;
+  }
+}
+
+// ── Recent Courses Row ───────────────────────────────────────
+.recent-courses-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 700px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.recent-course-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  text-decoration: none;
+  background: $surface;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.recent-course-card__thumb {
+  position: relative;
+  height: 100px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.recent-course-card__status {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &--published {
+    background: rgba($success, 0.9);
+    color: white;
+  }
+
+  &--draft {
+    background: rgba($text-muted, 0.9);
+    color: white;
+  }
+
+  &--pending {
+    background: rgba($warning, 0.9);
+    color: darken($warning, 20%);
+  }
+
+  &--rejected {
+    background: rgba($danger, 0.9);
+    color: white;
+  }
+}
+
+.recent-course-card__body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.recent-course-card__title {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $text-dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-course-card__meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: $text-muted;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+// ── Dashboard KPI Grid (6 cards) ───────────────────────────────
+.dashboard-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: 1.25rem;
+  box-shadow: $shadow-sm;
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-md;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+
+    i { line-height: 1; }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  &__value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: $text-dark;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__sub {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin-top: 0.15rem;
+
+    &--warning {
+      color: darken($warning, 10%);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+
+  &__link {
+    color: $primary;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  // Variant: highlighted (earnings)
+  &--highlight {
+    background: linear-gradient(135deg, #fff 0%, rgba($warning, 0.05) 100%);
+    border: 1.5px solid rgba($warning, 0.2);
+  }
+
+  // Variant: accent
+  &--accent {
+    background: linear-gradient(135deg, #fff 0%, rgba($primary, 0.04) 100%);
+  }
+}
+
+.kpi-card__icon--primary {
+  background: rgba($primary, 0.1);
+  color: $primary;
+}
+.kpi-card__icon--success {
+  background: rgba($success, 0.1);
+  color: $success;
+}
+.kpi-card__icon--warning {
+  background: rgba($warning, 0.12);
+  color: darken($warning, 8%);
+}
+.kpi-card__icon--accent {
+  background: rgba($accent, 0.1);
+  color: $accent;
+}
+.kpi-card__icon--danger {
+  background: rgba($danger, 0.1);
+  color: $danger;
+}
+
+.kpi-card__change {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+
+  &--up { color: $success; }
+  &--down { color: $danger; }
+
+  i { font-size: 0.7rem; }
+}
+
+// ── Dashboard Charts Grid ─────────────────────────────────────
+.dashboard-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Course Performance Cell ──────────────────────────────────
+.course-perf-cell {
+  &__title {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
+
+  &__price {
+    display: block;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__stat {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-dark;
+
+    &--success { color: $success; }
+  }
+
+  &__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f59e0b;
+
+    i { font-size: 0.8rem; }
+  }
+}
+
+// ── KPI Change Indicators ─────────────────────────────────────
+.kpi-card__change {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 0.35rem;
+
+  &--up {
+    color: $success;
+  }
+
+  &--down {
+    color: $danger;
+  }
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+.kpi-card__meta--warning {
+  color: darken($warning, 10%);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+// ── Activity List (Activities Page) ────────────────────────────
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.activity-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $border;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $bg;
+  }
+}
+
+.activity-list__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.activity-list__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+
+  &--enrollment {
+    background: rgba($success, 0.1);
+    color: $success;
+  }
+
+  &--quiz_completion {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+
+  &--review {
+    background: rgba(#f59e0b, 0.1);
+    color: #f59e0b;
+  }
+}
+
+.activity-list__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-list__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.activity-list__user {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.activity-list__action {
+  font-size: 0.875rem;
+  color: $text-mid;
+}
+
+.activity-list__course {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $primary;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.activity-list__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  background: rgba($success, 0.1);
+  color: $success;
+
+  &--review {
+    background: rgba(#f59e0b, 0.1);
+    color: #f59e0b;
+  }
+
+  i { font-size: 0.7rem; }
+}
+
+.activity-list__review-text {
+  font-size: 0.85rem;
+  color: $text-mid;
+  font-style: italic;
+  margin: 0.25rem 0 0.35rem;
+  line-height: 1.5;
+}
+
+.activity-list__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: $text-muted;
+}
+
+.activity-list__sep {
+  color: $border;
+}
+
+.activity-list__email {
+  color: $text-muted;
+}
+
+.activity-list__time {
+  color: $text-muted;
+}
+
+.quiz-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: $surface;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-md;
+    background: rgba($accent, 0.1);
+    color: $accent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-dark;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__meta {
+    font-size: 0.78rem;
+    color: $text-muted;
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+  }
+}
+
+
+// ── Learning Outcomes Section ──────────────────────────────
+.inst-form__outcomes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.inst-form__outcome-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  padding: 0.5rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+}
+
+.inst-form__outcome-input-wrap {
+  flex: 1;
+  position: relative;
+
+  .inst-form__input {
+    width: 100%;
+    padding-left: 2.25rem;
+    background: transparent;
+    border: none;
+    font-size: 0.88rem;
+
+    &:focus {
+      outline: none;
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+}
+
+.inst-form__outcome-icon {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $success;
+  font-size: 0.95rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.inst-form__outcome-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  cursor: pointer;
+  transition: $t;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+
+  .bi { font-size: 0.9rem; }
+}
+
+// ── Outcomes Section Header ──────────────────────────────
+.inst-form__outcomes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+}
+
+// Small add button for outcomes
+.inst-form__btn-outcome-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border: 1px dashed $border;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $t;
+
+  .bi { font-size: 0.75rem; }
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: rgba($primary, 0.05);
+  }
+}
+
+// ============================================================
+// Upload Toggle (link vs cloudinary)
+// ============================================================
+.inst-upload-toggle {
+  margin-bottom: 1rem;
+
+  &__options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.875rem;
+    border: 1.5px solid $border;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $text-secondary;
+    background: #fff;
+    transition: all 0.2s ease;
+    user-select: none;
+
+    input { display: none; }
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+      background: rgba($primary, 0.04);
+    }
+
+    &.active {
+      border-color: $primary;
+      background: rgba($primary, 0.08);
+      color: $primary;
+      font-weight: 600;
+    }
+  }
+}
+
+.inst-upload-section {
+  margin-top: 1rem;
+  transition: opacity 0.3s ease;
+
+  &.hidden {
+    display: block !important;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.opacity-0 {
+  opacity: 0 !important;
+}
+
+// ============================================================
+// File Dropzone
+// ============================================================
+.inst-file-dropzone {
+  border: 2px dashed $border;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &__icon {
+    font-size: 2rem;
+    color: $text-muted;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  &__text {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    margin: 0 0 0.25rem;
+
+    strong { color: $primary; }
+  }
+
+  &__hint {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__browse {
+    color: $primary;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  &:hover, &.drag-over {
+    border-color: $primary;
+    background: rgba($primary, 0.04);
+  }
+
+  &.has-file {
+    border-color: $success;
+    background: rgba($success, 0.04);
+
+    .inst-file-dropzone__icon { color: $success; }
+  }
+
+  &--sm {
+    padding: 1rem;
+    .inst-file-dropzone__icon { font-size: 1.4rem; }
+  }
+}
+
+// ============================================================
+// Upload Preview
+// ============================================================
+.inst-upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f0f9f4;
+  border: 1px solid rgba($success, 0.3);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+
+  > i { font-size: 1.5rem; color: $success; }
+
+  &__info { flex: 1; min-width: 0; }
+
+  &__name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__size {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__remove {
+    color: $danger;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover { color: darken($danger, 10%); }
+  }
+}
+
+// ============================================================
+// Attachments List
+// ============================================================
+.inst-attachments-list {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.inst-attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: $text-secondary;
+
+  i { color: $primary; }
+  span { flex: 1; }
+
+  &__size {
+    flex: unset !important;
+    color: $text-muted;
+    font-size: 0.75rem;
+  }
+}

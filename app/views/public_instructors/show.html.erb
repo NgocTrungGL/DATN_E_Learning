@@ -1,0 +1,70 @@
+<div class="pub-instructor-page">
+  <% content_for :body_class, "pub-instructor" %>
+
+  <%# Hero Header %>
+  <div class="pub-instructor-hero">
+    <div class="pub-container">
+      <div class="pub-instructor-hero__inner">
+        <div class="pub-instructor-avatar">
+          <%= @instructor.name[0].upcase %>
+        </div>
+        <div class="pub-instructor-hero__info">
+          <h1 class="pub-instructor-hero__name"><%= @instructor.name %></h1>
+          <% if @instructor.instructor_profile&.headline.present? %>
+            <p class="pub-instructor-hero__headline"><%= @instructor.instructor_profile.headline %></p>
+          <% end %>
+          <div class="pub-instructor-hero__stats">
+            <div class="pub-stat">
+              <span class="pub-stat__value"><%= @stats[:total_students] %></span>
+              <span class="pub-stat__label">Students</span>
+            </div>
+            <div class="pub-stat">
+              <span class="pub-stat__value"><%= @stats[:total_courses] %></span>
+              <span class="pub-stat__label">Courses</span>
+            </div>
+            <div class="pub-stat">
+              <span class="pub-stat__value">
+                <i class="bi bi-star-fill" style="color: #f59e0b;"></i>
+                <%= @stats[:avg_rating] %>
+              </span>
+              <span class="pub-stat__label">Avg Rating</span>
+            </div>
+            <div class="pub-stat">
+              <span class="pub-stat__value"><%= @stats[:total_reviews] %></span>
+              <span class="pub-stat__label">Reviews</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Bio %>
+  <% if @instructor.instructor_profile&.bio.present? %>
+    <div class="pub-container">
+      <div class="pub-section">
+        <h2 class="pub-section__title">About</h2>
+        <p class="pub-instructor-bio"><%= @instructor.instructor_profile.bio %></p>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Courses %>
+  <div class="pub-container">
+    <div class="pub-section">
+      <h2 class="pub-section__title">My Courses (<%= @courses.count %>)</h2>
+      <% if @courses.any? %>
+        <div class="pub-courses-grid">
+          <% @courses.each do |course| %>
+            <%= render "courses/course_card", course: course %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="pub-empty">
+          <i class="bi bi-book"></i>
+          <p>No published courses yet.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

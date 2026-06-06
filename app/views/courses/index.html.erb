@@ -40,70 +40,83 @@
   - params[:price_filter] → "free" → Course.where(price: 0); "paid" → where("price > 0")
   - params[:min_rating]  → join reviews + having avg >= min_rating
 %>
+<%
+q = params[:q]
+q_params = (q.respond_to?(:permit) ? q.permit!.to_h : (q.is_a?(Hash) ? q : {}))
+%>
 <turbo-frame id="courses-grid-container" target="_top">
-<div class="courses-filter-bar">
+<div class="courses-filter-bar" id="filter-bar">
   <div class="courses-inner">
-    <%= search_form_for @q, url: courses_path, method: :get, data: { turbo_action: "advance" } do |f| %>
-      <div class="filter-form">
+    <div class="filter-form">
+      <%# Search %>
+      <div class="filter-search">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="search"
+          id="filter-search-input"
+          placeholder="Search courses..."
+          autocomplete="off"
+          value="<%= q_params[:title_cont] %>"
+        >
+        <% if q_params[:title_cont].present? %>
+          <a href="<%= courses_path(params.permit(q: {}).to_h.merge(q: q_params.except(:title_cont).presence || {})) %>"
+             class="search-clear-icon"
+             title="Clear search">
+            <i class="bi bi-x"></i>
+          </a>
+        <% end %>
+      </div>
 
-        <%# Search %>
-        <div class="filter-search">
-          <i class="bi bi-search search-icon"></i>
-          <%= f.search_field :title_cont,
-                placeholder: "Search courses...",
-                autocomplete: "off" %>
-          <% if params.dig(:q, :title_cont).present? %>
-            <% q_params = params[:q].to_unsafe_h rescue {} %>
-            <%= link_to courses_path(q: q_params.merge(title_cont: nil)), 
-                  class: "search-clear-icon", 
-                  title: "Clear search" do %>
-              <i class="bi bi-x"></i>
+      <%# ── Category filter (2-level dropdowns) ── %>
+      <% selected_cat_id = @q.category_id_eq || q_params[:category_id_eq] || q_params[:category_id] %>
+      <% selected_cat = selected_cat_id.present? ? Category.find_by(id: selected_cat_id) : nil %>
+      <% selected_parent = selected_cat&.parent_id.nil? ? selected_cat : (selected_cat ? selected_cat.parent : nil) %>
+      <% selected_sub = selected_cat&.parent_id ? selected_cat : nil %>
+
+      <div class="filter-category-wrapper" id="filter-category-wrapper">
+        <select id="filter-parent-select" class="filter-select filter-select--category">
+          <option value="">All Categories</option>
+          <% @parent_categories.each do |parent| %>
+            <option value="<%= parent.id %>" data-has-children="<%= parent.subcategories.any? %>"<%= " selected" if selected_parent&.id == parent.id %>>
+              <%= parent.name %>
+            </option>
+          <% end %>
+        </select>
+
+        <select id="filter-sub-select" class="filter-select filter-select--category filter-select--sub" style="<%= selected_parent&.subcategories&.any? ? "" : "display:none" %>">
+          <option value="">All Subcategories</option>
+          <% if selected_parent&.subcategories&.any? %>
+            <% selected_parent.subcategories.order(:name).each do |sub| %>
+              <option value="<%= sub.id %>"<%= " selected" if selected_sub&.id == sub.id %>><%= sub.name %></option>
             <% end %>
           <% end %>
-        </div>
-
-        <%# Category %>
-        <%= f.select :category_id_eq,
-              options_for_select(
-                [["All Categories", ""]] +
-                Category.all.map { |c| [c.name, c.id] },
-                @q.category_id_eq
-              ),
-              {},
-              class: "filter-select" %>
-
-        <%# Price filter %>
-        <%= f.select :price_filter,
-              options_for_select(
-                [["Any Price", ""], ["Free", "free"], ["Paid", "paid"]],
-                @q.send(:price_filter)
-              ),
-              {},
-              class: "filter-select" %>
-
-        <%# Rating filter %>
-        <%= f.select :min_rating_filter,
-              options_for_select(
-                [["Any Rating", ""], ["4.5+", "4.5"], ["4.0+", "4.0"], ["3.5+", "3.5"]],
-                @q.send(:min_rating_filter)
-              ),
-              {},
-              class: "filter-select" %>
-
-        <div class="filter-actions">
-          <button type="submit" class="filter-apply-btn">
-            <i class="bi bi-funnel-fill"></i> Apply
-          </button>
-
-          <% if params[:q].present? %>
-            <%= link_to "Clear All", courses_path, class: "filter-clear-btn" %>
-          <% end %>
-        </div>
-
-
-
+        </select>
       </div>
-    <% end %>
+
+      <%# Price filter %>
+      <select id="filter-price-select" class="filter-select">
+        <option value="">Any Price</option>
+        <option value="free"<%= " selected" if q_params[:price_filter] == "free" %>>Free</option>
+        <option value="paid"<%= " selected" if q_params[:price_filter] == "paid" %>>Paid</option>
+      </select>
+
+      <%# Rating filter %>
+      <select id="filter-rating-select" class="filter-select">
+        <option value="">Any Rating</option>
+        <option value="4.5"<%= " selected" if q_params[:min_rating_filter] == "4.5" %>>4.5+</option>
+        <option value="4.0"<%= " selected" if q_params[:min_rating_filter] == "4.0" %>>4.0+</option>
+        <option value="3.5"<%= " selected" if q_params[:min_rating_filter] == "3.5" %>>3.5+</option>
+      </select>
+
+      <div class="filter-actions">
+        <a id="filter-apply-btn" href="#" class="filter-apply-btn">
+          <i class="bi bi-funnel-fill"></i> Apply
+        </a>
+        <% if q_params.present? %>
+          <%= link_to "Clear All", courses_path, class: "filter-clear-btn" %>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -176,8 +189,106 @@
 <%# ── Page-scoped JS (inline, Turbo-compatible) ─────────────── %>
 <% content_for :page_js do %>
 <script>
-  <%# Dynamically load courses_market.js safely using module-like approach %>
   document.addEventListener('turbo:load', function() {
+
+    // ── Filter bar: URL-based navigation ──
+    (function() {
+      var applyBtn    = document.getElementById('filter-apply-btn');
+      var searchInput = document.getElementById('filter-search-input');
+      var parentSel   = document.getElementById('filter-parent-select');
+      var subSel      = document.getElementById('filter-sub-select');
+      var priceSel    = document.getElementById('filter-price-select');
+      var ratingSel   = document.getElementById('filter-rating-select');
+
+      if (!applyBtn) return;
+
+      function buildUrl() {
+        var parts = [];
+        var search = searchInput && searchInput.value.trim();
+        var parent = parentSel && parentSel.value;
+        var sub    = subSel && subSel.value;
+        var price  = priceSel && priceSel.value;
+        var rating = ratingSel && ratingSel.value;
+
+        if (search)              parts.push('q[title_cont]=' + encodeURIComponent(search));
+        if (sub)                 parts.push('q[category_id_eq]=' + sub);
+        else if (parent)         parts.push('q[category_id_eq]=' + parent);
+        if (price)               parts.push('q[price_filter]=' + price);
+        if (rating)             parts.push('q[min_rating_filter]=' + rating);
+
+        return '/courses' + (parts.length ? '?' + parts.join('&') : '');
+      }
+
+      applyBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var url = buildUrl() + '#filter-bar';
+        window.location.href = url;
+      });
+
+      // After page load, scroll to filter bar if URL has hash
+      if (window.location.hash === '#filter-bar') {
+        var filterBar = document.getElementById('filter-bar');
+        if (filterBar) {
+          filterBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      // Enter key in search input triggers apply
+      if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            applyBtn && applyBtn.click();
+          }
+        });
+      }
+    })();
+
+    // ── Category cascading dropdown ──
+    (function() {
+      var parentSel = document.getElementById('filter-parent-select');
+      var subSel    = document.getElementById('filter-sub-select');
+
+      if (!parentSel || !subSel) return;
+
+      parentSel.addEventListener('change', function() {
+        var selected = parentSel.options[parentSel.selectedIndex];
+        var hasChildren = selected && selected.dataset.hasChildren === 'true';
+        var parentId = parentSel.value;
+
+        subSel.innerHTML = '<option value="">All Subcategories</option>';
+        subSel.value = '';
+
+        if (!parentId) {
+          subSel.style.display = 'none';
+          return;
+        }
+
+        if (hasChildren) {
+          fetch('/api/v1/categories/' + parentId + '/subcategories')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data.data && data.data.length > 0) {
+                data.data.forEach(function(cat) {
+                  var opt = document.createElement('option');
+                  opt.value = cat.id;
+                  opt.textContent = cat.name;
+                  subSel.appendChild(opt);
+                });
+                subSel.style.display = 'block';
+              } else {
+                subSel.style.display = 'none';
+              }
+            })
+            .catch(function() {
+              subSel.style.display = 'none';
+            });
+        } else {
+          subSel.style.display = 'none';
+        }
+      });
+    })();
+
     // ── CountdownTimer (Dynamic Format: >24h ? D/H/M : H/M/S)
     (function() {
       var root  = document.getElementById('flash-countdown');
@@ -270,30 +381,27 @@
       });
     })();
 
-    // ── CardClickRouter (Event Delegation)
+    // ── CardClickRouter (Event Delegation) — handles ALL course cards on page
     (function() {
-      const container = document.getElementById('courses-grid-container');
-      if (!container) return;
-
-      container.addEventListener('click', function(e) {
+      document.addEventListener('click', function(e) {
         const card = e.target.closest('[data-href]');
         if (!card) return;
-        
+
         // Ignore clicks on actual links or buttons inside the card
         if (e.target.closest('a, button')) return;
 
         const href = card.dataset.href;
         if (href) {
-          // If the card is inside a turbo-frame with target="_top", 
-          // we should probably use Turbo.visit for consistency, 
-          // but window.location.href works fine for full page navigation.
           window.location.href = href;
         }
       });
 
-      // Accessibility: roles and tabindices can still be set on load or via MutationObserver
-      // For now, we just ensure they are role="link"
-      container.querySelectorAll('[data-href]').forEach(el => el.setAttribute('role', 'link'));
+      // Set role="link" for all cards with data-href
+      document.querySelectorAll('[data-href]').forEach(el => {
+        if (!el.hasAttribute('role')) {
+          el.setAttribute('role', 'link');
+        }
+      });
     })();
   });
 </script>

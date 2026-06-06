@@ -1,0 +1,245 @@
+<%# Student Dashboard %>
+<% content_for :full_width, true %>
+
+<% weekly_goal_percent = @active_goal ? @active_goal.progress_percentage.to_i.clamp(0, 100) : 0 %>
+<% goal_ring_offset = 264 - (264 * weekly_goal_percent / 100.0) %>
+
+<div class="student-dashboard">
+  <main class="student-dashboard__shell">
+    <section class="student-dashboard__hero">
+      <div class="student-dashboard__hero-inner">
+        <div>
+          <p class="student-dashboard__eyebrow">Vietnamese tech e-learning</p>
+          <h1 class="student-dashboard__title">Chào mừng trở lại, <span><%= @user.name %></span></h1>
+          <p class="student-dashboard__subtitle">Theo dõi tiến độ học lập trình, giữ nhịp học mỗi tuần và hoàn thành mục tiêu đúng hạn.</p>
+        </div>
+        <%= link_to new_student_study_plan_path, class: "student-dashboard__hero-button" do %>
+          <i class="bi bi-calendar-plus"></i>
+          Create Study Plan
+        <% end %>
+      </div>
+    </section>
+
+    <section class="student-dashboard__stats" aria-label="Learning statistics">
+      <article class="student-stat student-stat--amber">
+        <span class="student-stat__icon"><i class="bi bi-lightning-charge-fill"></i></span>
+        <strong class="student-stat__number"><%= @streak.current_streak %></strong>
+        <span class="student-stat__label">Day Streak</span>
+        <p class="student-stat__text"><%= @weekly_active_days %>/7 active days this week</p>
+      </article>
+      <article class="student-stat student-stat--blue">
+        <span class="student-stat__icon"><i class="bi bi-clock-fill"></i></span>
+        <strong class="student-stat__number"><%= (@week_seconds / 3600.0).round(1) %></strong>
+        <span class="student-stat__label">Hours</span>
+        <p class="student-stat__text"><%= (@today_seconds / 3600.0).round(1) %>h today, <%= (@avg_per_day / 3600.0).round(1) %>h avg/day</p>
+      </article>
+      <article class="student-stat student-stat--green">
+        <span class="student-stat__icon"><i class="bi bi-play-circle-fill"></i></span>
+        <strong class="student-stat__number"><%= @lessons_week %></strong>
+        <span class="student-stat__label">Lessons</span>
+        <p class="student-stat__text"><%= @lessons_today %> lessons completed today</p>
+      </article>
+      <article class="student-stat student-stat--orange">
+        <span class="student-stat__icon"><i class="bi bi-bullseye"></i></span>
+        <strong class="student-stat__number"><%= @active_goal ? "#{@active_goal.progress_percentage}%" : "--" %></strong>
+        <span class="student-stat__label">Goal</span>
+        <p class="student-stat__text"><%= @active_goal ? "Weekly target in progress" : "Set your next weekly goal" %></p>
+      </article>
+    </section>
+
+    <section class="student-dashboard__charts" aria-label="Progress charts">
+      <article class="student-card student-chart">
+        <div class="student-card__header">
+          <div>
+            <p class="student-card__kicker">Last 7 days</p>
+            <h2>Study Hours</h2>
+          </div>
+          <i class="bi bi-bar-chart"></i>
+        </div>
+
+        <% if @daily_study_chart.present? && @daily_study_chart.values.any?(&:nonzero?) %>
+          <% max_hours = @daily_study_chart.values.max.to_f %>
+          <div class="student-chart__bars">
+            <% @daily_study_chart.each do |date, hours| %>
+              <% bar_height = max_hours.positive? ? ((hours.to_f / max_hours) * 100).round : 0 %>
+              <div class="student-chart__bar-cell">
+                <span><%= hours %>h</span>
+                <i style="--bar-height: <%= bar_height %>%"></i>
+                <small><%= date.split("/").last %></small>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="student-chart__empty">
+            <div class="student-chart__skeleton student-chart__skeleton--hours" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <p>No study hours yet. Start a lesson to light up this chart.</p>
+          </div>
+        <% end %>
+      </article>
+
+      <article class="student-card student-chart">
+        <div class="student-card__header">
+          <div>
+            <p class="student-card__kicker">Last 12 weeks</p>
+            <h2>Lesson Completions</h2>
+          </div>
+          <i class="bi bi-activity"></i>
+        </div>
+
+        <% if @weekly_progress_chart.present? && @weekly_progress_chart.values.any?(&:nonzero?) %>
+          <% max_lessons = @weekly_progress_chart.values.max.to_f %>
+          <div class="student-chart__bars student-chart__bars--compact">
+            <% @weekly_progress_chart.each do |week_start, completions| %>
+              <% bar_height = max_lessons.positive? ? ((completions.to_f / max_lessons) * 100).round : 0 %>
+              <div class="student-chart__bar-cell">
+                <span><%= completions %></span>
+                <i style="--bar-height: <%= bar_height %>%"></i>
+                <small><%= week_start.split("/").first %></small>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="student-chart__empty">
+            <div class="student-chart__skeleton student-chart__skeleton--lessons" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <p>No completed lessons yet. Your weekly trend will appear here.</p>
+          </div>
+        <% end %>
+      </article>
+    </section>
+
+    <% if @todays_lessons.present? %>
+    <section class="student-dashboard__today-lessons" aria-label="Today's study plan">
+      <article class="student-card student-today">
+        <div class="student-card__header">
+          <div>
+            <p class="student-card__kicker">Today</p>
+            <h2>Today's Lessons</h2>
+          </div>
+          <span class="student-today__count"><%= @todays_lessons.count %> pending</span>
+        </div>
+        <div class="student-today__list">
+          <% @todays_lessons.limit(5).each do |item| %>
+            <% lesson = item.lesson %>
+            <%= link_to lesson_path(lesson), class: "student-today__item" do %>
+              <div class="student-today__item-icon">
+                <% if lesson.video? %>
+                  <i class="bi bi-play-circle"></i>
+                <% else %>
+                  <i class="bi bi-card-text"></i>
+                <% end %>
+              </div>
+              <div class="student-today__item-body">
+                <h4><%= lesson.title %></h4>
+                <span><i class="bi bi-collection"></i> <%= lesson.course_module.title %></span>
+              </div>
+              <div class="student-today__item-meta">
+                <span><i class="bi bi-clock"></i> <%= item.estimated_duration_minutes %> min</span>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+        <% if @todays_lessons.count > 5 %>
+          <div class="student-today__more">
+            <span>+<%= @todays_lessons.count - 5 %> more lessons today</span>
+          </div>
+        <% end %>
+        <% if @active_study_plan %>
+          <div class="student-today__footer">
+            <%= link_to student_study_plan_path(@active_study_plan), class: "student-today__link" do %>
+              <i class="bi bi-calendar-week"></i>
+              View full study plan
+            <% end %>
+          </div>
+        <% end %>
+      </article>
+    </section>
+    <% end %>
+
+    <div class="student-dashboard__content">
+      <section class="student-courses">
+        <div class="student-card student-courses__card">
+        <div class="student-card__header">
+          <div>
+            <p class="student-card__kicker">Active learning</p>
+            <h2>My Courses</h2>
+          </div>
+          <%= link_to "Browse more", courses_path, class: "student-card__link" %>
+        </div>
+
+        <% if @active_courses.any? %>
+          <div class="student-courses__grid">
+            <% course_emojis = ["💻", "⚙️", "📱", "🧠", "🚀"] %>
+            <% @active_courses.first(3).each_with_index do |enrollment, index| %>
+              <% course = enrollment.course %>
+              <% progress = enrollment.current_progress_percentage.to_i.clamp(0, 100) %>
+              <%= link_to course_path(course), class: "student-course" do %>
+                <div class="student-course__thumb">
+                  <% if course.thumbnail_url.present? %>
+                    <img src="<%= course.thumbnail_url %>" alt="<%= course.title %>" class="student-course__img">
+                  <% else %>
+                    <span class="student-course__emoji"><%= course_emojis[index % course_emojis.length] %></span>
+                  <% end %>
+                  <span class="student-course__pct"><%= progress %>%</span>
+                  <div class="student-course__progress">
+                    <i style="width: <%= progress %>%"></i>
+                  </div>
+                </div>
+                <div class="student-course__body">
+                  <span class="student-course__tag"><%= course.category&.name || "Tech" %></span>
+                  <h3><%= course.title %></h3>
+                  <div class="student-course__meta">
+                    <span><i class="bi bi-collection-play"></i> <%= course.lessons.size %> lessons</span>
+                    <span><i class="bi bi-person-video3"></i> <%= course.creator&.name || "Instructor" %></span>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="student-card__empty">
+            <i class="bi bi-collection-play"></i>
+            <p>You have not enrolled in any course yet.</p>
+            <%= link_to "Explore courses", courses_path %>
+          </div>
+        <% end %>
+        </div>
+      </section>
+
+      <aside class="student-weekly-goal">
+        <div class="student-card student-weekly-goal__card">
+        <div class="student-card__header">
+          <div>
+            <p class="student-card__kicker">Weekly focus</p>
+            <h2>This Week's Goal</h2>
+          </div>
+        </div>
+
+        <div class="student-weekly-goal__ring" style="--goal-offset: <%= goal_ring_offset %>">
+          <svg viewBox="0 0 100 100" role="img" aria-label="<%= weekly_goal_percent %>% weekly goal progress">
+            <circle cx="50" cy="50" r="42"></circle>
+            <circle cx="50" cy="50" r="42"></circle>
+          </svg>
+          <strong><%= weekly_goal_percent %>%</strong>
+        </div>
+
+        <% if @active_goal %>
+          <h3><%= LearningGoal.goal_type_labels[@active_goal.goal_type] || @active_goal.goal_type.humanize %></h3>
+          <p><%= @active_goal.current_value %>/<%= @active_goal.target_value %> completed. Keep your weekly rhythm steady.</p>
+        <% else %>
+          <h3>No active goal</h3>
+          <p>Create a weekly goal to turn learning into a consistent habit.</p>
+        <% end %>
+
+        <%= link_to student_learning_goals_path, class: "student-weekly-goal__button" do %>
+          <i class="bi bi-arrow-right"></i>
+          Manage Goal
+        <% end %>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>

@@ -6,7 +6,7 @@ class Business::EmployeesController < ApplicationController
   def index
     @employees = current_user
                  .organization.users
-                 .where(role: :employee)
+                 .where(role: :student)
                  .order(created_at: :desc)
   end
 

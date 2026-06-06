@@ -1,0 +1,149 @@
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <div class="biz-breadcrumb">
+        <a href="<%= business_course_market_index_path %>" class="biz-breadcrumb__back">
+          <i class="bi bi-arrow-left"></i> Course Market
+        </a>
+      </div>
+      <h1 class="business-page__title">Purchase License</h1>
+      <p class="business-page__subtitle">Review your order before checkout</p>
+    </div>
+  </div>
+
+  <div class="purchase-layout">
+    <%# Order Summary %>
+    <div class="purchase-card">
+      <h2 class="purchase-card__title">Order Summary</h2>
+
+      <div class="purchase-card__course">
+        <div class="purchase-card__thumb">
+          <% if @course.thumbnail_url.present? %>
+            <img src="<%= @course.thumbnail_url %>" alt="<%= @course.title %>">
+          <% else %>
+            <div class="purchase-card__thumb-placeholder">
+              <i class="bi bi-book"></i>
+            </div>
+          <% end %>
+        </div>
+        <div class="purchase-card__course-info">
+          <span class="purchase-card__course-category"><%= @course.category&.name || "Uncategorized" %></span>
+          <h3 class="purchase-card__course-title"><%= @course.title %></h3>
+        </div>
+      </div>
+
+      <div class="purchase-card__details">
+        <div class="purchase-card__row">
+          <span>Quantity</span>
+          <span class="purchase-card__row-value"><%= @quantity %> seats</span>
+        </div>
+        <div class="purchase-card__row">
+          <span>Unit price</span>
+          <span class="purchase-card__row-value">
+            <%= number_to_currency(@course.price) %> / seat
+          </span>
+        </div>
+        <% if @quantity >= 10 %>
+          <div class="purchase-card__row purchase-card__row--highlight">
+            <span>Business discount (10%)</span>
+            <span class="purchase-card__row-value purchase-card__row-value--green">
+              - <%= number_to_currency(@discount) %>
+            </span>
+          </div>
+        <% end %>
+        <div class="purchase-card__row purchase-card__row--total">
+          <span>Total</span>
+          <span class="purchase-card__row-value">
+            <%= number_to_currency(@total_price) %>
+          </span>
+        </div>
+      </div>
+
+      <%= form_with url: business_purchases_path, method: :post do |f| %>
+        <%= f.hidden_field :course_id, value: @course.id %>
+        <%= f.hidden_field :quantity, value: @quantity %>
+
+        <div class="purchase-card__qty-section">
+          <label class="purchase-card__qty-label">Quantity (seats)</label>
+          <div class="purchase-card__qty-controls">
+            <button type="button" class="purchase-card__qty-btn"
+                    onclick="updateQty(-1)">-</button>
+            <input type="number" id="quantity-input" name="quantity"
+                   value="<%= @quantity %>" min="1" max="100"
+                   class="purchase-card__qty-input"
+                   onchange="recalculate()">
+            <button type="button" class="purchase-card__qty-btn"
+                    onclick="updateQty(1)">+</button>
+          </div>
+          <% if @quantity >= 10 %>
+            <p class="purchase-card__qty-hint">
+              <i class="bi bi-tag-fill"></i>
+              Discount applied! Buy 10+ seats and get 10% off.
+            </p>
+          <% else %>
+            <p class="purchase-card__qty-hint purchase-card__qty-hint--muted">
+              Buy 10+ seats to get 10% discount
+            </p>
+          <% end %>
+        </div>
+
+        <%= f.submit "Proceed to Payment", class: "purchase-card__pay-btn" %>
+      <% end %>
+
+      <p class="purchase-card__secure">
+        <i class="bi bi-lock"></i>
+        Secured by Stripe. Your payment information is encrypted.
+      </p>
+    </div>
+
+    <%# What you get %>
+    <div class="purchase-info">
+      <h2 class="purchase-info__title">What you get</h2>
+      <ul class="purchase-info__list">
+        <li>
+          <i class="bi bi-check-circle"></i>
+          <div>
+            <strong><%= @quantity %> seat licenses</strong>
+            <p>Assignable to <%= @quantity %> employees of your organization.</p>
+          </div>
+        </li>
+        <li>
+          <i class="bi bi-check-circle"></i>
+          <div>
+            <strong>Permanent access</strong>
+            <p>Licenses are valid for 1 year from purchase date.</p>
+          </div>
+        </li>
+        <li>
+          <i class="bi bi-check-circle"></i>
+          <div>
+            <strong>Track progress</strong>
+            <p>Monitor employee completion and quiz scores in your dashboard.</p>
+          </div>
+        </li>
+        <li>
+          <i class="bi bi-check-circle"></i>
+          <div>
+            <strong>Instant assignment</strong>
+            <p>Assign licenses to employees right after purchase.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateQty(delta) {
+    var input = document.getElementById('quantity-input');
+    var newVal = Math.max(1, Math.min(100, parseInt(input.value) + delta));
+    input.value = newVal;
+    recalculate();
+  }
+
+  function recalculate() {
+    // Redirect to update quantity in URL params
+    var qty = document.getElementById('quantity-input').value;
+    window.location.href = '<%= new_business_purchase_path(course_id: @course.id) %>&quantity=' + qty;
+  }
+</script>

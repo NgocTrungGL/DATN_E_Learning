@@ -1,0 +1,133 @@
+// ============================================================
+// BUSINESS LAYOUT
+// ============================================================
+
+.biz-body {
+  font-family: 'Inter', sans-serif;
+  background: #f1f5f9;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.biz-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+// ── Topbar ────────────────────────────────────────────────────────
+.biz-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 1.5rem;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+
+    i { font-size: 1.25rem; }
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+  }
+}
+
+// ── User Menu ─────────────────────────────────────────────────────
+.biz-user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  position: relative;
+  cursor: pointer;
+
+  &:hover .biz-user-dropdown {
+    display: flex;
+  }
+}
+
+.biz-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(#0ea5e9, 0.15);
+  color: #0ea5e9;
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.biz-user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.biz-user-dropdown {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: $radius-md;
+  box-shadow: $shadow-md;
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 100;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s;
+
+    &:hover { background: #f8fafc; }
+
+    &--danger {
+      color: #ef4444;
+      &:hover { background: #fef2f2; }
+    }
+
+    i { font-size: 1rem; }
+  }
+}
+
+// ── Main Content ──────────────────────────────────────────────────
+.biz-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.biz-content {
+  flex: 1;
+  padding: 1.75rem;
+  overflow-y: auto;
+}

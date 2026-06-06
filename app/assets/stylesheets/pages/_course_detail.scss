@@ -137,6 +137,30 @@
     a { color: #93c5fd; text-decoration: none; }
   }
 
+  &__duration {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: #64748b;
+    i { color: #f59e0b; }
+  }
+
+  &__updated {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #16a34a;
+    border: 1px solid #16a34a;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    width: fit-content;
+    i { font-size: 0.7rem; }
+  }
+
   // Thumbnail card on the right
   &__thumb-card {
     background: $surface;
@@ -881,6 +905,15 @@
     &:hover { border-color: $text-muted; }
   }
 
+  // Compact variant for sidebar CTAs (Buy Now + Add to Cart side by side)
+  &--compact {
+    width: auto;
+    flex: 1;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.84rem;
+    white-space: nowrap;
+  }
+
   &--hero-chat {
     background: rgba(255, 255, 255, 0.08) !important;
     color: white !important;
@@ -900,6 +933,13 @@
   }
 
   & + & { margin-top: 0.6rem; }
+}
+
+// CTA buttons wrapper for side-by-side layout
+.cd-cta-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 // Pending state
@@ -1200,4 +1240,138 @@
   .cd-card { padding: 1.25rem; }
   .cd-instructor { flex-direction: column; }
   .cd-rating-overview { gap: 1.25rem; }
+}
+
+// ── Load More Reviews ────────────────────────────────────────
+.cd-reviews-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed $border;
+}
+
+.cd-reviews-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.25rem;
+  background: transparent;
+  color: $primary;
+  border: 1.5px solid $primary;
+  border-radius: $radius-md;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: $t;
+
+  .bi { font-size: 0.9rem; }
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Spin animation for loading
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+// Coupon form in sidebar
+.cd-coupon-form {
+  margin-top: 0.5rem;
+}
+
+.cd-coupon-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+  color: $primary;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $t;
+
+  .bi:last-child {
+    margin-left: auto;
+    font-size: 0.75rem;
+    transition: transform 0.2s;
+  }
+
+  &:hover {
+    color: $primary-dark;
+  }
+}
+
+.cd-coupon-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  &.is-hidden {
+    display: none;
+  }
+}
+
+.cd-coupon-field {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  font-size: 0.84rem;
+  font-family: inherit;
+  transition: $t;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  &::placeholder {
+    color: $text-muted;
+  }
+}
+
+.cd-coupon-apply {
+  padding: 0.5rem 0.85rem;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: $t;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+.cd-coupon-message {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  &.success {
+    color: $success;
+  }
+
+  &.error {
+    color: $danger;
+  }
 }

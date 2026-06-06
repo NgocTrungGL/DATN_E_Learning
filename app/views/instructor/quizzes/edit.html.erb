@@ -1,4 +1,19 @@
-<div class="container mt-4">
-  <h3 class="mb-4">Chỉnh sửa bài kiểm tra</h3>
-  <%= render "form", quiz: @quiz %>
+<div class="inst-page">
+  <div class="inst-breadcrumb">
+    <a href="<%= instructor_quizzes_path %>">Quizzes</a>
+    <i class="bi bi-chevron-right"></i>
+    <span>Edit</span>
+  </div>
+  <div class="inst-card">
+    <div class="inst-card__header">
+      <h2 class="inst-card__title">Edit Quiz</h2>
+      <a href="<%= instructor_quizzes_path %>" class="btn btn-outline btn-sm">
+        <i class="bi bi-arrow-left"></i>
+        Back
+      </a>
+    </div>
+    <div class="inst-card__body">
+      <%= render "form", quiz: @quiz %>
+    </div>
+  </div>
 </div>

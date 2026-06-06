@@ -51,7 +51,7 @@
         <% stud_txt   = number_to_human(course.total_students.to_i, format: "%n%u", units: { thousand: "k", million: "M" }) %>
         <% link_url   = course_path(course) %>
 
-        <article class="flash-card">
+        <article class="flash-card" data-href="<%= link_url %>">
           <div class="flash-card__thumb">
             <img src="<%= thumb %>" alt="<%= title_txt %>" loading="lazy">
             <span class="flash-card__discount"><%= course.discount_label %></span>

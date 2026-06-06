@@ -105,9 +105,16 @@ class Instructor::LessonsController < Instructor::BaseController
             :title,
             :description,
             :video_url,
-            :attachment_url,
+            :document_url,
             :order_index,
-            :free_preview
+            :free_preview,
+            :lesson_type,
+            :upload_type,
+            :content,
+            :video_file,
+            :document_file,
+            attachments: [],
+            resources: [:title, :url]
           )
   end
 end

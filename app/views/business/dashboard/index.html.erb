@@ -1,31 +1,150 @@
-<div class="row g-4 mb-4">
-  <div class="col-md-4">
-    <div class="card border-0 shadow-sm h-100 bg-primary text-white">
-      <div class="card-body">
-        <h6 class="text-uppercase opacity-75 mb-2">Total employees</h6>
-        <h2 class="display-4 fw-bold mb-0"><%= @total_employees %></h2>
-        <p class="mt-3 mb-0 small">
-          <i class="bi bi-arrow-right-circle"></i>
-          <%= link_to "Manage employees", business_employees_path, class: "text-white text-decoration-none fw-bold" %>
-        </p>
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <h1 class="business-page__title"><%= @organization.name %></h1>
+      <p class="business-page__subtitle">Training management dashboard</p>
+    </div>
+    <div class="business-page__header-actions">
+      <a href="<%= new_business_employee_path %>" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        Add Employee
+      </a>
+    </div>
+  </div>
+
+  <%# License Overview %>
+  <div class="biz-section">
+    <h2 class="biz-section__title">License Overview</h2>
+    <div class="biz-stats-grid biz-stats-grid--4">
+      <div class="biz-stat-card">
+        <div class="biz-stat-card__icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;">
+          <i class="bi bi-ticket-perforated"></i>
+        </div>
+        <div class="biz-stat-card__body">
+          <span class="biz-stat-card__value"><%= @license_stats[:total] %></span>
+          <span class="biz-stat-card__label">Total Licenses</span>
+        </div>
+      </div>
+      <div class="biz-stat-card">
+        <div class="biz-stat-card__icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="biz-stat-card__body">
+          <span class="biz-stat-card__value"><%= @license_stats[:assigned] %></span>
+          <span class="biz-stat-card__label">Assigned</span>
+        </div>
+      </div>
+      <div class="biz-stat-card">
+        <div class="biz-stat-card__icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+          <i class="bi bi-clock"></i>
+        </div>
+        <div class="biz-stat-card__body">
+          <span class="biz-stat-card__value"><%= @license_stats[:expiring_soon] %></span>
+          <span class="biz-stat-card__label">Expiring Soon</span>
+        </div>
+      </div>
+      <div class="biz-stat-card">
+        <div class="biz-stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+          <i class="bi bi-x-circle"></i>
+        </div>
+        <div class="biz-stat-card__body">
+          <span class="biz-stat-card__value"><%= @license_stats[:expired] %></span>
+          <span class="biz-stat-card__label">Expired</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
-      <div class="card-body">
-        <h6 class="text-uppercase text-muted mb-2">Available licenses</h6>
-        <h2 class="display-4 fw-bold text-dark mb-0">0</h2>
-        <p class="mt-3 mb-0 small text-muted">You have not purchased any training packages.</p>
+  <%# Employee Progress %>
+  <div class="biz-section">
+    <h2 class="biz-section__title">Training Progress</h2>
+    <div class="biz-stats-grid biz-stats-grid--3">
+      <div class="biz-stat-card">
+        <div class="biz-stat-card__icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;">
+          <i class="bi bi-people"></i>
+        </div>
+        <div class="biz-stat-card__body">
+          <span class="biz-stat-card__value"><%= @employee_stats[:total] %></span>
+          <span class="biz-stat-card__label">Total Employees</span>
+        </div>
+      </div>
+      <div class="biz-stat-card">
+        <div class="biz-stat-card__icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+          <i class="bi bi-check-square"></i>
+        </div>
+        <div class="biz-stat-card__body">
+          <span class="biz-stat-card__value"><%= @avg_completion_rate %>%</span>
+          <span class="biz-stat-card__label">Avg Completion Rate</span>
+        </div>
+      </div>
+      <div class="biz-stat-card">
+        <div class="biz-stat-card__icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
+          <i class="bi bi-currency-dollar"></i>
+        </div>
+        <div class="biz-stat-card__body">
+          <span class="biz-stat-card__value"><%= number_to_currency(@training_cost_per_employee, unit: "", precision: 0) %> VND</span>
+          <span class="biz-stat-card__label">Cost per Employee</span>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="alert alert-light border shadow-sm">
-  <h4 class="alert-heading fw-bold"><i class="bi bi-emoji-smile me-2"></i>Hello, <%= current_user.name %>!</h4>
-  <p>Welcome to the training management dashboard for <strong><%= @organization.name %></strong>.</p>
-  <hr>
-  <p class="mb-0">Start by adding employees in <strong>Manage employees</strong>.</p>
+    <%# if @monthly_enrollments.any? %>
+    <%# end %>
+  </div>
+
+  <%# Top Courses %>
+  <% if @top_courses.any? %>
+    <div class="biz-section">
+      <h2 class="biz-section__title">Popular Courses</h2>
+      <div class="biz-card">
+        <div class="data-table__wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th style="text-align: center;">Licenses Assigned</th>
+                <th style="text-align: center;">Completed</th>
+                <th style="text-align: center;">Completion Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @top_courses.each do |course| %>
+                <% licenses = @organization.licenses.where(course: course) %>
+                <% assigned = licenses.where(status: :assigned).count %>
+                <% completed = licenses.joins(:user).where(users: { enrollments: { status: :completed } }).count %>
+                <% rate = assigned.positive? ? (completed.to_f / assigned * 100).round : 0 %>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <div style="width: 40px; height: 24px; border-radius: 4px; overflow: hidden; background: #f1f5f9; flex-shrink: 0;">
+                        <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/40x24/f1f5f9/aaa?text=No+Img' %>"
+                             alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                      </div>
+                      <span style="font-weight: 600; font-size: 0.875rem; color: #0f172a;">
+                        <%= course.title %>
+                      </span>
+                    </div>
+                  </td>
+                  <td style="text-align: center;">
+                    <span class="badge badge--secondary"><%= assigned %></span>
+                  </td>
+                  <td style="text-align: center;">
+                    <span class="badge badge--success"><%= completed %></span>
+                  </td>
+                  <td style="text-align: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                      <div style="width: 60px; height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden;">
+                        <div style="width: <%= rate %>%; height: 100%; background: linear-gradient(90deg, #22c55e, #4ade80); border-radius: 3px;"></div>
+                      </div>
+                      <span style="font-size: 0.8rem; font-weight: 600; color: #64748b; min-width: 36px;"><%= rate %>%</span>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

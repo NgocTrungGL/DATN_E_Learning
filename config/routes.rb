@@ -1,10 +1,18 @@
 Rails.application.routes.draw do
+  namespace :api do
+    namespace :v1 do
+      resources :recommendations, only: [:index]
+      get "categories/:id/subcategories", to: "categories#subcategories"
+    end
+  end
+
   resources :notifications, only: [:index, :update] do
     collection do
       post :mark_all_as_read
     end
   end
   root "home#index"
+  get "instructors/:id", to: "public_instructors#show", as: :public_instructor
   devise_for :users
   post 'create-checkout-session', to: 'checkouts#create'
 
@@ -13,6 +21,7 @@ Rails.application.routes.draw do
   post 'webhooks', to: 'webhooks#create'
   resource :cart, only: [:show] do
     post :apply_coupon, on: :member
+    post :apply_coupon_api, on: :member
   end
   post 'checkout-cart', to: 'checkouts#create_from_cart', as: 'checkout_cart'
 
@@ -46,7 +55,11 @@ Rails.application.routes.draw do
   # Gom nhóm resources :courses lại cho gọn
   resources :courses, only: [:index, :show] do
     post :toggle_wishlist, to: "wishlists#toggle", as: "toggle_wishlist"
-    resources :reviews, only: [:create, :destroy]
+    resources :reviews, only: [:create, :destroy] do
+      collection do
+        get :more
+      end
+    end
     resources :enrollments, only: [:create]
     resources :discussion_messages, path: "chat", only: [:index, :create, :destroy] do
       collection do
@@ -71,6 +84,9 @@ Rails.application.routes.draw do
     resources :comments, only: [:create, :destroy]
     resources :notes, only: [:create]
     post :complete, to: "progress_trackings#mark_lesson_complete"
+    post :video_progress, to: "progress_trackings#video_progress"
+    post :auto_complete, to: "progress_trackings#auto_complete"
+    get :progress, to: "progress_trackings#get_progress"
   end
   resources :notes, only: [:update, :destroy]
 
@@ -147,14 +163,24 @@ Rails.application.routes.draw do
   # --- INSTRUCTOR NAMESPACE (GIẢNG VIÊN) ---
   namespace :instructor do
     root to: "dashboard#index"
+    resources :activities, only: [:index]
     resources :revenues, only: [:index]
     resources :payouts, only: [:create]
     resources :quizzes
+    resources :quiz_attempts, only: [:index]
+    resources :student_analytics, only: [:index, :show]
+    resources :course_performance, only: [:index, :show]
+    resources :discussions, only: [:index]
+    get "courses/:course_id/builder" => "course_builder#show", as: :course_builder
+    patch "courses/:course_id/sort_modules" => "course_builder#sort_modules", as: :sort_modules
+    patch "courses/:course_id/sort_lessons" => "course_builder#sort_lessons", as: :sort_lessons
 
     resources :courses do
       member do
-        get :students
-        patch :submit_for_review # <--- (MỚI) Giảng viên gửi duyệt
+        get  :students
+        patch :sort_modules
+        patch :sort_lessons
+        patch :submit_for_review
       end
 
       resources :course_modules, shallow: true do
@@ -188,10 +214,48 @@ Rails.application.routes.draw do
   namespace :business do
     root 'dashboard#index'
 
-    resources :employees
+    resources :employees do
+      member do
+        get :progress, controller: "employee_progress", action: "show"
+        get :export, controller: "employee_progress"
+      end
+    end
     resources :licenses, only: [:index] do
       post :assign, on: :collection
+      member do
+        post :revoke
+      end
     end
     resources :course_market, only: [:index]
+
+    resources :bulk_imports, only: [:new, :create] do
+      collection do
+        get :template
+      end
+    end
+
+    resources :purchases, only: [:new, :create]
+    resources :invoices, only: [:index, :show]
+    resources :reports, only: [:index]
+  end
+
+  # --- STUDENT: PERSONAL DASHBOARD ---
+  namespace :student do
+    resource :dashboard, only: [:show], controller: "dashboard"
+    resources :learning_goals, only: [:index, :create, :update, :destroy]
+    resources :study_plans, only: [:index, :show, :new, :create, :edit, :update, :destroy] do
+      member do
+        post :pause
+        post :resume
+        post :regenerate
+      end
+    end
+    resources :study_plan_items, only: [] do
+      member do
+        post :start
+        post :complete
+        post :skip
+      end
+    end
   end
 end

@@ -1,0 +1,356 @@
+// ============================================================
+// INSTRUCTOR SIDEBAR
+// Dung !important de dam bao override Bootstrap
+// ============================================================
+
+#inst-sidebar {
+  width: 260px !important;
+  min-width: 260px !important;
+  max-width: 260px !important;
+  min-height: 100vh !important;
+  background: $surface !important;
+  border-right: 1px solid $border !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: sticky !important;
+  top: 0 !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  flex-shrink: 0 !important;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border;
+    border-radius: 2px;
+  }
+
+  // ── Header ──────────────────────────────────────────────
+  #inst-sidebar__header {
+    padding: 1.25rem;
+    border-bottom: 1px solid $border;
+  }
+
+  #inst-sidebar__brand {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: $text-dark;
+  }
+
+  #inst-sidebar__brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-md;
+    background: $primary;
+    color: white;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  #inst-sidebar__brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #inst-sidebar__brand-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-dark;
+    line-height: 1.2;
+  }
+
+  #inst-sidebar__brand-sub {
+    font-size: 0.7rem;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  // ── Quick Stats ─────────────────────────────────────────
+  #inst-sidebar__stats {
+    display: flex !important;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
+    border-bottom: 1px solid $border;
+    background: $bg;
+  }
+
+  #inst-sidebar__stat {
+    flex: 1;
+    text-align: center;
+  }
+
+  #inst-sidebar__stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-dark;
+    line-height: 1.2;
+  }
+
+  #inst-sidebar__stat-label {
+    font-size: 0.7rem;
+    color: $text-muted;
+    text-transform: uppercase;
+  }
+
+  // ── Alerts ────────────────────────────────────────────────
+  #inst-sidebar__alerts {
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-bottom: 1px solid $border;
+  }
+
+  .sidebar-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: $radius-md;
+    font-size: 0.78rem;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: all 0.15s ease;
+
+    i {
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    &--warning {
+      background: rgba($warning, 0.1);
+      color: darken($warning, 15%);
+      border: 1px solid rgba($warning, 0.2);
+
+      &:hover {
+        background: rgba($warning, 0.15);
+      }
+    }
+
+    &--info {
+      background: rgba($primary, 0.08);
+      color: $primary;
+      border: 1px solid rgba($primary, 0.15);
+
+      &:hover {
+        background: rgba($primary, 0.12);
+      }
+    }
+  }
+
+  // ── Sidebar Activity ───────────────────────────────────────
+  #inst-sidebar__activity {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid $border;
+  }
+
+  #inst-sidebar__activity-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.625rem;
+  }
+
+  .sidebar-activity {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sidebar-activity__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.4rem 1.25rem;
+    cursor: default;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba($primary, 0.04);
+    }
+  }
+
+  .sidebar-activity__icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+
+    &--enrollment {
+      background: rgba($success, 0.12);
+      color: $success;
+    }
+
+    &--review {
+      background: rgba(#f59e0b, 0.12);
+      color: #f59e0b;
+    }
+
+    &--quiz_completion {
+      background: rgba($primary, 0.12);
+      color: $primary;
+    }
+
+    &--course_created {
+      background: rgba($accent, 0.12);
+      color: $accent;
+    }
+  }
+
+  .sidebar-activity__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .sidebar-activity__text {
+    font-size: 0.78rem;
+    color: $text-mid;
+
+    strong {
+      color: $text-dark;
+      font-weight: 600;
+    }
+  }
+
+  .sidebar-activity__course {
+    display: block;
+    font-size: 0.72rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar-activity__time {
+    font-size: 0.68rem;
+    color: $text-muted;
+  }
+
+  .sidebar-activity--empty {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.78rem;
+    color: $text-muted;
+    font-style: italic;
+  }
+
+  // ── Navigation ─────────────────────────────────────────
+  #inst-sidebar__nav {
+    flex: 1;
+    padding: 1rem 0;
+    overflow-y: auto;
+  }
+
+  #inst-sidebar__section {
+    margin-bottom: 0.5rem;
+  }
+
+  #inst-sidebar__section-label {
+    display: block;
+    padding: 0.5rem 1.25rem 0.25rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .inst-sidebar__link {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1.25rem;
+    color: $text-mid;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    border-left: 3px solid transparent;
+    position: relative;
+
+    i {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    span {
+      flex: 1;
+    }
+
+    &:hover {
+      color: $primary;
+      background: rgba($primary, 0.04);
+    }
+
+    &.inst-sidebar__link--active {
+      color: $primary;
+      background: rgba($primary, 0.08);
+      border-left-color: $primary;
+      font-weight: 600;
+
+      i {
+        color: $primary;
+      }
+    }
+  }
+
+  #inst-sidebar__badge-warning {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    background: $warning-light;
+    color: darken($warning, 10%);
+  }
+
+  // ── Footer ─────────────────────────────────────────────
+  #inst-sidebar__footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid $border;
+  }
+
+  #inst-sidebar__footer-link {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    color: $text-muted;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.15s;
+
+    &:hover {
+      color: $primary;
+    }
+
+    i {
+      font-size: 0.9rem;
+    }
+  }
+}

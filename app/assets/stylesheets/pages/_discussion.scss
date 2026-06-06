@@ -210,6 +210,8 @@
     flex-direction: column;
     background: var(--lumina-surface);
     position: relative;
+    overflow: hidden;     // Contain children — required for inner scroll
+    min-height: 0;        // Allow flex shrink so messages area can scroll
     box-shadow: -4px 0 15px -3px rgba(0, 0, 0, 0.02);
   }
 
@@ -242,12 +244,24 @@
 
   &__messages {
     flex: 1;
+    min-height: 0;        // Critical: allows flex child to shrink & scroll
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 1rem 0;
     background: var(--lumina-surface);
-    
+    scroll-behavior: smooth;
+
+    // Scrollbar styling — visible but subtle (Slack style)
     &::-webkit-scrollbar { width: 6px; }
-    &::-webkit-scrollbar-thumb { background: var(--lumina-border); border-radius: 10px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background: var(--lumina-border);
+      border-radius: 10px;
+      &:hover { background: #b0b7c3; }
+    }
+    // Firefox
+    scrollbar-width: thin;
+    scrollbar-color: var(--lumina-border) transparent;
   }
 
   &__footer {
@@ -1157,4 +1171,3 @@
     color: #0369a1;
   }
 }
-

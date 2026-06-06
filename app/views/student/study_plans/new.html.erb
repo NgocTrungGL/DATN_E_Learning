@@ -1,0 +1,179 @@
+<%# Create New Study Plan %>
+<% content_for :full_width, true %>
+
+<% selected_course = @course %>
+<% total_lessons = selected_course ? selected_course.lessons.size : 0 %>
+<% hours_per_day = @learning_speed&.dig(:hours_per_day) || "0" %>
+<% lessons_per_day = @learning_speed&.dig(:lessons_per_day) || "0" %>
+
+<div class="study-plan-builder">
+  <main class="study-plan-builder__shell">
+    <header class="study-plan-builder__header">
+      <div>
+        <p class="study-plan-builder__eyebrow">Learning planner</p>
+        <h1>Create Study Plan</h1>
+        <p>Build a weekly schedule for your Vietnamese tech learning path.</p>
+      </div>
+      <%= link_to student_dashboard_path, class: "study-plan-builder__back" do %>
+        <i class="bi bi-arrow-left"></i>
+        Dashboard
+      <% end %>
+    </header>
+
+    <div class="study-plan-builder__layout">
+      <section class="study-plan-builder__form-card">
+        <%# Step 1 — Select course (separate GET form so param name matches controller) %>
+        <article class="study-plan-step <%= selected_course ? 'study-plan-step--done' : 'study-plan-step--active' %>">
+          <div class="study-plan-step__indicator">1</div>
+          <div class="study-plan-step__content">
+            <div class="study-plan-step__head">
+              <h2>Select Course</h2>
+              <p>Choose one enrolled course to generate your plan.</p>
+            </div>
+
+            <%= form_with url: new_student_study_plan_path, method: :get, local: true, class: "study-plan-field" do %>
+              <div class="study-plan-field__label-wrapper">
+                <label for="course_select" class="study-plan-field__label">Course</label>
+              </div>
+              <select id="course_select"
+                      name="course_id"
+                      class="study-plan-field__control"
+                      onchange="this.form.submit()"
+                      required>
+                <option value="">Choose a course</option>
+                <%= options_from_collection_for_select(@enrolled_courses, :id, :title, selected_course&.id) %>
+              </select>
+            <% end %>
+          </div>
+        </article>
+
+        <% if selected_course %>
+          <%# Main plan form — only shown when a course is selected %>
+          <%= form_with model: @study_plan, url: student_study_plans_path, local: true, class: "study-plan-builder__form" do |f| %>
+            <%= f.hidden_field :course_id, value: selected_course.id %>
+
+            <article class="study-plan-step study-plan-step--done">
+              <div class="study-plan-step__indicator">2</div>
+              <div class="study-plan-step__content">
+                <div class="study-plan-step__head">
+                  <h2>Course Pace</h2>
+                  <p>Review the estimated workload before creating the schedule.</p>
+                </div>
+
+                <div class="study-plan-builder__metrics">
+                  <div class="study-plan-builder__metric">
+                    <span>Lessons</span>
+                    <strong><%= total_lessons %></strong>
+                  </div>
+                  <div class="study-plan-builder__metric">
+                    <span>Hours/day</span>
+                    <strong><%= hours_per_day %></strong>
+                  </div>
+                  <div class="study-plan-builder__metric">
+                    <span>Lessons/day</span>
+                    <strong><%= lessons_per_day %></strong>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="study-plan-step study-plan-step--active">
+              <div class="study-plan-step__indicator">3</div>
+              <div class="study-plan-step__content">
+                <div class="study-plan-step__head">
+                  <h2>Plan Settings</h2>
+                  <p>Set a target date and preferred weekly time slots.</p>
+                </div>
+
+                <div class="study-plan-field">
+                  <%= f.label :goal_deadline, "Target completion date", class: "study-plan-field__label" %>
+                  <%= f.date_field :goal_deadline,
+                      value: @suggested_deadline,
+                      min: Date.today,
+                      class: "study-plan-field__control",
+                      required: true %>
+                  <% if @suggested_deadline %>
+                    <p class="study-plan-field__hint">Suggested: <%= l(@suggested_deadline, format: :long) %></p>
+                  <% end %>
+                </div>
+
+                <div class="study-plan-field">
+                  <label class="study-plan-field__label">Preferred study times</label>
+                  <div class="study-plan-builder__times">
+                    <% day_names = %w[monday tuesday wednesday thursday friday saturday sunday] %>
+                    <% day_labels = { monday: "Mon", tuesday: "Tue", wednesday: "Wed", thursday: "Thu", friday: "Fri", saturday: "Sat", sunday: "Sun" } %>
+                    <% day_names.each do |day| %>
+                      <% weekend = %w[saturday sunday].include?(day) %>
+                      <% preferred_time = @study_plan.preferred_study_times&.dig(day.to_sym) || @study_plan.preferred_study_times&.dig(day) %>
+                      <label class="study-plan-builder__slot <%= 'study-plan-builder__slot--weekend' if weekend %>">
+                        <span><%= day_labels[day.to_sym] %></span>
+                        <input type="text"
+                               name="study_plan[preferred_study_times][<%= day %>][]"
+                               placeholder="<%= weekend ? '09:00-12:00' : '19:00-21:00' %>"
+                               value="<%= preferred_time&.first || (weekend ? '09:00-12:00' : '19:00-21:00') %>">
+                      </label>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <div class="study-plan-builder__actions">
+              <%= link_to "Cancel", student_study_plans_path, class: "study-plan-button study-plan-button--ghost" %>
+              <%= f.submit "Create Plan", class: "study-plan-button study-plan-button--primary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <%# Step 2 & 3 locked until course is selected %>
+          <article class="study-plan-step">
+            <div class="study-plan-step__indicator">2</div>
+            <div class="study-plan-step__content">
+              <div class="study-plan-step__head">
+                <h2>Course Pace</h2>
+                <p>Review the estimated workload before creating the schedule.</p>
+              </div>
+              <p class="study-plan-field__hint">Select a course above to see pace metrics.</p>
+            </div>
+          </article>
+
+          <article class="study-plan-step">
+            <div class="study-plan-step__indicator">3</div>
+            <div class="study-plan-step__content">
+              <div class="study-plan-step__head">
+                <h2>Plan Settings</h2>
+                <p>Set a target date and preferred weekly time slots.</p>
+              </div>
+              <p class="study-plan-field__hint">Select a course above to configure your plan.</p>
+            </div>
+          </article>
+        <% end %>
+      </section>
+
+      <aside class="study-plan-builder__sidebar">
+        <section class="study-plan-builder__preview">
+          <p>Selected course</p>
+          <% if selected_course %>
+            <h2><%= selected_course.title %></h2>
+            <span><%= selected_course.category&.name || "Technology" %></span>
+            <div class="study-plan-builder__preview-meta">
+              <span><i class="bi bi-collection-play"></i> <%= total_lessons %> lessons</span>
+              <span><i class="bi bi-clock"></i> <%= selected_course.formatted_duration || "Self-paced" %></span>
+            </div>
+          <% else %>
+            <h2>No course selected</h2>
+            <span>Choose a course to preview pace and schedule details.</span>
+          <% end %>
+        </section>
+
+        <section class="study-plan-builder__tips">
+          <h2>Study tips</h2>
+          <ul>
+            <li><i class="bi bi-check2-circle"></i> Keep weekday sessions short and consistent.</li>
+            <li><i class="bi bi-check2-circle"></i> Use weekends for longer labs or projects.</li>
+            <li><i class="bi bi-check2-circle"></i> Review notes before starting each new module.</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>

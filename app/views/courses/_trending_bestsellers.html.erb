@@ -48,7 +48,7 @@
           orig        = en[:orig_price]
           show_slash  = !course.free? && orig > course.price
         %>
-        <article class="bs-card">
+        <article class="bs-card" data-href="<%= course_path(course) %>">
           <div class="bs-card__thumb">
             <%= link_to course_path(course) do %>
               <img src="<%= thumb %>" alt="<%= course.title %>" loading="lazy">

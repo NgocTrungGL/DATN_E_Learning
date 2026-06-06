@@ -1,0 +1,159 @@
+// ============================================================
+// INSTRUCTOR DISCUSSIONS PAGE
+// ============================================================
+
+.disc-stats-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.disc-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.875rem;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $text-mid;
+
+  i { color: $primary; }
+
+  &--warning {
+    color: darken($warning, 10%);
+    i { color: $warning; }
+  }
+
+  &--danger {
+    color: $danger;
+    i { color: $danger; }
+  }
+
+  &--info {
+    color: $primary;
+    i { color: $primary; }
+  }
+}
+
+.disc-course-select {
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.82rem;
+  background: $bg;
+  color: $text-dark;
+  outline: none;
+  min-width: 180px;
+  cursor: pointer;
+
+  &:focus { border-color: $primary; }
+}
+
+// ── Discussion Course Cards ───────────────────────────────────────
+.disc-course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.disc-course-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1.5px solid $border;
+  overflow: hidden;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: rgba($primary, 0.4);
+    box-shadow: $shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    gap: 0.875rem;
+    padding: 1rem;
+  }
+
+  &__thumb {
+    width: 80px;
+    height: 45px;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: $bg;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  &__category {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: $primary;
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid $border;
+  }
+
+  &__action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    text-decoration: none;
+    color: $text-mid;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    border-right: 1px solid $border;
+
+    i { font-size: 1.1rem; color: $primary; }
+
+    span:first-of-type { font-size: 0.78rem; }
+
+    &:last-child { border-right: none; }
+
+    &:hover {
+      background: rgba($primary, 0.05);
+      color: $primary;
+    }
+
+    &--chat:hover {
+      background: rgba($success, 0.05);
+      color: $success;
+      i { color: $success; }
+    }
+  }
+}

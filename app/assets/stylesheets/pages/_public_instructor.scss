@@ -1,0 +1,129 @@
+// ============================================================
+// PUBLIC INSTRUCTOR PROFILE PAGE
+// ============================================================
+
+.pub-instructor-page {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+// ── Hero ───────────────────────────────────────────────────────
+.pub-instructor-hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  padding: 3rem 0 2.5rem;
+  color: white;
+}
+
+.pub-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.pub-instructor-hero__inner {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.pub-instructor-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+}
+
+.pub-instructor-hero__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pub-instructor-hero__name {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.35rem;
+  color: white;
+}
+
+.pub-instructor-hero__headline {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 1.25rem;
+}
+
+.pub-instructor-hero__stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+// ── Stats ───────────────────────────────────────────────────────
+.pub-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  &__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+  }
+}
+
+// ── Sections ────────────────────────────────────────────────────
+.pub-section {
+  padding: 2.5rem 0;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+}
+
+.pub-instructor-bio {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #475569;
+  margin: 0;
+}
+
+// ── Courses Grid ────────────────────────────────────────────────
+.pub-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.pub-empty {
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+
+  i {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+}
