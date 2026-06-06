@@ -5,7 +5,9 @@ class CoursesController < ApplicationController
     set_course_search
     set_current_filters
     @parent_categories = Category.roots.order(:name)
-    @featured_subcategories = Category.where("parent_id IS NOT NULL").order("RAND()").limit(4)
+    @featured_subcategories = Category.where("parent_id IS NOT NULL")
+                                      .order(Category.random_order_sql)
+                                      .limit(4)
 
     respond_to do |format|
       format.html
@@ -44,7 +46,7 @@ class CoursesController < ApplicationController
 
     @sale_courses = Course.published.where(allow_admin_discounts: true)
                           .where("price > 0")
-                          .order(Arel.sql("RAND()")).limit(4)
+                          .order(Course.random_order_sql).limit(4)
   end
 
   def set_course_search

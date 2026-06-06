@@ -951,12 +951,26 @@
 <%# SCROLL REVEAL JS - Intersection Observer                   %>
 <%# ============================================================ %>
 <script>
-  // Scroll Reveal Animation using IntersectionObserver
-  // Use 'turbo:load' so this runs on EVERY navigation (Turbo + hard reload)
-  document.addEventListener('turbo:load', function() {
+  function initLandingReveal() {
+    if (!document.body.classList.contains('landing-page')) return;
+
     const revealElements = document.querySelectorAll('[data-reveal]');
 
     if (!revealElements.length) return;
+
+    document.body.classList.add('reveal-enabled');
+
+    function isElementVisible(el) {
+      const rect = el.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      revealElements.forEach(function(el) {
+        el.classList.add('revealed');
+      });
+      return;
+    }
 
     const observer = new IntersectionObserver(
       function(entries) {
@@ -971,7 +985,32 @@
     );
 
     revealElements.forEach(function(el) {
+      el.classList.remove('revealed');
       observer.observe(el);
+
+      if (isElementVisible(el)) {
+        el.classList.add('revealed');
+        observer.unobserve(el);
+      }
     });
-  });
+
+    window.setTimeout(function() {
+      revealElements.forEach(function(el) {
+        el.classList.add('revealed');
+      });
+    }, 1200);
+  }
+
+  if (!window.landingRevealBound) {
+    window.landingRevealBound = true;
+    document.addEventListener('turbo:load', initLandingReveal);
+    document.addEventListener('turbo:before-cache', function() {
+      document.body.classList.remove('reveal-enabled');
+      document.querySelectorAll('[data-reveal]').forEach(function(el) {
+        el.classList.remove('revealed');
+      });
+    });
+  }
+
+  initLandingReveal();
 </script>

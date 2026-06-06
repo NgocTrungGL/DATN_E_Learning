@@ -1,7 +1,7 @@
 // Tab switching for auth page
 // Paste this into app/javascript/auth.js or inline via a content_for block
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
   const tabs = document.querySelectorAll('.tab-btn');
   const contents = document.querySelectorAll('.tab-content');
 
