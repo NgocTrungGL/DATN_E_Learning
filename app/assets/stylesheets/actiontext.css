@@ -3,7 +3,7 @@
  * Clean, minimal, professional (Notion/Linear style)
  */
 
-@import "trix";
+@import "trix.css";
 
 /* ── Editor Container ─────────────────────────────────── */
 .trix-editor-wrapper {

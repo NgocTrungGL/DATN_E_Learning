@@ -3,8 +3,7 @@
 # =============================================================================
 step '(0/14) Clearing all tables'
 
-ActiveRecord::Base.connection.execute('SET FOREIGN_KEY_CHECKS = 0')
-%w[
+tables_to_truncate = %w[
   message_reactions user_recommendations course_similarities
   discussion_replies discussion_posts discussion_messages
   notes wallet_transactions wallets payout_requests notifications
@@ -14,12 +13,28 @@ ActiveRecord::Base.connection.execute('SET FOREIGN_KEY_CHECKS = 0')
   quiz_questions question_options questions quizzes
   lessons course_modules coupons courses
   instructor_profiles profiles categories users organizations
-].each do |t|
-  ActiveRecord::Base.connection.execute("TRUNCATE TABLE `#{t}`")
-rescue => e
-  puts "  Warning truncating #{t}: #{e.message}"
+]
+
+connection = ActiveRecord::Base.connection
+case connection.adapter_name.downcase
+when /postgres/
+  quoted_tables = tables_to_truncate.map { |table| connection.quote_table_name(table) }.join(', ')
+  connection.execute("TRUNCATE TABLE #{quoted_tables} RESTART IDENTITY CASCADE")
+when /mysql/
+  connection.execute('SET FOREIGN_KEY_CHECKS = 0')
+  tables_to_truncate.each do |table|
+    connection.execute("TRUNCATE TABLE #{connection.quote_table_name(table)}")
+  rescue => e
+    puts "  Warning truncating #{table}: #{e.message}"
+  end
+  connection.execute('SET FOREIGN_KEY_CHECKS = 1')
+else
+  tables_to_truncate.each do |table|
+    connection.execute("DELETE FROM #{connection.quote_table_name(table)}")
+  rescue => e
+    puts "  Warning clearing #{table}: #{e.message}"
+  end
 end
-ActiveRecord::Base.connection.execute('SET FOREIGN_KEY_CHECKS = 1')
 ok('All tables cleared')
 
 # =============================================================================

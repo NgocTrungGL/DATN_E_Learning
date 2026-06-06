@@ -56,13 +56,33 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  config.cache_store = :redis_cache_store, {
+    url: ENV.fetch("REDIS_URL", "redis://localhost:6379"),
+    expires_in: 90.minutes
+  }
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "rails_tutorial_production"
 
   config.action_mailer.perform_caching = false
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV["SMTP_HOST"],
+    port: ENV.fetch("SMTP_PORT", 587),
+    user_name: ENV["SMTP_USERNAME"],
+    password: ENV["SMTP_PASSWORD"],
+    domain: ENV["SMTP_DOMAIN"],
+    authentication: :login,
+    enable_starttls_auto: true
+  }
+  config.action_mailer.default_options = {
+    from: ENV.fetch("MAIL_FROM_ADDRESS", "noreply@example.com")
+  }
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch("APP_HOST", "your-app.onrender.com"),
+    protocol: "https"
+  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

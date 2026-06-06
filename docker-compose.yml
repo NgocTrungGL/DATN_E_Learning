@@ -2,18 +2,16 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0
+    image: postgres:15
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: rails_e_learning_development
-      MYSQL_CHARSET: utf8mb4
-      MYSQL_COLLATION: utf8mb4_unicode_ci
+      POSTGRES_DB: rails_e_learning_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
+      - db_data:/var/lib/postgresql/data
 
   web:
     build: .
@@ -26,6 +24,9 @@ services:
       - db
     environment:
       - RAILS_ENV=development
+      - DB_HOST=db
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
     stdin_open: true
     tty: true
 

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "health", to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
+
   namespace :api do
     namespace :v1 do
       resources :recommendations, only: [:index]

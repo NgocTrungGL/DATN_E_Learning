@@ -8,7 +8,7 @@ RUN apt-get update -qq && apt-get install -y \
     build-essential \
     libpq-dev \
     nodejs \
-    default-mysql-client \
+    postgresql-client \
     yarn \
     tzdata \
     dos2unix \

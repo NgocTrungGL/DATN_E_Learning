@@ -9,11 +9,12 @@ gem "rails", "~> 7.0.5"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
-# Use mysql as the database for Active Record
-gem "mysql2", "~> 0.5"
+# Use PostgreSQL as the database for Active Record
+gem "pg", "~> 1.5"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
+gem "redis", "~> 4.0"
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
@@ -87,3 +88,5 @@ end
 gem "ransack", "~> 4.3"
 
 gem "cloudinary", "~> 2.4"
+gem "sentry-rails"
+gem "sentry-ruby"
