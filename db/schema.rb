@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
-  create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
     t.string "record_type", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
   end
 
-  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
@@ -31,7 +31,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "active_storage_blobs", force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -43,13 +43,13 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "active_storage_variant_records", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "cart_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "cart_items", force: :cascade do |t|
     t.bigint "cart_id", null: false
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
@@ -59,7 +59,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["course_id"], name: "index_cart_items_on_course_id"
   end
 
-  create_table "carts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "carts", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -67,7 +67,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_carts_on_user_id"
   end
 
-  create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "categories", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
     t.bigint "parent_id"
@@ -77,7 +77,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["parent_id"], name: "index_categories_on_parent_id"
   end
 
-  create_table "certificates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "certificates", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
     t.string "certificate_code", null: false
@@ -91,7 +91,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_certificates_on_user_id"
   end
 
-  create_table "comments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "comments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "lesson_id", null: false
     t.text "body"
@@ -102,7 +102,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
-  create_table "coupons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "coupons", force: :cascade do |t|
     t.string "code", null: false
     t.integer "discount_type", default: 0
     t.decimal "discount_value", precision: 10, scale: 2, null: false
@@ -121,7 +121,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["creator_id"], name: "index_coupons_on_creator_id"
   end
 
-  create_table "course_learning_outcomes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "course_learning_outcomes", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.string "content", null: false
     t.integer "order_index", default: 0
@@ -131,7 +131,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["course_id"], name: "index_course_learning_outcomes_on_course_id"
   end
 
-  create_table "course_modules", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "course_modules", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.string "title", limit: 200, null: false
     t.text "description"
@@ -141,7 +141,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["course_id"], name: "index_course_modules_on_course_id"
   end
 
-  create_table "course_similarities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "course_similarities", force: :cascade do |t|
     t.bigint "course_a_id", null: false
     t.bigint "course_b_id", null: false
     t.decimal "score", precision: 8, scale: 6, null: false
@@ -153,7 +153,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["course_b_id"], name: "fk_rails_9f57006a7a"
   end
 
-  create_table "courses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "courses", force: :cascade do |t|
     t.bigint "category_id"
     t.string "title", null: false
     t.text "description"
@@ -169,7 +169,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["status"], name: "index_courses_on_status"
   end
 
-  create_table "discussion_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "discussion_messages", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.bigint "user_id", null: false
     t.text "content", null: false
@@ -183,7 +183,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_discussion_messages_on_user_id"
   end
 
-  create_table "discussion_posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "discussion_posts", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.bigint "user_id", null: false
     t.string "title", null: false
@@ -198,7 +198,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_discussion_posts_on_user_id"
   end
 
-  create_table "discussion_replies", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "discussion_replies", force: :cascade do |t|
     t.bigint "discussion_post_id", null: false
     t.bigint "user_id", null: false
     t.text "content", null: false
@@ -210,7 +210,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_discussion_replies_on_user_id"
   end
 
-  create_table "enrollments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "enrollments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
     t.timestamp "enrolled_at", default: -> { "CURRENT_TIMESTAMP" }
@@ -223,7 +223,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_enrollments_on_user_id"
   end
 
-  create_table "instructor_profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "instructor_profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.text "bio_detailed"
     t.string "linkedin_url"
@@ -240,7 +240,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_instructor_profiles_on_user_id"
   end
 
-  create_table "invoices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "invoices", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "course_id", null: false
     t.integer "quantity", default: 1, null: false
@@ -259,7 +259,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["stripe_session_id"], name: "index_invoices_on_stripe_session_id"
   end
 
-  create_table "learning_activities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "learning_activities", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id"
     t.bigint "lesson_id"
@@ -276,7 +276,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_learning_activities_on_user_id"
   end
 
-  create_table "learning_goals", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "learning_goals", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "goal_type", null: false
     t.integer "target_value", null: false
@@ -289,7 +289,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_learning_goals_on_user_id"
   end
 
-  create_table "learning_streaks", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "learning_streaks", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "current_streak", default: 0
     t.integer "longest_streak", default: 0
@@ -300,7 +300,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_learning_streaks_on_user_id"
   end
 
-  create_table "lessons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "lessons", force: :cascade do |t|
     t.bigint "course_module_id", null: false
     t.string "title", limit: 200, null: false
     t.text "description"
@@ -320,7 +320,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["upload_type"], name: "index_lessons_on_upload_type"
   end
 
-  create_table "licenses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "licenses", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "course_id", null: false
     t.bigint "user_id"
@@ -336,7 +336,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_licenses_on_user_id"
   end
 
-  create_table "message_reactions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "message_reactions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "discussion_message_id", null: false
     t.string "emoji", null: false
@@ -347,7 +347,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_message_reactions_on_user_id"
   end
 
-  create_table "notes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "notes", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "lesson_id", null: false
     t.bigint "course_id", null: false
@@ -359,7 +359,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
-  create_table "notifications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "notifications", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title"
     t.text "body"
@@ -373,7 +373,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
-  create_table "organizations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "organizations", force: :cascade do |t|
     t.string "name"
     t.string "domain"
     t.integer "plan"
@@ -383,7 +383,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["name"], name: "index_organizations_on_name", unique: true
   end
 
-  create_table "payout_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "payout_requests", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.decimal "amount", precision: 15, scale: 2, default: "0.0"
     t.integer "status", default: 0
@@ -396,7 +396,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_payout_requests_on_user_id"
   end
 
-  create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.text "bio"
     t.string "phone", limit: 20
@@ -407,7 +407,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_profiles_on_user_id", unique: true
   end
 
-  create_table "progress_trackings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "progress_trackings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
     t.bigint "lesson_id"
@@ -425,7 +425,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_progress_trackings_on_user_id"
   end
 
-  create_table "question_options", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "question_options", force: :cascade do |t|
     t.bigint "question_id", null: false
     t.text "option_text", null: false
     t.boolean "is_correct", default: false
@@ -435,7 +435,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["question_id"], name: "index_question_options_on_question_id"
   end
 
-  create_table "questions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "questions", force: :cascade do |t|
     t.bigint "course_id"
     t.bigint "lesson_id"
     t.text "question_text", null: false
@@ -449,7 +449,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["lesson_id"], name: "index_questions_on_lesson_id"
   end
 
-  create_table "quiz_answers", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "quiz_answers", force: :cascade do |t|
     t.bigint "quiz_attempt_id", null: false
     t.bigint "question_id", null: false
     t.bigint "question_option_id"
@@ -462,7 +462,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["quiz_attempt_id"], name: "index_quiz_answers_on_quiz_attempt_id"
   end
 
-  create_table "quiz_attempts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "quiz_attempts", force: :cascade do |t|
     t.bigint "quiz_id", null: false
     t.bigint "user_id", null: false
     t.datetime "started_at"
@@ -475,7 +475,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_quiz_attempts_on_user_id"
   end
 
-  create_table "quiz_questions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "quiz_questions", force: :cascade do |t|
     t.bigint "quiz_id", null: false
     t.bigint "question_id", null: false
     t.integer "order_index", default: 1
@@ -486,7 +486,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["quiz_id"], name: "index_quiz_questions_on_quiz_id"
   end
 
-  create_table "quizzes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "quizzes", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.bigint "lesson_id"
     t.string "title", limit: 200, null: false
@@ -507,7 +507,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["lesson_id"], name: "index_quizzes_on_lesson_id"
   end
 
-  create_table "reviews", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "reviews", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
     t.integer "rating"
@@ -519,7 +519,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
-  create_table "study_plan_adjustments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "study_plan_adjustments", force: :cascade do |t|
     t.bigint "study_plan_id", null: false
     t.string "reason"
     t.date "old_target_date"
@@ -531,7 +531,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["study_plan_id"], name: "index_study_plan_adjustments_on_study_plan_id"
   end
 
-  create_table "study_plan_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "study_plan_items", force: :cascade do |t|
     t.bigint "study_plan_id", null: false
     t.bigint "lesson_id", null: false
     t.date "scheduled_date"
@@ -549,7 +549,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["study_plan_id"], name: "index_study_plan_items_on_study_plan_id"
   end
 
-  create_table "study_plans", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "study_plans", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
     t.date "goal_deadline"
@@ -566,7 +566,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_study_plans_on_user_id"
   end
 
-  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "subscriptions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "plan_type", default: 0, null: false
     t.string "status", default: "active", null: false
@@ -580,7 +580,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_subscriptions_on_user_id", unique: true
   end
 
-  create_table "user_recommendations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "user_recommendations", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
     t.decimal "score", precision: 8, scale: 4
@@ -593,7 +593,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id", "score"], name: "index_user_recommendations_on_user_id_and_score"
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
     t.string "encrypted_password", null: false
@@ -615,7 +615,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "wallet_transactions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "wallet_transactions", force: :cascade do |t|
     t.bigint "wallet_id", null: false
     t.decimal "amount", precision: 15, scale: 2
     t.integer "transaction_type"
@@ -626,7 +626,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["wallet_id"], name: "index_wallet_transactions_on_wallet_id"
   end
 
-  create_table "wallets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "wallets", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.decimal "balance", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
@@ -634,7 +634,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.index ["user_id"], name: "index_wallets_on_user_id", unique: true
   end
 
-  create_table "wishlists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "wishlists", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false

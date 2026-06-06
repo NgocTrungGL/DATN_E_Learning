@@ -1,0 +1,68 @@
+services:
+  - type: web
+    name: rails-elearning
+    runtime: ruby
+    region: singapore
+    plan: free
+    buildCommand: bundle install && yarn install --frozen-lockfile && bundle exec rails assets:precompile
+    startCommand: bundle exec puma -C config/puma.rb
+    healthCheckPath: /health
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rails-elearning-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: rails-elearning-redis
+          property: connectionString
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_SIGNING_SECRET
+        sync: false
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_DOMAIN
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      - key: RAILS_SERVE_STATIC_FILES
+        value: "true"
+
+  - type: keyvalue
+    name: rails-elearning-redis
+    plan: free
+    region: singapore
+
+databases:
+  - name: rails-elearning-db
+    databaseName: rails_e_learning_prod
+    plan: free
+    region: singapore
