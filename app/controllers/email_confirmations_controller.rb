@@ -1,5 +1,5 @@
 class EmailConfirmationsController < ApplicationController
-  skip_before_action :authenticate_user!
+  skip_before_action :authenticate_user!, raise: false
   def edit
     user = find_user_by_signed_id
     return unless user

@@ -1,5 +1,5 @@
 class PublicInstructorsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show]
+  skip_before_action :authenticate_user!, only: [:show], raise: false
 
   def show
     @instructor = User.where(role: :instructor).find(params[:id])
