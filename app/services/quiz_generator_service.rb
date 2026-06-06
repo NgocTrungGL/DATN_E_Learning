@@ -30,9 +30,9 @@ class QuizGeneratorService
   def fetch_random_questions
     scope = Question.where(course_id: @quiz.course_id)
 
-    easy_qs = scope.easy.order("RAND()").limit(@quiz.easy_count)
-    medium_qs = scope.medium.order("RAND()").limit(@quiz.medium_count)
-    hard_qs = scope.hard.order("RAND()").limit(@quiz.hard_count)
+    easy_qs = scope.easy.order(Question.random_order_sql).limit(@quiz.easy_count)
+    medium_qs = scope.medium.order(Question.random_order_sql).limit(@quiz.medium_count)
+    hard_qs = scope.hard.order(Question.random_order_sql).limit(@quiz.hard_count)
 
     (easy_qs + medium_qs + hard_qs).shuffle
   end
