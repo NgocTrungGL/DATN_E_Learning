@@ -58,7 +58,8 @@ namespace :cloudinary do
         new_meta = (blob.metadata || {}).merge(
           "cloudinary_public_id" => data["public_id"],
           "cloudinary_version" => data["version"],
-          "cloudinary_format" => data["format"]
+          "cloudinary_format" => data["format"],
+          "cloudinary_duration" => data["duration"]
         )
         blob.update!(metadata: new_meta)
         puts "OK blob #{blob.id}: #{data["public_id"]}"
@@ -70,5 +71,33 @@ namespace :cloudinary do
     end
 
     puts "Done!"
+  end
+
+  desc "Backfill cached_duration_seconds for Cloudinary video lessons from blob metadata"
+  task backfill_duration: :environment do
+    updated = 0
+    skipped = 0
+
+    Lesson.where(upload_type: :cloudinary).find_each do |lesson|
+      unless lesson.video_file.attached?
+        skipped += 1
+        next
+      end
+
+      blob = lesson.video_file.blob
+      duration = blob&.metadata&.dig("cloudinary_duration")
+
+      if duration.blank? || duration.to_i.zero?
+        puts "SKIP lesson #{lesson.id} - blob metadata chua co cloudinary_duration"
+        skipped += 1
+        next
+      end
+
+      lesson.update_column(:cached_duration_seconds, duration.to_i)
+      puts "OK lesson #{lesson.id}: #{duration.to_i}s"
+      updated += 1
+    end
+
+    puts "Done! Updated: #{updated}, Skipped: #{skipped}"
   end
 end

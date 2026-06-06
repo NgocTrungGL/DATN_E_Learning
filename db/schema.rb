@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_02_222235) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -259,6 +259,47 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_02_222235) do
     t.index ["stripe_session_id"], name: "index_invoices_on_stripe_session_id"
   end
 
+  create_table "learning_activities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "course_id"
+    t.bigint "lesson_id"
+    t.string "activity_type", null: false
+    t.integer "duration_seconds", default: 0
+    t.integer "score"
+    t.date "activity_date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_learning_activities_on_course_id"
+    t.index ["lesson_id"], name: "index_learning_activities_on_lesson_id"
+    t.index ["user_id", "activity_date"], name: "index_learning_activities_on_user_id_and_activity_date"
+    t.index ["user_id", "activity_type"], name: "index_learning_activities_on_user_id_and_activity_type"
+    t.index ["user_id"], name: "index_learning_activities_on_user_id"
+  end
+
+  create_table "learning_goals", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "goal_type", null: false
+    t.integer "target_value", null: false
+    t.integer "current_value", default: 0
+    t.date "week_start", null: false
+    t.boolean "is_active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "week_start", "goal_type"], name: "index_learning_goals_on_user_id_and_week_start_and_goal_type", unique: true
+    t.index ["user_id"], name: "index_learning_goals_on_user_id"
+  end
+
+  create_table "learning_streaks", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "current_streak", default: 0
+    t.integer "longest_streak", default: 0
+    t.date "last_activity_date"
+    t.integer "weekly_activity_days", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_learning_streaks_on_user_id"
+  end
+
   create_table "lessons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "course_module_id", null: false
     t.string "title", limit: 200, null: false
@@ -274,6 +315,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_02_222235) do
     t.json "resources"
     t.integer "upload_type", default: 0, null: false
     t.string "document_url"
+    t.integer "cached_duration_seconds"
     t.index ["course_module_id"], name: "index_lessons_on_course_module_id"
     t.index ["upload_type"], name: "index_lessons_on_upload_type"
   end
@@ -477,6 +519,53 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_02_222235) do
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
+  create_table "study_plan_adjustments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "study_plan_id", null: false
+    t.string "reason"
+    t.date "old_target_date"
+    t.date "new_target_date"
+    t.json "replanned_items"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["study_plan_id", "created_at"], name: "index_study_plan_adjustments_on_study_plan_id_and_created_at"
+    t.index ["study_plan_id"], name: "index_study_plan_adjustments_on_study_plan_id"
+  end
+
+  create_table "study_plan_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "study_plan_id", null: false
+    t.bigint "lesson_id", null: false
+    t.date "scheduled_date"
+    t.time "scheduled_start_time"
+    t.integer "estimated_duration_minutes"
+    t.integer "order_in_course"
+    t.string "status", default: "pending"
+    t.datetime "actual_completed_at"
+    t.boolean "is_replan_needed", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lesson_id"], name: "index_study_plan_items_on_lesson_id"
+    t.index ["study_plan_id", "scheduled_date"], name: "index_study_plan_items_on_study_plan_id_and_scheduled_date"
+    t.index ["study_plan_id", "status"], name: "index_study_plan_items_on_study_plan_id_and_status"
+    t.index ["study_plan_id"], name: "index_study_plan_items_on_study_plan_id"
+  end
+
+  create_table "study_plans", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "course_id", null: false
+    t.date "goal_deadline"
+    t.integer "target_days"
+    t.json "preferred_study_times"
+    t.string "status", default: "active"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_study_plans_on_course_id"
+    t.index ["user_id", "course_id"], name: "index_study_plans_on_user_id_and_course_id", unique: true
+    t.index ["user_id", "status"], name: "index_study_plans_on_user_id_and_status"
+    t.index ["user_id"], name: "index_study_plans_on_user_id"
+  end
+
   create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "plan_type", default: 0, null: false
@@ -585,6 +674,11 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_02_222235) do
   add_foreign_key "instructor_profiles", "users"
   add_foreign_key "invoices", "courses"
   add_foreign_key "invoices", "organizations"
+  add_foreign_key "learning_activities", "courses"
+  add_foreign_key "learning_activities", "lessons"
+  add_foreign_key "learning_activities", "users"
+  add_foreign_key "learning_goals", "users"
+  add_foreign_key "learning_streaks", "users"
   add_foreign_key "lessons", "course_modules", on_delete: :cascade
   add_foreign_key "licenses", "courses"
   add_foreign_key "licenses", "organizations"
@@ -617,6 +711,11 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_02_222235) do
   add_foreign_key "quizzes", "users", column: "created_by"
   add_foreign_key "reviews", "courses"
   add_foreign_key "reviews", "users"
+  add_foreign_key "study_plan_adjustments", "study_plans"
+  add_foreign_key "study_plan_items", "lessons"
+  add_foreign_key "study_plan_items", "study_plans"
+  add_foreign_key "study_plans", "courses"
+  add_foreign_key "study_plans", "users"
   add_foreign_key "subscriptions", "users"
   add_foreign_key "user_recommendations", "courses", on_delete: :cascade
   add_foreign_key "user_recommendations", "users", on_delete: :cascade

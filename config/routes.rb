@@ -238,4 +238,24 @@ Rails.application.routes.draw do
     resources :invoices, only: [:index, :show]
     resources :reports, only: [:index]
   end
+
+  # --- STUDENT: PERSONAL DASHBOARD ---
+  namespace :student do
+    resource :dashboard, only: [:show], controller: "dashboard"
+    resources :learning_goals, only: [:index, :create, :update, :destroy]
+    resources :study_plans, only: [:index, :show, :new, :create, :edit, :update, :destroy] do
+      member do
+        post :pause
+        post :resume
+        post :regenerate
+      end
+    end
+    resources :study_plan_items, only: [] do
+      member do
+        post :start
+        post :complete
+        post :skip
+      end
+    end
+  end
 end

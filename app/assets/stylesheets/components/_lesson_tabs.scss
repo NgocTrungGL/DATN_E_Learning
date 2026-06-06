@@ -1333,3 +1333,33 @@
     transform: translateY(0);
   }
 }
+
+// Inline download link - aligned with hero content
+.lesson-tabs__inline-download {
+  margin-top: 1rem;
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #1f5eff 0%, #1546c6 100%);
+    color: #ffffff;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 3px 10px rgba(21, 70, 198, 0.22);
+    transition: all 200ms ease;
+
+    i {
+      font-size: 0.95rem;
+    }
+
+    &:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 16px rgba(21, 70, 198, 0.3);
+    }
+  }
+}

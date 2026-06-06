@@ -3430,22 +3430,21 @@
 
 .inst-upload-section {
   margin-top: 1rem;
+  transition: opacity 0.3s ease;
 
-  &__row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
+  &.hidden {
+    display: block !important;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
   }
+}
 
-  &__field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+.opacity-0 {
+  opacity: 0 !important;
 }
 
 // ============================================================

@@ -45,7 +45,8 @@ module ActiveStorage
           new_meta = (blob.metadata || {}).merge(
             "cloudinary_public_id" => public_id,
             "cloudinary_version" => data["version"],
-            "cloudinary_format" => data["format"]
+            "cloudinary_format" => data["format"],
+            "cloudinary_duration" => data["duration"]
           )
           blob.update!(metadata: new_meta)
         end

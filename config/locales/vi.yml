@@ -1,4 +1,14 @@
 vi:
+  student:
+    study_plans:
+      created: "Lich hoc cho khoa hoc '%{course_name}' da duoc tao thanh cong!"
+      updated: "Lich hoc da duoc cap nhat thanh cong."
+      cancelled: "Lich hoc da bi huy."
+      paused: "Lich hoc da duoc tam dung."
+      resumed: "Lich hoc da duoc kich hoat lai."
+      regenerated: "Lich hoc da duoc tao lai thanh cong."
+      cannot_regenerate: "Khong the tao lai lich hoc khi dang tam dung."
+
   admin:
     authorization:
       denied: "Bạn không có quyền truy cập khu vực này!"

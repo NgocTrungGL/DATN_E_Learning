@@ -91,12 +91,28 @@
           <%= @course.total_students %> students
         </div>
 
+        <% if @course.formatted_duration %>
+          <span class="cd-hero__separator">·</span>
+          <div class="cd-hero__duration">
+            <i class="bi bi-clock-fill"></i>
+            <%= @course.formatted_duration %>
+          </div>
+        <% end %>
+
         <span class="cd-hero__separator">·</span>
 
         <div class="cd-hero__instructor-line">
           Created by <a href="#cd-instructor"><%= instructor&.name || "Instructor" %></a>
         </div>
       </div>
+
+      <%# Updated badge %>
+      <% if @course.updated_at.present? %>
+        <div class="cd-hero__updated">
+          <i class="bi bi-pencil-square"></i>
+          Updated <%= time_ago_in_words(@course.updated_at) %> ago
+        </div>
+      <% end %>
 
       <%# Enrolled badge %>
       <% if has_access && enrollment&.active? %>

@@ -1,5 +1,5 @@
 <% form_scope = @lesson.persisted? ? [:admin, @lesson] : [:admin, @course_module, @lesson] %>
-<% submit_text = local_assigns[:submit_text] || (@lesson.persisted? ? 'Cap nhat bai hoc' : 'Luu & Them tiep') %>
+<% submit_text = local_assigns[:submit_text] || (@lesson.persisted? ? 'Update Lesson' : 'Save & Add More') %>
 
 <%= form_with(model: form_scope, class: 'admin-lessons__form', data: { turbo: false }) do |form| %>
   <% if @lesson.errors.any? %>
@@ -13,16 +13,16 @@
   <% end %>
 
   <div class="admin-lessons__field">
-    <%= form.label :title, 'Ten bai hoc', class: 'admin-lessons__label' %>
+    <%= form.label :title, 'Lesson Title', class: 'admin-lessons__label' %>
     <%= form.text_field :title,
                         class: 'admin-input admin-lessons__input',
-                        placeholder: 'Vi du: Cai dat moi truong...',
+                        placeholder: 'e.g. Introduction to Variables',
                         autofocus: true,
                         required: true %>
   </div>
 
   <div class="admin-lessons__field">
-    <%= form.label :lesson_type, 'Loai bai hoc', class: 'admin-lessons__label' %>
+    <%= form.label :lesson_type, 'Lesson Type', class: 'admin-lessons__label' %>
     <div class="admin-lessons__type-toggle">
       <label class="admin-lessons__type-option <%= 'active' if @lesson.video? || !@lesson.persisted? %>">
         <%= form.radio_button :lesson_type, :video, checked: @lesson.video? || !@lesson.persisted? %>
@@ -38,11 +38,11 @@
   </div>
 
   <div class="admin-lessons__field">
-    <%= form.label :description, 'Mo ta', class: 'admin-lessons__label' %>
+    <%= form.label :description, 'Description', class: 'admin-lessons__label' %>
     <%= form.text_area :description,
                        rows: 2,
                        class: 'admin-textarea admin-lessons__textarea',
-                       placeholder: 'Tom tat noi dung bai hoc...' %>
+                       placeholder: 'Brief description...' %>
   </div>
 
   <%# === VIDEO SECTION === %>
@@ -50,46 +50,46 @@
 
     <%# Upload Type Toggle %>
     <div class="admin-upload-toggle">
-      <span class="admin-upload-toggle__label">Nguon video:</span>
+      <span class="admin-upload-toggle__label">Video source:</span>
       <div class="admin-upload-toggle__options">
         <label class="admin-upload-toggle__option <%= 'active' if @lesson.link? || !@lesson.persisted? %>" data-upload="link">
           <input type="radio" name="lesson[upload_type]" value="link"
                  <%= 'checked' if @lesson.link? || !@lesson.persisted? %>>
           <i class="bi bi-link-45deg"></i>
-          <span>Tu lưu (link)</span>
+          <span>Link only</span>
         </label>
         <label class="admin-upload-toggle__option <%= 'active' if @lesson.cloudinary? %>" data-upload="cloudinary">
           <input type="radio" name="lesson[upload_type]" value="cloudinary"
                  <%= 'checked' if @lesson.cloudinary? %>>
           <i class="bi bi-cloud-arrow-up"></i>
-          <span>Luu tren HT</span>
+          <span>Upload to storage</span>
         </label>
       </div>
     </div>
 
-    <%# TU LUU (LINK MODE): 2 fields URL, khong co choose file %>
+    <%# LINK MODE: 2 fields URL, no choose file %>
     <div id="upload-link-section" class="admin-upload-section">
       <div class="admin-upload-section__row">
         <div class="admin-upload-section__field">
-          <%= form.label :video_url, 'Link Video', class: 'admin-lessons__label' %>
+          <%= form.label :video_url, 'Video URL', class: 'admin-lessons__label' %>
           <div class="admin-input-group">
             <span class="input-group-text"><i class="bi bi-youtube"></i></span>
             <%= form.text_field :video_url, class: 'admin-input',
-                                placeholder: 'https://youtube.com/... hoac Google Drive link' %>
+                                placeholder: 'https://youtube.com/... or Google Drive link' %>
           </div>
         </div>
         <div class="admin-upload-section__field">
-          <%= form.label :document_url, 'Link Tai lieu', class: 'admin-lessons__label' %>
+          <%= form.label :document_url, 'Document URL', class: 'admin-lessons__label' %>
           <div class="admin-input-group">
             <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
             <%= form.text_field :document_url, class: 'admin-input',
-                                placeholder: 'https://docs.google.com/... hoac link PDF' %>
+                                placeholder: 'https://docs.google.com/... or PDF link' %>
           </div>
         </div>
       </div>
     </div>
 
-    <%# LUU TREN HT (CLOUDINARY MODE): 2 fields upload, co choose file %>
+    <%# UPLOAD MODE: 2 fields upload, with choose file %>
     <div id="upload-cloudinary-section" class="admin-upload-section hidden">
       <div class="admin-upload-section__row">
         <%# Upload Video %>
@@ -109,6 +109,12 @@
                 <i class="bi bi-x-lg"></i>
               </button>
             </div>
+            <div class="admin-file-dropzone hidden" id="video-upload-area">
+              <i class="bi bi-cloud-arrow-up admin-file-dropzone__icon"></i>
+              <p class="admin-file-dropzone__text">Drag & drop or <label for="lesson_video_file" class="admin-file-dropzone__browse">choose file</label></p>
+              <p class="admin-file-dropzone__hint">MP4, MOV, AVI, WebM</p>
+              <%= form.file_field :video_file, id: 'lesson_video_file', class: 'hidden', accept: 'video/*' %>
+            </div>
           <% else %>
             <div class="admin-upload-preview hidden" id="video-preview">
               <div class="admin-upload-preview__icon">
@@ -122,19 +128,18 @@
                 <i class="bi bi-x-lg"></i>
               </button>
             </div>
+            <div class="admin-file-dropzone" id="video-upload-area">
+              <i class="bi bi-cloud-arrow-up admin-file-dropzone__icon"></i>
+              <p class="admin-file-dropzone__text">Drag & drop or <label for="lesson_video_file" class="admin-file-dropzone__browse">choose file</label></p>
+              <p class="admin-file-dropzone__hint">MP4, MOV, AVI, WebM</p>
+              <%= form.file_field :video_file, id: 'lesson_video_file', class: 'hidden', accept: 'video/*' %>
+            </div>
           <% end %>
-
-          <div class="admin-file-dropzone" id="video-upload-area">
-            <i class="bi bi-cloud-arrow-up admin-file-dropzone__icon"></i>
-            <p class="admin-file-dropzone__text">Keo tha video hoac <label for="lesson_video_file" class="admin-file-dropzone__browse">chon file</label></p>
-            <p class="admin-file-dropzone__hint">MP4, MOV, AVI, WebM</p>
-            <%= form.file_field :video_file, id: 'lesson_video_file', class: 'hidden', accept: 'video/*' %>
-          </div>
         </div>
 
-        <%# Upload Tai lieu %>
+        <%# Upload Document %>
         <div class="admin-upload-section__field">
-          <%= form.label :document_file, 'Upload Tai lieu', class: 'admin-lessons__label' %>
+          <%= form.label :document_file, 'Upload Document', class: 'admin-lessons__label' %>
 
           <% if @lesson.document_file.attached? %>
             <div class="admin-upload-preview admin-upload-preview--visible" id="doc-preview">
@@ -149,6 +154,12 @@
                 <i class="bi bi-x-lg"></i>
               </button>
             </div>
+            <div class="admin-file-dropzone hidden" id="doc-upload-area">
+              <i class="bi bi-cloud-arrow-up admin-file-dropzone__icon"></i>
+              <p class="admin-file-dropzone__text">Drag & drop or <label for="lesson_document_file" class="admin-file-dropzone__browse">choose file</label></p>
+              <p class="admin-file-dropzone__hint">PDF, DOCX, ZIP, PNG, JPG</p>
+              <%= form.file_field :document_file, id: 'lesson_document_file', class: 'hidden', accept: '.pdf,.doc,.docx,.zip,.png,.jpg,.jpeg' %>
+            </div>
           <% else %>
             <div class="admin-upload-preview hidden" id="doc-preview">
               <div class="admin-upload-preview__icon">
@@ -162,14 +173,13 @@
                 <i class="bi bi-x-lg"></i>
               </button>
             </div>
+            <div class="admin-file-dropzone" id="doc-upload-area">
+              <i class="bi bi-cloud-arrow-up admin-file-dropzone__icon"></i>
+              <p class="admin-file-dropzone__text">Drag & drop or <label for="lesson_document_file" class="admin-file-dropzone__browse">choose file</label></p>
+              <p class="admin-file-dropzone__hint">PDF, DOCX, ZIP, PNG, JPG</p>
+              <%= form.file_field :document_file, id: 'lesson_document_file', class: 'hidden', accept: '.pdf,.doc,.docx,.zip,.png,.jpg,.jpeg' %>
+            </div>
           <% end %>
-
-          <div class="admin-file-dropzone" id="doc-upload-area">
-            <i class="bi bi-cloud-arrow-up admin-file-dropzone__icon"></i>
-            <p class="admin-file-dropzone__text">Keo tha file hoac <label for="lesson_document_file" class="admin-file-dropzone__browse">chon file</label></p>
-            <p class="admin-file-dropzone__hint">PDF, DOCX, ZIP, PNG, JPG</p>
-            <%= form.file_field :document_file, id: 'lesson_document_file', class: 'hidden', accept: '.pdf,.doc,.docx,.zip,.png,.jpg,.jpeg' %>
-          </div>
         </div>
       </div>
 
@@ -182,16 +192,16 @@
 
   <%# === TEXT SECTION === %>
   <div id="text-section" class="admin-lessons__field admin-lessons__field--conditional <%= 'hidden' if @lesson.video? %>">
-    <%= form.label :content, 'Noi dung bai hoc', class: 'admin-lessons__label' %>
+    <%= form.label :content, 'Lesson Content', class: 'admin-lessons__label' %>
     <div class="trix-editor-wrapper admin-lessons__rich-editor">
-      <%= form.rich_text_area :content, placeholder: 'Noi dung bai hoc...', rows: 10, data: { trix_autofocus: false } %>
+      <%= form.rich_text_area :content, placeholder: 'Lesson content...', rows: 10, data: { trix_autofocus: false } %>
     </div>
   </div>
 
   <%= form.hidden_field :order_index %>
 
   <div class="admin-lessons__actions">
-    <%= link_to 'Quay lai', admin_course_path(@course_module.course), class: 'btn-cancel admin-lessons__action-btn' %>
+    <%= link_to 'Back', admin_course_path(@course_module.course), class: 'btn-cancel admin-lessons__action-btn' %>
     <%= form.submit submit_text, class: 'btn-save admin-lessons__action-btn' %>
   </div>
 <% end %>
@@ -220,25 +230,31 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ========== TOGGLE UPLOAD TYPE ==========
+  function switchUploadMode(mode) {
+    var linkSection = document.getElementById('upload-link-section');
+    var cloudSection = document.getElementById('upload-cloudinary-section');
+
+    document.querySelectorAll('.admin-upload-toggle__option').forEach(function(el) { el.classList.remove('active'); });
+    var activeLabel = document.querySelector('input[name="lesson[upload_type]"][value="' + mode + '"]');
+    if (activeLabel) {
+      var wrapper = activeLabel.closest('.admin-upload-toggle__option');
+      if (wrapper) wrapper.classList.add('active');
+    }
+
+    if (mode === 'link') {
+      cloudSection.classList.add('hidden');
+      linkSection.classList.remove('hidden');
+    } else {
+      linkSection.classList.add('hidden');
+      cloudSection.classList.remove('hidden');
+    }
+  }
+
   document.querySelectorAll('input[name="lesson[upload_type]"]').forEach(function(radio) {
     radio.addEventListener('change', function() {
-      var linkSection = document.getElementById('upload-link-section');
-      var cloudSection = document.getElementById('upload-cloudinary-section');
-
-      document.querySelectorAll('.admin-upload-toggle__option').forEach(function(el) { el.classList.remove('active'); });
-      var wrapper = this.closest('.admin-upload-toggle__option');
-      if (wrapper) wrapper.classList.add('active');
-
-      if (this.value === 'link') {
-        linkSection.classList.remove('hidden');
-        cloudSection.classList.add('hidden');
-      } else {
-        linkSection.classList.add('hidden');
-        cloudSection.classList.remove('hidden');
-      }
+      switchUploadMode(this.value);
     });
 
-    // Kich hoat ngay neu da duoc chon
     if (radio.checked) {
       radio.dispatchEvent(new Event('change'));
     }
@@ -264,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   document.querySelectorAll('.admin-file-dropzone').forEach(bindDropzone);
 
-  // ========== VIDEO FILE: an dropzone, hien preview ==========
+  // ========== VIDEO FILE: hide dropzone, show preview ==========
   var videoInput = document.getElementById('lesson_video_file');
   if (videoInput) {
     videoInput.addEventListener('change', function() {
@@ -284,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ========== DOCUMENT FILE: an dropzone, hien preview ==========
+  // ========== DOCUMENT FILE: hide dropzone, show preview ==========
   var docInput = document.getElementById('lesson_document_file');
   if (docInput) {
     docInput.addEventListener('change', function() {
@@ -313,6 +329,10 @@ document.addEventListener('DOMContentLoaded', function() {
       var previewArea = document.getElementById('video-preview');
       var input = document.getElementById('lesson_video_file');
       if (dropzone && previewArea && input) {
+        var nameEl = previewArea.querySelector('.admin-upload-preview__name');
+        var sizeEl = previewArea.querySelector('.admin-upload-preview__size');
+        if (nameEl) nameEl.textContent = '';
+        if (sizeEl) sizeEl.textContent = '';
         previewArea.classList.add('hidden');
         previewArea.classList.remove('admin-upload-preview--visible');
         dropzone.classList.remove('hidden');
@@ -327,6 +347,10 @@ document.addEventListener('DOMContentLoaded', function() {
       var previewArea = document.getElementById('doc-preview');
       var input = document.getElementById('lesson_document_file');
       if (dropzone && previewArea && input) {
+        var nameEl = previewArea.querySelector('.admin-upload-preview__name');
+        var sizeEl = previewArea.querySelector('.admin-upload-preview__size');
+        if (nameEl) nameEl.textContent = '';
+        if (sizeEl) sizeEl.textContent = '';
         previewArea.classList.add('hidden');
         previewArea.classList.remove('admin-upload-preview--visible');
         dropzone.classList.remove('hidden');

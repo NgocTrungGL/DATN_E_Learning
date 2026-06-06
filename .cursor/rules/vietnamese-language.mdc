@@ -5,8 +5,9 @@ alwaysApply: true
 
 # Ngôn ngữ giao tiếp
 
-Tất cả các phản hồi và giao tiếp phải sử dụng **tiếng Việt**.
+Tất cả các phản hồi và giao tiếp phải sử dụng **tiếng Việt có dấu**.
 
-- Trao đổi với người dùng luôn dùng tiếng Việt.
+- Trao đổi với người dùng luôn dùng tiếng Việt có dấu đầy đủ.
 - Không sử dụng emoji trong câu trả lời.
-- Các comment trong code, commit message, và tài liệu cũng nên dùng tiếng Việt khi phù hợp.
+- Các comment trong code, commit message, và tài liệu cũng phải dùng tiếng Việt có dấu khi phù hợp.
+- Tuyệt đối không viết tắt tiếng Việt không dấu (ví dụ: "ko", "dc", "j", "ng`).

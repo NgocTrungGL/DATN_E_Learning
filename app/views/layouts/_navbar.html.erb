@@ -83,7 +83,14 @@
                 <div class="fw-bold text-dark text-truncate"><%= current_user.name %></div>
                 <div class="small text-muted text-truncate"><%= current_user.email %></div>
               </li>
-              
+
+              <li>
+                <%= link_to student_dashboard_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-bar-chart-line"></i>
+                  Bang phan tich ca nhan
+                <% end %>
+              </li>
+              <li><hr class="dropdown-divider"></li>
               <li><%= link_to "My Courses", my_courses_path, class: "dropdown-item mt-2" %></li>
               <li><%= link_to "My Wishlist", wishlists_path, class: "dropdown-item" %></li>
               <li><%= link_to "My Certificates", certificates_path, class: "dropdown-item" %></li>

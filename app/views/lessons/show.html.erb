@@ -92,22 +92,6 @@
       </div>
     <% end %>
 
-    <%# Attachment %>
-    <% if @lesson.attachment_url.present? %>
-      <%= link_to @lesson.attachment_url, target: "_blank", class: "lesson-attach" do %>
-        <div class="lesson-attach__icon">
-          <i class="bi bi-paperclip"></i>
-        </div>
-        <div class="lesson-attach__text">
-          <span class="lesson-attach__label">
-            Reference material
-            <i class="bi bi-box-arrow-up-right" style="font-size:0.7em; opacity:0.6;"></i>
-          </span>
-          <div class="lesson-attach__hint">Click to view or download the material</div>
-        </div>
-      <% end %>
-    <% end %>
-
     <%# Lesson title + description %>
     <div class="lesson-content">
       <h1 class="lesson-content__title"><%= @lesson.title %></h1>
@@ -118,20 +102,15 @@
       <% end %>
     </div>
 
-    <%# Attachment %>
-    <% if @lesson.attachment_url.present? %>
-      <%= link_to @lesson.attachment_url, target: "_blank", class: "lesson-attach" do %>
-        <div class="lesson-attach__icon">
-          <i class="bi bi-paperclip"></i>
-        </div>
-        <div class="lesson-attach__text">
-          <span class="lesson-attach__label">
-            Reference material
-            <i class="bi bi-box-arrow-up-right" style="font-size:0.7em; opacity:0.6;"></i>
-          </span>
-          <div class="lesson-attach__hint">Click to view or download the material</div>
-        </div>
-      <% end %>
+    <%# Tai lieu - download truc tiep %>
+    <% doc_url = @lesson.document_url.presence || (@lesson.cloudinary? && @lesson.document_file.attached? ? rails_blob_path(@lesson.document_file, disposition: "attachment") : nil) %>
+    <% if doc_url.present? %>
+      <div class="lesson-tabs__inline-download">
+        <a href="<%= doc_url %>" target="_blank" class="lesson-tabs__inline-download-link">
+          <i class="bi bi-file-earmark-arrow-down"></i>
+          <span>Lesson Materials</span>
+        </a>
+      </div>
     <% end %>
 
     <%# Completion status + toggle button (only for signed-in users) %>

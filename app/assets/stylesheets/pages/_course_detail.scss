@@ -137,6 +137,30 @@
     a { color: #93c5fd; text-decoration: none; }
   }
 
+  &__duration {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: #64748b;
+    i { color: #f59e0b; }
+  }
+
+  &__updated {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #16a34a;
+    border: 1px solid #16a34a;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    width: fit-content;
+    i { font-size: 0.7rem; }
+  }
+
   // Thumbnail card on the right
   &__thumb-card {
     background: $surface;

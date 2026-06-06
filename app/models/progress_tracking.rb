@@ -13,6 +13,7 @@ class ProgressTracking < ApplicationRecord
   validates :quiz_id, uniqueness: { scope: :user_id }, allow_nil: true
 
   after_commit :check_certificate_issuance, on: [:create, :update]
+  after_commit :track_learning_activity, on: [:create, :update]
 
   private
 
@@ -27,5 +28,19 @@ class ProgressTracking < ApplicationRecord
     return unless status == "completed"
 
     Certificate.issue_for(user, course)
+  end
+
+  def track_learning_activity
+    return unless saved_change_to_status? && completed?
+
+    LearningActivity.create!(
+      user: user,
+      course: course,
+      lesson: lesson,
+      activity_type: :lesson_complete,
+      activity_date: Date.current
+    )
+    user.learning_streak_record.update_streak!(Date.current)
+    GoalProgressService.update_user_goals(user)
   end
 end
