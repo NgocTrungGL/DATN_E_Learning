@@ -67,41 +67,44 @@
 
   <%# Charts Row %>
   <div class="analytics-charts-grid">
-    <div class="inst-card">
-      <div class="inst-card__header">
+    <div class="inst-card inst-chart-card">
+      <div class="inst-card__header inst-chart-card__header">
         <h2 class="inst-card__title">Enrollment Trend (12 weeks)</h2>
       </div>
-      <div class="inst-card__body">
+      <div class="inst-card__body inst-chart-card__body">
         <% if @enrollment_trend.values.sum > 0 %>
           <%= line_chart @enrollment_trend,
               height: "220px",
-              colors: ["#2563eb"],
+              colors: ["#4f46e5"],
+              points: false,
+              curve: true,
+              library: instructor_line_chart_library,
               messages: { empty: "No enrollment data" } %>
         <% else %>
-          <div class="inst-empty" style="padding: 2rem; text-align: center; color: #94a3b8;">
-            <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
-            <p style="margin-top: 0.5rem;">No enrollment data yet</p>
+          <div class="inst-empty inst-chart-empty">
+            <i class="bi bi-graph-up"></i>
+            <p>No enrollment data yet</p>
           </div>
         <% end %>
       </div>
     </div>
 
-    <div class="inst-card">
-      <div class="inst-card__header">
+    <div class="inst-card inst-chart-card">
+      <div class="inst-card__header inst-chart-card__header">
         <h2 class="inst-card__title">Completion Rate</h2>
       </div>
-      <div class="inst-card__body">
+      <div class="inst-card__body inst-chart-card__body">
         <% chart_sum = @completion_chart.values.sum %>
         <% if chart_sum > 0 %>
-          <%= pie_chart @completion_chart,
+          <%= bar_chart @completion_chart,
               height: "220px",
-              colors: ["#10b981", "#f59e0b", "#94a3b8"],
-              legend: "bottom",
+              colors: ["#10b981"],
+              library: instructor_bar_chart_library,
               messages: { empty: "No data" } %>
         <% else %>
-          <div class="inst-empty" style="padding: 2rem; text-align: center; color: #94a3b8;">
-            <i class="bi bi-pie-chart" style="font-size: 2rem;"></i>
-            <p style="margin-top: 0.5rem;">No data yet</p>
+          <div class="inst-empty inst-chart-empty">
+            <i class="bi bi-bar-chart"></i>
+            <p>No data yet</p>
           </div>
         <% end %>
       </div>

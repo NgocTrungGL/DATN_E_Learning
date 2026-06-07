@@ -244,6 +244,402 @@
   }
 }
 
+// ── Admin Dashboard ──────────────────────────────────────────
+.admin-dashboard-hero {
+  &__subtitle {
+    margin: 0.45rem 0 0;
+    color: rgba($text-muted, 0.95);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+}
+
+.admin-dashboard-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba($primary, 0.18);
+  border-radius: $radius-md;
+  background: $white;
+  color: $primary;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  transition: $t;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+
+  &--primary {
+    background: $primary;
+    color: $white;
+    border-color: $primary;
+  }
+}
+
+.admin-dashboard {
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 1100px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.admin-dashboard-stat {
+  min-height: 132px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), $white),
+    radial-gradient(circle at top right, rgba($primary, 0.1), transparent 35%);
+  color: $text-dark;
+  text-decoration: none;
+  box-shadow: $shadow-sm;
+  transition: $t;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &--success { background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), $white), radial-gradient(circle at top right, rgba($success, 0.12), transparent 35%); }
+  &--accent { background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), $white), radial-gradient(circle at top right, rgba($accent, 0.12), transparent 35%); }
+  &--warning { background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), $white), radial-gradient(circle at top right, rgba($warning, 0.14), transparent 35%); }
+
+  &__icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    background: rgba($primary, 0.1);
+    color: $primary;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+
+    .admin-dashboard-stat--success & {
+      background: rgba($success, 0.12);
+      color: $success;
+    }
+
+    .admin-dashboard-stat--accent & {
+      background: rgba($accent, 0.12);
+      color: $accent;
+    }
+
+    .admin-dashboard-stat--warning & {
+      background: rgba($warning, 0.14);
+      color: darken($warning, 8%);
+    }
+  }
+
+  &__content {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+
+    strong {
+      color: $text-dark;
+      font-size: clamp(1.55rem, 2.4vw, 2.1rem);
+      font-weight: 900;
+      line-height: 1;
+      word-break: break-word;
+    }
+
+    span {
+      color: $text-muted;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-dashboard-panel {
+  margin-bottom: 0;
+
+  &--attention {
+    grid-row: span 2;
+  }
+
+  &__header {
+    background:
+      linear-gradient(180deg, rgba(248, 250, 252, 0.94), $white),
+      radial-gradient(circle at top right, rgba($primary, 0.1), transparent 34%);
+
+    h5 {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        color: $primary;
+      }
+    }
+  }
+}
+
+.admin-dashboard-tasks {
+  display: grid;
+}
+
+.admin-dashboard-task {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  color: $text-dark;
+  text-decoration: none;
+  border-bottom: 1px solid $border;
+  transition: $t;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background: rgba($primary, 0.035);
+  }
+
+  &__icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    background: rgba($warning, 0.12);
+    color: darken($warning, 8%);
+    font-size: 1.15rem;
+
+    &--primary {
+      background: rgba($primary, 0.1);
+      color: $primary;
+    }
+
+    &--success {
+      background: rgba($success, 0.12);
+      color: $success;
+    }
+
+    &--accent {
+      background: rgba($accent, 0.12);
+      color: $accent;
+    }
+  }
+
+  &__body {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+
+    strong {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: $text-dark;
+      line-height: 1;
+    }
+
+    span {
+      color: $text-muted;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+  }
+
+  &__arrow {
+    color: $text-muted;
+  }
+}
+
+.admin-dashboard-inventory {
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: center;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__meter {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__list {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    color: $text-dark;
+    text-decoration: none;
+    transition: $t;
+
+    &:hover {
+      border-color: rgba($primary, 0.35);
+      background: rgba($primary, 0.035);
+    }
+
+    span {
+      color: $text-muted;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    strong {
+      font-size: 1rem;
+      font-weight: 900;
+    }
+  }
+}
+
+.admin-dashboard-ring {
+  width: 132px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.2rem;
+  background:
+    radial-gradient(circle at center, $white 0 58%, transparent 59%),
+    conic-gradient($primary var(--value), rgba($primary, 0.1) 0);
+  box-shadow: inset 0 0 0 1px rgba($primary, 0.08);
+
+  strong {
+    color: $text-dark;
+    font-size: 1.45rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  span {
+    color: $text-muted;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+}
+
+.admin-dashboard-pulse {
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid $border;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    span {
+      color: $text-muted;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    strong {
+      color: $text-dark;
+      font-size: 1rem;
+      font-weight: 900;
+      text-align: right;
+    }
+  }
+}
+
+.admin-dashboard-links {
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-dashboard-link {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $white;
+  color: $text-dark;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: $t;
+
+  i {
+    color: $primary;
+  }
+
+  &:hover {
+    border-color: rgba($primary, 0.35);
+    background: rgba($primary, 0.035);
+    transform: translateY(-1px);
+  }
+}
+
 // ── Admin Pagination ─────────────────────────────────────────
 .admin-pagination, [class*="-pagination"] {
   display: flex;
@@ -370,6 +766,67 @@
     border-top: 1px solid $border;
     font-size: 0.8rem;
     color: $text-muted;
+  }
+}
+
+.admin-charts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.46fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-chart-card {
+  border-color: rgba(226, 232, 240, 0.92);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+
+  &__header {
+    background:
+      linear-gradient(180deg, rgba(248, 250, 252, 0.94), $white),
+      radial-gradient(circle at top right, rgba(13, 148, 136, 0.12), transparent 34%);
+
+    h5 {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        color: $accent;
+      }
+    }
+  }
+
+  &__body {
+    padding: 1rem 1.25rem 1.25rem;
+
+    .chartkick,
+    canvas {
+      max-width: 100%;
+    }
+  }
+}
+
+.admin-chart-empty {
+  min-height: 300px;
+  padding: 2rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.65rem;
+  color: $text-muted;
+  text-align: center;
+
+  i {
+    font-size: 2rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
   }
 }
 

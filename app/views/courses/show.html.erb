@@ -502,6 +502,12 @@
       </div>
     </div>
 
+    <%= render "courses/recommendations",
+               results: @related_recommendation_results,
+               kicker: t("recommendations.detail.kicker"),
+               title: t("recommendations.detail.title"),
+               modifier: "detail" %>
+
     <%# ── Reviews ───────────────────────────────────────────── %>
     <div class="cd-card cd-anchor" id="cd-reviews">
       <%# Header with write-review button %>

@@ -22,7 +22,7 @@ module Api
           thumbnail_url: result.course.thumbnail_url,
           price: result.course.price,
           category: result.course.category&.name,
-          instructor: result.course.instructor&.name,
+          instructor: result.course.creator&.name,
           score: result.score,
           reason_type: result.reason_type
         }

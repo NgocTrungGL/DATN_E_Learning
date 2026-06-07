@@ -23,6 +23,297 @@
 }
 
 // ============================================================
+// SHARED COURSE RECOMMENDATIONS
+// ============================================================
+.course-recommendations {
+  padding: 0;
+}
+
+.courses-recommendations-section {
+  background: $bg;
+  padding: 1.5rem 0 0;
+}
+
+.course-index-recommendations {
+  padding-bottom: 0.5rem;
+}
+
+.course-recommendations--detail {
+  margin-bottom: 1.25rem;
+}
+
+.course-recommendations--my-courses {
+  margin-top: 2rem;
+}
+
+.course-recommendations__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.course-recommendations__kicker {
+  margin: 0 0 0.25rem;
+  color: $text-muted;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.course-recommendations__header h2 {
+  margin: 0;
+  color: $text-dark;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.course-recommendations__link {
+  color: $primary;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover { color: $primary-dark; }
+}
+
+.course-recommendations__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.course-rec-card {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $white;
+  color: $text-dark;
+  transition: $t;
+
+  &:hover {
+    border-color: rgba($primary, 0.42);
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.course-rec-card__thumb {
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  background: #e2e8f0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  a {
+    display: block;
+    height: 100%;
+  }
+}
+
+.course-rec-card__reason {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  max-width: calc(100% - 1.3rem);
+  padding: 0.32rem 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba($white, 0.94);
+  color: $primary;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: $shadow-sm;
+}
+
+.course-rec-card__body {
+  flex: 1;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.course-rec-card__category {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.28rem 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-rec-card__title {
+  display: -webkit-box;
+  min-height: 2.5rem;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: $text-dark;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-decoration: none;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.course-rec-card__meta {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid $border;
+  color: $text-muted;
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  span {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  i { color: $primary; }
+  .bi-star-fill { color: $warning; }
+}
+
+.course-rec-card__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  &.is-free {
+    color: $success;
+    font-size: 0.86rem;
+    font-weight: 900;
+  }
+}
+
+.course-rec-card__price-current {
+  color: $text-dark;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.course-rec-card__price-original {
+  position: relative;
+  display: inline-block;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: line-through;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1.5px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 50%;
+    height: 1.5px;
+    background: currentColor;
+    transform: translateY(-50%);
+  }
+}
+
+.course-rec-card__actions {
+  padding: 0 0.85rem 0.85rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+
+  form {
+    margin: 0;
+  }
+}
+
+.course-rec-card__action {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid $border;
+  border-radius: 10px;
+  background: $white;
+  color: $text-muted;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: $t;
+
+  &:hover {
+    border-color: rgba($primary, 0.35);
+    background: rgba($primary, 0.08);
+    color: $primary;
+  }
+
+  &.is-active {
+    border-color: rgba($primary, 0.2);
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+}
+
+.course-rec-card__action--wishlist.is-active {
+  color: #e11d48;
+}
+
+@media (max-width: 1024px) {
+  .course-recommendations__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .course-recommendations {
+    padding: 1rem;
+  }
+
+  .course-recommendations__header {
+    align-items: flex-start;
+  }
+
+  .course-recommendations__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ============================================================
 // SECTION 1 — PAGE HEADER
 // ============================================================
 .courses-page-header {

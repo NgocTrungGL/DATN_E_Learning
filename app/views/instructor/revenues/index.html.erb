@@ -41,23 +41,25 @@
   </div>
 
   <%# Chart %>
-  <div class="inst-card" style="margin-bottom: 1.5rem;">
-    <div class="inst-card__header">
+  <div class="inst-card inst-chart-card inst-chart-card--hero">
+    <div class="inst-card__header inst-chart-card__header">
       <h2 class="inst-card__title">Earnings Trend (Last 30 days)</h2>
     </div>
-    <div class="inst-card__body">
+    <div class="inst-card__body inst-chart-card__body">
       <% if @income_chart_data.values.sum > 0 %>
-        <%= column_chart @income_chart_data,
+        <%= area_chart @income_chart_data,
             prefix: "",
             thousands: ",",
-            colors: ["#2563eb"],
+            colors: ["#4f46e5"],
             height: "260px",
+            points: false,
+            curve: true,
             empty: "No earnings in the last 30 days",
-            ytitle: "VND",
             round: 0,
+            library: instructor_line_chart_library,
             messages: { empty: "No data available" } %>
       <% else %>
-        <div class="inst-empty">
+        <div class="inst-empty inst-chart-empty">
           <i class="bi bi-graph-up"></i>
           <p>No earnings data available</p>
         </div>

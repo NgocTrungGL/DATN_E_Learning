@@ -49,12 +49,15 @@
 
         <div class="perf-course-card__chart">
           <% if data[:chart].values.sum > 0 %>
-            <%= column_chart data[:chart],
+            <%= line_chart data[:chart],
                 height: "100px",
-                colors: ["#2563eb"],
+                colors: ["#4f46e5"],
+                points: false,
+                curve: true,
+                library: instructor_line_chart_library,
                 messages: { empty: "No enrollments" } %>
           <% else %>
-            <div style="height: 100px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.85rem;">
+            <div class="inst-chart-empty inst-chart-empty--compact">
               <i class="bi bi-bar-chart"></i> No enrollment data
             </div>
           <% end %>

@@ -24,6 +24,7 @@ class Student::DashboardController < Student::BaseController
                            .joins(:course)
                            .includes(course: [:category, :creator, { course_modules: :lessons }])
                            .limit(3)
+    @recommended_results = recommended_course_results(limit: 4)
 
     @active_study_plan = @user.study_plans.active.includes(:course).first
     @todays_lessons = @active_study_plan&.study_plan_items

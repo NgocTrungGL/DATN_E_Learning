@@ -89,5 +89,11 @@
       </div>
 
     <% end %>
+
+    <%= render "courses/recommendations",
+               results: @recommended_results,
+               kicker: t("recommendations.my_courses.kicker"),
+               title: t("recommendations.my_courses.title"),
+               modifier: "my-courses" %>
   </div>
 </div>
