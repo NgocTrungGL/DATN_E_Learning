@@ -1,16 +1,26 @@
 class CheckoutsController < ApplicationController
+  STRIPE_MINIMUM_VND_AMOUNT = 15_000
+
   before_action :authenticate_user!
 
   # ================= SINGLE COURSE CHECKOUT =================
 
   def create
     course = Course.find(params[:course_id])
+    total_amount = unit_price(course) * quantity
+    return if redirect_if_below_stripe_minimum(total_amount, course_path(course))
 
     session = Stripe::Checkout::Session.create(
-      locale: "vi",
+      locale: "en",
       payment_method_types: %w(card),
       line_items: [line_item(course)],
       mode: "payment",
+      customer_email: current_user.email,
+      submit_type: "pay",
+      custom_text: checkout_custom_text,
+      payment_intent_data: {
+        description: "E-Learning course checkout - #{course.title.truncate(80)}"
+      },
       success_url:,
       cancel_url: root_url,
       metadata: single_checkout_metadata(course)
@@ -26,6 +36,9 @@ class CheckoutsController < ApplicationController
     return if redirect_if_cart_empty
 
     line_items = build_line_items(@cart)
+    total_amount = line_items.sum { |item| item.dig(:price_data, :unit_amount).to_i * item[:quantity].to_i }
+    return if redirect_if_below_stripe_minimum(total_amount, cart_path)
+
     session = create_cart_checkout_session(line_items)
 
     redirect_to session.url, allow_other_host: true
@@ -120,15 +133,23 @@ class CheckoutsController < ApplicationController
     {
       price_data: {
         currency: "vnd",
-        product_data: {
-          name: product_name(course),
-          description: course.description.to_s.truncate(200),
-          images: [stripe_image(course)]
-        },
+        product_data: stripe_product_data(course),
         unit_amount: unit_price(course)
       },
       quantity:
     }
+  end
+
+  def stripe_product_data course
+    data = {
+      name: product_name(course),
+      images: [stripe_image(course)]
+    }
+
+    description = course.description.to_s.strip
+    data[:description] = description.truncate(200) if description.present?
+
+    data
   end
 
   # ================= METADATA =================
@@ -213,31 +234,55 @@ class CheckoutsController < ApplicationController
     {
       price_data: {
         currency: "vnd",
-        product_data: {
-          name: item.course.title,
-          images: product_images(item)
-        },
+        product_data: stripe_product_data(item.course),
         unit_amount:
       },
       quantity: 1
     }
   end
 
-  def product_images item
-    return [] if item.course.thumbnail_url.blank?
-
-    [item.course.thumbnail_url]
-  end
-
   def create_cart_checkout_session line_items
     Stripe::Checkout::Session.create(
-      locale: "vi",
+      locale: "en",
       payment_method_types: %w(card),
       line_items:,
       mode: "payment",
+      customer_email: current_user.email,
+      submit_type: "pay",
+      custom_text: checkout_custom_text,
+      payment_intent_data: {
+        description: "E-Learning cart checkout - #{line_items.size} course(s)"
+      },
       metadata: cart_checkout_metadata,
       success_url: success_checkout_url,
       cancel_url: cart_url
+    )
+  end
+
+  def redirect_if_below_stripe_minimum amount, fallback_path
+    return false if amount >= STRIPE_MINIMUM_VND_AMOUNT
+
+    redirect_to fallback_path,
+                alert: "Stripe requires a minimum payment of about #{formatted_vnd(STRIPE_MINIMUM_VND_AMOUNT)}. " \
+                       "The current total is #{formatted_vnd(amount)}, so checkout could not be started."
+    true
+  end
+
+  def checkout_custom_text
+    {
+      submit: {
+        message: "Secure payment powered by Stripe. After payment, your course access will be added to your E-Learning account."
+      }
+    }
+  end
+
+  def formatted_vnd amount
+    ActionController::Base.helpers.number_to_currency(
+      amount,
+      unit: "₫",
+      format: "%n %u",
+      precision: 0,
+      delimiter: "."
     )
   end
 

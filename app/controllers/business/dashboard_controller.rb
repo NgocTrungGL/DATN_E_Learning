@@ -38,12 +38,7 @@ class Business::DashboardController < ApplicationController
     # Monthly enrollment trend (without group_by_month due to MySQL timezone issue)
     @monthly_enrollments = {}
 
-    # Top courses
-    @top_courses = Course.joins(:licenses)
-                         .where(licenses: { organization_id: @organization.id })
-                         .group("courses.id")
-                         .order("COUNT(licenses.id) DESC")
-                         .limit(5)
+    @top_courses = build_top_course_stats
   end
 
   private
@@ -68,5 +63,32 @@ class Business::DashboardController < ApplicationController
     end
 
     (total_progress / @employees.count).round(1)
+  end
+
+  def build_top_course_stats
+    Course.joins(:licenses)
+          .where(licenses: { organization_id: @organization.id })
+          .select("courses.*, COUNT(licenses.id) AS licenses_count")
+          .group("courses.id")
+          .order(Arel.sql("COUNT(licenses.id) DESC"))
+          .limit(5)
+          .map do |course|
+            assigned = @organization.licenses.where(course:, status: :assigned).count
+            completed = completed_enrollments_for(course)
+
+            {
+              course:,
+              assigned:,
+              completed:,
+              completion_rate: assigned.positive? ? (completed.to_f / assigned * 100).round : 0
+            }
+          end
+  end
+
+  def completed_enrollments_for course
+    Enrollment.joins(:user)
+              .where(users: { organization_id: @organization.id, role: :student })
+              .where(course:, status: :completed)
+              .count
   end
 end

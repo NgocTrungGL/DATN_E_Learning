@@ -53,11 +53,11 @@
             <td>
               <div class="admin-table__actions">
                 <% if profile.pending? %>
-                  <%= button_to "Approve", approve_admin_instructor_path(profile), method: :patch,
+                  <%= button_to approve_admin_instructor_profile_path(profile), method: :patch,
                         class: "btn-action btn-action--success" do %>
                     <i class="bi bi-check-lg"></i> Approve
                   <% end %>
-                  <%= button_to "Reject", reject_admin_instructor_path(profile), method: :patch,
+                  <%= button_to reject_admin_instructor_profile_path(profile), method: :patch,
                         class: "btn-action btn-action--danger" do %>
                     <i class="bi bi-x-lg"></i> Reject
                   <% end %>

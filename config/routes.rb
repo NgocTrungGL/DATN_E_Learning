@@ -238,6 +238,9 @@ Rails.application.routes.draw do
 
     resources :purchases, only: [:new, :create]
     resources :invoices, only: [:index, :show]
+    resources :employee_reports, only: [:index] do
+      get :suggestions, on: :collection
+    end
     resources :reports, only: [:index]
   end
 

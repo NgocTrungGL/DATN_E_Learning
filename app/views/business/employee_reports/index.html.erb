@@ -1,0 +1,217 @@
+<div class="business-page">
+  <div class="business-page__header">
+    <div>
+      <h1 class="business-page__title">Employee Progress</h1>
+      <p class="business-page__subtitle">Inspect course-by-course learning progress, test completion, and scores.</p>
+    </div>
+  </div>
+
+  <div class="biz-section">
+    <div class="biz-report-selector">
+      <div>
+        <h2 class="biz-section__title">Employee Course Drilldown</h2>
+        <p class="biz-report-selector__subtitle">Select an employee to review each course they are currently taking.</p>
+      </div>
+      <%= form_with url: business_employee_reports_path,
+                    method: :get,
+                    local: true,
+                    class: "biz-report-selector__form",
+                    data: {
+                      controller: "employee-search",
+                      employee_search_url_value: suggestions_business_employee_reports_path,
+                      employee_search_selected_id_value: @selected_employee&.id
+                    } do %>
+        <label for="q_name_or_email_cont">Search employee</label>
+        <div class="biz-report-search">
+          <i class="bi bi-search"></i>
+          <%= search_field_tag "q[name_or_email_cont]",
+                               @search_params[:name_or_email_cont],
+                               id: "q_name_or_email_cont",
+                               placeholder: "Search by name or email",
+                               class: "biz-report-search__input",
+                               data: {
+                                 employee_search_target: "input",
+                                 action: "input->employee-search#search"
+                               } %>
+          <button type="submit" class="biz-report-search__button">Search</button>
+          <% if @search_params.present? %>
+            <%= link_to business_employee_reports_path, class: "biz-report-search__clear", title: "Clear search" do %>
+              <i class="bi bi-x-lg"></i>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @search_params[:name_or_email_cont].present? %>
+          <div class="biz-report-suggestions" data-employee-search-target="suggestions">
+            <% if @employees.any? %>
+              <% @employees.limit(6).each do |employee| %>
+                <%= link_to business_employee_reports_path(employee_id: employee.id),
+                            class: "biz-report-suggestion #{'is-active' if employee == @selected_employee}",
+                            data: { action: "click->employee-search#clearSuggestions" } do %>
+                  <span class="biz-report-suggestion__avatar"><%= employee.name[0].upcase %></span>
+                  <span class="biz-report-suggestion__body">
+                    <strong><%= employee.name %></strong>
+                    <small><%= employee.email %></small>
+                  </span>
+                  <i class="bi bi-arrow-right"></i>
+                <% end %>
+              <% end %>
+            <% else %>
+              <div class="biz-report-suggestions__empty">No employees found.</div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="biz-report-suggestions" data-employee-search-target="suggestions"></div>
+        <% end %>
+
+        <label for="employee_id">Employee</label>
+        <div class="biz-report-selector__control">
+          <%= select_tag :employee_id,
+                         options_from_collection_for_select(@employees, :id, :name, @selected_employee&.id),
+                         include_blank: "Select employee",
+                         onchange: "this.form.requestSubmit()",
+                         class: "biz-report-selector__select" %>
+          <% if @selected_employee %>
+            <%= link_to business_employee_reports_path, class: "biz-report-selector__clear", title: "Clear selection" do %>
+              <i class="bi bi-x-lg"></i>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @selected_employee %>
+      <div class="biz-report-employee">
+        <div class="biz-report-employee__header">
+          <div class="data-table__cell-user">
+            <div class="data-table__cell-user-avatar"><%= @selected_employee.name[0].upcase %></div>
+            <div class="data-table__cell-user-info">
+              <span class="data-table__cell-user-name"><%= @selected_employee.name %></span>
+              <span class="data-table__cell-user-email"><%= @selected_employee.email %></span>
+            </div>
+          </div>
+          <%= link_to progress_business_employee_path(@selected_employee), class: "btn btn-outline-secondary" do %>
+            <i class="bi bi-box-arrow-up-right"></i>
+            Full profile
+          <% end %>
+        </div>
+
+        <div class="biz-report-employee__stats">
+          <div class="biz-report-mini-stat">
+            <strong><%= @selected_employee_summary[:enrolled_courses] %></strong>
+            <span>Courses</span>
+          </div>
+          <div class="biz-report-mini-stat">
+            <strong><%= @selected_employee_summary[:avg_progress] %>%</strong>
+            <span>Avg progress</span>
+          </div>
+          <div class="biz-report-mini-stat">
+            <strong><%= @selected_employee_summary[:completed_tests] %></strong>
+            <span>Tests completed</span>
+          </div>
+          <div class="biz-report-mini-stat">
+            <strong><%= @selected_employee_summary[:avg_score] ? "#{@selected_employee_summary[:avg_score]}%" : "N/A" %></strong>
+            <span>Avg score</span>
+          </div>
+        </div>
+
+        <div class="biz-card">
+          <div class="data-table__wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Progress</th>
+                  <th style="text-align: center;">Lessons</th>
+                  <th style="text-align: center;">Tests</th>
+                  <th style="text-align: center;">Avg Score</th>
+                  <th style="text-align: center;">Best Score</th>
+                  <th>Last Activity</th>
+                  <th style="text-align: center;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if @employee_course_progress.any? %>
+                  <% @employee_course_progress.each do |item| %>
+                    <tr>
+                      <td>
+                        <div class="biz-report-course">
+                          <div class="biz-report-course__thumb">
+                            <img src="<%= item[:course].thumbnail_url.presence || 'https://via.placeholder.com/40x24/f1f5f9/aaa?text=No+Img' %>" alt="">
+                          </div>
+                          <div class="biz-report-course__content">
+                            <strong><%= item[:course].title %></strong>
+                            <span>Enrolled <%= item[:enrollment].created_at.strftime("%d %b %Y") %></span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="emp-progress-cell">
+                          <div class="emp-progress-cell__bar">
+                            <div class="emp-progress-cell__fill" style="width: <%= item[:progress_percent] %>%;"></div>
+                          </div>
+                          <span><%= item[:progress_percent] %>%</span>
+                        </div>
+                      </td>
+                      <td style="text-align: center;">
+                        <span class="biz-report-count"><%= item[:completed_lessons] %>/<%= item[:total_lessons] %></span>
+                      </td>
+                      <td style="text-align: center;">
+                        <span class="biz-report-count">
+                          <%= item[:completed_tests] %>/<%= item[:total_tests] %>
+                          <% if item[:total_attempts].positive? %>
+                            <small><%= item[:total_attempts] %> attempts</small>
+                          <% end %>
+                        </span>
+                      </td>
+                      <td style="text-align: center;">
+                        <% if item[:avg_score] %>
+                          <span class="badge <%= item[:avg_score] >= 70 ? 'badge--success' : 'badge--warning' %>"><%= item[:avg_score] %>%</span>
+                        <% else %>
+                          <span class="biz-report-muted">N/A</span>
+                        <% end %>
+                      </td>
+                      <td style="text-align: center;">
+                        <% if item[:best_score] %>
+                          <span class="badge <%= item[:best_score] >= 70 ? 'badge--success' : 'badge--warning' %>"><%= item[:best_score] %>%</span>
+                        <% else %>
+                          <span class="biz-report-muted">N/A</span>
+                        <% end %>
+                      </td>
+                      <td class="biz-report-muted">
+                        <%= item[:last_activity] ? "#{time_ago_in_words(item[:last_activity])} ago" : "No activity" %>
+                      </td>
+                      <td style="text-align: center;">
+                        <% if item[:status] == "Completed" %>
+                          <span class="badge badge--success">Completed</span>
+                        <% elsif item[:status] == "In Progress" %>
+                          <span class="badge badge--warning">In Progress</span>
+                        <% else %>
+                          <span class="badge badge--secondary">Not Started</span>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                <% else %>
+                  <tr>
+                    <td colspan="8">
+                      <div class="biz-report-empty">
+                        <i class="bi bi-journal-bookmark"></i>
+                        <p>This employee has not enrolled in any course yet.</p>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="biz-report-empty biz-report-empty--selector">
+        <i class="bi bi-person-lines-fill"></i>
+        <p>Add employees to view detailed course progress and test scores.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

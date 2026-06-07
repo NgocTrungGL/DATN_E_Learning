@@ -59,6 +59,14 @@ dependent: :nullify
   after_create :create_default_wallet
   scope :recent, ->{order(created_at: :desc)}
 
+  def self.ransackable_attributes _auth_object = nil
+    %w[email name role organization_id]
+  end
+
+  def self.ransackable_associations _auth_object = nil
+    []
+  end
+
   has_one :learning_streak, dependent: :destroy
   has_many :learning_activities, dependent: :destroy
   has_many :learning_goals, dependent: :destroy

@@ -39,6 +39,7 @@
         <tbody>
           <% if @attempts.any? %>
             <% @attempts.each do |attempt| %>
+              <% attempt_status = attempt.status.presence || "unknown" %>
               <tr>
                 <td>
                   <div class="data-table__cell-user">
@@ -71,12 +72,14 @@
                   <% end %>
                 </td>
                 <td style="text-align: center;">
-                  <% if attempt.status == "completed" %>
+                  <% if attempt_status == "completed" %>
                     <span class="badge badge--success">Completed</span>
-                  <% elsif attempt.status == "in_progress" %>
+                  <% elsif attempt_status == "in_progress" %>
                     <span class="badge badge--warning">In Progress</span>
+                  <% elsif attempt_status == "abandoned" %>
+                    <span class="badge badge--danger">Abandoned</span>
                   <% else %>
-                    <span class="badge badge--secondary"><%= attempt.status.titleize %></span>
+                    <span class="badge badge--secondary"><%= attempt_status.humanize %></span>
                   <% end %>
                 </td>
                 <td style="color: #64748b; font-size: 0.82rem; white-space: nowrap;">
@@ -92,7 +95,7 @@
                   <% end %>
                 </td>
                 <td style="text-align: center;">
-                  <% if attempt.status == "completed" %>
+                  <% if attempt_status == "completed" %>
                     <a href="<%= review_quiz_attempt_path(attempt) %>"
                        target="_blank"
                        class="btn btn-outline-secondary btn-sm">

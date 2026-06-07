@@ -21,6 +21,12 @@
       <span>Employee List</span>
     </a>
 
+    <a href="<%= business_employee_reports_path %>"
+       class="biz-sidebar__link <%= 'biz-sidebar__link--active' if controller_name == 'employee_reports' %>">
+      <i class="bi bi-clipboard-data"></i>
+      <span>Employee Progress</span>
+    </a>
+
     <div class="biz-sidebar__section-label">TRAINING</div>
 
     <a href="<%= business_licenses_path %>"
