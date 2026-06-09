@@ -5,7 +5,7 @@ class Business::ReportsController < ApplicationController
 
   def index
     @organization = current_user.organization
-    @employees = @organization.users.where(role: :student)
+    @employees = organization_employees
 
     build_overview_stats
     build_course_stats
@@ -120,5 +120,9 @@ class Business::ReportsController < ApplicationController
     end
 
     (compliant.to_f / @employees.count * 100).round(1)
+  end
+
+  def organization_employees
+    @organization.users.where(role: %i[student employee]).order(:name)
   end
 end

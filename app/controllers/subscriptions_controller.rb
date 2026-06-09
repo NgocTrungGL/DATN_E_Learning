@@ -28,6 +28,9 @@ class SubscriptionsController < ApplicationController
       payment_method_types: %w(card),
       line_items:           [subscription_line_item(plan)],
       mode:                 "subscription",
+      customer_email:       current_user.email,
+      submit_type:          "pay",
+      custom_text:          checkout_custom_text(plan),
       success_url:          subscriptions_url(subscribed: true),
       cancel_url:           subscriptions_url,
       metadata:             {
@@ -69,10 +72,19 @@ class SubscriptionsController < ApplicationController
         recurring: { interval: "month" },
         product_data: {
           name: "#{plan.capitalize} Plan - E-Learning",
-          description: plan_description(plan)
+          description: plan_description(plan),
+          images: ["https://placehold.co/600x400?text=E-Learning+#{plan.capitalize}"]
         }
       },
       quantity: 1
+    }
+  end
+
+  def checkout_custom_text plan
+    {
+      submit: {
+        message: "You are subscribing to the #{plan.capitalize} plan. Your plan will be activated after successful payment."
+      }
     }
   end
 

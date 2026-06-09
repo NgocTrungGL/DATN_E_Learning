@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
     elsif resource.company_admin?
       business_root_path
     elsif resource.instructor?
-      root_path
+      instructor_root_path
     else
       root_path
     end
@@ -47,6 +47,20 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     @current_cart ||= current_user.current_cart
+  end
+
+  def recommended_course_results(limit:, exclude_course_ids: [])
+    return [] unless user_signed_in?
+
+    excluded_ids = Array(exclude_course_ids).compact.map(&:to_i)
+    cart_course_ids = current_user.cart&.cart_items&.pluck(:course_id) || []
+    excluded_ids |= cart_course_ids
+
+    fetch_limit = [limit + excluded_ids.size + 8, 50].min
+    Recommendations::Engine.new(current_user)
+                           .call(limit: fetch_limit)
+                           .reject { |result| excluded_ids.include?(result.course_id) }
+                           .first(limit)
   end
 
   def layout_by_resource

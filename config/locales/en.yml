@@ -72,8 +72,13 @@ en:
         edit: "Edit"
         delete: "Delete"
         confirm_delete: "Are you sure you want to delete this course?"
+        search_placeholder: "Search courses by title or description"
+        search_button: "Search"
+        clear_search: "Clear search"
         empty_title: "No courses yet"
         empty_text: "Create your first course to start building your learning catalog."
+        empty_search_title: "No matching courses"
+        empty_search_text: "No courses matched \"%{query}\". Try another keyword."
         pagination_note: "Showing %{items} courses per page (Total %{count} courses)"
       new:
         eyebrow: "Create"
@@ -205,6 +210,46 @@ en:
       empty_title: "Your wishlist is empty"
       empty_body: "You haven't saved any courses yet. Browse our catalog and save your favorites!"
       browse_courses: "Browse Courses"
+
+  student:
+    dashboard:
+      recommendations:
+        kicker: "Personalized picks"
+        title: "Recommended for You"
+        browse_all: "Browse all"
+        default_category: "Tech"
+        default_instructor: "E-Learning Team"
+        no_reviews: "No reviews yet"
+        free: "Free"
+        reasons:
+          similar: "Similar to your courses"
+          interests: "Based on your interests"
+          popular: "Popular with learners"
+
+  recommendations:
+    browse_all: "Browse all"
+    add_to_cart: "Add to cart"
+    default_category: "Tech"
+    default_instructor: "E-Learning Team"
+    free: "Free"
+    no_reviews: "No reviews yet"
+    remove_from_cart: "Remove from cart"
+    reasons:
+      similar: "Similar to your courses"
+      interests: "Based on your interests"
+      popular: "Popular with learners"
+    index:
+      kicker: "Personalized picks"
+      title: "Recommended for You"
+    detail:
+      kicker: "Next picks"
+      title: "You May Also Like"
+    cart:
+      kicker: "Before checkout"
+      title: "Complete Your Learning Stack"
+    my_courses:
+      kicker: "Keep exploring"
+      title: "Recommended Next"
 
   certificates:
     index:

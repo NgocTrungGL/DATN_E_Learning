@@ -11,9 +11,12 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
-    t.text "body", size: :long
+    t.text "body"
     t.string "record_type", null: false
     t.bigint "record_id", null: false
     t.datetime "created_at", null: false
@@ -150,7 +153,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.datetime "updated_at", null: false
     t.index ["course_a_id", "course_b_id"], name: "index_course_similarities_on_course_a_id_and_course_b_id", unique: true
     t.index ["course_a_id", "score"], name: "index_course_similarities_on_course_a_id_and_score"
-    t.index ["course_b_id"], name: "fk_rails_9f57006a7a"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -165,7 +167,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.integer "status", default: 0
     t.boolean "allow_admin_discounts", default: true
     t.index ["category_id"], name: "index_courses_on_category_id"
-    t.index ["created_by"], name: "fk_rails_8984e96f9b"
     t.index ["status"], name: "index_courses_on_status"
   end
 
@@ -213,7 +214,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
   create_table "enrollments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "course_id", null: false
-    t.timestamp "enrolled_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "enrolled_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.string "status", default: "pending"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -588,7 +589,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.datetime "computed_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["course_id"], name: "fk_rails_ffdca66d10"
     t.index ["user_id", "course_id"], name: "index_user_recommendations_on_user_id_and_course_id", unique: true
     t.index ["user_id", "score"], name: "index_user_recommendations_on_user_id_and_score"
   end

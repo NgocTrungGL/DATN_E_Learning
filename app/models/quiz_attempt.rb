@@ -1,9 +1,12 @@
 class QuizAttempt < ApplicationRecord
-  enum status: { in_progress: "in_progress", completed: "completed" }
+  enum status: { in_progress: "in_progress", completed: "completed",
+                 abandoned: "abandoned" }
 
   belongs_to :quiz
   belongs_to :user
   has_many :quiz_answers, dependent: :destroy
+
+  validates :status, presence: true
 
   after_commit :track_learning_activity, on: [:update]
 

@@ -108,11 +108,11 @@
               </tr>
             </thead>
             <tbody>
-              <% @top_courses.each do |course| %>
-                <% licenses = @organization.licenses.where(course: course) %>
-                <% assigned = licenses.where(status: :assigned).count %>
-                <% completed = licenses.joins(:user).where(users: { enrollments: { status: :completed } }).count %>
-                <% rate = assigned.positive? ? (completed.to_f / assigned * 100).round : 0 %>
+              <% @top_courses.each do |course_stat| %>
+                <% course = course_stat[:course] %>
+                <% assigned = course_stat[:assigned] %>
+                <% completed = course_stat[:completed] %>
+                <% rate = course_stat[:completion_rate] %>
                 <tr>
                   <td>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">

@@ -101,22 +101,24 @@
     </div>
   </div>
 
-  <%# Revenue Chart (full width) %>
-  <div class="inst-card" style="margin-bottom: 1.5rem;">
-    <div class="inst-card__header">
+  <%# Revenue Chart %>
+  <div class="inst-card inst-chart-card inst-chart-card--hero">
+    <div class="inst-card__header inst-chart-card__header">
       <h2 class="inst-card__title">Revenue Trend</h2>
-      <span class="inst-card__subtitle">Last 30 days</span>
     </div>
-    <div class="inst-card__body">
-        <% if @revenue_chart_data.values.sum > 0 %>
-        <%= column_chart @revenue_chart_data,
+    <div class="inst-card__body inst-chart-card__body">
+      <% if @revenue_chart_data.values.sum > 0 %>
+        <%= area_chart @revenue_chart_data,
             prefix: "",
             thousands: ",",
-            colors: ["#2563eb"],
-            height: "220px",
+            colors: ["#4f46e5"],
+            height: "260px",
+            points: false,
+            curve: true,
+            library: instructor_line_chart_library,
             messages: { empty: "No revenue data" } %>
       <% else %>
-        <div class="inst-empty" style="padding: 2rem; text-align: center;">
+        <div class="inst-empty inst-chart-empty">
           <i class="bi bi-graph-up"></i>
           <p>No revenue data yet. Publish a course and attract students!</p>
         </div>
@@ -127,19 +129,21 @@
   <%# 2-column Charts %>
   <div class="dashboard-charts-grid">
     <%# Enrollments Chart %>
-    <div class="inst-card">
-      <div class="inst-card__header">
+    <div class="inst-card inst-chart-card">
+      <div class="inst-card__header inst-chart-card__header">
         <h2 class="inst-card__title">Enrollments</h2>
-        <span class="inst-card__subtitle">Last 30 days</span>
       </div>
-      <div class="inst-card__body">
+      <div class="inst-card__body inst-chart-card__body">
         <% if @enrollment_chart_data.values.sum > 0 %>
-          <%= area_chart @enrollment_chart_data,
+          <%= line_chart @enrollment_chart_data,
               colors: ["#10b981"],
-              height: "180px",
+              height: "220px",
+              points: false,
+              curve: true,
+              library: instructor_line_chart_library,
               messages: { empty: "No enrollment data" } %>
         <% else %>
-          <div class="inst-empty" style="padding: 2rem; text-align: center;">
+          <div class="inst-empty inst-chart-empty">
             <i class="bi bi-people"></i>
             <p>No enrollments yet</p>
           </div>
@@ -148,19 +152,19 @@
     </div>
 
     <%# Course Performance %>
-    <div class="inst-card">
-      <div class="inst-card__header">
+    <div class="inst-card inst-chart-card">
+      <div class="inst-card__header inst-chart-card__header">
         <h2 class="inst-card__title">Students by Course</h2>
-        <span class="inst-card__subtitle">All time</span>
       </div>
-      <div class="inst-card__body">
+      <div class="inst-card__body inst-chart-card__body">
         <% if @course_students_data.values.sum > 0 %>
           <%= bar_chart @course_students_data,
               colors: ["#6366f1"],
-              height: "180px",
+              height: "220px",
+              library: instructor_bar_chart_library,
               messages: { empty: "No data" } %>
         <% else %>
-          <div class="inst-empty" style="padding: 2rem; text-align: center;">
+          <div class="inst-empty inst-chart-empty">
             <i class="bi bi-bar-chart"></i>
             <p>Publish courses to see performance</p>
           </div>

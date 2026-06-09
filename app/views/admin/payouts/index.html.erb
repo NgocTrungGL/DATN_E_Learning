@@ -26,10 +26,10 @@
           <tr>
             <td>
               <div class="admin-table__title"><%= payout.user.name %></div>
-              <div class="admin-table__sub">Wallet: <%= number_to_currency(payout.user.wallet.balance, unit: "VND", precision: 0) %></div>
+              <div class="admin-table__sub">Wallet: <%= number_to_currency(payout.user.wallet.balance, unit: "VND", precision: 0, format: "%n %u") %></div>
             </td>
             <td style="font-weight:800; color:#ef4444; font-size:1.05rem;">
-              -<%= number_to_currency(payout.amount, unit: "VND", precision: 0) %>
+              -<%= number_to_currency(payout.amount, unit: "VND", precision: 0, format: "%n %u") %>
             </td>
             <td>
               <div class="admin-table__title"><%= payout.bank_name %></div>

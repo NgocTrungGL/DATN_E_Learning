@@ -1,79 +1,122 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow-lg border-0 rounded-3">
-        <div class="card-header bg-primary text-white text-center py-4">
-          <h3 class="fw-bold mb-0"><i class="bi bi-building me-2"></i>Business registration</h3>
-          <p class="mb-0 opacity-75 mt-2">Create a training account for your organization</p>
+<main class="b2b-register">
+  <section class="b2b-register__shell">
+    <aside class="b2b-register__intro" aria-label="Business learning overview">
+      <%= link_to root_path, class: "b2b-register__brand" do %>
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>E-Learning Business</span>
+      <% end %>
+
+      <div class="b2b-register__intro-copy">
+        <span class="b2b-register__eyebrow">Business onboarding</span>
+        <h1>Launch team training in one workspace</h1>
+        <p>Create an organization account, assign licenses, and track employee progress from your business dashboard.</p>
+      </div>
+
+      <div class="b2b-register__benefits">
+        <div class="b2b-register__benefit">
+          <i class="bi bi-people-fill"></i>
+          <span>Invite employees and manage access</span>
+        </div>
+        <div class="b2b-register__benefit">
+          <i class="bi bi-bar-chart-line-fill"></i>
+          <span>Monitor learning progress and reports</span>
+        </div>
+        <div class="b2b-register__benefit">
+          <i class="bi bi-receipt-cutoff"></i>
+          <span>Centralize purchases and invoices</span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="b2b-register__form-panel" aria-label="Business registration form">
+      <div class="b2b-register__form-header">
+        <span class="b2b-register__step-label">Create account</span>
+        <h2>Register your organization</h2>
+        <p>Set up the company profile and the first business administrator.</p>
+      </div>
+
+      <%= form_with model: @organization, url: b2b_register_path, local: true, html: { class: "b2b-register-form" } do |f| %>
+        <% if @organization.errors.any? %>
+          <div class="b2b-register-alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+              <strong><%= pluralize(@organization.errors.count, "error") %> need fixing:</strong>
+              <ul>
+                <% @organization.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="b2b-register-form__section">
+          <div class="b2b-register-form__section-head">
+            <span>1</span>
+            <div>
+              <h3>Organization information</h3>
+              <p>This becomes the workspace your employees join.</p>
+            </div>
+          </div>
+
+          <div class="b2b-register-form__grid">
+            <div class="b2b-register-field">
+              <%= f.label :name, "Organization name", class: "b2b-register-field__label" %>
+              <%= f.text_field :name, class: "b2b-register-field__input", placeholder: "ZigEXn Corporation", required: true %>
+            </div>
+
+            <div class="b2b-register-field">
+              <%= f.label :domain, "Website or domain", class: "b2b-register-field__label" %>
+              <%= f.text_field :domain, class: "b2b-register-field__input", placeholder: "zigexn.vn", required: true %>
+            </div>
+          </div>
         </div>
 
-        <div class="card-body p-4 p-md-5">
-          <%= form_with model: @organization, url: b2b_register_path, local: true do |f| %>
-
-            <% if @organization.errors.any? %>
-              <div class="alert alert-danger">
-                <ul class="mb-0 small">
-                  <% @organization.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
-                  <% end %>
-                </ul>
-              </div>
-            <% end %>
-
-            <h6 class="text-primary fw-bold text-uppercase mb-3 small border-bottom pb-2">1. Organization information</h6>
-
-            <div class="form-floating mb-3">
-              <%= f.text_field :name, class: "form-control", placeholder: "Company name", required: true %>
-              <%= f.label :name, "Organization name" %>
+        <div class="b2b-register-form__section">
+          <div class="b2b-register-form__section-head">
+            <span>2</span>
+            <div>
+              <h3>Administrator information</h3>
+              <p>This user will manage licenses, employees, and reports.</p>
             </div>
+          </div>
 
-            <div class="form-floating mb-4">
-              <%= f.text_field :domain, class: "form-control", placeholder: "Domain", required: true %>
-              <%= f.label :domain, "Website / Domain (e.g., fpt.com)" %>
+          <%= f.fields_for :users do |user_form| %>
+            <div class="b2b-register-form__grid">
+              <div class="b2b-register-field">
+                <%= user_form.label :name, "Admin full name", class: "b2b-register-field__label" %>
+                <%= user_form.text_field :name, class: "b2b-register-field__input", placeholder: "Minh Nguyen", required: true %>
+              </div>
+
+              <div class="b2b-register-field">
+                <%= user_form.label :email, "Work email", class: "b2b-register-field__label" %>
+                <%= user_form.email_field :email, class: "b2b-register-field__input", placeholder: "admin@company.com", required: true %>
+              </div>
+
+              <div class="b2b-register-field">
+                <%= user_form.label :password, "Password", class: "b2b-register-field__label" %>
+                <%= user_form.password_field :password, class: "b2b-register-field__input", placeholder: "Minimum 6 characters", required: true %>
+              </div>
+
+              <div class="b2b-register-field">
+                <%= user_form.label :password_confirmation, "Confirm password", class: "b2b-register-field__label" %>
+                <%= user_form.password_field :password_confirmation, class: "b2b-register-field__input", placeholder: "Re-enter password", required: true %>
+              </div>
             </div>
-
-            <h6 class="text-primary fw-bold text-uppercase mb-3 mt-4 small border-bottom pb-2">2. Admin information</h6>
-
-            <%= f.fields_for :users do |u| %>
-              <div class="form-floating mb-3">
-                <%= u.text_field :name, class: "form-control", placeholder: "Full name", required: true %>
-                <%= u.label :name, "Admin full name" %>
-              </div>
-
-              <div class="form-floating mb-3">
-                <%= u.email_field :email, class: "form-control", placeholder: "Email", required: true %>
-                <%= u.label :email, "Work email" %>
-              </div>
-
-              <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <%= u.password_field :password, class: "form-control", placeholder: "Password", required: true %>
-                    <%= u.label :password, "Password" %>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <%= u.password_field :password_confirmation, class: "form-control", placeholder: "Re-enter", required: true %>
-                    <%= u.label :password_confirmation, "Confirm password" %>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-
-            <div class="d-grid gap-2 mt-4">
-              <%= f.button type: "submit", class: "btn btn-primary btn-lg fw-bold shadow-sm" do %>
-                <i class="bi bi-rocket-takeoff me-2"></i> Initialize system
-              <% end %>
-            </div>
-
           <% end %>
         </div>
 
-        <div class="card-footer bg-light text-center py-3 small">
-          Already have an account? <%= link_to "Sign in here", new_user_session_path, class: "text-decoration-none fw-bold" %>
+        <div class="b2b-register-form__actions">
+          <%= f.button type: "submit", class: "b2b-register-submit" do %>
+            <i class="bi bi-rocket-takeoff-fill"></i>
+            Initialize workspace
+          <% end %>
+          <p>
+            Already have an account?
+            <%= link_to "Sign in", new_user_session_path %>
+          </p>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+      <% end %>
+    </section>
+  </section>
+</main>

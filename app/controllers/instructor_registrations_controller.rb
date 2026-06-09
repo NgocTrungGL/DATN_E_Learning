@@ -24,7 +24,7 @@ class InstructorRegistrationsController < ApplicationController
     authorize! :create, @profile
 
     if @profile.save
-      redirect_to instructor_registration_path, notice: "Đã gửi đơn đăng ký!"
+      redirect_to instructor_registration_path, notice: "Your instructor application has been submitted."
     else
       render :new, status: :unprocessable_entity
     end
@@ -41,7 +41,9 @@ class InstructorRegistrationsController < ApplicationController
   private
 
   def profile_params
-    params.require(:instructor_profile).permit(:bio, :phone, :linkedin_url,
-                                               :cv_url)
+    params.require(:instructor_profile).permit(
+      :bio_detailed, :phone, :linkedin_url, :website_url, :cv_url,
+      :bank_name, :bank_account_number, :bank_account_name
+    )
   end
 end

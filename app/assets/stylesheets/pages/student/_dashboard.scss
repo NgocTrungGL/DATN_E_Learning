@@ -431,10 +431,179 @@
 .student-courses {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
 .student-courses__card {
   flex: 1;
+}
+
+.student-recommendations {
+  margin-top: 22px;
+}
+
+.student-recommendations .student-card {
+  padding: 18px;
+}
+
+.student-recommendations .student-card__header {
+  margin-bottom: 14px;
+}
+
+.student-recommendations .student-courses__grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.student-recommendations .student-course {
+  border: 1px solid var(--student-border);
+  box-shadow: none;
+}
+
+.student-recommendations .student-course__thumb {
+  min-height: 118px;
+  aspect-ratio: 16 / 9;
+}
+
+.student-recommendations .student-course__body {
+  padding: 12px;
+  gap: 8px;
+}
+
+.student-recommendations .student-course__tag {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.student-recommendations .student-course h3 {
+  min-height: 40px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.student-recommendations .student-course__meta {
+  padding-top: 9px;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.student-recommendations .student-course__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  &.is-free {
+    color: var(--student-green);
+    font-size: 13px;
+    font-weight: 800;
+  }
+}
+
+.student-recommendations .student-course__price-current {
+  color: var(--student-text);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.student-recommendations .student-course__price-original {
+  position: relative;
+  display: inline-block;
+  color: var(--student-text-muted);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: line-through;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1.5px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 50%;
+    height: 1.5px;
+    background: currentColor;
+    transform: translateY(-50%);
+  }
+}
+
+.student-course--recommended .student-course__thumb {
+  min-height: 118px;
+
+  a {
+    display: block;
+    height: 100%;
+  }
+}
+
+.student-course__pct--reason {
+  left: 12px;
+  right: auto;
+  max-width: calc(100% - 24px);
+  color: var(--student-primary);
+}
+
+.student-recommendations .student-course__title-link {
+  display: -webkit-box;
+  min-height: 40px;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--student-text);
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 800;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--student-primary);
+  }
+}
+
+.student-recommendations .student-course__actions {
+  padding: 0 12px 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+
+  form {
+    margin: 0;
+  }
+}
+
+.student-recommendations .student-course__action {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--student-border);
+  border-radius: 10px;
+  background: var(--student-surface);
+  color: var(--student-text-muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: rgba(59, 91, 219, 0.35);
+    background: rgba(59, 91, 219, 0.08);
+    color: var(--student-primary);
+  }
+
+  &.is-active {
+    border-color: rgba(59, 91, 219, 0.2);
+    background: rgba(59, 91, 219, 0.1);
+    color: var(--student-primary);
+  }
+}
+
+.student-recommendations .student-course__action--wishlist.is-active {
+  color: #e11d48;
 }
 
 .student-weekly-goal {
@@ -668,6 +837,10 @@
     grid-template-columns: 1fr;
   }
 
+  .student-recommendations .student-courses__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .student-dashboard__title {
     font-size: 32px;
   }
@@ -705,6 +878,10 @@
   .student-dashboard__stats,
   .student-dashboard__charts,
   .student-courses__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-recommendations .student-courses__grid {
     grid-template-columns: 1fr;
   }
 

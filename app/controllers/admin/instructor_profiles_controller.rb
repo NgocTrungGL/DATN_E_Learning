@@ -3,8 +3,14 @@ class Admin::InstructorProfilesController < Admin::BaseController
   def index
     authorize! :read, InstructorProfile
 
-    status_order =
-      "FIELD(status, 'pending', 'approved', 'rejected')"
+    status_order = <<~SQL.squish
+      CASE status
+      WHEN 'pending' THEN 0
+      WHEN 'approved' THEN 1
+      WHEN 'rejected' THEN 2
+      ELSE 3
+      END
+    SQL
 
     @instructor_profiles = InstructorProfile
                            .includes(:user)

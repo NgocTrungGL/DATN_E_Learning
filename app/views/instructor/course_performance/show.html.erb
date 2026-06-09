@@ -18,41 +18,43 @@
 
   <%# Revenue + Enrollment Charts %>
   <div class="perf-charts-grid">
-    <div class="inst-card">
-      <div class="inst-card__header">
+    <div class="inst-card inst-chart-card">
+      <div class="inst-card__header inst-chart-card__header">
         <h2 class="inst-card__title">Revenue Trend (6 months)</h2>
-        <span class="inst-card__subtitle">70% of enrollment price</span>
       </div>
-      <div class="inst-card__body">
+      <div class="inst-card__body inst-chart-card__body">
         <% if @monthly_revenue.values.sum > 0 %>
-          <%= column_chart @monthly_revenue,
+          <%= area_chart @monthly_revenue,
               height: "220px",
               colors: ["#10b981"],
+              points: false,
+              curve: true,
+              library: instructor_line_chart_library,
               messages: { empty: "No revenue yet" } %>
         <% else %>
-          <div class="inst-empty" style="padding: 2rem; text-align: center; color: #94a3b8;">
-            <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
-            <p style="margin-top: 0.5rem;">No revenue yet</p>
+          <div class="inst-empty inst-chart-empty">
+            <i class="bi bi-graph-up"></i>
+            <p>No revenue yet</p>
           </div>
         <% end %>
       </div>
     </div>
 
-    <div class="inst-card">
-      <div class="inst-card__header">
+    <div class="inst-card inst-chart-card">
+      <div class="inst-card__header inst-chart-card__header">
         <h2 class="inst-card__title">Enrollment vs Completion</h2>
-        <span class="inst-card__subtitle">How many finish the course</span>
       </div>
-      <div class="inst-card__body">
+      <div class="inst-card__body inst-chart-card__body">
         <% if @enrollment_vs_completion.values.sum > 0 %>
           <%= bar_chart @enrollment_vs_completion,
               height: "220px",
-              colors: ["#2563eb", "#10b981"],
+              colors: ["#4f46e5"],
+              library: instructor_bar_chart_library,
               messages: { empty: "No data" } %>
         <% else %>
-          <div class="inst-empty" style="padding: 2rem; text-align: center; color: #94a3b8;">
-            <i class="bi bi-bar-chart" style="font-size: 2rem;"></i>
-            <p style="margin-top: 0.5rem;">No data yet</p>
+          <div class="inst-empty inst-chart-empty">
+            <i class="bi bi-bar-chart"></i>
+            <p>No data yet</p>
           </div>
         <% end %>
       </div>

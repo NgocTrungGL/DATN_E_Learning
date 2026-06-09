@@ -23,7 +23,7 @@ module Recommendations
         .where(user_id: @user.id)
         .fresh
         .by_score
-        .includes(course: [:category, :instructor])
+        .includes(course: [:category, :creator])
         .limit(limit)
         .map do |rec|
           next unless rec.course&.published?

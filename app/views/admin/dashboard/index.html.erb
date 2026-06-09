@@ -1,118 +1,192 @@
-<%# Admin Dashboard — Bootstrap-free BEM redesign %>
-
-<div class="admin-page-header">
+<div class="admin-page-header admin-dashboard-hero">
   <div class="admin-page-header__inner">
     <div>
-      <div class="admin-page-header__badge"><i class="bi bi-speedometer2"></i> Overview</div>
+      <div class="admin-page-header__badge">
+        <i class="bi bi-speedometer2"></i>
+        Overview
+      </div>
       <h1 class="admin-page-header__title">System Dashboard</h1>
+      <p class="admin-dashboard-hero__subtitle">Monitor platform health, approvals, revenue, and course operations.</p>
+    </div>
+    <div class="admin-dashboard-hero__actions">
+      <%= link_to admin_course_reviews_path, class: "admin-dashboard-action admin-dashboard-action--primary" do %>
+        <i class="bi bi-check2-square"></i>
+        Course review
+      <% end %>
+      <%= link_to admin_revenues_path, class: "admin-dashboard-action" do %>
+        <i class="bi bi-cash-coin"></i>
+        Finance
+      <% end %>
     </div>
   </div>
 </div>
 
-<div class="admin-page-body">
+<div class="admin-page-body admin-dashboard">
+  <div class="admin-dashboard__stats">
+    <%= link_to admin_users_path(role: "student"), class: "admin-dashboard-stat admin-dashboard-stat--primary" do %>
+      <span class="admin-dashboard-stat__icon"><i class="bi bi-people-fill"></i></span>
+      <span class="admin-dashboard-stat__content">
+        <strong><%= @total_students %></strong>
+        <span>Students</span>
+      </span>
+    <% end %>
 
-  <%# ── Stats Widget Grid ──────────────────────────────────── %>
-  <div class="admin-stats">
-    <div class="admin-stats__card admin-stats__card--primary">
-      <i class="bi bi-people-fill admin-stats__icon"></i>
-      <div class="admin-stats__value"><%= @total_students %></div>
-      <div class="admin-stats__label">Students</div>
-    </div>
+    <%= link_to admin_instructor_profiles_path, class: "admin-dashboard-stat admin-dashboard-stat--success" do %>
+      <span class="admin-dashboard-stat__icon"><i class="bi bi-person-video3"></i></span>
+      <span class="admin-dashboard-stat__content">
+        <strong><%= @total_instructors %></strong>
+        <span>Instructors</span>
+      </span>
+    <% end %>
 
-    <div class="admin-stats__card admin-stats__card--success">
-      <i class="bi bi-person-video3 admin-stats__icon"></i>
-      <div class="admin-stats__value"><%= @total_instructors %></div>
-      <div class="admin-stats__label">Instructors</div>
-    </div>
+    <%= link_to admin_courses_path, class: "admin-dashboard-stat admin-dashboard-stat--accent" do %>
+      <span class="admin-dashboard-stat__icon"><i class="bi bi-collection-play-fill"></i></span>
+      <span class="admin-dashboard-stat__content">
+        <strong><%= @total_courses %></strong>
+        <span>Total courses</span>
+      </span>
+    <% end %>
 
-    <div class="admin-stats__card admin-stats__card--accent">
-      <i class="bi bi-collection-play-fill admin-stats__icon"></i>
-      <div class="admin-stats__value"><%= @total_courses %></div>
-      <div class="admin-stats__label">Total courses</div>
-    </div>
-
-    <div class="admin-stats__card admin-stats__card--warning">
-      <i class="bi bi-hourglass-split admin-stats__icon"></i>
-      <div class="admin-stats__value"><%= @pending_enrollments.count %></div>
-      <div class="admin-stats__label">Pending</div>
-    </div>
+    <%= link_to admin_revenues_path, class: "admin-dashboard-stat admin-dashboard-stat--warning" do %>
+      <span class="admin-dashboard-stat__icon"><i class="bi bi-graph-up-arrow"></i></span>
+      <span class="admin-dashboard-stat__content">
+        <strong><%= number_to_currency(@platform_revenue, unit: "", precision: 0) %></strong>
+        <span>Platform revenue</span>
+      </span>
+    <% end %>
   </div>
 
-  <%# ── Two-column feed area ───────────────────────────────── %>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-
-    <%# Latest Reviews %>
-    <div class="admin-card">
-      <div class="admin-card__header" style="justify-content:space-between;">
-        <h5><i class="bi bi-star" style="color:#f59e0b;"></i> Latest reviews</h5>
-        <%= link_to "View all", admin_reviews_path, class: "btn-action btn-action--info", style: "font-size:0.78rem;" %>
+  <div class="admin-dashboard-grid">
+    <section class="admin-card admin-dashboard-panel admin-dashboard-panel--attention">
+      <div class="admin-card__header admin-dashboard-panel__header">
+        <h5><i class="bi bi-lightning-charge-fill"></i> Needs attention</h5>
       </div>
-      <div class="admin-card__body" style="padding:0;">
-        <% @latest_reviews.each do |review| %>
-          <div style="padding:0.9rem 1.25rem; border-bottom:1px solid #f1f5f9; display:flex; flex-direction:column; gap:0.3rem;">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <% if review.user.avatar_url.present? %>
-                  <img src="<%= review.user.avatar_url %>" style="width:28px; height:28px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                <% else %>
-                  <div style="width:28px; height:28px; border-radius:50%; background:#eff6ff; color:#2563eb; font-weight:800; font-size:0.8rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <%= review.user.name.first.upcase %>
-                  </div>
-                <% end %>
-                <span style="font-weight:700; font-size:0.85rem; color:#0f172a;"><%= review.user.name %></span>
-              </div>
-              <span style="color:#f59e0b; font-size:0.8rem;">
-                <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
-              </span>
-            </div>
-            <p style="font-size:0.8rem; color:#64748b; font-style:italic; margin:0;">"<%= review.content.truncate(60) %>"</p>
-            <span style="font-size:0.73rem; color:#94a3b8;">Course: <%= review.course.title.truncate(30) %></span>
+      <div class="admin-dashboard-tasks">
+        <%= link_to admin_course_reviews_path, class: "admin-dashboard-task" do %>
+          <span class="admin-dashboard-task__icon admin-dashboard-task__icon--warning">
+            <i class="bi bi-journal-check"></i>
+          </span>
+          <span class="admin-dashboard-task__body">
+            <strong><%= @pending_courses_count %></strong>
+            <span>Courses waiting for review</span>
+          </span>
+          <i class="bi bi-arrow-right admin-dashboard-task__arrow"></i>
+        <% end %>
+
+        <%= link_to admin_instructor_profiles_path(status: "pending"), class: "admin-dashboard-task" do %>
+          <span class="admin-dashboard-task__icon admin-dashboard-task__icon--primary">
+            <i class="bi bi-person-badge"></i>
+          </span>
+          <span class="admin-dashboard-task__body">
+            <strong><%= @pending_instructor_profiles_count %></strong>
+            <span>Instructor applications</span>
+          </span>
+          <i class="bi bi-arrow-right admin-dashboard-task__arrow"></i>
+        <% end %>
+
+        <%= link_to admin_payouts_path(status: "pending"), class: "admin-dashboard-task" do %>
+          <span class="admin-dashboard-task__icon admin-dashboard-task__icon--success">
+            <i class="bi bi-bank"></i>
+          </span>
+          <span class="admin-dashboard-task__body">
+            <strong><%= @pending_payouts_count %></strong>
+            <span>Payout requests</span>
+          </span>
+          <i class="bi bi-arrow-right admin-dashboard-task__arrow"></i>
+        <% end %>
+
+        <%= link_to admin_enrollments_path(status: "pending"), class: "admin-dashboard-task" do %>
+          <span class="admin-dashboard-task__icon admin-dashboard-task__icon--accent">
+            <i class="bi bi-hourglass-split"></i>
+          </span>
+          <span class="admin-dashboard-task__body">
+            <strong><%= @pending_enrollments.count %></strong>
+            <span>Pending enrollments</span>
+          </span>
+          <i class="bi bi-arrow-right admin-dashboard-task__arrow"></i>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="admin-card admin-dashboard-panel">
+      <div class="admin-card__header admin-dashboard-panel__header">
+        <h5><i class="bi bi-boxes"></i> Course inventory</h5>
+      </div>
+      <div class="admin-dashboard-inventory">
+        <div class="admin-dashboard-inventory__meter">
+          <% published_ratio = @total_courses.positive? ? ((@published_courses.to_f / @total_courses) * 100).round : 0 %>
+          <div class="admin-dashboard-ring" style="--value: <%= published_ratio %>%;">
+            <strong><%= published_ratio %>%</strong>
+            <span>published</span>
           </div>
-        <% end %>
-        <% if @latest_reviews.empty? %>
-          <div style="padding:2rem; text-align:center; color:#94a3b8; font-size:0.85rem;">No reviews yet.</div>
-        <% end %>
+        </div>
+        <div class="admin-dashboard-inventory__list">
+          <%= link_to admin_courses_path(status: "published"), class: "admin-dashboard-inventory__item" do %>
+            <span>Published</span>
+            <strong><%= @published_courses %></strong>
+          <% end %>
+          <%= link_to admin_course_reviews_path, class: "admin-dashboard-inventory__item" do %>
+            <span>Pending review</span>
+            <strong><%= @pending_courses_count %></strong>
+          <% end %>
+          <%= link_to admin_courses_path(status: "draft"), class: "admin-dashboard-inventory__item" do %>
+            <span>Drafts</span>
+            <strong><%= @draft_courses %></strong>
+          <% end %>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <%# Latest Users %>
-    <div class="admin-card">
-      <div class="admin-card__header" style="justify-content:space-between;">
-        <h5><i class="bi bi-person-plus" style="color:#10b981;"></i> New members</h5>
-        <%= link_to "Manage users", admin_users_path, class: "btn-action btn-action--success", style: "font-size:0.78rem;" %>
+    <section class="admin-card admin-dashboard-panel">
+      <div class="admin-card__header admin-dashboard-panel__header">
+        <h5><i class="bi bi-activity"></i> Platform pulse</h5>
       </div>
-      <div style="overflow:hidden;">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Created on</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @latest_users.each do |user| %>
-              <tr>
-                <td>
-                  <div style="display:flex; align-items:center; gap:0.5rem;">
-                    <% if user.avatar_url.present? %>
-                      <img src="<%= user.avatar_url %>" style="width:28px; height:28px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                    <% else %>
-                      <div style="width:28px; height:28px; border-radius:50%; background:#eff6ff; color:#2563eb; font-weight:800; font-size:0.78rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                        <%= user.name.first.upcase %>
-                      </div>
-                    <% end %>
-                    <span style="font-weight:700; font-size:0.85rem;"><%= user.name %></span>
-                  </div>
-                </td>
-                <td class="admin-table__sub"><%= user.email %></td>
-                <td class="admin-table__sub"><%= user.created_at.strftime("%d/%m/%Y") %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+      <div class="admin-dashboard-pulse">
+        <div class="admin-dashboard-pulse__item">
+          <span>Active enrollments</span>
+          <strong><%= @active_enrollments_count %></strong>
+        </div>
+        <div class="admin-dashboard-pulse__item">
+          <span>Average course rating</span>
+          <strong><%= @avg_course_rating.positive? ? @avg_course_rating : "—" %></strong>
+        </div>
+        <div class="admin-dashboard-pulse__item">
+          <span>Revenue this month</span>
+          <strong><%= number_to_currency(@revenue_this_month, unit: "", precision: 0) %></strong>
+        </div>
       </div>
-    </div>
+    </section>
 
+    <section class="admin-card admin-dashboard-panel">
+      <div class="admin-card__header admin-dashboard-panel__header">
+        <h5><i class="bi bi-compass"></i> Quick navigation</h5>
+      </div>
+      <div class="admin-dashboard-links">
+        <%= link_to admin_users_path, class: "admin-dashboard-link" do %>
+          <i class="bi bi-people"></i>
+          Users
+        <% end %>
+        <%= link_to admin_courses_path, class: "admin-dashboard-link" do %>
+          <i class="bi bi-play-btn"></i>
+          Courses
+        <% end %>
+        <%= link_to admin_reviews_path, class: "admin-dashboard-link" do %>
+          <i class="bi bi-star"></i>
+          Reviews
+        <% end %>
+        <%= link_to admin_categories_path, class: "admin-dashboard-link" do %>
+          <i class="bi bi-tags"></i>
+          Categories
+        <% end %>
+        <%= link_to admin_coupons_path, class: "admin-dashboard-link" do %>
+          <i class="bi bi-ticket-perforated"></i>
+          Coupons
+        <% end %>
+        <%= link_to admin_payouts_path, class: "admin-dashboard-link" do %>
+          <i class="bi bi-wallet2"></i>
+          Payouts
+        <% end %>
+      </div>
+    </section>
   </div>
 </div>

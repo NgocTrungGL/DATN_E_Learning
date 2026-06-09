@@ -1,0 +1,87 @@
+<%
+  course = result.course
+  reviews = course.reviews
+  average_rating = reviews.any? ? reviews.average(:rating).to_f.round(1) : nil
+  thumbnail = course.thumbnail_url.presence ||
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=340&fit=crop&q=80"
+  reason_key = {
+    "cf" => "similar",
+    "content" => "interests",
+    "popular" => "popular"
+  }.fetch(result.reason_type.to_s, "popular")
+%>
+
+<article class="student-course student-course--recommended">
+  <div class="student-course__thumb">
+    <%= link_to course_path(course) do %>
+      <img src="<%= thumbnail %>" alt="<%= course.title %>" loading="lazy">
+    <% end %>
+    <span class="student-course__pct student-course__pct--reason">
+      <%= t("student.dashboard.recommendations.reasons.#{reason_key}") %>
+    </span>
+  </div>
+
+  <div class="student-course__body">
+    <span class="student-course__tag"><%= course.category&.name || t("student.dashboard.recommendations.default_category") %></span>
+    <%= link_to course.title, course_path(course), class: "student-course__title-link" %>
+
+    <div class="student-course__meta">
+      <span><i class="bi bi-person-fill"></i> <%= course.creator&.name || t("student.dashboard.recommendations.default_instructor") %></span>
+      <span>
+        <% if average_rating %>
+          <i class="bi bi-star-fill"></i>
+          <%= average_rating %>
+        <% else %>
+          <%= t("student.dashboard.recommendations.no_reviews") %>
+        <% end %>
+      </span>
+    </div>
+
+    <div class="student-course__price <%= "is-free" if course.free? %>">
+      <% if course.free? %>
+        <%= t("student.dashboard.recommendations.free") %>
+      <% else %>
+        <span class="student-course__price-current">
+          <%= number_to_currency(course.discounted_price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+        </span>
+        <% if course.has_discount? %>
+          <span class="student-course__price-original">
+            <%= number_to_currency(course.price, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if current_user %>
+    <div class="student-course__actions">
+      <%= button_to course_toggle_wishlist_path(course),
+                    method: :post,
+                    form: { data: { turbo: false } },
+                    class: "student-course__action student-course__action--wishlist #{'is-active' if wishlisted?(course)}",
+                    title: wishlisted?(course) ? t("wishlists.remove") : t("wishlists.add") do %>
+        <i class="bi bi-heart<%= '-fill' if wishlisted?(course) %>"></i>
+      <% end %>
+
+      <% if !course.free? && !current_user.enrolled_in?(course) %>
+        <% if (cart_item = current_user.cart&.cart_items&.find_by(course: course)) %>
+          <%= button_to cart_item_path(cart_item),
+                        method: :delete,
+                        form: { data: { turbo: false } },
+                        class: "student-course__action student-course__action--cart is-active",
+                        title: t("recommendations.remove_from_cart") do %>
+            <i class="bi bi-check-lg"></i>
+          <% end %>
+        <% else %>
+          <%= button_to cart_items_path(course_id: course.id),
+                        method: :post,
+                        form: { data: { turbo: false } },
+                        class: "student-course__action student-course__action--cart",
+                        title: t("recommendations.add_to_cart") do %>
+            <i class="bi bi-cart-plus"></i>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</article>

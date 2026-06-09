@@ -5,6 +5,7 @@ class CartsController < ApplicationController
     @cart = current_cart
     @items = @cart.cart_items.includes(:course)
     @wishlists = current_user.wishlists.includes(:course).order(created_at: :desc)
+    set_cart_recommendations
   end
 
   def apply_coupon
@@ -80,5 +81,11 @@ class CartsController < ApplicationController
     else
       render json: { success: false, message: "Invalid or expired coupon code." }
     end
+  end
+
+  private
+
+  def set_cart_recommendations
+    @cart_recommendation_results = recommended_course_results(limit: 4)
   end
 end

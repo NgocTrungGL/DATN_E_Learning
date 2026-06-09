@@ -207,6 +207,7 @@
           </div>
         <% end %>
         </div>
+
       </section>
 
       <aside class="student-weekly-goal">
@@ -241,5 +242,25 @@
         </div>
       </aside>
     </div>
+
+    <% if @recommended_results.present? %>
+      <section class="student-recommendations">
+        <div class="student-card student-recommendations__card">
+          <div class="student-card__header">
+            <div>
+              <p class="student-card__kicker"><%= t("student.dashboard.recommendations.kicker") %></p>
+              <h2><%= t("student.dashboard.recommendations.title") %></h2>
+            </div>
+            <%= link_to t("student.dashboard.recommendations.browse_all"), courses_path, class: "student-card__link" %>
+          </div>
+
+          <div class="student-courses__grid">
+            <% @recommended_results.each do |result| %>
+              <%= render "student/dashboard/recommended_course", result: result %>
+            <% end %>
+          </div>
+        </div>
+      </section>
+    <% end %>
   </main>
 </div>

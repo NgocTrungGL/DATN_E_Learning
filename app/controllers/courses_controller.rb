@@ -8,6 +8,7 @@ class CoursesController < ApplicationController
     @featured_subcategories = Category.where("parent_id IS NOT NULL")
                                       .order(Category.random_order_sql)
                                       .limit(4)
+    set_recommended_courses
 
     respond_to do |format|
       format.html
@@ -31,6 +32,7 @@ class CoursesController < ApplicationController
     end
 
     @big_quizzes = @course.quizzes.big
+    set_related_recommendations
   end
 
   private
@@ -105,6 +107,18 @@ class CoursesController < ApplicationController
 
   def set_current_filters
     @current_filters = params.permit(:page, q: {}).to_h
+  end
+
+  def set_recommended_courses
+    return unless user_signed_in? && @page == 1
+
+    @recommended_results = recommended_course_results(limit: 4)
+  end
+
+  def set_related_recommendations
+    return unless user_signed_in?
+
+    @related_recommendation_results = recommended_course_results(limit: 4, exclude_course_ids: [@course.id])
   end
 
   # Page 1: 0. Page 2: 8. Page 3: 20. (8 + (page-2)*12)

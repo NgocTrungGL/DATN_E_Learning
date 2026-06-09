@@ -1,6 +1,7 @@
 class Organization < ApplicationRecord
   has_many :users, dependent: :nullify
   has_many :licenses, dependent: :destroy
+  has_many :invoices, dependent: :destroy
   enum plan: { free: 0, standard: 1, enterprise: 2 }
 
   validates :name, presence: true, uniqueness: true

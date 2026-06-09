@@ -146,7 +146,13 @@
           </div>
         </div>
       </div>
-      
+
+      <%= render "courses/recommendations",
+                 results: @cart_recommendation_results,
+                 kicker: t("recommendations.cart.kicker"),
+                 title: t("recommendations.cart.title"),
+                 modifier: "cart" %>
+
       <%# Wishlist Section inside layout so it sits under the main cart %>
       <% if @wishlists.any? %>
         <div class="cart-wishlist">
@@ -217,7 +223,13 @@
       <p class="cart-empty__text">Find the right course to level up your skills today.</p>
       <%= link_to "Explore courses", courses_path, class: "cart-empty__btn" %>
     </div>
-    
+
+    <%= render "courses/recommendations",
+               results: @cart_recommendation_results,
+               kicker: t("recommendations.cart.kicker"),
+               title: t("recommendations.cart.title"),
+               modifier: "cart-empty" %>
+
     <% if @wishlists.any? %>
       <div class="cart-wishlist" style="margin-top: 24px;">
         <div class="cart-wishlist__header">

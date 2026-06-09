@@ -122,6 +122,27 @@ q_params = (q.respond_to?(:permit) ? q.permit!.to_h : (q.is_a?(Hash) ? q : {}))
 
 <%# Flash Sale moved to header position %>
 
+<% if @recommended_results.present? %>
+  <section class="courses-recommendations-section">
+    <div class="courses-inner">
+      <div class="course-index-recommendations">
+        <div class="course-recommendations__header">
+          <div>
+            <p class="course-recommendations__kicker"><%= t("recommendations.index.kicker") %></p>
+            <h2><%= t("recommendations.index.title") %></h2>
+          </div>
+        </div>
+
+        <div class="courses-grid">
+          <% @recommended_results.each do |result| %>
+            <%= render "courses/course_card", course: result.course %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+<% end %>
+
 <%# ── Courses Grid ─────────────────────────────────────────── %>
 <section class="courses-grid-section">
   <div class="courses-inner">

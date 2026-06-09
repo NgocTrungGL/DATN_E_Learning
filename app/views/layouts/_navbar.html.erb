@@ -91,10 +91,30 @@
                 <% end %>
               </li>
               <li><hr class="dropdown-divider"></li>
-              <li><%= link_to "My Courses", my_courses_path, class: "dropdown-item mt-2" %></li>
-              <li><%= link_to "My Wishlist", wishlists_path, class: "dropdown-item" %></li>
-              <li><%= link_to "My Certificates", certificates_path, class: "dropdown-item" %></li>
-              <li><%= link_to "My Notes", my_notes_path, class: "dropdown-item" %></li>
+              <li>
+                <%= link_to my_courses_path, class: "dropdown-item d-flex align-items-center gap-2 mt-2" do %>
+                  <i class="bi bi-collection-play"></i>
+                  My Courses
+                <% end %>
+              </li>
+              <li>
+                <%= link_to wishlists_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-heart"></i>
+                  My Wishlist
+                <% end %>
+              </li>
+              <li>
+                <%= link_to certificates_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-award"></i>
+                  My Certificates
+                <% end %>
+              </li>
+              <li>
+                <%= link_to my_notes_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-journal-text"></i>
+                  My Notes
+                <% end %>
+              </li>
               <li>
                 <%= link_to subscriptions_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
                   <i class="bi bi-credit-card"></i>
@@ -106,16 +126,29 @@
                   <% end %>
                 <% end %>
               </li>
-              <li><%= link_to "Edit Profile", edit_user_registration_path, class: "dropdown-item" %></li>
+              <li>
+                <%= link_to edit_user_registration_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-person-gear"></i>
+                  Edit Profile
+                <% end %>
+              </li>
 
               <% if current_user.admin? %>
                 <li><hr class="dropdown-divider"></li>
-                <li><%= link_to "Admin Dashboard", admin_dashboard_path, class: "dropdown-item text-danger fw-bold" %></li>
+                <li>
+                  <%= link_to admin_dashboard_path, class: "dropdown-item d-flex align-items-center gap-2 text-danger fw-bold" do %>
+                    <i class="bi bi-shield-lock"></i>
+                    Admin Dashboard
+                  <% end %>
+                </li>
               <% end %>
 
               <li><hr class="dropdown-divider"></li>
               <li>
-                <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item text-start w-100" %>
+                <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-start w-100 d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-box-arrow-right"></i>
+                  Sign Out
+                <% end %>
               </li>
             </ul>
           </div>

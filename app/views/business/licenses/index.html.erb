@@ -1,136 +1,236 @@
-<div class="business-page">
-  <div class="business-page__header">
+<div class="business-page biz-licenses-page">
+  <div class="business-page__header biz-licenses-hero">
     <div>
+      <span class="biz-licenses-hero__eyebrow">Training seats</span>
       <h1 class="business-page__title">Course License Inventory</h1>
-      <p class="business-page__subtitle">Manage licenses for your organization's training courses</p>
+      <p class="business-page__subtitle">Assign purchased course seats to employees and monitor license availability.</p>
     </div>
+
+    <%= link_to business_course_market_index_path, class: "biz-licenses-hero__action" do %>
+      <i class="bi bi-plus-circle"></i>
+      Buy licenses
+    <% end %>
   </div>
 
-  <% if @licenses_by_course.any? %>
-    <div class="license-grid">
-      <% @licenses_by_course.each do |course, licenses| %>
-        <%
-          total_count = licenses.count
-          available_count = licenses.select(&:available?).count
-          assigned_count = total_count - available_count
-          expiring_count = licenses.select(&:expiring_soon?).count
-          progress_percent = total_count.positive? ? (assigned_count.to_f / total_count * 100).round : 0
-        %>
+  <div class="biz-stats-grid biz-stats-grid--4 biz-licenses-stats">
+    <article class="biz-stat-card">
+      <span class="biz-stat-card__icon biz-stat-card__icon--primary"><i class="bi bi-ticket-perforated"></i></span>
+      <span class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @license_stats[:total] %></span>
+        <span class="biz-stat-card__label">Total licenses</span>
+      </span>
+    </article>
 
-        <div class="license-card">
-          <div class="license-card__header">
-            <div class="license-card__course">
-              <div class="license-card__thumb">
-                <img src="<%= course.thumbnail_url.presence || 'https://via.placeholder.com/48x28/f0f2f5/aaa?text=No+Img' %>"
-                     alt="">
-              </div>
-              <div>
-                <h3 class="license-card__title"><%= course.title %></h3>
-                <span class="license-card__price">
-                  <i class="bi bi-tag"></i>
-                  <%= number_to_currency(licenses.first.price) %> / seat
-                </span>
-              </div>
-            </div>
-            <div class="license-card__badge-wrap">
-              <% if available_count > 0 %>
-                <span class="license-card__badge license-card__badge--success">
-                  <%= available_count %> available
-                </span>
-              <% else %>
-                <span class="license-card__badge license-card__badge--secondary">
-                  Sold out
-                </span>
-              <% end %>
-              <% if expiring_count > 0 %>
-                <span class="license-card__badge license-card__badge--warning">
-                  <i class="bi bi-clock"></i>
-                  <%= expiring_count %> expiring soon
-                </span>
-              <% end %>
-            </div>
-          </div>
+    <article class="biz-stat-card">
+      <span class="biz-stat-card__icon biz-stat-card__icon--success"><i class="bi bi-person-check"></i></span>
+      <span class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @license_stats[:assigned] %></span>
+        <span class="biz-stat-card__label">Assigned</span>
+      </span>
+    </article>
 
-          <div class="license-card__body">
-            <div class="license-card__progress-header">
-              <span><%= assigned_count %> / <%= total_count %> assigned</span>
-              <span><%= progress_percent %>%</span>
-            </div>
-            <div class="license-card__progress-bar">
-              <div class="license-card__progress-fill" style="width: <%= progress_percent %>%;"></div>
-            </div>
-          </div>
+    <article class="biz-stat-card">
+      <span class="biz-stat-card__icon biz-stat-card__icon--accent"><i class="bi bi-box-seam"></i></span>
+      <span class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @license_stats[:available] %></span>
+        <span class="biz-stat-card__label">Available</span>
+      </span>
+    </article>
 
-          <div class="license-card__assign">
-            <% if available_count > 0 %>
-              <label class="license-card__assign-label">Assign to employee:</label>
-              <div class="license-card__assign-form">
-                <%= form_with url: assign_business_licenses_path, method: :post do |f| %>
-                  <%= f.hidden_field :course_id, value: course.id %>
-                  <%= f.collection_select :user_id,
-                        current_user.organization.users.where(role: :student),
-                        :id, :name,
-                        { prompt: "Select employee..." },
-                        { class: "license-card__select", required: true } %>
-                  <%= f.button type: "submit", class: "btn btn-primary btn-sm" do %>
-                    <i class="bi bi-check-lg"></i> Assign
-                  <% end %>
-                <% end %>
-              </div>
+    <article class="biz-stat-card">
+      <span class="biz-stat-card__icon biz-stat-card__icon--warning"><i class="bi bi-clock-history"></i></span>
+      <span class="biz-stat-card__body">
+        <span class="biz-stat-card__value"><%= @license_stats[:expiring_soon] %></span>
+        <span class="biz-stat-card__label">Expiring soon</span>
+      </span>
+    </article>
+  </div>
+
+  <% if @license_course_groups.any? %>
+    <section class="biz-license-grid" aria-label="Course license inventory">
+      <% @license_course_groups.each do |group| %>
+        <% course = group[:course] %>
+
+        <article class="biz-license-card" data-controller="license-modal">
+          <div class="biz-license-card__media">
+            <% if course.thumbnail_url.present? %>
+              <img src="<%= course.thumbnail_url %>" alt="<%= course.title %>">
             <% else %>
-              <div class="license-card__alert">
-                <i class="bi bi-exclamation-circle"></i>
-                All licenses for this course have been assigned. Purchase more to assign additional employees.
+              <div class="biz-license-card__placeholder">
+                <i class="bi bi-play-circle"></i>
               </div>
             <% end %>
           </div>
 
-          <div class="license-card__assigned">
-            <button type="button" class="license-card__toggle"
-                    onclick="document.getElementById('list-<%= course.id %>').classList.toggle('license-card__list--open')">
-              <span>View assigned list (<%= assigned_count %>)</span>
-              <i class="bi bi-chevron-down"></i>
-            </button>
-            <ul id="list-<%= course.id %>" class="license-card__list">
-              <% licenses.select(&:assigned?).each do |lic| %>
-                <li class="license-card__list-item">
-                  <div class="license-card__list-avatar">
-                    <%= lic.user&.name&.first&.upcase || "?" %>
-                  </div>
-                  <div class="license-card__list-info">
-                    <span class="license-card__list-name"><%= lic.user&.name || "Unknown" %></span>
-                    <span class="license-card__list-date">
-                      <% if lic.expires_at %>
-                        Expires <%= lic.expires_at.strftime("%d %b %Y") %>
-                      <% else %>
-                        No expiry
-                      <% end %>
-                    </span>
-                  </div>
-                  <%= button_to revoke_business_license_path(lic),
-                                method: :post,
-                                form: { style: "display: inline;" },
-                                class: "license-card__list-revoke",
-                                data: { turbo_confirm: "Revoke license from #{lic.user&.name}?" } do %>
-                    <i class="bi bi-x-circle"></i>
-                  <% end %>
-                </li>
+          <div class="biz-license-card__content">
+            <div class="biz-license-card__topline">
+              <span class="biz-license-card__course-label"><%= course.category&.name || "Course" %></span>
+              <% if group[:available_count].positive? %>
+                <span class="biz-license-badge biz-license-badge--success"><%= group[:available_count] %> available</span>
+              <% else %>
+                <span class="biz-license-badge biz-license-badge--neutral">Fully assigned</span>
               <% end %>
-              <% if assigned_count == 0 %>
-                <li class="license-card__list-empty">No employees assigned yet.</li>
+            </div>
+
+            <h2 class="biz-license-card__title"><%= course.title %></h2>
+
+            <div class="biz-license-card__meta">
+              <span><i class="bi bi-tag"></i><%= number_to_currency(group[:price], unit: "VND", precision: 0, format: "%n %u") %> / seat</span>
+              <% if group[:expiring_count].positive? %>
+                <span class="biz-license-card__warning"><i class="bi bi-clock"></i><%= group[:expiring_count] %> expiring soon</span>
               <% end %>
-            </ul>
+            </div>
+
+            <div class="biz-license-usage">
+              <div class="biz-license-usage__row">
+                <span><%= group[:assigned_count] %> of <%= group[:total_count] %> assigned</span>
+                <strong><%= group[:progress_percent] %>%</strong>
+              </div>
+              <progress class="biz-license-usage__bar" value="<%= group[:assigned_count] %>" max="<%= group[:total_count] %>"></progress>
+            </div>
+
+            <div class="biz-license-card__actions">
+              <% if group[:available_count].positive? && @employees.any? %>
+                <button type="button"
+                        class="biz-license-card__button biz-license-card__button--primary"
+                        data-action="click->license-modal#open"
+                        data-license-modal-panel-param="assign">
+                  <i class="bi bi-person-plus"></i>
+                  Assign employee
+                </button>
+              <% elsif group[:available_count].positive? %>
+                <button type="button"
+                        class="biz-license-card__button biz-license-card__button--primary"
+                        data-action="click->license-modal#open"
+                        data-license-modal-panel-param="assign">
+                  <i class="bi bi-person-plus"></i>
+                  Assign employee
+                </button>
+              <% else %>
+                <%= link_to business_course_market_index_path,
+                      class: "biz-license-card__button biz-license-card__button--primary" do %>
+                  <i class="bi bi-plus-circle"></i>
+                  Buy more
+                <% end %>
+              <% end %>
+
+              <button type="button"
+                      class="biz-license-card__button biz-license-card__button--ghost"
+                      data-action="click->license-modal#open"
+                      data-license-modal-panel-param="employees">
+                <i class="bi bi-people"></i>
+                View employees
+              </button>
+            </div>
           </div>
-        </div>
+
+          <div class="biz-license-modal" data-license-modal-target="modal" aria-hidden="true">
+            <div class="biz-license-modal__backdrop" data-action="click->license-modal#close"></div>
+            <div class="biz-license-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="license-modal-title-<%= course.id %>">
+              <div class="biz-license-modal__header">
+                <div>
+                  <span class="biz-license-modal__eyebrow"><%= course.category&.name || "Course" %></span>
+                  <h2 id="license-modal-title-<%= course.id %>"><%= course.title %></h2>
+                </div>
+                <button type="button" class="biz-license-modal__close" aria-label="Close" data-action="click->license-modal#close">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+
+              <div class="biz-license-modal__body">
+                <section class="biz-license-modal__panel" data-license-modal-target="assignPanel">
+                  <div class="biz-license-modal__section-head">
+                    <span class="biz-license-modal__icon"><i class="bi bi-person-plus"></i></span>
+                    <div>
+                      <h3>Assign employee</h3>
+                      <p><%= group[:available_count] %> available license<%= "s" unless group[:available_count] == 1 %> for this course.</p>
+                    </div>
+                  </div>
+
+                  <% if group[:available_count].positive? %>
+                    <% if @employees.any? %>
+                      <%= form_with url: assign_business_licenses_path, method: :post, class: "biz-license-assignment__form" do |f| %>
+                        <%= f.hidden_field :course_id, value: course.id %>
+                        <div class="biz-license-assignment__field">
+                          <%= f.label :user_id, "Employee" %>
+                          <%= f.collection_select :user_id,
+                                @employees,
+                                :id,
+                                :name,
+                                { prompt: "Select employee..." },
+                                { class: "biz-license-assignment__select", required: true } %>
+                        </div>
+                        <%= f.button type: "submit", class: "biz-license-assignment__button" do %>
+                          <i class="bi bi-check-lg"></i>
+                          Assign license
+                        <% end %>
+                      <% end %>
+                    <% else %>
+                      <div class="biz-license-alert">
+                        <i class="bi bi-person-plus"></i>
+                        Add employees before assigning available licenses.
+                      </div>
+                    <% end %>
+                  <% else %>
+                    <div class="biz-license-alert">
+                      <i class="bi bi-exclamation-circle"></i>
+                      All seats for this course are assigned. Purchase more licenses to continue.
+                    </div>
+                  <% end %>
+                </section>
+
+                <section class="biz-license-modal__panel" data-license-modal-target="employeesPanel">
+                  <div class="biz-license-modal__section-head">
+                    <span class="biz-license-modal__icon"><i class="bi bi-people"></i></span>
+                    <div>
+                      <h3>Assigned employees</h3>
+                      <p><%= group[:assigned_count] %> of <%= group[:total_count] %> seats are currently assigned.</p>
+                    </div>
+                  </div>
+
+                  <div class="biz-license-assigned__list">
+                    <% if group[:assigned_licenses].any? %>
+                      <% group[:assigned_licenses].each do |license| %>
+                        <div class="biz-license-assigned__item">
+                          <span class="biz-license-assigned__avatar"><%= license.user&.name&.first&.upcase || "?" %></span>
+                          <span class="biz-license-assigned__body">
+                            <strong><%= license.user&.name || "Unknown employee" %></strong>
+                            <small>
+                              <% if license.expires_at.present? %>
+                                Expires <%= license.expires_at.strftime("%d %b %Y") %>
+                              <% else %>
+                                No expiry date
+                              <% end %>
+                            </small>
+                          </span>
+                          <%= button_to revoke_business_license_path(license),
+                                method: :post,
+                                class: "biz-license-assigned__revoke",
+                                data: { turbo_confirm: "Revoke license from #{license.user&.name}?" } do %>
+                            <i class="bi bi-x-circle"></i>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      <div class="biz-license-assigned__empty">No employees assigned yet.</div>
+                    <% end %>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </article>
       <% end %>
-    </div>
+    </section>
   <% else %>
-    <div class="biz-card">
-      <div class="inst-empty" style="padding: 3rem; text-align: center;">
-        <i class="bi bi-ticket-perforated" style="font-size: 3rem;"></i>
-        <p style="margin-top: 1rem; color: #94a3b8;">You have not purchased any licenses yet.</p>
-        <p style="color: #94a3b8; font-size: 0.875rem;">Contact your administrator to purchase a training package.</p>
-      </div>
-    </div>
+    <section class="biz-license-empty">
+      <div class="biz-license-empty__icon"><i class="bi bi-ticket-perforated"></i></div>
+      <h2>No licenses purchased yet</h2>
+      <p>Purchase course licenses from the training marketplace before assigning courses to employees.</p>
+      <%= link_to business_course_market_index_path, class: "biz-licenses-hero__action" do %>
+        <i class="bi bi-shop"></i>
+        Browse course market
+      <% end %>
+    </section>
   <% end %>
 </div>

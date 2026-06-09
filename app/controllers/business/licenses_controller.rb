@@ -4,7 +4,12 @@ class Business::LicensesController < ApplicationController
   layout "business"
 
   def index
-    @licenses_by_course = current_user.organization.licenses.group_by(&:course)
+    @organization = current_user.organization
+    @employees = @organization.users.where(role: %i[student employee]).order(:name)
+    licenses = @organization.licenses.includes(:course, :user).order(created_at: :desc)
+
+    @license_stats = build_license_stats(licenses)
+    @license_course_groups = build_license_course_groups(licenses)
   end
 
   def assign
@@ -80,5 +85,35 @@ class Business::LicensesController < ApplicationController
 
   def redirect_error
     redirect_to business_licenses_path, alert: "Có lỗi xảy ra."
+  end
+
+  def build_license_stats licenses
+    {
+      total: licenses.size,
+      assigned: licenses.count(&:assigned?),
+      available: licenses.count(&:available?),
+      expiring_soon: licenses.count(&:expiring_soon?)
+    }
+  end
+
+  def build_license_course_groups licenses
+    licenses.group_by(&:course).map do |course, course_licenses|
+      total_count = course_licenses.size
+      available_count = course_licenses.count(&:available?)
+      assigned_licenses = course_licenses.select(&:assigned?)
+      expiring_count = course_licenses.count(&:expiring_soon?)
+
+      {
+        course:,
+        licenses: course_licenses,
+        total_count:,
+        available_count:,
+        assigned_count: assigned_licenses.size,
+        assigned_licenses:,
+        expiring_count:,
+        price: course_licenses.first&.price.to_f,
+        progress_percent: total_count.positive? ? (assigned_licenses.size.to_f / total_count * 100).round : 0
+      }
+    end.sort_by { |group| [group[:available_count].zero? ? 1 : 0, group[:course].title.to_s] }
   end
 end
