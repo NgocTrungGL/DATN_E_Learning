@@ -21,7 +21,7 @@ class Admin::CouponsController < Admin::BaseController
 
     if @coupon.save
       redirect_to admin_coupons_path,
-                  notice: "Mã giảm giá đã được tạo thành công."
+                  notice: "Coupon was created successfully."
     else
       @courses = Course.all
       render :new, status: :unprocessable_entity
@@ -30,7 +30,7 @@ class Admin::CouponsController < Admin::BaseController
 
   def update
     if @coupon.update(coupon_params)
-      redirect_to admin_coupons_path, notice: "Mã giảm giá đã được cập nhật."
+      redirect_to admin_coupons_path, notice: "Coupon was updated successfully."
     else
       @courses = Course.all
       render :edit, status: :unprocessable_entity
@@ -39,7 +39,7 @@ class Admin::CouponsController < Admin::BaseController
 
   def destroy
     @coupon.destroy
-    redirect_to admin_coupons_path, notice: "Mã giảm giá đã được xóa."
+    redirect_to admin_coupons_path, notice: "Coupon was deleted successfully."
   end
 
   private

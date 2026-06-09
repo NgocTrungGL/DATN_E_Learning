@@ -1,6 +1,7 @@
 <%# Admin Courses Index — Premium Table-based Redesign %>
 
 <div class="crs-page">
+  <% search_value = params[:q].is_a?(ActionController::Parameters) ? params.dig(:q, :title_or_description_cont).to_s : "" %>
 
   <%# ── Page Header ──────────────────────────────────────────── %>
   <header class="crs-page__header">
@@ -26,6 +27,31 @@
       <% end %>
     </div>
   </header>
+
+  <%# ── Search Bar ───────────────────────────────────────────── %>
+  <section class="crs-search-card" aria-label="Course search">
+    <%= search_form_for @q, url: admin_courses_path, method: :get, html: { class: "crs-search-form" } do |f| %>
+      <div class="crs-search-form__field">
+        <i class="bi bi-search"></i>
+        <%= f.search_field :title_or_description_cont,
+              class: "crs-search-form__input",
+              placeholder: t("admin.courses.index.search_placeholder"),
+              autocomplete: "off" %>
+      </div>
+
+      <button type="submit" class="crs-search-form__submit">
+        <i class="bi bi-search"></i>
+        <span><%= t("admin.courses.index.search_button") %></span>
+      </button>
+
+      <% if search_value.present? %>
+        <%= link_to admin_courses_path, class: "crs-search-form__clear" do %>
+          <i class="bi bi-x-lg"></i>
+          <span><%= t("admin.courses.index.clear_search") %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
 
   <%# ── Table Card ───────────────────────────────────────────── %>
   <% if @courses.any? %>
@@ -119,11 +145,20 @@
       <div class="crs-empty__icon">
         <i class="bi bi-journal-bookmark"></i>
       </div>
-      <h3><%= t('admin.courses.index.empty_title') %></h3>
-      <p><%= t('admin.courses.index.empty_text') %></p>
-      <%= link_to new_admin_course_path, class: 'crs-page__cta' do %>
-        <i class="bi bi-plus-lg"></i>
-        <span><%= t('admin.courses.index.new_course') %></span>
+      <% if search_value.present? %>
+        <h3><%= t('admin.courses.index.empty_search_title') %></h3>
+        <p><%= t('admin.courses.index.empty_search_text', query: search_value) %></p>
+        <%= link_to admin_courses_path, class: 'crs-page__cta' do %>
+          <i class="bi bi-arrow-counterclockwise"></i>
+          <span><%= t('admin.courses.index.clear_search') %></span>
+        <% end %>
+      <% else %>
+        <h3><%= t('admin.courses.index.empty_title') %></h3>
+        <p><%= t('admin.courses.index.empty_text') %></p>
+        <%= link_to new_admin_course_path, class: 'crs-page__cta' do %>
+          <i class="bi bi-plus-lg"></i>
+          <span><%= t('admin.courses.index.new_course') %></span>
+        <% end %>
       <% end %>
     </div>
   <% end %>

@@ -1,35 +1,37 @@
-<div class="container mt-5">
-  <div class="card shadow-sm mx-auto" style="max-width: 600px;">
-    <div class="card-header bg-white text-center py-4">
-      <h3 class="fw-bold mb-0">Application Status</h3>
-    </div>
+<main class="instructor-apply instructor-apply--status">
+  <section class="instructor-status">
+    <%= link_to root_path, class: "instructor-status__brand" do %>
+      <i class="bi bi-mortarboard-fill"></i>
+      <span>E-Learning Instructor</span>
+    <% end %>
 
-    <div class="card-body text-center p-5">
-      <% if @profile.pending? %>
-        <i class="bi bi-hourglass-split display-1 text-warning mb-3"></i>
-        <h4 class="fw-bold text-warning">Pending review</h4>
-        <p class="text-muted mt-3">
-          Your application has been submitted successfully.<br>
-          Please wait for admin review (typically 24h).
-        </p>
-
-      <% elsif @profile.approved? %>
-        <i class="bi bi-check-circle-fill display-1 text-success mb-3"></i>
-        <h4 class="fw-bold text-success">Approved!</h4>
-        <p class="text-muted mt-3">Congratulations, you are now an instructor.</p>
-        <div class="mt-4">
-          <%= link_to "Go to Instructor Dashboard", instructor_root_path, class: "btn btn-primary fw-bold px-4" %>
-        </div>
-
-      <% elsif @profile.rejected? %>
-        <i class="bi bi-x-circle-fill display-1 text-danger mb-3"></i>
-        <h4 class="fw-bold text-danger">Application rejected</h4>
-        <p class="text-muted mt-3">Sorry, your application was not approved.</p>
+    <% if @profile.pending? %>
+      <div class="instructor-status__icon instructor-status__icon--pending">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+      <span class="instructor-status__eyebrow">Application submitted</span>
+      <h1>Pending review</h1>
+      <p>Your application has been submitted successfully. The admin team usually reviews instructor applications within 24 hours.</p>
+    <% elsif @profile.approved? %>
+      <div class="instructor-status__icon instructor-status__icon--approved">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <span class="instructor-status__eyebrow">Welcome aboard</span>
+      <h1>Application approved</h1>
+      <p>Congratulations, you are now an instructor. You can start building and managing your courses.</p>
+      <%= link_to instructor_root_path, class: "instructor-status__cta" do %>
+        <i class="bi bi-speedometer2"></i>
+        Go to Instructor Dashboard
       <% end %>
-    </div>
+    <% elsif @profile.rejected? %>
+      <div class="instructor-status__icon instructor-status__icon--rejected">
+        <i class="bi bi-x-circle-fill"></i>
+      </div>
+      <span class="instructor-status__eyebrow">Review complete</span>
+      <h1>Application rejected</h1>
+      <p>Your application was not approved. You can contact support if you need more details about the review.</p>
+    <% end %>
 
-    <div class="card-footer bg-light text-center py-3">
-      <%= link_to "Back to homepage", root_path, class: "text-decoration-none text-muted small" %>
-    </div>
-  </div>
-</div>
+    <%= link_to "Back to homepage", root_path, class: "instructor-status__link" %>
+  </section>
+</main>

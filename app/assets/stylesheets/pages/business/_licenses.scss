@@ -1,261 +1,645 @@
 // ============================================================
 // BUSINESS LICENSES PAGE
+// Blocks: .biz-licenses, .biz-license-card, .biz-license-assignment
 // ============================================================
 
-.license-grid {
+.biz-licenses-page {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 1.5rem;
+}
+
+.biz-licenses-hero {
+  align-items: center;
+  margin-bottom: 0;
+
+  &__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0.35rem;
+    color: $primary;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__action {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    border-radius: $radius-md;
+    background: $primary;
+    color: $white;
+    font-size: 0.86rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: $shadow-blue;
+    transition: $t;
+    white-space: nowrap;
+
+    &:hover {
+      background: $primary-dark;
+      color: $white;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.biz-licenses-stats {
+  margin-bottom: 0.25rem;
+}
+
+.biz-stat-card__icon {
+  &--primary { background: rgba($primary, 0.1); color: $primary; }
+  &--success { background: $success-light; color: $success; }
+  &--accent { background: $accent-light; color: $accent; }
+  &--warning { background: $warning-light; color: darken($warning, 8%); }
+}
+
+.biz-license-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  align-items: start;
   gap: 1.25rem;
 
-  @media (max-width: 640px) {
+  @media (max-width: 680px) {
     grid-template-columns: 1fr;
   }
 }
 
-.license-card {
+.biz-license-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   background: $surface;
+  border: 1px solid $border;
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
-  border: 1px solid $border;
+  overflow: visible;
+  transition: $t;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+.biz-license-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: $radius-lg $radius-lg 0 0;
+  background: $bg;
   overflow: hidden;
-  transition: box-shadow 0.2s;
 
-  &:hover { box-shadow: $shadow-md; }
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 1.25rem 1.25rem 0;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+  img,
+  .biz-license-card__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
+}
 
-  &__course {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
+.biz-license-card__placeholder {
+  display: grid;
+  place-items: center;
+  color: $text-muted;
+  font-size: 2.6rem;
+  background: linear-gradient(135deg, #e2e8f0, #f8fafc);
+}
 
-  &__thumb {
-    width: 48px;
-    height: 28px;
-    border-radius: $radius-sm;
-    overflow: hidden;
-    background: #f1f5f9;
-    flex-shrink: 0;
+.biz-license-card__content {
+  display: grid;
+  gap: 1rem;
+  flex: 1;
+  padding: 1.15rem;
+}
 
-    img { width: 100%; height: 100%; object-fit: cover; }
-  }
+.biz-license-card__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
 
-  &__title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: $text-dark;
-    margin: 0 0 0.25rem;
-  }
+.biz-license-card__course-label {
+  color: $primary;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
 
-  &__price {
-    font-size: 0.78rem;
-    color: $text-muted;
+.biz-license-card__title {
+  margin: -0.25rem 0 0;
+  color: $text-dark;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
 
-    i { margin-right: 0.25rem; }
-  }
+.biz-license-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  color: $text-muted;
+  font-size: 0.8rem;
+  font-weight: 700;
 
-  &__badge-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    align-items: flex-end;
-  }
-
-  &__badge {
+  span {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    white-space: nowrap;
+    gap: 0.35rem;
+  }
+}
 
-    &--success { background: rgba($success, 0.1); color: $success; }
-    &--warning { background: rgba($warning, 0.1); color: darken($warning, 5%); }
-    &--secondary { background: #f1f5f9; color: $text-mid; }
+.biz-license-card__warning {
+  color: darken($warning, 10%);
+}
+
+.biz-license-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+
+  &--success {
+    background: $success-light;
+    color: $success;
   }
 
-  &__body {
-    padding: 1rem 1.25rem;
-  }
-
-  &__progress-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    color: $text-muted;
-    font-weight: 500;
-    margin-bottom: 0.4rem;
-  }
-
-  &__progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #f1f5f9;
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  &__progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, $primary, lighten($primary, 10%));
-    border-radius: 3px;
-    transition: width 0.3s ease;
-  }
-
-  &__assign {
-    padding: 0 1.25rem 1rem;
-    border-top: 1px solid $border;
-    padding-top: 1rem;
-  }
-
-  &__assign-label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: $text-muted;
-    margin-bottom: 0.5rem;
-  }
-
-  &__assign-form {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  &__select {
-    flex: 1;
-    min-width: 160px;
-    padding: 0.4rem 0.75rem;
-    border: 1.5px solid $border;
-    border-radius: $radius-md;
-    font-size: 0.82rem;
-    background: $bg;
-    color: $text-dark;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.15s;
-
-    &:focus { border-color: $primary; }
-  }
-
-  &__alert {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    color: darken($warning, 10%);
-    background: rgba($warning, 0.08);
-    border: 1px solid rgba($warning, 0.2);
-    border-radius: $radius-md;
-    padding: 0.75rem;
-
-    i { flex-shrink: 0; margin-top: 0.1rem; }
-  }
-
-  &__assigned {
-    border-top: 1px solid $border;
-  }
-
-  &__toggle {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1.25rem;
-    font-size: 0.82rem;
-    font-weight: 600;
+  &--neutral {
+    background: rgba($text-muted, 0.12);
     color: $text-mid;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: color 0.15s;
+  }
+}
 
-    i { transition: transform 0.2s; }
+.biz-license-usage {
+  display: grid;
+  gap: 0.45rem;
+}
 
-    &:hover { color: $primary; }
+.biz-license-usage__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: $text-muted;
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  strong {
+    color: $text-dark;
+    font-weight: 900;
+  }
+}
+
+.biz-license-usage__bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: $bg;
+
+  &::-webkit-progress-bar {
+    background: $bg;
+    border-radius: 999px;
   }
 
-  &__list {
-    list-style: none;
-    margin: 0;
-    padding: 0 1.25rem 1rem;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s ease;
+  &::-webkit-progress-value {
+    background: linear-gradient(90deg, $primary, $accent);
+    border-radius: 999px;
+  }
 
-    &--open { max-height: 400px; }
+  &::-moz-progress-bar {
+    background: linear-gradient(90deg, $primary, $accent);
+    border-radius: 999px;
+  }
+}
 
-    &-item {
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f1f5f9;
+.biz-license-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: auto;
 
-      &:last-child { border-bottom: none; }
+  @media (max-width: 430px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.biz-license-card__button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: $radius-md;
+  font-size: 0.84rem;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+  transition: $t;
+
+  &--primary {
+    border: 0;
+    background: $primary;
+    color: $white;
+    box-shadow: 0 12px 26px rgba($primary, 0.18);
+
+    &:hover {
+      background: $primary-dark;
+      color: $white;
+      transform: translateY(-1px);
     }
+  }
 
-    &-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba($primary, 0.12);
+  &--ghost {
+    border: 1px solid $border;
+    background: $surface;
+    color: $text-mid;
+
+    &:hover {
+      border-color: rgba($primary, 0.35);
       color: $primary;
-      font-size: 0.7rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    &-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-
-    &-name {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: $text-dark;
-    }
-
-    &-date {
-      font-size: 0.72rem;
-      color: $text-muted;
-    }
-
-    &-empty {
-      font-size: 0.82rem;
-      color: $text-muted;
-      padding: 0.5rem 0;
-    }
-
-    &-revoke {
-      margin-left: auto;
-      background: none;
-      border: none;
-      color: #94a3b8;
-      cursor: pointer;
-      padding: 0.25rem;
-      border-radius: 4px;
-      font-size: 1rem;
-      transition: color 0.15s, background 0.15s;
-      flex-shrink: 0;
-
-      &:hover { color: $danger; background: rgba($danger, 0.08); }
+      background: rgba($primary, 0.05);
     }
   }
+}
+
+.biz-license-assignment__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.biz-license-assignment__field {
+  display: grid;
+  gap: 0.35rem;
+
+  label {
+    color: $text-mid;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+}
+
+.biz-license-assignment__select {
+  width: 100%;
+  height: 42px;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  background: $surface;
+  color: $text-dark;
+  font-size: 0.86rem;
+  font-weight: 650;
+  outline: none;
+  padding: 0 0.75rem;
+  transition: $t;
+
+  &:focus {
+    border-color: rgba($primary, 0.7);
+    box-shadow: 0 0 0 4px rgba($primary, 0.1);
+  }
+}
+
+.biz-license-assignment__button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 0;
+  border-radius: $radius-md;
+  background: $primary;
+  color: $white;
+  font-size: 0.84rem;
+  font-weight: 900;
+  padding: 0 0.95rem;
+  cursor: pointer;
+  transition: $t;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+.biz-license-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.95rem;
+  border: 1px solid rgba($warning, 0.22);
+  border-radius: $radius-md;
+  background: rgba($warning, 0.08);
+  color: darken($warning, 12%);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.45;
+
+  i {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+}
+
+.biz-license-assigned {
+  border-top: 1px solid $border;
+  padding-top: 0.15rem;
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: $text-mid;
+    font-size: 0.83rem;
+    font-weight: 900;
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    i {
+      transition: transform 0.18s ease;
+    }
+  }
+
+  &[open] summary i {
+    transform: rotate(180deg);
+  }
+}
+
+.biz-license-assigned__list {
+  display: grid;
+  gap: 0.65rem;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.biz-license-assigned__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $bg;
+}
+
+.biz-license-assigned__avatar {
+  width: 34px;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba($primary, 0.12);
+  color: $primary;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.biz-license-assigned__body {
+  min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+
+  strong {
+    color: $text-dark;
+    font-size: 0.86rem;
+    font-weight: 850;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color: $text-muted;
+    font-size: 0.73rem;
+    font-weight: 650;
+  }
+}
+
+.biz-license-assigned__revoke {
+  width: 34px;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba($danger, 0.18);
+  border-radius: $radius-md;
+  background: $surface;
+  color: $danger;
+  cursor: pointer;
+  transition: $t;
+
+  &:hover {
+    background: $danger-light;
+  }
+}
+
+.biz-license-assigned__empty {
+  color: $text-muted;
+  font-size: 0.84rem;
+  font-weight: 650;
+  padding: 0.5rem 0;
+}
+
+.biz-license-empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 4rem 1.5rem;
+  border: 1px dashed rgba($primary, 0.28);
+  border-radius: $radius-lg;
+  background: $surface;
+  text-align: center;
+  box-shadow: $shadow-sm;
+
+  h2 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 0 0 0.5rem;
+    max-width: 32rem;
+    color: $text-muted;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+}
+
+.biz-license-empty__icon {
+  width: 70px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: $radius-lg;
+  background: $primary-light;
+  color: $primary;
+  font-size: 2rem;
+}
+
+body.biz-license-modal-open {
+  overflow: hidden;
+}
+
+.biz-license-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+
+  &.is-open {
+    display: flex;
+  }
+}
+
+.biz-license-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.54);
+  backdrop-filter: blur(8px);
+}
+
+.biz-license-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(100vh - 2.5rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba($border, 0.9);
+  border-radius: $radius-lg;
+  background: $surface;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.24);
+}
+
+.biz-license-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.35rem 1.5rem;
+  border-bottom: 1px solid $border;
+  background: linear-gradient(180deg, $surface, $bg);
+
+  h2 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 1.25rem;
+    font-weight: 950;
+    line-height: 1.25;
+  }
+}
+
+.biz-license-modal__eyebrow {
+  display: inline-flex;
+  margin-bottom: 0.35rem;
+  color: $primary;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.biz-license-modal__close {
+  width: 40px;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $surface;
+  color: $text-mid;
+  cursor: pointer;
+  transition: $t;
+
+  &:hover {
+    color: $danger;
+    border-color: rgba($danger, 0.22);
+    background: $danger-light;
+  }
+}
+
+.biz-license-modal__body {
+  display: grid;
+  gap: 1rem;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.biz-license-modal__panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $bg;
+
+  &.is-hidden {
+    display: none;
+  }
+}
+
+.biz-license-modal__section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+
+  h3 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 0.98rem;
+    font-weight: 950;
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    color: $text-muted;
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.45;
+  }
+}
+
+.biz-license-modal__icon {
+  width: 38px;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: $radius-md;
+  background: rgba($primary, 0.1);
+  color: $primary;
 }

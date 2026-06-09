@@ -114,6 +114,21 @@ module ApplicationHelper
     )
   end
 
+  def admin_bar_chart_without_labels_library
+    admin_base_chart_library.deep_merge(
+      scales: {
+        xAxes: [{
+          gridLines: { display: false, drawBorder: false },
+          ticks: { display: false }
+        }],
+        yAxes: [{
+          gridLines: { color: admin_chart_axis_color, drawBorder: false, zeroLineColor: admin_chart_axis_color },
+          ticks: { beginAtZero: true, fontColor: admin_chart_tick_color, fontSize: 11, precision: 0 }
+        }]
+      }
+    )
+  end
+
   private
 
   def instructor_base_chart_library

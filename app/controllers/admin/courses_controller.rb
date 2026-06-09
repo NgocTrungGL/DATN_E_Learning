@@ -1,8 +1,10 @@
 class Admin::CoursesController < Admin::BaseController
   def index
+    @q = Course.includes(:category, :creator).ransack(course_search_params)
+
     @pagy, @courses = pagy(
-      Course.includes(:category, :creator)
-            .order(status: :asc, created_at: :desc).recent
+      @q.result(distinct: true)
+        .order(status: :asc, created_at: :desc)
     )
   end
 
@@ -73,6 +75,12 @@ class Admin::CoursesController < Admin::BaseController
   end
 
   private
+
+  def course_search_params
+    return {} unless params[:q].is_a?(ActionController::Parameters)
+
+    params.require(:q).permit(:title_or_description_cont)
+  end
 
   def set_course
     @course = Course.find_by(id: params[:id])

@@ -1,0 +1,333 @@
+// ============================================================
+// B2B REGISTRATION
+// Blocks: .b2b-register, .b2b-register-form, .b2b-register-field
+// ============================================================
+
+.b2b-register {
+  min-height: calc(100vh - 72px);
+  padding: 2.5rem;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94)),
+    linear-gradient(180deg, $bg, $white);
+  display: grid;
+  place-items: center;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.b2b-register__shell {
+  width: 100%;
+  max-width: 1180px;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.15fr);
+  border: 1px solid rgba($white, 0.12);
+  border-radius: $radius-xl;
+  overflow: hidden;
+  background: $white;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.b2b-register__intro {
+  min-height: 720px;
+  padding: 2rem;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.92)),
+    image-url("auth.jpg");
+  background-color: $bg-dark;
+  background-position: center;
+  background-size: cover;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+
+  @media (max-width: 960px) {
+    min-height: auto;
+  }
+}
+
+.b2b-register__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: $white;
+  text-decoration: none;
+  font-size: 0.98rem;
+  font-weight: 900;
+
+  i {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    background: rgba($primary, 0.95);
+    box-shadow: $shadow-blue;
+  }
+}
+
+.b2b-register__intro-copy {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 30rem;
+
+  h1 {
+    margin: 0;
+    color: $white;
+    font-size: clamp(2rem, 4vw, 3.35rem);
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+    color: rgba($white, 0.76);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+}
+
+.b2b-register__eyebrow {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba($white, 0.18);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  background: rgba($white, 0.08);
+  color: rgba($white, 0.82);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.b2b-register__benefits {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.b2b-register__benefit {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid rgba($white, 0.12);
+  border-radius: $radius-md;
+  background: rgba($white, 0.08);
+  color: rgba($white, 0.9);
+  font-size: 0.9rem;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+
+  i {
+    color: $success;
+    font-size: 1.05rem;
+  }
+}
+
+.b2b-register__form-panel {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: $white;
+}
+
+.b2b-register__form-header {
+  margin-bottom: 1.5rem;
+
+  h2 {
+    margin: 0.35rem 0 0.35rem;
+    color: $text-dark;
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 0;
+    color: $text-muted;
+    font-size: 0.95rem;
+  }
+}
+
+.b2b-register__step-label {
+  color: $primary;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.b2b-register-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.b2b-register-form__section {
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  background: $white;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.b2b-register-form__section-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  padding: 1rem 1.15rem;
+  background: $bg;
+  border-bottom: 1px solid $border;
+
+  > span {
+    width: 32px;
+    aspect-ratio: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: $primary;
+    color: $white;
+    font-size: 0.8rem;
+    font-weight: 900;
+  }
+
+  h3 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 0.98rem;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 0.15rem 0 0;
+    color: $text-muted;
+    font-size: 0.8rem;
+  }
+}
+
+.b2b-register-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1.15rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.b2b-register-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.b2b-register-field__label {
+  color: $text-mid;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.b2b-register-field__input {
+  width: 100%;
+  height: 46px;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  background: $bg;
+  color: $text-dark;
+  font-size: 0.92rem;
+  font-weight: 650;
+  outline: none;
+  padding: 0 0.9rem;
+  transition: $t;
+
+  &::placeholder {
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  &:focus {
+    border-color: rgba($primary, 0.7);
+    background: $white;
+    box-shadow: 0 0 0 4px rgba($primary, 0.1);
+  }
+}
+
+.b2b-register-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba($danger, 0.22);
+  border-radius: $radius-md;
+  background: $danger-light;
+  color: darken($danger, 8%);
+  font-size: 0.86rem;
+
+  i {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  ul {
+    margin: 0.35rem 0 0;
+    padding-left: 1.2rem;
+  }
+}
+
+.b2b-register-form__actions {
+  display: grid;
+  gap: 0.9rem;
+  justify-items: center;
+  padding-top: 0.35rem;
+
+  p {
+    margin: 0;
+    color: $text-muted;
+    font-size: 0.88rem;
+
+    a {
+      color: $primary;
+      font-weight: 800;
+      text-decoration: none;
+
+      &:hover {
+        color: $primary-dark;
+      }
+    }
+  }
+}
+
+.b2b-register-submit {
+  width: 100%;
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border: 0;
+  border-radius: $radius-md;
+  background: $primary;
+  color: $white;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: $shadow-blue;
+  transition: $t;
+
+  &:hover {
+    background: $primary-dark;
+    transform: translateY(-1px);
+  }
+}

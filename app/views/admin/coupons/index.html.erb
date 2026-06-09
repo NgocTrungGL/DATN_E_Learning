@@ -1,95 +1,149 @@
-<div class="cat-page">
-  <header class="cat-page__header">
-    <div class="cat-page__header-left">
-      <div class="cat-page__breadcrumb">
+<div class="admin-page-header admin-coupons-hero">
+  <div class="admin-page-header__inner">
+    <div>
+      <div class="admin-page-header__badge">
         <i class="bi bi-ticket-perforated-fill"></i>
-        <span>Promotions</span>
+        Promotions
       </div>
-      <h1 class="cat-page__title">Coupon management</h1>
-      <p class="cat-page__subtitle">Create and manage promotions sitewide or for specific courses.</p>
+      <h1 class="admin-page-header__title">Coupon Management</h1>
+      <p class="admin-coupons-hero__subtitle">Create and manage platform-wide or course-specific promotions.</p>
     </div>
 
-    <div class="cat-page__header-right">
-      <%= link_to new_admin_coupon_path, class: 'cat-page__cta' do %>
-        <i class="bi bi-plus-lg"></i>
-        <span>Add new code</span>
-      <% end %>
-    </div>
-  </header>
+    <%= link_to new_admin_coupon_path, class: "admin-coupons-action" do %>
+      <i class="bi bi-plus-lg"></i>
+      Add Coupon
+    <% end %>
+  </div>
+</div>
 
-  <div class="cat-table-card">
-    <table class="cat-table">
-      <thead>
-        <tr>
-          <th class="cat-table__th">Code</th>
-          <th class="cat-table__th">Type</th>
-          <th class="cat-table__th">Value</th>
-          <th class="cat-table__th">Scope</th>
-          <th class="cat-table__th">Validity</th>
-          <th class="cat-table__th">Status</th>
-          <th class="cat-table__th">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if @coupons.any? %>
-          <% @coupons.each do |coupon| %>
-            <tr class="cat-table__row">
-              <td class="cat-table__td">
-                <span class="fw-bold text-primary"><%= coupon.code %></span>
-              </td>
-              <td class="cat-table__td">
-                <%= coupon.percentage? ? "Percentage (%)" : "Fixed amount (VND)" %>
-              </td>
-              <td class="cat-table__td">
-                <%= coupon.percentage? ? "#{coupon.discount_value}%" : number_to_currency(coupon.discount_value, unit: "VND", precision: 0, format: "%n %u") %>
-              </td>
-              <td class="cat-table__td">
-                <% if coupon.global? %>
-                  <span class="badge bg-info-subtle text-info border border-info-subtle">Sitewide</span>
-                <% else %>
-                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Course-specific</span>
-                  <div class="small text-muted mt-1"><%= coupon.course&.title&.truncate(30) %></div>
-                <% end %>
-              </td>
-              <td class="cat-table__td">
-                <div class="small">From: <%= coupon.start_at.strftime("%d/%m/%Y") %></div>
-                <div class="small">To: <%= coupon.end_at.strftime("%d/%m/%Y") %></div>
-              </td>
-              <td class="cat-table__td">
-                <% if coupon.active? && coupon.active_and_current? %>
-                  <span class="badge bg-success">Active</span>
-                <% elsif coupon.inactive? %>
-                  <span class="badge bg-secondary">Inactive</span>
-                <% elsif coupon.expired? %>
-                  <span class="badge bg-danger">Expired</span>
-                <% else %>
-                  <span class="badge bg-primary">Pending start</span>
-                <% end %>
-              </td>
-              <td class="cat-table__td">
-                <div class="cat-table__action-group">
-                  <%= link_to edit_admin_coupon_path(coupon), class: 'cat-btn cat-btn--edit' do %>
-                    <i class="bi bi-pencil-fill"></i>
+<div class="admin-page-body admin-coupons">
+  <div class="admin-card">
+    <div class="admin-card__header admin-coupons-card__header">
+      <h5><i class="bi bi-ticket-detailed"></i> Promotion codes</h5>
+      <span class="admin-coupons-count"><%= pluralize(@coupons.size, "coupon") %></span>
+    </div>
+
+    <div class="admin-table-wrapper admin-coupons-table">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Scope</th>
+            <th>Usage</th>
+            <th>Validity</th>
+            <th>Status</th>
+            <th class="admin-coupons-table__actions-heading">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @coupons.any? %>
+            <% @coupons.each do |coupon| %>
+              <tr>
+                <td>
+                  <span class="admin-coupon-code"><%= coupon.code %></span>
+                </td>
+                <td>
+                  <div class="admin-table__title">
+                    <%= coupon.percentage? ? "Percentage" : "Fixed amount" %>
+                  </div>
+                  <div class="admin-table__sub">
+                    <%= coupon.discount_type.humanize %>
+                  </div>
+                </td>
+                <td>
+                  <span class="admin-coupon-value">
+                    <% if coupon.percentage? %>
+                      <%= number_with_precision(coupon.discount_value, precision: 0) %>%
+                    <% else %>
+                      <%= number_to_currency(coupon.discount_value, unit: "VND", precision: 0, format: "%n %u") %>
+                    <% end %>
+                  </span>
+                </td>
+                <td>
+                  <% if coupon.global? %>
+                    <span class="admin-badge admin-badge--info">
+                      <i class="bi bi-globe2"></i>
+                      Sitewide
+                    </span>
+                  <% else %>
+                    <span class="admin-badge admin-badge--warning">
+                      <i class="bi bi-collection-play"></i>
+                      Course-specific
+                    </span>
+                    <div class="admin-coupon-course"><%= coupon.course&.title&.truncate(34) || "Course unavailable" %></div>
                   <% end %>
-                  <%= link_to admin_coupon_path(coupon), data: { turbo_method: :delete, turbo_confirm: "Confirm delete this code?" }, class: 'cat-btn cat-btn--delete' do %>
-                    <i class="bi bi-trash-fill"></i>
+                </td>
+                <td>
+                  <div class="admin-coupon-usage">
+                    <strong><%= coupon.usage_count.to_i %></strong>
+                    <span>/</span>
+                    <span><%= coupon.usage_limit.to_i.zero? ? "Unlimited" : coupon.usage_limit.to_i %></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="admin-coupon-validity">
+                    <span>From <strong><%= coupon.start_at&.strftime("%d/%m/%Y") || "Not set" %></strong></span>
+                    <span>To <strong><%= coupon.end_at&.strftime("%d/%m/%Y") || "Not set" %></strong></span>
+                  </div>
+                </td>
+                <td>
+                  <% if coupon.active? && coupon.start_at.present? && coupon.end_at.present? && coupon.active_and_current? %>
+                    <span class="admin-badge admin-badge--success">
+                      <i class="bi bi-check-circle"></i>
+                      Active
+                    </span>
+                  <% elsif coupon.inactive? %>
+                    <span class="admin-badge admin-badge--neutral">
+                      <i class="bi bi-pause-circle"></i>
+                      Inactive
+                    </span>
+                  <% elsif coupon.end_at.present? && coupon.expired? %>
+                    <span class="admin-badge admin-badge--danger">
+                      <i class="bi bi-x-circle"></i>
+                      Expired
+                    </span>
+                  <% else %>
+                    <span class="admin-badge admin-badge--accent">
+                      <i class="bi bi-clock-history"></i>
+                      Pending start
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="admin-table__actions">
+                    <%= link_to edit_admin_coupon_path(coupon), class: "btn-action btn-action--warning", title: "Edit coupon" do %>
+                      <i class="bi bi-pencil-fill"></i>
+                      Edit
+                    <% end %>
+                    <%= link_to admin_coupon_path(coupon),
+                          data: { turbo_method: :delete, turbo_confirm: "Confirm delete this code?" },
+                          class: "btn-action btn-action--danger",
+                          title: "Delete coupon" do %>
+                      <i class="bi bi-trash-fill"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8">
+                <div class="admin-table__empty admin-coupons-empty">
+                  <i class="bi bi-ticket-perforated"></i>
+                  <h3>No coupons yet</h3>
+                  <p>Create the first code to attract learners.</p>
+                  <%= link_to new_admin_coupon_path, class: "admin-coupons-action admin-coupons-action--compact" do %>
+                    <i class="bi bi-plus-lg"></i>
+                    Add Coupon
                   <% end %>
                 </div>
               </td>
             </tr>
           <% end %>
-        <% else %>
-          <tr>
-            <td colspan="7">
-              <div class="cat-table__empty">
-                <i class="bi bi-ticket-perforated display-4 opacity-25"></i>
-                <h3>No coupons yet</h3>
-                <p>Create the first code to attract learners.</p>
-              </div>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

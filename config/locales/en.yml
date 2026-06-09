@@ -72,8 +72,13 @@ en:
         edit: "Edit"
         delete: "Delete"
         confirm_delete: "Are you sure you want to delete this course?"
+        search_placeholder: "Search courses by title or description"
+        search_button: "Search"
+        clear_search: "Clear search"
         empty_title: "No courses yet"
         empty_text: "Create your first course to start building your learning catalog."
+        empty_search_title: "No matching courses"
+        empty_search_text: "No courses matched \"%{query}\". Try another keyword."
         pagination_note: "Showing %{items} courses per page (Total %{count} courses)"
       new:
         eyebrow: "Create"

@@ -1,0 +1,447 @@
+// ============================================================
+// INSTRUCTOR REGISTRATION
+// Blocks: .instructor-apply, .instructor-apply-form, .instructor-status
+// ============================================================
+
+.instructor-apply {
+  min-height: calc(100vh - 72px);
+  padding: 2.5rem;
+  background:
+    linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96)),
+    image-url("auth.jpg");
+  background-position: center;
+  background-size: cover;
+  display: grid;
+  place-items: center;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
+  &--status {
+    background:
+      linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.94)),
+      image-url("auth.jpg");
+    background-position: center;
+    background-size: cover;
+  }
+}
+
+.instructor-apply__shell {
+  width: 100%;
+  max-width: 1220px;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+  border: 1px solid rgba($white, 0.65);
+  border-radius: $radius-xl;
+  background: $white;
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
+
+  @media (max-width: 1040px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.instructor-apply__intro {
+  padding: 2rem;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.94)),
+    image-url("auth.jpg");
+  background-position: center;
+  background-size: cover;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.instructor-apply__brand,
+.instructor-status__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: $white;
+  text-decoration: none;
+  font-size: 0.98rem;
+  font-weight: 900;
+
+  i {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    background: rgba($primary, 0.96);
+    box-shadow: $shadow-blue;
+  }
+}
+
+.instructor-apply__copy {
+  display: grid;
+  gap: 0.85rem;
+
+  h1 {
+    margin: 0;
+    color: $white;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.04;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+    color: rgba($white, 0.76);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+}
+
+.instructor-apply__eyebrow,
+.instructor-status__eyebrow {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba($white, 0.18);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  background: rgba($white, 0.08);
+  color: rgba($white, 0.82);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.instructor-apply__checklist {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.instructor-apply__check {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid rgba($white, 0.12);
+  border-radius: $radius-md;
+  background: rgba($white, 0.08);
+  color: rgba($white, 0.9);
+  font-size: 0.9rem;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+
+  i {
+    color: $success;
+    font-size: 1.1rem;
+  }
+}
+
+.instructor-apply__panel {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: $white;
+}
+
+.instructor-apply__header {
+  margin-bottom: 1.4rem;
+
+  > span {
+    color: $primary;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h2 {
+    margin: 0.35rem 0;
+    color: $text-dark;
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 0;
+    color: $text-muted;
+    font-size: 0.95rem;
+  }
+}
+
+.instructor-apply-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.instructor-apply-card {
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  background: $white;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.instructor-apply-card__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  padding: 1rem 1.15rem;
+  background: $bg;
+  border-bottom: 1px solid $border;
+
+  > span {
+    width: 32px;
+    aspect-ratio: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: $primary;
+    color: $white;
+    font-size: 0.8rem;
+    font-weight: 900;
+  }
+
+  h3 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 0.98rem;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 0.15rem 0 0;
+    color: $text-muted;
+    font-size: 0.8rem;
+  }
+}
+
+.instructor-apply-card__body {
+  display: grid;
+  gap: 1rem;
+  padding: 1.15rem;
+}
+
+.instructor-apply-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.instructor-apply-field {
+  display: grid;
+  gap: 0.4rem;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.instructor-apply-field__label {
+  color: $text-mid;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.instructor-apply-field__input,
+.instructor-apply-field__textarea {
+  width: 100%;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  background: $bg;
+  color: $text-dark;
+  font-size: 0.92rem;
+  font-weight: 650;
+  outline: none;
+  transition: $t;
+
+  &::placeholder {
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  &:focus {
+    border-color: rgba($primary, 0.7);
+    background: $white;
+    box-shadow: 0 0 0 4px rgba($primary, 0.1);
+  }
+}
+
+.instructor-apply-field__input {
+  height: 46px;
+  padding: 0 0.9rem;
+}
+
+.instructor-apply-field__textarea {
+  min-height: 132px;
+  padding: 0.85rem 0.9rem;
+  resize: vertical;
+}
+
+.instructor-apply-note {
+  margin: 0;
+  color: $text-muted;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.instructor-apply-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba($danger, 0.22);
+  border-radius: $radius-md;
+  background: $danger-light;
+  color: darken($danger, 8%);
+  font-size: 0.86rem;
+
+  i {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  ul {
+    margin: 0.35rem 0 0;
+    padding-left: 1.2rem;
+  }
+}
+
+.instructor-apply-form__actions {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: center;
+  padding-top: 0.25rem;
+}
+
+.instructor-apply-submit {
+  width: 100%;
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border: 0;
+  border-radius: $radius-md;
+  background: $primary;
+  color: $white;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: $shadow-blue;
+  transition: $t;
+
+  &:hover {
+    background: $primary-dark;
+    transform: translateY(-1px);
+  }
+}
+
+.instructor-apply-secondary-link,
+.instructor-status__link {
+  color: $text-muted;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.instructor-status {
+  width: 100%;
+  max-width: 640px;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid rgba($white, 0.14);
+  border-radius: $radius-xl;
+  background: rgba($white, 0.96);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+  text-align: center;
+
+  .instructor-status__brand {
+    justify-content: center;
+    color: $text-dark;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    margin: 0.65rem 0 0.65rem;
+    color: $text-dark;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0 auto 1.5rem;
+    max-width: 34rem;
+    color: $text-mid;
+    line-height: 1.65;
+  }
+}
+
+.instructor-status__eyebrow {
+  border-color: rgba($primary, 0.16);
+  background: $primary-light;
+  color: $primary;
+}
+
+.instructor-status__icon {
+  width: 86px;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+
+  &--pending {
+    background: $warning-light;
+    color: darken($warning, 8%);
+  }
+
+  &--approved {
+    background: $success-light;
+    color: $success;
+  }
+
+  &--rejected {
+    background: $danger-light;
+    color: $danger;
+  }
+}
+
+.instructor-status__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 46px;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1.2rem;
+  border-radius: $radius-md;
+  background: $primary;
+  color: $white;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: $shadow-blue;
+  transition: $t;
+
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+    transform: translateY(-1px);
+  }
+}

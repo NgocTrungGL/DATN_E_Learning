@@ -18,7 +18,7 @@ class B2b::RegistrationsController < ApplicationController
       sign_in(user)
 
       redirect_to root_path,
-                  notice: "Chào mừng #{@organization.name}."
+                  notice: "Welcome #{@organization.name}."
     else
       render :new, status: :unprocessable_entity
     end
