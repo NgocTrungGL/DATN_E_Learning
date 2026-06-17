@@ -49,7 +49,11 @@ Rails.application.routes.draw do
       get :print
     end
   end
-  resources :subscriptions, only: [:index, :create, :destroy]
+  resources :subscriptions, only: [:index, :create, :destroy] do
+    member do
+      patch :resume
+    end
+  end
 
   # --- HỌC VIÊN (PUBLIC) ---
   resources :categories, only: [:index, :show]

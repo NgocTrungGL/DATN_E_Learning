@@ -11,7 +11,6 @@ module Recommendations
       return [] if category_ids.empty?
 
       enrolled_ids = user.enrollments.pluck(:course_id)
-      return [] if enrolled_ids.empty?
 
       courses = Course.published
                       .where.not(id: enrolled_ids)

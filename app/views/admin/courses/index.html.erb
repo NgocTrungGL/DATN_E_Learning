@@ -1,7 +1,11 @@
 <%# Admin Courses Index — Premium Table-based Redesign %>
 
 <div class="crs-page">
-  <% search_value = params[:q].is_a?(ActionController::Parameters) ? params.dig(:q, :title_or_description_cont).to_s : "" %>
+  <%
+    search_value = @course_search_value.to_s
+    selected_category_id = @selected_category_id
+    filters_active = @filters_active
+  %>
 
   <%# ── Page Header ──────────────────────────────────────────── %>
   <header class="crs-page__header">
@@ -30,7 +34,16 @@
 
   <%# ── Search Bar ───────────────────────────────────────────── %>
   <section class="crs-search-card" aria-label="Course search">
-    <%= search_form_for @q, url: admin_courses_path, method: :get, html: { class: "crs-search-form" } do |f| %>
+    <%= search_form_for @q,
+          url: admin_courses_path,
+          method: :get,
+          html: {
+            class: "crs-search-form",
+            data: {
+              controller: "admin-course-filters",
+              admin_course_filters_all_subcategories_label_value: t("admin.courses.index.all_subcategories")
+            }
+          } do |f| %>
       <div class="crs-search-form__field">
         <i class="bi bi-search"></i>
         <%= f.search_field :title_or_description_cont,
@@ -39,15 +52,49 @@
               autocomplete: "off" %>
       </div>
 
+      <%= hidden_field_tag "q[category_id_eq]", selected_category_id, data: { admin_course_filters_target: "categoryInput" } %>
+
+      <div class="crs-search-form__category">
+        <div class="crs-search-form__select-wrap">
+          <i class="bi bi-tags"></i>
+          <select class="crs-search-form__select"
+                  data-admin-course-filters-target="parentSelect"
+                  data-action="admin-course-filters#changeParent">
+            <option value=""><%= t("admin.courses.index.all_categories") %></option>
+            <% @parent_categories.each do |parent| %>
+              <option value="<%= parent.id %>"
+                      data-has-children="<%= parent.subcategories.any? %>"
+                      <%= "selected" if @selected_parent_category&.id == parent.id %>>
+                <%= parent.name %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+
+        <div class="crs-search-form__select-wrap crs-search-form__select-wrap--sub <%= 'is-hidden' unless @selected_parent_subcategories.any? %>">
+          <i class="bi bi-diagram-2"></i>
+          <select class="crs-search-form__select"
+                  data-admin-course-filters-target="subSelect"
+                  data-action="admin-course-filters#changeSub">
+            <option value=""><%= t("admin.courses.index.all_subcategories") %></option>
+            <% @selected_parent_subcategories.each do |subcategory| %>
+              <option value="<%= subcategory.id %>" <%= "selected" if @selected_subcategory&.id == subcategory.id %>>
+                <%= subcategory.name %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+
       <button type="submit" class="crs-search-form__submit">
         <i class="bi bi-search"></i>
         <span><%= t("admin.courses.index.search_button") %></span>
       </button>
 
-      <% if search_value.present? %>
+      <% if filters_active %>
         <%= link_to admin_courses_path, class: "crs-search-form__clear" do %>
           <i class="bi bi-x-lg"></i>
-          <span><%= t("admin.courses.index.clear_search") %></span>
+          <span><%= t("admin.courses.index.clear_filters") %></span>
         <% end %>
       <% end %>
     <% end %>
@@ -145,12 +192,18 @@
       <div class="crs-empty__icon">
         <i class="bi bi-journal-bookmark"></i>
       </div>
-      <% if search_value.present? %>
+      <% if filters_active %>
         <h3><%= t('admin.courses.index.empty_search_title') %></h3>
-        <p><%= t('admin.courses.index.empty_search_text', query: search_value) %></p>
+        <p>
+          <% if search_value.present? %>
+            <%= t('admin.courses.index.empty_search_text', query: search_value) %>
+          <% else %>
+            <%= t('admin.courses.index.empty_filter_text') %>
+          <% end %>
+        </p>
         <%= link_to admin_courses_path, class: 'crs-page__cta' do %>
           <i class="bi bi-arrow-counterclockwise"></i>
-          <span><%= t('admin.courses.index.clear_search') %></span>
+          <span><%= t('admin.courses.index.clear_filters') %></span>
         <% end %>
       <% else %>
         <h3><%= t('admin.courses.index.empty_title') %></h3>

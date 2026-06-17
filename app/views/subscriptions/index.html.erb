@@ -56,6 +56,7 @@
   ]
   current_plan_details = plans.find { |plan| plan[:key] == @current_plan }
   has_paid_subscription = @current_subscription.present? && @current_plan != "free"
+  can_upgrade_to_premium = @current_subscription&.pro? && @premium_upgrade_amount.to_i.positive?
 %>
 
 <div class="subscriptions-page">
@@ -152,6 +153,14 @@
               <i class="bi bi-clock-history"></i>
               Renewal is canceled. You keep access until the end of this billing period.
             </div>
+            <% if @current_subscription.stripe_subscription_id.present? %>
+              <%= button_to resume_subscription_path(@current_subscription),
+                            method: :patch,
+                            class: "subscription-manager__resume",
+                            data: { turbo: false } do %>
+                <i class="bi bi-arrow-repeat"></i> Resume renewal
+              <% end %>
+            <% end %>
           <% else %>
             <div class="subscription-manager__notice">
               <i class="bi bi-arrow-repeat"></i>
@@ -165,6 +174,23 @@
                 <i class="bi bi-x-circle"></i> Cancel renewal
               <% end %>
             <% end %>
+          <% end %>
+
+          <% if can_upgrade_to_premium %>
+            <div class="subscription-manager__upgrade">
+              <span>Upgrade today</span>
+              <strong>
+                <%= number_to_currency(@premium_upgrade_amount, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+              </strong>
+              <small>Prorated for the time left in this billing period.</small>
+              <%= button_to subscriptions_path,
+                            method: :post,
+                            params: { plan: "premium" },
+                            class: "subscription-manager__upgrade-button",
+                            data: { turbo: false } do %>
+                <i class="bi bi-stars"></i> Upgrade to Premium
+              <% end %>
+            </div>
           <% end %>
 
           <%= link_to courses_path, class: "subscription-manager__browse" do %>
@@ -189,6 +215,7 @@
           is_active    = current_user && (@current_plan == plan[:key])
           is_popular   = plan[:badge].present?
           is_free      = plan[:key] == "free"
+          is_upgrade    = has_paid_subscription && @current_plan == "pro" && plan[:key] == "premium" && @premium_upgrade_amount.to_i.positive?
         %>
         <div class="pricing-card <%= 'pricing-card--popular' if is_popular %> <%= 'pricing-card--active' if is_active %>"
              id="plan-<%= plan[:key] %>">
@@ -252,7 +279,17 @@
               <% end %>
             <% else %>
               <%# Paid plan CTA %>
-              <% if has_paid_subscription %>
+              <% if is_upgrade %>
+                <%= button_to subscriptions_path,
+                               method: :post,
+                               params: { plan: plan[:key] },
+                               class: "subscription-plan-button subscription-plan-button--primary",
+                               data: { turbo: false },
+                               id: "upgrade-#{plan[:key]}" do %>
+                  <i class="bi bi-stars"></i>
+                  Upgrade for <%= number_to_currency(@premium_upgrade_amount, unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %>
+                <% end %>
+              <% elsif has_paid_subscription %>
                 <button class="subscription-plan-button subscription-plan-button--outline" disabled>
                   <i class="bi bi-lock-fill"></i>
                   Manage current plan
