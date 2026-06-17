@@ -14,7 +14,9 @@ class SubscriptionCheckoutFulfillmentService
     plan = metadata["plan"].to_s
     return unless user && Subscription.plan_types.key?(plan)
 
-    upsert_subscription(user, subscription_attributes(plan))
+    subscription = upsert_subscription(user, subscription_attributes(plan))
+    record_subscription_revenue(subscription)
+    subscription
   end
 
   private
@@ -100,5 +102,19 @@ class SubscriptionCheckoutFulfillmentService
     else
       user.create_subscription!(attrs)
     end
+  end
+
+  def record_subscription_revenue subscription
+    SubscriptionRevenueService.new(
+      source: subscription,
+      amount: session.amount_total,
+      external_reference: subscription_payment_reference
+    ).perform
+  end
+
+  def subscription_payment_reference
+    return "stripe_invoice:#{session.invoice}" if session.invoice.present?
+
+    "stripe_checkout:#{session.id}"
   end
 end

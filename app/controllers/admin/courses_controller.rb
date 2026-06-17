@@ -1,9 +1,15 @@
 class Admin::CoursesController < Admin::BaseController
   def index
-    @q = Course.includes(:category, :creator).ransack(course_search_params)
+    @parent_categories = Category.roots.includes(:subcategories).order(:name)
+    search_params = course_search_params
+    set_search_filter_state(search_params)
+    set_category_filter_state
+
+    @q = Course.includes(:category, :creator)
+               .ransack(search_params.except(:category_id, :category_id_eq))
 
     @pagy, @courses = pagy(
-      @q.result(distinct: true)
+      apply_category_filter(@q.result(distinct: true), search_params)
         .order(status: :asc, created_at: :desc)
     )
   end
@@ -77,9 +83,47 @@ class Admin::CoursesController < Admin::BaseController
   private
 
   def course_search_params
-    return {} unless params[:q].is_a?(ActionController::Parameters)
+    return {}.with_indifferent_access unless params[:q].is_a?(ActionController::Parameters)
 
-    params.require(:q).permit(:title_or_description_cont)
+    params.require(:q).permit(:title_or_description_cont, :category_id,
+                              :category_id_eq).to_h.with_indifferent_access
+  end
+
+  def apply_category_filter courses, search_params
+    return courses if @selected_category_id.blank?
+
+    category = Category.find_by(id: @selected_category_id)
+    return courses unless category
+
+    if category.parent_id.nil?
+      child_ids = category.subcategories.pluck(:id)
+      courses.where(category_id: [category.id] + child_ids)
+    else
+      courses.where(category_id: category.id)
+    end
+  end
+
+  def set_search_filter_state search_params
+    @course_search_value = search_params[:title_or_description_cont].to_s
+    @selected_category_id = selected_category_id(search_params)
+    @filters_active = @course_search_value.present? || @selected_category_id.present?
+  end
+
+  def set_category_filter_state
+    @selected_category = Category.includes(:parent).find_by(id: @selected_category_id)
+    @selected_parent_category = selected_parent_category
+    @selected_subcategory = @selected_category&.parent_id ? @selected_category : nil
+    @selected_parent_subcategories = @selected_parent_category&.subcategories&.order(:name) || Category.none
+  end
+
+  def selected_category_id search_params
+    search_params[:category_id_eq].presence || search_params[:category_id].presence
+  end
+
+  def selected_parent_category
+    return nil unless @selected_category
+
+    @selected_category.parent_id.nil? ? @selected_category : @selected_category.parent
   end
 
   def set_course

@@ -7,17 +7,14 @@ class Enrollment < ApplicationRecord
   validates :user_id, uniqueness: { scope: :course_id }
 
   after_commit :create_enrollment_notification, on: [:create, :update], if: :saved_change_to_status_active?
-  after_commit :queue_recommendation_update, on: [:create]
+  after_commit :queue_recommendation_update, on: [:create, :update, :destroy]
 
   def saved_change_to_status_active?
     saved_change_to_status? && active?
   end
 
   def queue_recommendation_update
-    last_computed = UserRecommendation.where(user_id: user_id).maximum(:computed_at)
-    return if last_computed && last_computed > 5.minutes.ago
-
-    RecommendationJob.perform_later(user_id)
+    Recommendations::CacheInvalidator.call(user_id)
   end
 
   def create_enrollment_notification

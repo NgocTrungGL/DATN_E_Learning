@@ -9,12 +9,9 @@ class Review < ApplicationRecord
                           message: "đã đánh giá khóa học này rồi" }
   scope :recent, ->{order(created_at: :desc)}
 
-  after_create_commit :queue_recommendation_update
+  after_commit :queue_recommendation_update, on: [:create, :update, :destroy]
 
   def queue_recommendation_update
-    last_computed = UserRecommendation.where(user_id: user_id).maximum(:computed_at)
-    return if last_computed && last_computed > 5.minutes.ago
-
-    RecommendationJob.perform_later(user_id)
+    Recommendations::CacheInvalidator.call(user_id)
   end
 end

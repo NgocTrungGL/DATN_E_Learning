@@ -31,6 +31,8 @@ class WebhooksController < ApplicationController
       sync_subscription(event.data.object)
     when "customer.subscription.deleted"
       cancel_subscription(event.data.object)
+    when "invoice.payment_succeeded"
+      record_subscription_invoice_payment(event.data.object)
     when "invoice.payment_failed"
       mark_subscription_past_due(event.data.object)
     end
@@ -43,6 +45,8 @@ class WebhooksController < ApplicationController
 
     if session.metadata["type"] == "subscription"
       handle_subscription_checkout(session)
+    elsif session.metadata["type"] == "subscription_upgrade"
+      handle_subscription_upgrade_checkout(session)
     elsif cart_checkout?(session)
       handle_cart_checkout(user, session)
     elsif session.metadata["purchase_type"] == "license"
@@ -85,6 +89,10 @@ class WebhooksController < ApplicationController
 
   def handle_subscription_checkout session
     SubscriptionCheckoutFulfillmentService.new(session).call
+  end
+
+  def handle_subscription_upgrade_checkout session
+    SubscriptionUpgradeCheckoutService.new(session).call
   end
 
   def use_coupon promo_code
@@ -136,12 +144,32 @@ class WebhooksController < ApplicationController
   # Called on `invoice.payment_failed`
   # Marks the subscription as past_due when renewal payment fails.
   def mark_subscription_past_due invoice
-    return if invoice.subscription.blank?
+    return if invoice_subscription_id(invoice).blank?
 
-    subscription = Subscription.find_by(stripe_subscription_id: invoice.subscription)
+    subscription = Subscription.find_by(stripe_subscription_id: invoice_subscription_id(invoice))
     return unless subscription
 
     subscription.update!(status: :past_due)
+  end
+
+  def record_subscription_invoice_payment invoice
+    return if invoice_subscription_id(invoice).blank?
+
+    subscription = Subscription.find_by(stripe_subscription_id: invoice_subscription_id(invoice))
+    return unless subscription
+
+    amount = stripe_value(invoice, :amount_paid).to_i
+    SubscriptionRevenueService.new(
+      source: subscription,
+      amount: amount,
+      external_reference: "stripe_invoice:#{invoice.id}"
+    ).perform
+  end
+
+  def invoice_subscription_id invoice
+    stripe_value(invoice, :subscription) ||
+      stripe_value(stripe_value(invoice, :parent), :subscription) ||
+      stripe_value(stripe_value(stripe_value(invoice, :parent), :subscription_details), :subscription)
   end
 
   def normalized_subscription_status status

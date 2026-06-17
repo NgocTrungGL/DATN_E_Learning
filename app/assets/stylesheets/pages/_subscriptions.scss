@@ -329,6 +329,72 @@
   }
 }
 
+.subscriptions-page .subscription-manager__resume {
+  border: 1.5px solid rgba($success, 0.28);
+  border-radius: $radius-md;
+  background: rgba($success, 0.1);
+  color: darken($success, 8%);
+  text-decoration: none;
+  min-height: 44px;
+
+  &:hover {
+    background: rgba($success, 0.16);
+    color: darken($success, 14%);
+  }
+}
+
+.subscriptions-page .subscription-manager__upgrade {
+  padding: 1rem;
+  color: $text-dark;
+  border: 1px solid rgba($primary, 0.18);
+  border-radius: $radius-md;
+  background: $primary-light;
+
+  span,
+  small {
+    display: block;
+    color: $text-muted;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  strong {
+    display: block;
+    color: $primary-dark;
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 0.35rem 0;
+  }
+}
+
+.subscriptions-page .subscription-manager__upgrade-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 0.9rem;
+  padding: 0.75rem 1rem;
+  color: $white;
+  background: $primary;
+  border: 1.5px solid $primary;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: $t;
+
+  &:hover {
+    color: $white;
+    background: $primary-dark;
+    border-color: $primary-dark;
+    box-shadow: $shadow-blue;
+    transform: translateY(-1px);
+  }
+}
+
 .subscriptions-page .subscription-manager__browse {
   display: inline-flex;
   align-items: center;
@@ -605,7 +671,8 @@
   }
 }
 
-.subscriptions-page .subscription-manager__cancel {
+.subscriptions-page .subscription-manager__cancel,
+.subscriptions-page .subscription-manager__resume {
   display: flex;
   align-items: center;
   justify-content: center;
