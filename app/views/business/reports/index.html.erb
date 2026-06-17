@@ -39,10 +39,10 @@
       </div>
       <div class="biz-stat-card">
         <div class="biz-stat-card__icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-          <i class="bi bi-currency-dollar"></i>
+          <i class="bi bi-cash-coin"></i>
         </div>
         <div class="biz-stat-card__body">
-          <span class="biz-stat-card__value"><%= number_to_currency(@total_spent, precision: 0) %></span>
+          <span class="biz-stat-card__value"><%= format_vnd(@total_spent) %></span>
           <span class="biz-stat-card__label">Total Spent</span>
         </div>
       </div>

@@ -2,6 +2,7 @@ class License < ApplicationRecord
   belongs_to :organization
   belongs_to :course
   belongs_to :user, optional: true
+  belongs_to :invoice, optional: true
 
   enum status: {
     available: 0,

@@ -1,5 +1,6 @@
 class SubscriptionsController < ApplicationController
   before_action :authenticate_user!
+  before_action :fulfill_checkout_session, only: :index
 
   PLAN_PRICES = Subscription::PLAN_PRICES.freeze
   STRIPE_PRICES = {
@@ -23,15 +24,19 @@ class SubscriptionsController < ApplicationController
       return
     end
 
+    if current_user.active_subscription&.stripe_subscription_id
+      redirect_to subscriptions_path, alert: t("subscriptions.already_active")
+      return
+    end
+
     session = Stripe::Checkout::Session.create(
       locale:               "en",
       payment_method_types: %w(card),
       line_items:           [subscription_line_item(plan)],
       mode:                 "subscription",
       customer_email:       current_user.email,
-      submit_type:          "pay",
       custom_text:          checkout_custom_text(plan),
-      success_url:          subscriptions_url(subscribed: true),
+      success_url:          subscriptions_url(subscribed: true, session_id: "{CHECKOUT_SESSION_ID}"),
       cancel_url:           subscriptions_url,
       metadata:             {
         user_id: current_user.id,
@@ -54,8 +59,12 @@ class SubscriptionsController < ApplicationController
 
     begin
       # Set to cancel at the end of the current period instead of immediate termination
-      Stripe::Subscription.update(subscription.stripe_subscription_id, { cancel_at_period_end: true })
-      subscription.update!(status: :canceled)
+      stripe_subscription = Stripe::Subscription.update(subscription.stripe_subscription_id,
+                                                        { cancel_at_period_end: true })
+      subscription.update!(
+        cancel_at_period_end: true,
+        canceled_at: stripe_timestamp_to_time(stripe_value(stripe_subscription, :canceled_at))
+      )
       redirect_to subscriptions_path, notice: t("subscriptions.canceled_successfully")
     rescue Stripe::StripeError => e
       redirect_to subscriptions_path, alert: e.message
@@ -63,6 +72,29 @@ class SubscriptionsController < ApplicationController
   end
 
   private
+
+  def fulfill_checkout_session
+    return if params[:session_id].blank?
+
+    session = Stripe::Checkout::Session.retrieve(params[:session_id])
+    subscription = SubscriptionCheckoutFulfillmentService.new(session).call
+    return unless subscription&.user == current_user
+
+    flash.now[:notice] = t("subscriptions.activated_successfully",
+                           default: "Your subscription is now active.")
+  rescue Stripe::StripeError => e
+    flash.now[:alert] = e.message
+  end
+
+  def stripe_timestamp_to_time timestamp
+    Time.zone.at(timestamp) if timestamp
+  end
+
+  def stripe_value object, key
+    object&.[](key.to_s)
+  rescue NoMethodError
+    nil
+  end
 
   def subscription_line_item plan
     {

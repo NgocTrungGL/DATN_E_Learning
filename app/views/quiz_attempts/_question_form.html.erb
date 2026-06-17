@@ -42,9 +42,8 @@
                   checked: is_checked %>
           <% else %>
             <%= f.check_box :selected_option_ids,
-                  { multiple: true, class: "qa-option-input qa-auto-save" },
-                  option.id, nil,
-                  checked: is_checked %>
+                  { multiple: true, class: "qa-option-input qa-auto-save", checked: is_checked },
+                  option.id, nil %>
           <% end %>
           <span class="qa-option-text"><%= option.option_text %></span>
         </label>

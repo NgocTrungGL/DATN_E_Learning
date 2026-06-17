@@ -50,7 +50,7 @@
     <%= link_to admin_revenues_path, class: "admin-dashboard-stat admin-dashboard-stat--warning" do %>
       <span class="admin-dashboard-stat__icon"><i class="bi bi-graph-up-arrow"></i></span>
       <span class="admin-dashboard-stat__content">
-        <strong><%= number_to_currency(@platform_revenue, unit: "", precision: 0) %></strong>
+        <strong><%= format_vnd(@platform_revenue) %></strong>
         <span>Platform revenue</span>
       </span>
     <% end %>
@@ -152,7 +152,7 @@
         </div>
         <div class="admin-dashboard-pulse__item">
           <span>Revenue this month</span>
-          <strong><%= number_to_currency(@revenue_this_month, unit: "", precision: 0) %></strong>
+          <strong><%= format_vnd(@revenue_this_month) %></strong>
         </div>
       </div>
     </section>

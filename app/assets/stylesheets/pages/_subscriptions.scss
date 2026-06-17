@@ -11,11 +11,19 @@
   background: $bg;
   min-height: 100vh;
   padding-bottom: 5rem;
+
+  &__inner {
+    @include inner-container;
+  }
+
+  &__hero-content {
+    text-align: center;
+  }
 }
 
 // ── Hero Header ──────────────────────────────────────────────
 .subs-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0f172a 100%);
+  background: linear-gradient(135deg, $bg-dark 0%, $primary-dark 60%, $bg-dark 100%);
   padding: 5rem 0 4rem;
   text-align: center;
   position: relative;
@@ -28,7 +36,7 @@
     right: -10%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba($primary, 0.25) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -36,9 +44,9 @@
 
 .subs-badge {
   display: inline-block;
-  background: rgba(37, 99, 235, 0.2);
-  border: 1px solid rgba(37, 99, 235, 0.4);
-  color: #93c5fd;
+  background: rgba($primary, 0.2);
+  border: 1px solid rgba($primary, 0.4);
+  color: lighten($primary, 25%);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -58,7 +66,7 @@
 
 .subs-subtitle {
   font-size: 1.05rem;
-  color: #94a3b8;
+  color: $text-muted;
   max-width: 560px;
   margin: 0 auto 2rem;
   line-height: 1.7;
@@ -68,16 +76,309 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #6ee7b7;
+  background: rgba($success, 0.15);
+  border: 1px solid rgba($success, 0.35);
+  color: lighten($success, 22%);
   font-size: 0.9rem;
   padding: 0.5rem 1.25rem;
   border-radius: 999px;
   margin-top: 0.5rem;
 
-  i { color: #10b981; }
-  strong { color: #d1fae5; }
+  i { color: $success; }
+  strong { color: lighten($success, 35%); }
+}
+
+// ── Active Subscription Manager ──────────────────────────────
+.subscriptions-page .subscription-manager {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 1.25rem;
+  max-width: 1040px;
+  margin: -2.75rem auto 3rem;
+  padding: 1.5rem;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, $primary, $accent);
+  }
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+    margin-top: -2rem;
+  }
+}
+
+.subscriptions-page .subscription-manager__main,
+.subscriptions-page .subscription-manager__actions {
+  background: $white;
+}
+
+.subscriptions-page .subscription-manager__main {
+  padding: 0;
+}
+
+.subscriptions-page .subscription-manager__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.subscriptions-page .subscription-manager__icon {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary;
+  font-size: 1.45rem;
+  border-radius: $radius-md;
+  background: $primary-light;
+  border: 1px solid rgba($primary, 0.16);
+  flex: 0 0 auto;
+}
+
+.subscriptions-page .subscription-manager__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: $success;
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+
+  i { color: $success; }
+}
+
+.subscriptions-page .subscription-manager__title {
+  color: $text-dark;
+  font-size: clamp(1.65rem, 3vw, 2.2rem);
+  font-weight: 900;
+  line-height: 1.12;
+  margin: 0;
+}
+
+.subscriptions-page .subscription-manager__description {
+  color: $text-muted;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  max-width: 620px;
+  margin: 0 0 1.5rem;
+}
+
+.subscriptions-page .subscription-manager__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.subscriptions-page .subscription-manager__stat {
+  border: 1px solid rgba($text-muted, 0.2);
+  border-radius: $radius-md;
+  padding: 1rem;
+  background: $bg;
+
+  span {
+    display: block;
+    color: $text-muted;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+
+  strong {
+    color: $text-dark;
+    font-size: 1.05rem;
+    font-weight: 800;
+    word-break: break-word;
+  }
+}
+
+.subscriptions-page .subscription-manager__features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 38px;
+    color: $text-mid;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    padding: 0.55rem 0.75rem;
+  }
+
+  li::marker { content: ""; }
+
+  i {
+    color: $success;
+    flex: 0 0 auto;
+  }
+}
+
+.subscriptions-page .subscription-manager__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  justify-content: flex-start;
+  padding-left: 1.25rem;
+  border-left: 1px solid $border;
+
+  @media (max-width: 860px) {
+    padding-left: 0;
+    padding-top: 1.25rem;
+    border-left: 0;
+    border-top: 1px solid $border;
+  }
+}
+
+.subscriptions-page .subscription-manager__price-card {
+  padding: 1rem;
+  color: $text-dark;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $bg;
+
+  span,
+  small {
+    display: block;
+    color: $text-muted;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  strong {
+    display: block;
+    color: $text-dark;
+    font-size: 1.45rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 0.35rem 0;
+  }
+}
+
+.subscriptions-page .subscription-manager__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background: rgba($primary, 0.08);
+  border: 1px solid rgba($primary, 0.16);
+  border-radius: $radius-md;
+  color: $text-mid;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.55;
+  padding: 0.9rem 1rem;
+
+  i {
+    color: $primary;
+    margin-top: 0.15rem;
+    flex: 0 0 auto;
+  }
+
+  &--warning {
+    background: rgba($warning, 0.1);
+    border-color: rgba($warning, 0.22);
+
+    i { color: darken($warning, 10%); }
+  }
+}
+
+.subscriptions-page .subscription-manager__cancel {
+  border: 1px solid rgba($danger, 0.2);
+  border-radius: $radius-md;
+  background: $danger-light;
+  color: $danger;
+  text-decoration: none;
+  min-height: 44px;
+
+  &:hover {
+    background: rgba($danger, 0.16);
+    color: darken($danger, 12%);
+  }
+}
+
+.subscriptions-page .subscription-manager__browse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  color: $white;
+  background: $primary;
+  border: 1.5px solid $primary;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: $t;
+
+  &:hover {
+    color: $white;
+    background: $primary-dark;
+    border-color: $primary-dark;
+    box-shadow: $shadow-blue;
+    transform: translateY(-1px);
+  }
+}
+
+.subscriptions-page .subscription-manager__actions form {
+  margin: 0;
+}
+
+.pricing-section-heading {
+  max-width: 960px;
+  margin: 2rem auto 1.75rem;
+  padding: 0 1rem;
+
+  span {
+    color: $primary;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    color: $text-dark;
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 0.4rem 0 0;
+  }
 }
 
 // ── Pricing Grid ─────────────────────────────────────────────
@@ -109,12 +410,12 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: $shadow-lg;
-    border-color: rgba(37, 99, 235, 0.25);
+    border-color: rgba($primary, 0.25);
   }
 
   // Popular / highlighted variant
   &--popular {
-    background: linear-gradient(180deg, #eff6ff 0%, $white 40%);
+    background: linear-gradient(180deg, $primary-light 0%, $white 40%);
     border-color: $primary;
     border-width: 2px;
     transform: scale(1.03);
@@ -132,7 +433,7 @@
     border-width: 2px;
 
     &:not(.pricing-card--popular) {
-      background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, $white 40%);
+      background: linear-gradient(180deg, rgba($success, 0.04) 0%, $white 40%);
     }
   }
 
@@ -141,21 +442,21 @@
     top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, $primary, #3b82f6);
+    background: linear-gradient(135deg, $primary, lighten($primary, 8%));
     color: $white;
     font-size: 0.75rem;
     font-weight: 800;
     padding: 0.3rem 1rem;
     border-radius: 999px;
     white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 4px 12px rgba($primary, 0.4);
   }
 
   &__active-tag {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: rgba(16, 185, 129, 0.1);
+    background: rgba($success, 0.1);
     color: $success;
     font-size: 0.75rem;
     font-weight: 700;
@@ -229,7 +530,7 @@
       &.pricing-card__feature--disabled {
         color: $text-muted;
 
-        i { color: #cbd5e1; }
+        i { color: $border; }
       }
     }
   }
@@ -243,76 +544,80 @@
 }
 
 // ── Plan Buttons ──────────────────────────────────────────────
-.btn-plan {
+.subscription-plan-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  border-radius: $radius-md;
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: $t;
   width: 100%;
+  min-height: 44px;
+  white-space: normal;
 
-  &--solid {
-    background: linear-gradient(135deg, $primary, #3b82f6);
+  &--primary {
     color: $white;
-    border-color: transparent;
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    background: $primary;
+    border: 1.5px solid $primary;
+    border-radius: $radius-md;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    transition: $t;
 
     &:hover {
-      background: linear-gradient(135deg, $primary-dark, $primary);
       color: $white;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+      background: $primary-dark;
+      border-color: $primary-dark;
+      box-shadow: $shadow-blue;
+      transform: translateY(-1px);
     }
   }
 
   &--outline {
-    background: transparent;
     color: $primary;
-    border-color: $primary;
+    background: $white;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    transition: $t;
 
     &:hover {
-      background: $primary-light;
       color: $primary-dark;
+      background: $primary-light;
+      border-color: $primary;
     }
   }
 
   &--current {
-    background: rgba(16, 185, 129, 0.1);
+    background: rgba($success, 0.1);
     color: $success;
-    border-color: rgba(16, 185, 129, 0.3);
+    border: 1.5px solid rgba($success, 0.3);
+    border-radius: $radius-md;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
     cursor: default;
 
     &:hover { transform: none; }
   }
 }
 
-.btn-plan-cancel {
+.subscriptions-page .subscription-manager__cancel {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
   padding: 0.55rem 1rem;
-  border: none;
-  border-radius: $radius-md;
   font-size: 0.8rem;
   font-weight: 600;
-  color: $text-muted;
-  background: transparent;
   cursor: pointer;
   transition: $t;
-  text-decoration: underline;
-  text-underline-offset: 3px;
   width: 100%;
 
   &:hover {
-    color: $danger;
     text-decoration: none;
   }
 
@@ -385,7 +690,7 @@
     transition: $t;
 
     &:hover {
-      border-color: rgba(37, 99, 235, 0.3);
+      border-color: rgba($primary, 0.3);
       box-shadow: $shadow-md;
     }
   }

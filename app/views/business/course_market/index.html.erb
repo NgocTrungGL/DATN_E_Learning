@@ -58,7 +58,7 @@
             <p class="cm-card__desc"><%= course.description.to_s.truncate(100) %></p>
 
             <div class="cm-card__price-block">
-              <span class="cm-card__price"><%= number_to_currency(course.price) %></span>
+              <span class="cm-card__price"><%= format_vnd(course.price) %></span>
               <span class="cm-card__price-unit">/seat</span>
             </div>
 
@@ -69,7 +69,7 @@
                 Buy <strong>10 seats</strong> and get <strong>10%</strong> off.
                 <br>
                 <span class="cm-card__offer-price">
-                  Now only <strong><%= number_to_currency(course.price * 0.9) %></strong>/seat
+                  Now only <strong><%= format_vnd(course.price * 0.9) %></strong>/seat
                 </span>
               </div>
             </div>

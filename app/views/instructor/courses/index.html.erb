@@ -40,8 +40,8 @@
               <%= course.enrollments.count %> students
             </span>
             <span class="courses-grid__stat">
-              <i class="bi bi-currency-dollar"></i>
-              <%= course.price.zero? ? 'Free' : number_to_currency(course.price, unit: '', precision: 0) + ' VND' %>
+              <i class="bi bi-cash-coin"></i>
+              <%= course.price.zero? ? 'Free' : format_vnd(course.price) %>
             </span>
           </div>
           <div class="courses-grid__actions">

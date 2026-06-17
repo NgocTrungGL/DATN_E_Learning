@@ -46,7 +46,7 @@
           </div>
           <div class="invoice-card__row">
             <span>Unit price</span>
-            <span class="invoice-card__row-value"><%= number_to_currency(@invoice.unit_price) %></span>
+            <span class="invoice-card__row-value"><%= format_vnd(@invoice.unit_price) %></span>
           </div>
           <% if @invoice.unit_price < @invoice.course.price %>
             <div class="invoice-card__row invoice-card__row--discount">
@@ -58,7 +58,7 @@
           <% end %>
           <div class="invoice-card__row invoice-card__row--total">
             <span>Total</span>
-            <span class="invoice-card__row-value"><%= number_to_currency(@invoice.total_amount) %></span>
+            <span class="invoice-card__row-value"><%= format_vnd(@invoice.total_amount) %></span>
           </div>
         </div>
 

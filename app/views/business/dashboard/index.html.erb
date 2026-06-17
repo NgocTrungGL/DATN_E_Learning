@@ -79,10 +79,10 @@
       </div>
       <div class="biz-stat-card">
         <div class="biz-stat-card__icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
-          <i class="bi bi-currency-dollar"></i>
+          <i class="bi bi-cash-coin"></i>
         </div>
         <div class="biz-stat-card__body">
-          <span class="biz-stat-card__value"><%= number_to_currency(@training_cost_per_employee, unit: "", precision: 0) %> VND</span>
+          <span class="biz-stat-card__value"><%= format_vnd(@training_cost_per_employee) %></span>
           <span class="biz-stat-card__label">Cost per Employee</span>
         </div>
       </div>

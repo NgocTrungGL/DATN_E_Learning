@@ -82,7 +82,7 @@ class QuizAttemptsController < ApplicationController
   def prepare_quiz_data
     @quiz_answers = @quiz_attempt.quiz_answers.includes(question: :question_options).order(:id)
     @current_answer = find_current_answer
-    @all_questions = @quiz.questions
+    @all_questions = @quiz_answers.map(&:question)
     @current_question = @current_answer&.question
     @answered_ids = @quiz_answers.select{|qa| qa.selected_option_ids.present?}.index_by(&:question_id)
     @quiz_is_finished = @quiz_attempt.completed?
@@ -100,10 +100,16 @@ class QuizAttemptsController < ApplicationController
 
   def set_quiz_attempt
     @quiz_attempt = QuizAttempt.find(params[:id])
-    return if @quiz_attempt.user == current_user ||
-              @quiz_attempt.quiz.course.created_by == current_user.id
 
-    redirect_to root_path, alert: "Bạn không có quyền truy cập."
+    authorize! quiz_attempt_authorization_action, @quiz_attempt
+  end
+
+  def quiz_attempt_authorization_action
+    case action_name
+    when "finish" then :finish
+    when "review" then :review
+    else :read
+    end
   end
 
   def finalize_attempt!

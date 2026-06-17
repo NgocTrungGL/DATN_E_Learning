@@ -14,7 +14,7 @@
       </div>
       <div class="kpi-card__body">
         <span class="kpi-card__value">
-          <%= number_to_currency(@wallet.balance, unit: "", precision: 0) %> VND
+          <%= format_vnd(@wallet.balance) %>
         </span>
         <span class="kpi-card__label">Available Balance</span>
         <span class="kpi-card__meta">Minimum: 100,000 VND</span>
@@ -27,12 +27,12 @@
 
     <div class="kpi-card">
       <div class="kpi-card__icon kpi-card__icon--primary">
-        <i class="bi bi-currency-dollar"></i>
+        <i class="bi bi-cash-coin"></i>
       </div>
       <div class="kpi-card__body">
         <span class="kpi-card__value">
           <% total_earned = @wallet.wallet_transactions.where(transaction_type: 'sale_commission').sum(:amount) %>
-          <%= number_to_currency(total_earned, unit: "", precision: 0) %> VND
+          <%= format_vnd(total_earned) %>
         </span>
         <span class="kpi-card__label">Total Earnings</span>
         <span class="kpi-card__meta">Lifetime commission from sales</span>
@@ -108,7 +108,7 @@
                 </td>
                 <td>
                   <span class="revenue-amount <%= txn.amount >= 0 ? 'revenue-amount--positive' : 'revenue-amount--negative' %>">
-                    <%= txn.amount >= 0 ? "+" : "" %><%= number_to_currency(txn.amount, unit: "", precision: 0) %> VND
+                    <%= txn.amount >= 0 ? "+" : "" %><%= format_vnd(txn.amount) %>
                   </span>
                 </td>
                 <td>
@@ -168,7 +168,7 @@
             <i class="bi bi-wallet2"></i>
             <div>
               <strong>Available balance:</strong>
-              <%= number_to_currency(@wallet.balance, unit: "", precision: 0) %> VND
+              <%= format_vnd(@wallet.balance) %>
             </div>
           </div>
 

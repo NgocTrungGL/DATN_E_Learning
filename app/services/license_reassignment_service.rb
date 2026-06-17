@@ -61,9 +61,11 @@ class LicenseReassignmentService
   def create_enrollment(user)
     return unless user
 
-    Enrollment.find_or_create_by!(user:, course: @license.course) do |e|
-      e.price = @license.price
-      e.enrolled_at = Time.current
-    end
+    enrollment = Enrollment.find_or_initialize_by(user:, course: @license.course)
+    enrollment.update!(
+      price: @license.price,
+      status: :active,
+      enrolled_at: enrollment.enrolled_at || Time.current
+    )
   end
 end

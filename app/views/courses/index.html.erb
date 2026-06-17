@@ -202,7 +202,8 @@ q_params = (q.respond_to?(:permit) ? q.permit!.to_h : (q.is_a?(Hash) ? q : {}))
 <%= render 'courses/skill_carousels' %>
 
 <%# ── Learning Paths ───────────────────────────────────────── %>
-<%= render 'courses/learning_paths' %>
+<%# Hardcoded learning paths hidden until dynamic content is ready. %>
+<%#= render 'courses/learning_paths' %>
 
 <%# ── Global Footer ────────────────────────────────────────── %>
 <%= render 'shared/landing_footer' %>

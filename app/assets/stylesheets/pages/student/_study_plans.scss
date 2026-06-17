@@ -163,6 +163,14 @@ $sp-transition-fast: all 0.15s ease;
   // Reset for button_to generated <button>
   background: none;
 
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+  }
+
   &--primary {
     background: $sp-primary;
     color: #fff;

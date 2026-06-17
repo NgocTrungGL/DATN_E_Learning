@@ -55,7 +55,7 @@
           </div>
           <div class="study-plan-stat">
             <span class="study-plan-stat__label">Progress</span>
-            <strong class="study-plan-stat__value"><%= @study_plan.progress_percentage %>%</strong>
+            <strong class="study-plan-stat__value" data-study-plan-progress><%= @study_plan.progress_percentage %>%</strong>
           </div>
           <div class="study-plan-stat">
             <span class="study-plan-stat__label">Hours/day</span>
@@ -74,7 +74,7 @@
         <div class="study-plan-status-box">
           <div class="study-plan-status-box__row">
             <span>Plan status</span>
-            <span class="study-plan-status study-plan-status--<%= @study_plan.status %>">
+            <span class="study-plan-status study-plan-status--<%= @study_plan.status %>" data-study-plan-status>
               <%= @study_plan.status.humanize %>
             </span>
           </div>
@@ -145,7 +145,7 @@
                           <span>•</span>
                           <span><%= item.lesson.course_module.title %></span>
                           <% if item.overdue? && !item.completed? && item.status != 'skipped' %>
-                            <span class="study-plan-pill study-plan-pill--muted">Overdue</span>
+                            <span class="study-plan-pill study-plan-pill--muted" data-overdue-pill>Overdue</span>
                           <% end %>
                         </p>
                       </div>
@@ -155,11 +155,13 @@
                       <% unless item.completed? || item.status == 'skipped' %>
                         <button class="study-plan-button study-plan-button--ghost complete-btn"
                                 data-item-id="<%= item.id %>"
+                                data-action-url="<%= complete_student_study_plan_item_path(item) %>"
                                 type="button">
                           <i class="bi bi-check2"></i> Complete
                         </button>
                         <button class="study-plan-button study-plan-button--ghost skip-btn"
                                 data-item-id="<%= item.id %>"
+                                data-action-url="<%= skip_student_study_plan_item_path(item) %>"
                                 type="button">
                           <i class="bi bi-skip-forward"></i> Skip
                         </button>
@@ -197,23 +199,116 @@
 <%# JS: use turbo:load instead of DOMContentLoaded (Turbo gotcha fix) %>
 <script>
   (function() {
+    function humanizeStatus(status) {
+      return status
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, function(char) { return char.toUpperCase(); });
+    }
+
+    function statusPillHtml(status, label) {
+      var pillClass = status === 'completed' ? 'success' : 'muted';
+      var icon = status === 'completed' ? '<i class="bi bi-check2-circle"></i> ' : '';
+      return '<span class="study-plan-pill study-plan-pill--' + pillClass + '">' +
+        icon + (label || humanizeStatus(status)) +
+      '</span>';
+    }
+
+    function setButtonsLoading(buttons, isLoading) {
+      buttons.forEach(function(button) {
+        button.disabled = isLoading;
+        if (isLoading) {
+          button.dataset.originalText = button.innerHTML;
+          button.innerHTML = '<i class="bi bi-hourglass-split"></i> Updating';
+        } else if (button.dataset.originalText) {
+          button.innerHTML = button.dataset.originalText;
+          delete button.dataset.originalText;
+        }
+      });
+    }
+
+    function updatePlanSummary(plan) {
+      if (!plan) return;
+
+      var progress = document.querySelector('[data-study-plan-progress]');
+      if (progress) progress.textContent = plan.progress_percentage + '%';
+
+      var status = document.querySelector('[data-study-plan-status]');
+      if (status) {
+        status.className = 'study-plan-status study-plan-status--' + plan.status;
+        status.textContent = plan.status_label || humanizeStatus(plan.status);
+      }
+    }
+
+    function updateLessonCard(item) {
+      var card = document.querySelector('[data-item-id="' + item.id + '"]');
+      if (!card) return;
+
+      card.classList.remove(
+        'study-plan-lesson--pending',
+        'study-plan-lesson--in_progress',
+        'study-plan-lesson--completed',
+        'study-plan-lesson--skipped',
+        'study-plan-lesson--overdue'
+      );
+      card.classList.add('study-plan-lesson--' + item.status);
+
+      var overduePill = card.querySelector('[data-overdue-pill]');
+      if (overduePill) overduePill.remove();
+
+      var actions = card.querySelector('.study-plan-lesson__actions');
+      if (actions) {
+        actions.innerHTML = statusPillHtml(item.status, item.status_label);
+      }
+    }
+
+    function showActionError(buttons, message) {
+      var primaryButton = buttons[0];
+      if (!primaryButton) return;
+
+      primaryButton.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Retry';
+      primaryButton.title = message || 'Could not update this item.';
+    }
+
+    function submitItemAction(button, actionUrl) {
+      var card = button.closest('.study-plan-lesson');
+      var buttons = card ? Array.from(card.querySelectorAll('.complete-btn, .skip-btn')) : [button];
+      var csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (!csrfToken) return;
+
+      setButtonsLoading(buttons, true);
+
+      fetch(actionUrl, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': csrfToken.content,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+      .then(function(response) {
+        return response.json().then(function(data) {
+          if (!response.ok || !data.success) {
+            throw new Error(data.error || 'Could not update this item.');
+          }
+          return data;
+        });
+      })
+      .then(function(data) {
+        updateLessonCard(data.item);
+        updatePlanSummary(data.item.plan);
+      })
+      .catch(function(error) {
+        setButtonsLoading(buttons, false);
+        showActionError(buttons, error.message);
+      });
+    }
+
     function initStudyPlanActions() {
       document.querySelectorAll('.complete-btn').forEach(function(btn) {
         if (btn.dataset.bound) return;
         btn.dataset.bound = '1';
         btn.addEventListener('click', function() {
-          var itemId = this.dataset.itemId;
-          var csrfToken = document.querySelector('meta[name="csrf-token"]');
-          if (!csrfToken) return;
-          fetch('/student/study_plan_items/' + itemId + '/complete', {
-            method: 'POST',
-            headers: {
-              'X-CSRF-Token': csrfToken.content,
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(function(r) { return r.json(); })
-          .then(function(data) { if (data.success) location.reload(); });
+          submitItemAction(this, this.dataset.actionUrl);
         });
       });
 
@@ -221,18 +316,7 @@
         if (btn.dataset.bound) return;
         btn.dataset.bound = '1';
         btn.addEventListener('click', function() {
-          var itemId = this.dataset.itemId;
-          var csrfToken = document.querySelector('meta[name="csrf-token"]');
-          if (!csrfToken) return;
-          fetch('/student/study_plan_items/' + itemId + '/skip', {
-            method: 'POST',
-            headers: {
-              'X-CSRF-Token': csrfToken.content,
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(function(r) { return r.json(); })
-          .then(function(data) { if (data.success) location.reload(); });
+          submitItemAction(this, this.dataset.actionUrl);
         });
       });
     }

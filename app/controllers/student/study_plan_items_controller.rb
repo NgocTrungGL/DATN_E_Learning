@@ -27,14 +27,12 @@ class Student::StudyPlanItemsController < Student::BaseController
       current_user.learning_streak_record.update_streak!(Date.current)
 
       # Update progress tracking
-      ProgressTracking.find_or_create_by!(
+      tracking = ProgressTracking.find_or_initialize_by(
         user: current_user,
         course: @item.lesson.course,
         lesson: @item.lesson
-      ) do |tracking|
-        tracking.status = :completed
-        tracking.progress_value = 100
-      end
+      )
+      tracking.update!(status: :completed, progress_value: 100)
 
       # Check if plan is complete
       check_plan_completion
@@ -67,12 +65,20 @@ class Student::StudyPlanItemsController < Student::BaseController
   end
 
   def item_json
+    plan = @item.study_plan.reload
+
     {
       id: @item.id,
       status: @item.status,
+      status_label: @item.status.humanize,
       lesson_id: @item.lesson_id,
       scheduled_date: @item.scheduled_date,
-      actual_completed_at: @item.actual_completed_at
+      actual_completed_at: @item.actual_completed_at,
+      plan: {
+        status: plan.status,
+        status_label: plan.status.humanize,
+        progress_percentage: plan.progress_percentage
+      }
     }
   end
 
