@@ -6,7 +6,7 @@ class Business::EmployeesController < ApplicationController
   def index
     @employees = current_user
                  .organization.users
-                 .where(role: :student)
+                 .where(role: %i[student employee])
                  .order(created_at: :desc)
   end
 
@@ -18,6 +18,7 @@ class Business::EmployeesController < ApplicationController
     @employee = User.new(employee_params)
     @employee.organization = current_user.organization
     @employee.role = :employee
+    @employee.skip_confirmation!
 
     if @employee.save
       redirect_to business_employees_path,

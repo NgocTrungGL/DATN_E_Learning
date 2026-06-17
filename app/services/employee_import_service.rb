@@ -33,15 +33,15 @@ class EmployeeImportService
       return
     end
 
-    user = User.create!(
+    user = User.new(
       email: email,
       name: name.presence || email.split("@").first,
-      phone: phone,
       password: SecureRandom.hex(8),
       role: :student,
-      organization_id: @organization.id,
-      confirmed_at: Time.current
+      organization_id: @organization.id
     )
+    user.skip_confirmation!
+    user.save!
 
     if department.present?
       user.build_profile(department: department)

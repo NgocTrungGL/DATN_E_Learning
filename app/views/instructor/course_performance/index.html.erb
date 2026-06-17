@@ -34,7 +34,7 @@
           <div class="perf-metric">
             <span class="perf-metric__value">
               <% rev = course.enrollments.sum { |e| e.price.to_f * 0.7 }.round %>
-              <%= number_to_currency(rev, unit: "", precision: 0) %>
+              <%= format_vnd(rev) %>
             </span>
             <span class="perf-metric__label">Revenue</span>
           </div>

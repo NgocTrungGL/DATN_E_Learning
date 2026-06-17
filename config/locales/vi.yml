@@ -241,4 +241,6 @@ vi:
   subscriptions:
     invalid_plan: "Gói đăng ký không hợp lệ."
     no_active_subscription: "Bạn không có gói đăng ký đang hoạt động."
+    activated_successfully: "Gói đăng ký của bạn đã được kích hoạt."
+    already_active: "Bạn đã có gói đăng ký đang hoạt động. Hãy hủy gia hạn trước khi đăng ký gói khác."
     canceled_successfully: "Gói đăng ký đã được hủy thành công. Bạn có thể tiếp tục sử dụng đến cuối kỳ thanh toán."

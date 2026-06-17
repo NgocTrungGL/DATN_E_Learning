@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_17_093000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -331,7 +331,9 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "expires_at"
+    t.bigint "invoice_id"
     t.index ["course_id"], name: "index_licenses_on_course_id"
+    t.index ["invoice_id"], name: "index_licenses_on_invoice_id"
     t.index ["organization_id", "course_id", "status"], name: "index_licenses_on_organization_id_and_course_id_and_status"
     t.index ["organization_id"], name: "index_licenses_on_organization_id"
     t.index ["user_id"], name: "index_licenses_on_user_id"
@@ -577,6 +579,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
     t.datetime "current_period_end"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "cancel_at_period_end", default: false, null: false
+    t.datetime "canceled_at"
     t.index ["stripe_subscription_id"], name: "index_subscriptions_on_stripe_subscription_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id", unique: true
   end
@@ -681,6 +685,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_06_000003) do
   add_foreign_key "learning_streaks", "users"
   add_foreign_key "lessons", "course_modules", on_delete: :cascade
   add_foreign_key "licenses", "courses"
+  add_foreign_key "licenses", "invoices"
   add_foreign_key "licenses", "organizations"
   add_foreign_key "licenses", "users"
   add_foreign_key "message_reactions", "discussion_messages"

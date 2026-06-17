@@ -110,9 +110,9 @@ class Instructor::CoursesController < Instructor::BaseController
     in_progress = [@active_students - completed, 0].max
     not_started = @total_students - @active_students
     @completion_chart = {
-      "Hoan thanh" => completed,
-      "Dang hoc" => in_progress,
-      "Chua hoc" => not_started
+      "Completed" => completed,
+      "In Progress" => in_progress,
+      "Not Started" => not_started
     }
   end
 

@@ -54,18 +54,24 @@
       ]
     }
   ]
+  current_plan_details = plans.find { |plan| plan[:key] == @current_plan }
+  has_paid_subscription = @current_subscription.present? && @current_plan != "free"
 %>
 
 <div class="subscriptions-page">
 
   <%# ── Page Header ────────────────────────────────────────── %>
   <div class="subs-hero">
-    <div class="container">
-      <div class="text-center">
-        <span class="subs-badge">💳 Pricing Plans</span>
-        <h1 class="subs-title">Invest in Your Future</h1>
+    <div class="subscriptions-page__inner">
+      <div class="subscriptions-page__hero-content">
+        <span class="subs-badge"><i class="bi bi-credit-card"></i> <%= has_paid_subscription ? "Subscription" : "Pricing Plans" %></span>
+        <h1 class="subs-title"><%= has_paid_subscription ? "Manage Your Plan" : "Invest in Your Future" %></h1>
         <p class="subs-subtitle">
-          Flexible plans for every stage of your journey. Start free, scale when you're ready.
+          <% if has_paid_subscription %>
+            Track your billing cycle, access level, and renewal settings in one place.
+          <% else %>
+            Flexible plans for every stage of your journey. Start free, scale when you're ready.
+          <% end %>
         </p>
 
         <%# Show current plan badge if logged in %>
@@ -83,8 +89,100 @@
     </div>
   </div>
 
-  <%# ── Pricing Grid ────────────────────────────────────────── %>
-  <div class="container">
+  <%# ── Active Subscription Manager ─────────────────────────── %>
+  <div class="subscriptions-page__inner">
+    <% if has_paid_subscription && current_plan_details %>
+      <section class="subscription-manager" aria-labelledby="subscription-manager-title">
+        <div class="subscription-manager__main">
+          <div class="subscription-manager__header">
+            <div class="subscription-manager__icon">
+              <i class="bi bi-credit-card-2-front"></i>
+            </div>
+            <div>
+              <div class="subscription-manager__eyebrow">
+                <i class="bi bi-patch-check-fill"></i>
+                Active subscription
+              </div>
+              <h2 id="subscription-manager-title" class="subscription-manager__title">
+                <%= current_plan_details[:name] %> Plan
+              </h2>
+            </div>
+          </div>
+
+          <p class="subscription-manager__description">
+            <%= current_plan_details[:description] %>
+          </p>
+
+          <div class="subscription-manager__stats">
+            <div class="subscription-manager__stat">
+              <span>Status</span>
+              <strong><%= @current_subscription.status.humanize %></strong>
+            </div>
+            <div class="subscription-manager__stat">
+              <span><%= @current_subscription.cancel_at_period_end? ? "Access ends" : "Next renewal" %></span>
+              <strong>
+                <%= @current_subscription.current_period_end&.strftime("%d/%m/%Y") || "Not available" %>
+              </strong>
+            </div>
+            <div class="subscription-manager__stat">
+              <span>Monthly price</span>
+              <strong><%= number_to_currency(current_plan_details[:price_vnd], unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %></strong>
+            </div>
+          </div>
+
+          <ul class="subscription-manager__features">
+            <% current_plan_details[:features].select { |feature| feature[:ok] }.each do |feature| %>
+              <li>
+                <i class="bi bi-check-circle-fill"></i>
+                <%= feature[:text] %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+
+        <aside class="subscription-manager__actions">
+          <div class="subscription-manager__price-card">
+            <span>Monthly billing</span>
+            <strong><%= number_to_currency(current_plan_details[:price_vnd], unit: "₫", format: "%n %u", precision: 0, delimiter: ".") %></strong>
+            <small>Auto-renews every month</small>
+          </div>
+
+          <% if @current_subscription.cancel_at_period_end? %>
+            <div class="subscription-manager__notice subscription-manager__notice--warning">
+              <i class="bi bi-clock-history"></i>
+              Renewal is canceled. You keep access until the end of this billing period.
+            </div>
+          <% else %>
+            <div class="subscription-manager__notice">
+              <i class="bi bi-arrow-repeat"></i>
+              Your plan renews automatically each month.
+            </div>
+            <% if @current_subscription.stripe_subscription_id.present? %>
+              <%= button_to subscription_path(@current_subscription),
+                             method: :delete,
+                             class: "subscription-manager__cancel",
+                             data: { confirm: "Cancel renewal for your #{current_plan_details[:name]} plan? You will retain access until the end of the current billing cycle." } do %>
+                <i class="bi bi-x-circle"></i> Cancel renewal
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <%= link_to courses_path, class: "subscription-manager__browse" do %>
+            <i class="bi bi-compass"></i>
+            Browse included courses
+          <% end %>
+        </aside>
+      </section>
+    <% end %>
+
+    <%# ── Pricing Grid ──────────────────────────────────────── %>
+    <% if has_paid_subscription %>
+      <div class="pricing-section-heading">
+        <span>Plan comparison</span>
+        <h2>Available plans</h2>
+      </div>
+    <% end %>
+
     <div class="pricing-grid">
       <% plans.each do |plan| %>
         <%
@@ -138,39 +236,32 @@
           <div class="pricing-card__cta">
             <% if is_active %>
               <%# Current plan - show cancel option for paid plans %>
-              <% if !is_free && @current_subscription&.stripe_subscription_id %>
-                <button class="btn-plan btn-plan--current" disabled>
-                  <i class="bi bi-patch-check-fill"></i> Current Plan
-                </button>
-                <%= button_to subscription_path(@current_subscription),
-                               method: :delete,
-                               class: "btn-plan-cancel",
-                               data: { confirm: "Are you sure you want to cancel your #{plan[:name]} plan? You will retain access until the end of the current billing cycle." } do %>
-                  <i class="bi bi-x-circle"></i> Cancel Subscription
-                <% end %>
-              <% else %>
-                <button class="btn-plan btn-plan--current" disabled>
-                  <i class="bi bi-patch-check-fill"></i> Current Plan
-                </button>
-              <% end %>
+              <button class="subscription-plan-button subscription-plan-button--current" disabled>
+                <i class="bi bi-patch-check-fill"></i> Current Plan
+              </button>
             <% elsif is_free %>
               <%# Free plan CTA %>
               <% if user_signed_in? %>
-                <a href="<%= courses_path %>" class="btn-plan btn-plan--outline" id="free-plan-cta">
+                <a href="<%= courses_path %>" class="subscription-plan-button subscription-plan-button--outline" id="free-plan-cta">
                   <i class="bi bi-compass"></i> Explore Courses
                 </a>
               <% else %>
-                <%= link_to new_user_registration_path, class: "btn-plan btn-plan--outline", id: "free-plan-register" do %>
+                <%= link_to new_user_registration_path, class: "subscription-plan-button subscription-plan-button--outline", id: "free-plan-register" do %>
                   <i class="bi bi-person-plus"></i> Get Started Free
                 <% end %>
               <% end %>
             <% else %>
               <%# Paid plan CTA %>
-              <% if user_signed_in? %>
+              <% if has_paid_subscription %>
+                <button class="subscription-plan-button subscription-plan-button--outline" disabled>
+                  <i class="bi bi-lock-fill"></i>
+                  Manage current plan
+                </button>
+              <% elsif user_signed_in? %>
                 <%= button_to subscriptions_path,
                                method: :post,
                                params: { plan: plan[:key] },
-                               class: "btn-plan #{is_popular ? 'btn-plan--solid' : 'btn-plan--outline'}",
+                               class: "subscription-plan-button #{is_popular ? 'subscription-plan-button--primary' : 'subscription-plan-button--outline'}",
                                data: { turbo: false },
                                id: "subscribe-#{plan[:key]}" do %>
                   <i class="bi bi-lightning-charge-fill"></i>
@@ -178,7 +269,7 @@
                 <% end %>
               <% else %>
                 <%= link_to new_user_session_path,
-                            class: "btn-plan #{is_popular ? 'btn-plan--solid' : 'btn-plan--outline'}",
+                            class: "subscription-plan-button #{is_popular ? 'subscription-plan-button--primary' : 'subscription-plan-button--outline'}",
                             id: "login-for-#{plan[:key]}" do %>
                   <i class="bi bi-box-arrow-in-right"></i> Login to Subscribe
                 <% end %>
@@ -207,7 +298,7 @@
   </div>
 
   <%# ── FAQ ─────────────────────────────────────────────────── %>
-  <div class="container">
+  <div class="subscriptions-page__inner">
     <div class="subs-faq">
       <h2 class="subs-faq__title">Frequently Asked Questions</h2>
       <div class="subs-faq__grid">

@@ -14,7 +14,7 @@
     <div class="admin-stats__card admin-stats__card--accent">
       <i class="bi bi-safe2-fill admin-stats__icon"></i>
       <div class="admin-stats__value">
-        <%= number_to_currency(@wallet.balance, unit: "VND", precision: 0, format: "%n %u") %>
+        <%= format_vnd(@wallet.balance) %>
       </div>
       <div class="admin-stats__label">Admin Wallet (30% Fee)</div>
       <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Amount you can withdraw</div>
@@ -23,7 +23,7 @@
     <div class="admin-stats__card admin-stats__card--success">
       <i class="bi bi-graph-up-arrow admin-stats__icon"></i>
       <div class="admin-stats__value">
-        <%= number_to_currency(@total_platform_revenue, unit: "VND", precision: 0, format: "%n %u") %>
+        <%= format_vnd(@total_platform_revenue) %>
       </div>
       <div class="admin-stats__label">Total Revenue (Lifetime)</div>
       <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Total 30% fee collected to date</div>
@@ -32,7 +32,7 @@
     <div class="admin-stats__card admin-stats__card--warning">
       <i class="bi bi-bank admin-stats__icon"></i>
       <div class="admin-stats__value">
-        <%= number_to_currency(@total_system_balance, unit: "VND", precision: 0, format: "%n %u") %>
+        <%= format_vnd(@total_system_balance) %>
       </div>
       <div class="admin-stats__label">Total System Hold</div>
       <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.25rem;">Total balance across all wallets (Admin + Instructors)</div>
@@ -114,13 +114,13 @@
                 <% end %>
               </td>
               <td style="font-weight:800; font-size:1.05rem; color:#10b981;">
-                +<%= number_to_currency(txn.amount, unit: "VND", precision: 0, format: "%n %u") %>
+                +<%= format_vnd(txn.amount) %>
               </td>
               <td>
                 <% if txn.source.is_a?(Enrollment) %>
                   <div class="admin-table__title"><%= txn.source.course.title %></div>
                   <div class="admin-table__sub">
-                    Base price: <%= number_to_currency(txn.source.price, unit: "VND", precision: 0) %>
+                    Paid amount: <%= format_vnd(txn.source.price) %>
                     | Student: <%= txn.source.user.name %>
                   </div>
                 <% end %>

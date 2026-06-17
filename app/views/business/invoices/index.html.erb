@@ -44,7 +44,7 @@
                   <%= inv.quantity %> seats
                 </td>
                 <td style="text-align: right; font-weight: 700; font-size: 0.9rem; color: #0f172a;">
-                  <%= number_to_currency(inv.total_amount) %>
+                  <%= format_vnd(inv.total_amount) %>
                 </td>
                 <td style="text-align: center;">
                   <span class="badge <%= inv.paid? ? 'badge--success' : (inv.pending? ? 'badge--warning' : 'badge--danger') %>">

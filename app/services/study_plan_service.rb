@@ -84,7 +84,7 @@ class StudyPlanService
       total_seconds = activities.sum(:duration_seconds)
       avg_hours_per_day = active_days.positive? ? (total_seconds.to_f / active_days / 3600) : DEFAULT_DAILY_HOURS
 
-      # Calculate preferred study days (day of week: 0=Sunday, 1=Monday, etc.)
+      # Calculate preferred study days (Date#wday: 0=Sunday, 1=Monday, etc.)
       preferred_days = calculate_preferred_days(activities)
 
       # Calculate average lesson duration
@@ -304,15 +304,27 @@ class StudyPlanService
     end
 
     def calculate_preferred_days(activities)
-      return [1, 2, 3, 4, 5, 6, 7] if activities.empty?
+      return (0..6).to_a if activities.empty?
 
       # Count activities by day of week
-      day_counts = activities.group("DAYOFWEEK(activity_date)")
+      day_counts = activities.group(Arel.sql(day_of_week_sql))
                              .count
 
       # Return all days with activities, sorted by activity count
       day_counts.sort_by { |_day, count| -count }
-                .map { |day, _count| day }
+                .map { |day, _count| day.to_i }
+    end
+
+    def day_of_week_sql
+      adapter = ActiveRecord::Base.connection_db_config.adapter.downcase
+
+      if adapter.include?("postgres")
+        "EXTRACT(DOW FROM activity_date)::integer"
+      elsif adapter.include?("mysql")
+        "(DAYOFWEEK(activity_date) - 1)"
+      else
+        "CAST(strftime('%w', activity_date) AS integer)"
+      end
     end
 
     def next_available_date(date, preferred_times, profile)

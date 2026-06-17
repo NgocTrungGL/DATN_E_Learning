@@ -4,8 +4,9 @@ class QuizAnswersController < ApplicationController
   before_action :set_quiz
 
   def create
-    return if redirect_if_random_quiz
     return if render_forbidden_if_finished
+
+    authorize! :update, @quiz_attempt
 
     @answer = find_answer
     update_answer_selection if @answer
@@ -27,16 +28,6 @@ class QuizAnswersController < ApplicationController
   end
 
   # ===== Guard clauses =====
-
-  def redirect_if_random_quiz
-    return false unless @quiz.random_selection?
-
-    redirect_to(
-      admin_quiz_path(@quiz),
-      alert: "Không thể thêm câu hỏi thủ công vào bài thi Random."
-    )
-    true
-  end
 
   def render_forbidden_if_finished
     return false unless @quiz_attempt.completed? || @quiz_attempt.expired?

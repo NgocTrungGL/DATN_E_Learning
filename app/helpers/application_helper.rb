@@ -21,6 +21,10 @@ module ApplicationHelper
     current_user.notes.where(lesson:).count
   end
 
+  def format_vnd amount
+    number_to_currency(amount || 0, unit: "VND", format: "%n %u", precision: 0, delimiter: ".")
+  end
+
   # Design system colors for use in views
   def ds_primary
     "#2563eb"

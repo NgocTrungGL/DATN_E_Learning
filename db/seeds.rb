@@ -1,67 +1,76 @@
 # frozen_string_literal: true
-# =============================================================================
-# db/seeds.rb — EDTECH PLATFORM · Production-Grade Seed Data
-# =============================================================================
-#
-#   bundle exec rails db:seed
-#
-#   Runtime:  ~25–45 min depending on hardware
-#   Rails:    7.0  |  Ruby >= 2.7  |  MySQL 8.0 (utf8mb4)
-#
-#   Scale:
-#     Users              ~5,011  (1 admin · 10 B2B · 200 instructors · 4,800 students)
-#     Categories         ~130    (22 main + ~108 sub)
-#     Courses            ~510+
-#     Modules / Lessons  ~3,500 / ~22,000
-#     Enrollments        ~65,000
-#     Reviews            ~12,000
-#     Comments           ~55,000
-#     Progress trackings ~300,000+
-#     All other tables   fully populated
-#
-#   Demo credentials (all accounts use same password):
-#     Admin:       admin@edtech.dev
-#     Instructor:  nguyen.minh.duc@gmail.com
-#     Student:     (any generated student email)
-#     B2B:         learning-admin@zigexn.vn
-#     Password:    Demo@12345!
-#
-#   Structure:
-#     seeds_part1.rb  —  Helpers, constants, data arrays (names, review text, comments)
-#     seeds_part2.rb  —  Category definitions + Course title pool (510+ courses)
-#     seeds_part3.rb  —  Quiz question pools + Module/lesson templates + Media assets
-#     seeds_part4.rb  —  Steps  0–6  : Truncate · Org · Users · Profiles · Wallets
-#                                       Subscriptions · InstructorProfiles · Categories
-#     seeds_part5.rb  —  Step   7    : Courses · Modules · Lessons · Quizzes
-#                                       Questions · QuestionOptions · QuizQuestions
-#     seeds_part6.rb  —  Steps  8–9  : Enrollments · Progress Trackings
-#     seeds_part7.rb  —  Steps 10–12 : Reviews · Quiz Attempts · Quiz Answers · Certificates
-#     seeds_part8.rb  —  Steps 13–14 : Comments · Discussion Posts/Replies/Messages
-#     seeds_part9.rb  —  Steps 15–16 : Notes · Wishlists · Carts · Coupons
-#                                       Wallet Transactions · Payout Requests
-#                                       Notifications · Course Similarities
-#                                       User Recommendations · Message Reactions
-#                                       Licenses · Invoices · Final Activation
-# =============================================================================
+# ============================================================
+# db/seeds.rb — Production Seed Data for EdTech Platform
+# ============================================================
+# Usage:    rails db:seed
+# Reset:    rails db:reset && rails db:seed
+# Requires: bcrypt gem (already in Gemfile with Devise)
+# ============================================================
 
-SEED_DIR = __dir__   # same directory as this file (db/)
+require 'bcrypt'
+require 'securerandom'
+require 'set'
 
-def load_seed_part(filename)
-  path = File.join(SEED_DIR, filename)
-  puts "\n#{'=' * 72}"
-  puts "  Loading #{filename}"
-  puts "  #{'-' * 68}"
-  $stdout.flush
-  load path
+Dir[Rails.root.join('db/seeds/*.rb')].sort.each { |f| require f }
+
+puts "\n🌱  Production Seed Data Generator"
+puts "=" * 60
+
+ActiveRecord::Base.transaction do
+  SeedHelpers.setup!
+
+  puts "\n[1/10] Organizations & Users..."
+  SeedOrganizationsAndUsers.run!
+
+  puts "\n[2/10] Categories..."
+  SeedCategories.run!
+
+  puts "\n[3/10] Courses & Content..."
+  SeedCoursesAndContent.run!
+
+  puts "\n[4/10] Quizzes & Questions..."
+  SeedQuizzes.run!
+
+  puts "\n[5/10] Enrollments, Licenses & Coupons..."
+  SeedEnrollments.run!
+
+  puts "\n[6/10] Reviews & Comments..."
+  SeedReviewsAndComments.run!
+
+  puts "\n[7/10] Progress Tracking & Quiz Attempts..."
+  SeedProgress.run!
+
+  puts "\n[8/10] Learning Activities, Streaks & Goals..."
+  SeedLearningActivities.run!
+
+  puts "\n[9/10] Certificates, Wallets & Notifications..."
+  SeedCertificatesAndWallets.run!
+
+  puts "\n[10/10] Discussions, Study Plans & Recommendations..."
+  SeedMisc.run!
 end
 
-# Parts must be loaded in order — later parts query data created by earlier ones.
-load_seed_part 'seeds_part1.rb'
-load_seed_part 'seeds_part2.rb'
-load_seed_part 'seeds_part3.rb'
-load_seed_part 'seeds_part4.rb'
-load_seed_part 'seeds_part5.rb'
-load_seed_part 'seeds_part6.rb'
-load_seed_part 'seeds_part7.rb'
-load_seed_part 'seeds_part8.rb'
-load_seed_part 'seeds_part9.rb'
+puts "\n" + "=" * 60
+puts "✅  Seed complete!"
+puts "-" * 60
+puts "   Users total:     #{User.count}"
+puts "   → Admins:        #{User.where(role: 'admin').count}"
+puts "   → Instructors:   #{User.where(role: 'instructor').count}"
+puts "   → Students:      #{User.where(role: 'student').count}"
+puts "   Categories:      #{Category.count}"
+puts "   Courses:         #{Course.count} (#{Course.published.count} published)"
+puts "   Modules:         #{CourseModule.count}"
+puts "   Lessons:         #{Lesson.count}"
+puts "   Quizzes:         #{Quiz.count}"
+puts "   Questions:       #{Question.count}"
+puts "   Enrollments:     #{Enrollment.count}"
+puts "   Reviews:         #{Review.count}"
+puts "   Comments:        #{Comment.count}"
+puts "   Activities:      #{LearningActivity.count}"
+puts "   Certificates:    #{Certificate.count}"
+puts "   Study Plans:     #{StudyPlan.count}"
+puts "=" * 60
+
+# ── Quick-activate command (idempotent) ───────────────────
+puts "\n💡 All users pre-confirmed. Run this to activate any stragglers:"
+puts "   User.update_all(confirmed_at: Time.current)"

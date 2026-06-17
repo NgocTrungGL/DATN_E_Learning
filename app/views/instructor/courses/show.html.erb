@@ -46,7 +46,7 @@
           <div class="course-detail-card__info-row">
             <span class="course-detail-card__info-label">Price</span>
             <span class="course-detail-card__info-value">
-              <%= @course.price.zero? ? 'Free' : number_to_currency(@course.price, unit: '', precision: 0) + ' VND' %>
+              <%= @course.price.zero? ? 'Free' : format_vnd(@course.price) %>
             </span>
           </div>
           <div class="course-detail-card__info-row">

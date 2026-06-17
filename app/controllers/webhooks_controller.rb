@@ -42,7 +42,7 @@ class WebhooksController < ApplicationController
     return unless user
 
     if session.metadata["type"] == "subscription"
-      handle_subscription_checkout(user, session)
+      handle_subscription_checkout(session)
     elsif cart_checkout?(session)
       handle_cart_checkout(user, session)
     elsif session.metadata["purchase_type"] == "license"
@@ -57,36 +57,25 @@ class WebhooksController < ApplicationController
   end
 
   def handle_cart_checkout user, session
-    courses = Course.where(id: session.metadata["course_ids"].split(","))
+    courses = Course.where(id: session.metadata["course_ids"].to_s.split(","))
+    amounts_by_course_id = cart_course_amounts(session)
+    fallback_amount = courses.any? ? session.amount_total.to_i / courses.count : 0
+
     courses.each do |course|
-      enroll_user(user, course, session.amount_total / courses.count)
+      amount = amounts_by_course_id.fetch(course.id.to_s, fallback_amount)
+      enroll_user(user, course, amount)
     end
     use_coupon(session.metadata["promo_code"])
   end
 
+  def cart_course_amounts session
+    JSON.parse(session.metadata["course_amounts"].presence || "{}")
+  rescue JSON::ParserError
+    {}
+  end
+
   def handle_license_checkout user, session
-    org_id = session.metadata["organization_id"]
-    course_id = session.metadata["course_id"]
-    quantity = session.metadata["quantity"].to_i
-    unit_price = session.amount_total.to_i / quantity
-
-    organization = Organization.find_by(id: org_id)
-    course = Course.find_by(id: course_id)
-    return unless organization && course
-
-    expires_at = 1.year.from_now
-
-    service = LicensePurchaseService.new(organization, course, quantity, unit_price, expires_at:)
-    invoice = service.call
-
-    if invoice
-      invoice.update!(
-        stripe_session_id: session.id,
-        stripe_payment_intent: session.payment_intent,
-        status: :paid,
-        paid_at: Time.current
-      )
-    end
+    LicenseCheckoutFulfillmentService.new(session).call
   end
 
   def handle_course_checkout user, session
@@ -94,11 +83,8 @@ class WebhooksController < ApplicationController
     enroll_user(user, course, session.amount_total) if course
   end
 
-  def handle_subscription_checkout user, session
-    plan = session.metadata["plan"]
-    return if plan.blank?
-
-    upsert_subscription(user, subscription_attributes(plan, session))
+  def handle_subscription_checkout session
+    SubscriptionCheckoutFulfillmentService.new(session).call
   end
 
   def use_coupon promo_code
@@ -109,10 +95,12 @@ class WebhooksController < ApplicationController
 
   def enroll_user user, course, amount
     enrollment = Enrollment.find_or_initialize_by(user:, course:)
-    enrollment.update(
+    return unless enrollment.update(
       price: amount,
       status: :active
     )
+
+    DistributeRevenueService.new(enrollment).perform
   end
 
   # -- Subscription lifecycle handlers --
@@ -124,9 +112,11 @@ class WebhooksController < ApplicationController
     return unless subscription
 
     subscription.update!(
-      status:               stripe_sub.status,
-      current_period_start: Time.zone.at(stripe_sub.current_period_start),
-      current_period_end:   Time.zone.at(stripe_sub.current_period_end)
+      status: normalized_subscription_status(stripe_value(stripe_sub, :status)),
+      current_period_start: stripe_period_start(stripe_sub),
+      current_period_end: stripe_period_end(stripe_sub),
+      cancel_at_period_end: stripe_value(stripe_sub, :cancel_at_period_end) || false,
+      canceled_at: stripe_timestamp_to_time(stripe_value(stripe_sub, :canceled_at))
     )
   end
 
@@ -136,7 +126,11 @@ class WebhooksController < ApplicationController
     subscription = Subscription.find_by(stripe_subscription_id: stripe_sub.id)
     return unless subscription
 
-    subscription.update!(status: :canceled)
+    subscription.update!(
+      status: :canceled,
+      cancel_at_period_end: false,
+      canceled_at: stripe_timestamp_to_time(stripe_value(stripe_sub, :canceled_at)) || Time.current
+    )
   end
 
   # Called on `invoice.payment_failed`
@@ -150,29 +144,37 @@ class WebhooksController < ApplicationController
     subscription.update!(status: :past_due)
   end
 
-  def subscription_attributes plan, session
-    {
-      plan_type: plan,
-      status: "active",
-      stripe_subscription_id: session.subscription,
-      stripe_customer_id: session.customer,
-      current_period_start: Time.current,
-      current_period_end: subscription_period_end(session)
-    }
+  def normalized_subscription_status status
+    status = status.to_s
+    return status if Subscription.statuses.key?(status)
+
+    "active"
   end
 
-  def subscription_period_end session
-    return 1.month.from_now if session.subscription.blank?
-
-    stripe_sub = Stripe::Subscription.retrieve(session.subscription)
-    Time.zone.at(stripe_sub.current_period_end)
+  def stripe_period_start stripe_sub
+    timestamp = stripe_value(stripe_sub, :current_period_start) ||
+                stripe_value(stripe_subscription_item(stripe_sub), :current_period_start)
+    Time.zone.at(timestamp) if timestamp
   end
 
-  def upsert_subscription user, attrs
-    if user.subscription
-      user.subscription.update!(attrs)
-    else
-      user.create_subscription!(attrs)
-    end
+  def stripe_period_end stripe_sub
+    timestamp = stripe_value(stripe_sub, :current_period_end) ||
+                stripe_value(stripe_subscription_item(stripe_sub), :current_period_end)
+    Time.zone.at(timestamp) if timestamp
   end
+
+  def stripe_subscription_item stripe_sub
+    stripe_sub&.items&.data&.first
+  end
+
+  def stripe_timestamp_to_time timestamp
+    Time.zone.at(timestamp) if timestamp
+  end
+
+  def stripe_value object, key
+    object&.[](key.to_s)
+  rescue NoMethodError
+    nil
+  end
+
 end

@@ -84,21 +84,29 @@ class CheckoutsController < ApplicationController
   # ================= PRICE =================
 
   def unit_price course
-    price = course.price
-    price *= 0.9 if license_discount?
-
-    # Apply session coupon if exists for this course
     course_id = course.id.to_s
     session_coupon_code = session[:course_coupons]&.dig(course_id)
+
     if session_coupon_code.present?
       coupon = active_manual_coupon(session_coupon_code)
       if coupon && (coupon.specific_course? && coupon.course_id == course.id || coupon.global?)
-        price -= coupon.percentage? ? course.price * coupon.discount_value / 100.0 : coupon.discount_value
-        price = [price, 0].max
+        price = manual_coupon_price(course, coupon)
+        price *= 0.9 if license_discount?
+        return price.to_i
       end
     end
 
+    price = course.has_discount? ? course.discounted_price : course.price
+    price *= 0.9 if license_discount?
     price.to_i
+  end
+
+  def manual_coupon_price course, coupon
+    if coupon.percentage?
+      course.price * (1 - coupon.discount_value / 100.0)
+    else
+      [course.price - coupon.discount_value, 0].max
+    end
   end
 
   def formatted_price course
@@ -172,6 +180,7 @@ class CheckoutsController < ApplicationController
       user_id: current_user.id,
       type: "cart",
       course_ids: current_user.cart.course_ids.join(","),
+      course_amounts: cart_course_amounts.to_json,
       session_coupons: session[:course_coupons]&.to_json
     }
   end
@@ -190,12 +199,21 @@ class CheckoutsController < ApplicationController
   end
 
   def build_line_items cart
+    @cart_course_amounts = {}
+
     cart.cart_items.map do |item|
       course_id = item.course_id.to_s
       session_coupon_code = session[:course_coupons]&.dig(course_id)
       coupon = active_manual_coupon(session_coupon_code)
-      build_cart_line_item(item, discounted_unit_amount(item.course, coupon))
+      unit_amount = discounted_unit_amount(item.course, coupon)
+      @cart_course_amounts[course_id] = unit_amount
+
+      build_cart_line_item(item, unit_amount)
     end
+  end
+
+  def cart_course_amounts
+    @cart_course_amounts ||= {}
   end
 
   def active_manual_coupon promo_code

@@ -61,6 +61,8 @@ class Ability
     can :destroy, Comment, user_id: @user.id
     can :manage, Note, user_id: @user.id
 
+    quiz_attempt_rules
+
     # Discussion permissions
     can :read, DiscussionPost
     can :create, DiscussionPost
@@ -72,6 +74,22 @@ class Ability
     can :read, DiscussionMessage
     can :create, DiscussionMessage
     can :destroy, DiscussionMessage, user_id: @user.id
+  end
+
+  def quiz_attempt_rules
+    can :read, Quiz do |quiz|
+      quiz.lesson&.free_preview? || can?(:access_content, quiz.course)
+    end
+
+    can :create, QuizAttempt
+
+    can [:read, :update, :finish], QuizAttempt, user_id: @user.id
+
+    can :review, QuizAttempt do |attempt|
+      attempt.user_id == @user.id && attempt.completed? && attempt.is_passed?
+    end
+
+    can :manage, QuizAnswer, quiz_attempt: { user_id: @user.id }
   end
 
   #############################################################
@@ -127,6 +145,9 @@ class Ability
     can [:read, :update, :destroy], Question, created_by: @user.id
     can :manage, QuizQuestion, quiz: { created_by: @user.id }
     can :read, QuizAttempt, quiz: { created_by: @user.id }
+    can :review, QuizAttempt do |attempt|
+      attempt.quiz.course.created_by == @user.id
+    end
   end
 
   def instructor_enrollment_rules

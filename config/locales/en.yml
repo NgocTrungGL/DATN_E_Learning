@@ -272,4 +272,6 @@ en:
   subscriptions:
     invalid_plan: "Invalid plan selected."
     no_active_subscription: "You don't have an active subscription."
+    activated_successfully: "Your subscription is now active."
+    already_active: "You already have an active subscription. Cancel renewal before starting another plan."
     canceled_successfully: "Subscription canceled successfully. You will retain access until the end of the billing period."

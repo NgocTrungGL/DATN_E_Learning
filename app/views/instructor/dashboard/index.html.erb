@@ -51,10 +51,10 @@
 
     <div class="kpi-card kpi-card--highlight">
       <div class="kpi-card__icon kpi-card__icon--warning">
-        <i class="bi bi-currency-dollar"></i>
+        <i class="bi bi-cash-coin"></i>
       </div>
       <div class="kpi-card__body">
-        <span class="kpi-card__value"><%= number_to_currency(@total_revenue, unit: "", precision: 0) %></span>
+        <span class="kpi-card__value"><%= format_vnd(@total_revenue) %></span>
         <span class="kpi-card__label">Total Earnings</span>
         <% if @revenue_change != 0 %>
           <span class="kpi-card__change <%= @revenue_change >= 0 ? 'kpi-card__change--up' : 'kpi-card__change--down' %>">
@@ -92,7 +92,7 @@
         <i class="bi bi-wallet2"></i>
       </div>
       <div class="kpi-card__body">
-        <span class="kpi-card__value"><%= number_to_currency(current_user.wallet&.balance || 0, unit: "", precision: 0) %></span>
+        <span class="kpi-card__value"><%= format_vnd(current_user.wallet&.balance) %></span>
         <span class="kpi-card__label">Available Balance</span>
         <span class="kpi-card__sub">
           <%= link_to "Withdraw", "#", class: "kpi-card__link", data: { bs_toggle: "modal", bs_target: "#payoutModal" } if current_user.wallet&.balance.to_i >= 100000 %>
@@ -200,7 +200,7 @@
                 <div class="course-perf-cell">
                   <span class="course-perf-cell__title"><%= course.title %></span>
                   <span class="course-perf-cell__price">
-                    <%= number_to_currency(course.price, unit: "", precision: 0) %> VND
+                    <%= format_vnd(course.price) %>
                   </span>
                 </div>
               </td>
@@ -209,7 +209,7 @@
               </td>
               <td style="text-align: center;">
                 <span class="course-perf-cell__stat course-perf-cell__stat--success">
-                  <%= number_to_currency(course_revenue, unit: "", precision: 0) %>
+                  <%= format_vnd(course_revenue) %>
                 </span>
               </td>
               <td style="text-align: center;">

@@ -1,6 +1,7 @@
 class Business::LicensesController < ApplicationController
   before_action :authenticate_user!
   before_action :require_company_admin!
+  before_action :fulfill_checkout_session, only: :index
   layout "business"
 
   def index
@@ -48,6 +49,19 @@ class Business::LicensesController < ApplicationController
     redirect_to root_path, alert: "Không có quyền."
   end
 
+  def fulfill_checkout_session
+    return if params[:session_id].blank?
+
+    session = Stripe::Checkout::Session.retrieve(params[:session_id])
+    invoice = LicenseCheckoutFulfillmentService.new(session).call
+    return unless invoice&.organization_id == current_user.organization_id
+
+    flash.now[:notice] = "Thanh toán thành công. License đã được thêm vào workspace."
+  rescue Stripe::StripeError => e
+    Rails.logger.warn "[Business::Licenses] Failed to fulfill checkout session: #{e.message}"
+    flash.now[:alert] = "Không thể xác nhận phiên thanh toán. Vui lòng tải lại sau ít phút."
+  end
+
   def available_license
     current_user.organization.licenses
                 .find_by(course_id: params[:course_id], status: :available)
@@ -60,13 +74,12 @@ class Business::LicensesController < ApplicationController
   def assign_license license, user
     ActiveRecord::Base.transaction do
       license.update!(user: user, status: :assigned)
-      Enrollment.find_or_create_by!(
-        user: user,
-        course: license.course
-      ) do |e|
-        e.price = license.price
-        e.enrolled_at = Time.current
-      end
+      enrollment = Enrollment.find_or_initialize_by(user:, course: license.course)
+      enrollment.update!(
+        price: license.price,
+        status: :active,
+        enrolled_at: enrollment.enrolled_at || Time.current
+      )
     end
     true
   rescue ActiveRecord::RecordInvalid

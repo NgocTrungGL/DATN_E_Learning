@@ -40,26 +40,26 @@
         <div class="purchase-card__row">
           <span>Unit price</span>
           <span class="purchase-card__row-value">
-            <%= number_to_currency(@course.price) %> / seat
+            <%= format_vnd(@course.price) %> / seat
           </span>
         </div>
         <% if @quantity >= 10 %>
           <div class="purchase-card__row purchase-card__row--highlight">
             <span>Business discount (10%)</span>
             <span class="purchase-card__row-value purchase-card__row-value--green">
-              - <%= number_to_currency(@discount) %>
+              - <%= format_vnd(@discount) %>
             </span>
           </div>
         <% end %>
         <div class="purchase-card__row purchase-card__row--total">
           <span>Total</span>
           <span class="purchase-card__row-value">
-            <%= number_to_currency(@total_price) %>
+            <%= format_vnd(@total_price) %>
           </span>
         </div>
       </div>
 
-      <%= form_with url: business_purchases_path, method: :post do |f| %>
+      <%= form_with url: business_purchases_path, method: :post, data: { turbo: false } do |f| %>
         <%= f.hidden_field :course_id, value: @course.id %>
         <%= f.hidden_field :quantity, value: @quantity %>
 
