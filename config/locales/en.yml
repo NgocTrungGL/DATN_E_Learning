@@ -283,3 +283,4 @@ en:
     renewal_resumed: "Your subscription renewal has been resumed."
     invalid_upgrade: "This subscription cannot be upgraded right now."
     upgraded_successfully: "Your subscription has been upgraded to Premium."
+    checkout_session_missing: "Stripe did not return a checkout session. Please refresh this page or wait for the payment webhook to finish syncing."

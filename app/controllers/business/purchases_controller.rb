@@ -32,7 +32,7 @@ class Business::PurchasesController < ApplicationController
       payment_intent_data: {
         description: "E-Learning business license - #{@course.title.truncate(80)}"
       },
-      success_url: business_licenses_url(session_id: "{CHECKOUT_SESSION_ID}"),
+      success_url: "#{business_licenses_url}?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: business_course_market_index_url,
       metadata: {
         course_id: @course.id,
