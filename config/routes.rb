@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
   get "health", to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
+  get "sentry-test", to: proc {
+    error = StandardError.new("Sentry production demo test error")
+    Sentry.capture_exception(error)
+    Sentry.get_current_client&.flush
+    raise error
+  } if ENV["ENABLE_SENTRY_TEST_ROUTE"] == "true"
 
   namespace :api do
     namespace :v1 do
