@@ -252,3 +252,4 @@ vi:
     renewal_resumed: "Gia hạn gói đăng ký đã được bật lại."
     invalid_upgrade: "Gói đăng ký này hiện chưa thể nâng cấp."
     upgraded_successfully: "Gói đăng ký của bạn đã được nâng cấp lên Premium."
+    checkout_session_missing: "Stripe không trả về mã phiên thanh toán. Hãy tải lại trang hoặc chờ webhook đồng bộ thanh toán."

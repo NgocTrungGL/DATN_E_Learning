@@ -43,8 +43,8 @@
         <div class="qreview-stat-info">
           <span class="qreview-stat-label">Score</span>
           <div class="qreview-stat-value">
-            <span class="qreview-stat-number"><%= (@quiz_attempt.score * @total_questions / 100).to_i %>/<%= @total_questions * 5 %></span>
-            <span class="qreview-stat-sub">Marks Obtained</span>
+            <span class="qreview-stat-number"><%= number_with_precision(@marks_obtained, precision: 1, strip_insignificant_zeros: true) %>/<%= @total_marks %></span>
+            <span class="qreview-stat-sub">Points Obtained</span>
           </div>
         </div>
         <div class="qreview-stat-icon qreview-stat-icon--blue">
@@ -105,7 +105,9 @@
                 <i class="bi <%= answer.is_correct? ? 'bi-check-circle' : 'bi-x-circle' %>"></i>
                 Question <%= index + 1 %>
               </div>
-              <div class="qreview-card__marks">5 marks</div>
+              <div class="qreview-card__marks">
+                <%= number_with_precision(answer.score_earned.to_f / 10, precision: 1, strip_insignificant_zeros: true) %> points
+              </div>
             </div>
             
             <div class="qreview-card__body">

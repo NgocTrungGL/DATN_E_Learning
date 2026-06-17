@@ -71,6 +71,8 @@ class QuizAttemptsController < ApplicationController
     @correct_count = @quiz_answers.where(is_correct: true).count
     @incorrect_count = @total_questions - @correct_count
     @accuracy = @total_questions.positive? ? (@correct_count.to_f / @total_questions * 100).round(1) : 0
+    @total_marks = 10
+    @marks_obtained = (@quiz_attempt.score.to_f / 100 * @total_marks).round(1)
   end
 
   def handle_expired_attempt

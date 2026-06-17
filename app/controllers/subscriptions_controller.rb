@@ -45,7 +45,7 @@ class SubscriptionsController < ApplicationController
       mode:                 "subscription",
       customer_email:       current_user.email,
       custom_text:          checkout_custom_text(plan),
-      success_url:          subscriptions_url(subscribed: true, session_id: "{CHECKOUT_SESSION_ID}"),
+      success_url:          subscription_success_url(:subscribed),
       cancel_url:           subscriptions_url,
       metadata:             {
         user_id: current_user.id,
@@ -104,6 +104,10 @@ class SubscriptionsController < ApplicationController
 
   def fulfill_checkout_session
     return if params[:session_id].blank?
+    if params[:session_id] == "{CHECKOUT_SESSION_ID}"
+      flash.now[:alert] = t("subscriptions.checkout_session_missing")
+      return
+    end
 
     session = Stripe::Checkout::Session.retrieve(params[:session_id])
     subscription = if session.metadata&.[]("type") == "subscription_upgrade"
@@ -162,7 +166,7 @@ class SubscriptionsController < ApplicationController
       line_items: [upgrade_line_item(subscription, plan, amount)],
       mode: "payment",
       customer_email: current_user.email,
-      success_url: subscriptions_url(upgraded: true, session_id: "{CHECKOUT_SESSION_ID}"),
+      success_url: subscription_success_url(:upgraded),
       cancel_url: subscriptions_url,
       metadata: {
         type: "subscription_upgrade",
@@ -191,6 +195,10 @@ class SubscriptionsController < ApplicationController
       },
       quantity: 1
     }
+  end
+
+  def subscription_success_url result
+    "#{subscriptions_url}?#{result}=true&session_id={CHECKOUT_SESSION_ID}"
   end
 
   def upgrade_description subscription, plan
