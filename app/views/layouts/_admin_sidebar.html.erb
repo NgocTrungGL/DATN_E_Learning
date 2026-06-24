@@ -83,6 +83,10 @@
       <span><i class="bi bi-receipt-cutoff"></i> Enrollment Approvals</span>
     <% end %>
 
+    <%= link_to admin_recommendation_evaluations_path, class: "admin-sidebar__link #{'active' if controller_name == 'recommendation_evaluations'}" do %>
+      <span><i class="bi bi-graph-up-arrow"></i> RCM Evaluation</span>
+    <% end %>
+
     <%= link_to admin_payouts_path, class: "admin-sidebar__link #{'active' if controller_name == 'payouts'}" do %>
       <span><i class="bi bi-bank2" style="color: #ef4444;"></i> Payout Requests</span>
     <% end %>

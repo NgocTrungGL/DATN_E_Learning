@@ -170,6 +170,7 @@ Rails.application.routes.draw do
     end
     resources :quiz_questions, only: [:destroy]
     resources :coupons
+    resources :recommendation_evaluations, only: [:index]
   end
 
   # --- INSTRUCTOR NAMESPACE (GIẢNG VIÊN) ---

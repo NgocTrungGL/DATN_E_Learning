@@ -1,0 +1,55 @@
+<section class="admin-rec-eval__panel">
+  <div class="admin-rec-eval__panel-heading">
+    <h2><%= title %></h2>
+    <span><%= rows.size %> results</span>
+  </div>
+
+  <% if rows.present? %>
+    <div class="admin-rec-eval__result-list">
+      <% rows.each do |row| %>
+        <% result = row[:result] %>
+        <% relevance = row[:relevance] %>
+
+        <article class="admin-rec-eval__result-item <%= 'admin-rec-eval__result-item--soft' if relevance[:soft] %>">
+          <div class="admin-rec-eval__rank">#<%= row[:rank] %></div>
+
+          <div class="admin-rec-eval__course">
+            <h3><%= result.course.title %></h3>
+            <p><%= result.course.category&.name || "Uncategorized" %></p>
+          </div>
+
+          <div class="admin-rec-eval__score">
+            <span>Score</span>
+            <strong><%= number_with_precision(result.score, precision: 4) %></strong>
+          </div>
+
+          <div class="admin-rec-eval__score">
+            <span>Semantic</span>
+            <strong><%= number_with_precision(relevance[:semantic_score], precision: 3) %></strong>
+          </div>
+
+          <div class="admin-rec-eval__badges">
+            <span class="admin-rec-eval__badge admin-rec-eval__badge--source"><%= result.reason_type %></span>
+            <% if relevance[:exact] %>
+              <span class="admin-rec-eval__badge admin-rec-eval__badge--success">Exact</span>
+            <% end %>
+            <% if relevance[:category] %>
+              <span class="admin-rec-eval__badge admin-rec-eval__badge--success">Category</span>
+            <% end %>
+            <% if relevance[:semantic] %>
+              <span class="admin-rec-eval__badge admin-rec-eval__badge--info">Semantic</span>
+            <% end %>
+            <% unless relevance[:soft] %>
+              <span class="admin-rec-eval__badge admin-rec-eval__badge--neutral">No match</span>
+            <% end %>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="admin-rec-eval__empty">
+      <i class="bi bi-inboxes"></i>
+      <p>No recommendation results were generated.</p>
+    </div>
+  <% end %>
+</section>

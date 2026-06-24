@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_17_094500) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_20_000100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -122,6 +122,17 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_17_094500) do
     t.index ["code"], name: "index_coupons_on_code", unique: true
     t.index ["course_id"], name: "index_coupons_on_course_id"
     t.index ["creator_id"], name: "index_coupons_on_creator_id"
+  end
+
+  create_table "course_embeddings", force: :cascade do |t|
+    t.bigint "course_id", null: false
+    t.jsonb "embedding", default: [], null: false
+    t.string "content_hash", null: false
+    t.datetime "embedded_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["content_hash"], name: "index_course_embeddings_on_content_hash"
+    t.index ["course_id"], name: "index_course_embeddings_on_course_id"
   end
 
   create_table "course_learning_outcomes", force: :cascade do |t|
@@ -662,6 +673,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_17_094500) do
   add_foreign_key "comments", "users"
   add_foreign_key "coupons", "courses"
   add_foreign_key "coupons", "users", column: "creator_id"
+  add_foreign_key "course_embeddings", "courses", on_delete: :cascade
   add_foreign_key "course_learning_outcomes", "courses"
   add_foreign_key "course_modules", "courses", on_delete: :cascade
   add_foreign_key "course_similarities", "courses", column: "course_a_id", on_delete: :cascade
