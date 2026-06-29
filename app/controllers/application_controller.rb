@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   layout :layout_by_resource
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :prepare_learning_checkin
   include Pagy::Backend
   def after_sign_in_path_for resource
     if resource.admin?
@@ -61,6 +62,33 @@ class ApplicationController < ActionController::Base
                            .call(limit: fetch_limit)
                            .reject { |result| excluded_ids.include?(result.course_id) }
                            .first(limit)
+  end
+
+  def prepare_learning_checkin
+    return unless user_signed_in? && current_user.student?
+    return unless request.get?
+    return unless request.format.html?
+    return if devise_controller?
+    return if session[:learning_checkin_shown_on] == Date.current.to_s
+
+    plan = current_user.study_plans.active.includes(:course).order(updated_at: :desc).first
+    return unless plan
+
+    profile = Learning::BehaviorProfileBuilder.new(
+      current_user,
+      course: plan.course,
+      study_plan: plan
+    ).call
+    risk = Learning::StudyRiskDetector.new(profile).call
+    focus_items = Learning::StudyFocusRecommender.new(profile).call(limit: 2)
+
+    @learning_checkin = {
+      plan: plan,
+      profile: profile,
+      risk: risk,
+      focus_items: focus_items
+    }
+    session[:learning_checkin_shown_on] = Date.current.to_s
   end
 
   def layout_by_resource

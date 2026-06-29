@@ -30,7 +30,7 @@
     
     <div class="qr-right__content">
       <!-- Circular Progress Ring -->
-      <% score_percent = (quiz_attempt.score * 100).round %>
+      <% score_percent = quiz_attempt.score.to_f.round.clamp(0, 100) %>
       <div class="qr-progress-wrapper">
         <div class="qr-progress-ring" style="--progress: <%= score_percent %>%;">
           <div class="qr-progress-inner">

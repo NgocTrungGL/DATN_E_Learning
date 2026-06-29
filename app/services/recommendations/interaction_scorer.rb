@@ -3,9 +3,9 @@ module Recommendations
   # Dung cho ContentFilter va CollaborativeFilter trong giai doan 2+.
   class InteractionScorer
     SCORES = {
-      enrolled_completed: 5.0,
-      enrolled_in_progress: 4.0,
-      enrolled_not_started: 2.0,
+      enrollment_active: 4.0,
+      enrollment_pending: 2.0,
+      enrollment_rejected: -2.0,
       review_5: 5.0,
       review_4: 3.0,
       review_3: 1.0,
@@ -31,11 +31,7 @@ module Recommendations
     end
 
     def interaction_count
-      @interaction_count ||= begin
-        (user.enrollments.count +
-         user.reviews.count +
-         user.wishlists.count).to_f
-      end
+      @interaction_count ||= scores.count { |_course_id, score| !score.zero? }
     end
 
     def weights
@@ -52,10 +48,10 @@ module Recommendations
       scores = Hash.new(0.0)
 
       user.enrollments.each do |e|
-        case e.status.to_sym
-        when :completed then scores[e.course_id] += SCORES[:enrolled_completed]
-        when :active    then scores[e.course_id] += SCORES[:enrolled_in_progress]
-        else                 scores[e.course_id] += SCORES[:enrolled_not_started]
+        case e.status.to_s.to_sym
+        when :active   then scores[e.course_id] += SCORES[:enrollment_active]
+        when :pending  then scores[e.course_id] += SCORES[:enrollment_pending]
+        when :rejected then scores[e.course_id] += SCORES[:enrollment_rejected]
         end
       end
 
@@ -73,13 +69,18 @@ module Recommendations
         scores[w.course_id] += SCORES[:wishlist]
       end
 
-      user.cart.cart_items.each do |ci|
+      user.cart&.cart_items&.each do |ci|
         scores[ci.course_id] += SCORES[:cart]
       end
 
-      user.progress_trackings.where(quiz_id: user.progress_trackings.pluck(:quiz_id).uniq.compact).each do |pt|
-        next unless pt.progress_value.to_f >= 70
-        scores[pt.course_id] += SCORES[:quiz_passed]
+      user.notes.where.not(course_id: nil).find_each do |note|
+        scores[note.course_id] += SCORES[:note]
+      end
+
+      user.quiz_attempts.completed.includes(:quiz).find_each do |attempt|
+        next unless attempt.score.to_f >= 70
+
+        scores[attempt.quiz.course_id] += SCORES[:quiz_passed]
       end
 
       scores

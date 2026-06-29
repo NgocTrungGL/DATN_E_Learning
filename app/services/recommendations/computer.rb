@@ -16,8 +16,12 @@ module Recommendations
         # Cold start: chi dung popularity
         PopularityScorer.new(exclude_enrolled_for: user).call(limit: limit)
       else
-        cf_results      = CollaborativeFilter.new(user).call(limit: limit)
-        content_results = ContentFilter.new(user).call(limit: limit)
+        cf_results = CollaborativeFilter.new(
+          user, interaction_scorer: @interaction_scorer
+        ).call(limit: limit)
+        content_results = ContentFilter.new(
+          user, interaction_scorer: @interaction_scorer
+        ).call(limit: limit)
         pop_results     = PopularityScorer.new(exclude_enrolled_for: user).call(limit: limit)
 
         ScoreFuser.new(

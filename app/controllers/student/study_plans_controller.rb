@@ -1,5 +1,7 @@
 class Student::StudyPlansController < Student::BaseController
-  before_action :set_study_plan, only: [:show, :edit, :update, :destroy, :pause, :resume, :regenerate]
+  before_action :set_study_plan,
+                only: [:show, :edit, :update, :destroy, :pause, :resume,
+                       :regenerate, :refresh_focus]
   before_action :set_enrolled_courses, only: [:new, :create]
   before_action :set_course, only: [:new, :create]
 
@@ -17,6 +19,17 @@ class Student::StudyPlansController < Student::BaseController
 
     @learning_speed = StudyPlanService.learning_speed(current_user, @study_plan.course)
     @feasibility = StudyPlanService.feasibility_check(@study_plan)
+    @behavior_profile = Learning::BehaviorProfileBuilder.new(
+      current_user,
+      course: @study_plan.course,
+      study_plan: @study_plan
+    ).call
+    @study_risk = Learning::StudyRiskDetector.new(@behavior_profile).call
+    @focus_recommendations = Learning::StudyFocusRecommender.new(@behavior_profile).call(limit: 5)
+    @plan_suggestions = Learning::StudyPlanOptimizer.new(
+      @behavior_profile,
+      risk: @study_risk
+    ).call(limit: 4)
   end
 
   def new
@@ -97,6 +110,11 @@ class Student::StudyPlansController < Student::BaseController
       redirect_to student_study_plan_path(@study_plan),
                   alert: I18n.t("student.study_plans.cannot_regenerate")
     end
+  end
+
+  def refresh_focus
+    redirect_to student_study_plan_path(@study_plan),
+                notice: "Study focus suggestions were refreshed."
   end
 
   private

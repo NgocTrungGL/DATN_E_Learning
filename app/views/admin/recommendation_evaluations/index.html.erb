@@ -1,0 +1,99 @@
+<div class="admin-rec-eval">
+  <div class="admin-rec-eval__header">
+    <div>
+      <p class="admin-rec-eval__kicker">Recommendation Evaluation</p>
+      <h1>Offline Holdout Demo</h1>
+    </div>
+
+    <div class="admin-rec-eval__coverage">
+      <span><%= @embedding_coverage[:embedded] %>/<%= @embedding_coverage[:published] %></span>
+      <small>embedded published courses</small>
+    </div>
+  </div>
+
+  <% if @embedding_coverage[:embedded].zero? %>
+    <div class="admin-alert admin-alert--warning">
+      <i class="bi bi-exclamation-triangle"></i>
+      <div>
+        Course embeddings are missing. Run <code>bundle exec rails db:migrate</code>, then <code>bundle exec rake recommendations:embed_courses</code> before presenting the AI recommender.
+      </div>
+    </div>
+  <% end %>
+
+  <%= form_with url: admin_recommendation_evaluations_path, method: :get, local: true, class: "admin-rec-eval__filters" do %>
+    <label class="admin-field">
+      <span class="admin-field__label">Sample student</span>
+      <%= select_tag :user_id,
+                     options_from_collection_for_select(@candidate_users, :id, :name, @selected_user&.id),
+                     class: "admin-select" %>
+    </label>
+
+    <label class="admin-field">
+      <span class="admin-field__label">Top K</span>
+      <%= number_field_tag :k, @k, min: 1, max: 20, class: "admin-input" %>
+    </label>
+
+    <button class="btn-action btn-action--info" type="submit">
+      <i class="bi bi-arrow-repeat"></i> Evaluate
+    </button>
+  <% end %>
+
+  <% if @evaluation.blank? %>
+    <div class="admin-rec-eval__empty">
+      <i class="bi bi-bar-chart"></i>
+      <p>No student with enough interaction history was found.</p>
+    </div>
+  <% else %>
+    <div class="admin-rec-eval__split">
+      <section class="admin-rec-eval__panel">
+        <h2>Input history</h2>
+        <div class="admin-rec-eval__chips">
+          <% @evaluation[:profile_interactions].each do |course_id, weight| %>
+            <% course = @history_courses[course_id] %>
+            <% next unless course %>
+            <span class="admin-rec-eval__chip">
+              <%= course.title %>
+              <small><%= course.category&.name %> · w=<%= weight.round(1) %></small>
+            </span>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="admin-rec-eval__panel admin-rec-eval__panel--truth">
+        <h2>Hidden ground truth</h2>
+        <div class="admin-rec-eval__chips">
+          <% @evaluation[:ground_truth_ids].each do |course_id| %>
+            <% course = @ground_truth_courses[course_id] %>
+            <% next unless course %>
+            <span class="admin-rec-eval__chip">
+              <%= course.title %>
+              <small><%= course.category&.name %></small>
+            </span>
+          <% end %>
+        </div>
+      </section>
+    </div>
+
+    <div class="admin-rec-eval__metrics">
+      <%= render "metric_card", title: "Hybrid RCM", metrics: @evaluation[:hybrid_metrics] %>
+      <%= render "metric_card", title: "AI Embedding", metrics: @evaluation[:ai_metrics] %>
+      <div class="admin-rec-eval__metric-card">
+        <div class="admin-rec-eval__metric-title">
+          <span>Overlap@<%= @k %></span>
+          <strong><%= number_with_precision(@evaluation[:overlap], precision: 3) %></strong>
+        </div>
+        <p class="admin-rec-eval__metric-note">Lower overlap means the two algorithms are surfacing different course sets.</p>
+      </div>
+    </div>
+
+    <div class="admin-rec-eval__results">
+      <%= render "result_table",
+                 title: "Existing Hybrid RCM",
+                 rows: @hybrid_result_rows %>
+
+      <%= render "result_table",
+                 title: "AI Embedding",
+                 rows: @ai_result_rows %>
+    </div>
+  <% end %>
+</div>

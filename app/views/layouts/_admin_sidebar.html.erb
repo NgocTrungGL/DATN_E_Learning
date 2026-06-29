@@ -50,6 +50,17 @@
       <span><i class="bi bi-question-square"></i> Question Bank</span>
     <% end %>
 
+    <%# Section: Personalized Learning %>
+    <div class="admin-sidebar__group">Personalized Learning</div>
+
+    <%= link_to admin_personalization_reports_path, class: "admin-sidebar__link #{'active' if controller_name == 'personalization_reports'}" do %>
+      <span><i class="bi bi-columns-gap"></i> Personalization Report</span>
+    <% end %>
+
+    <%= link_to admin_recommendation_evaluations_path, class: "admin-sidebar__link #{'active' if controller_name == 'recommendation_evaluations'}" do %>
+      <span><i class="bi bi-graph-up-arrow"></i> RCM Evaluation</span>
+    <% end %>
+
     <%# Section: Engagement & Community %>
     <div class="admin-sidebar__group">Engagement & Community</div>
 

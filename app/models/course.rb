@@ -18,6 +18,7 @@ optional: true
   has_many :wishlisting_users, through: :wishlists, source: :user
   has_many :certificates, dependent: :destroy
   has_many :course_learning_outcomes, dependent: :destroy, inverse_of: :course
+  has_one :course_embedding, dependent: :destroy
   accepts_nested_attributes_for :course_learning_outcomes, allow_destroy: true, reject_if: ->(attrs) { attrs[:content].blank? }
   has_many :study_plans, dependent: :destroy
   has_one_attached :image

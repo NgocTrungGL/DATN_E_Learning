@@ -9,6 +9,7 @@ class QuizAttempt < ApplicationRecord
   validates :status, presence: true
 
   after_commit :track_learning_activity, on: [:update]
+  after_commit :queue_recommendation_update, on: [:update]
 
   def expired?
     return false if quiz.time_limit.blank?
@@ -32,5 +33,11 @@ class QuizAttempt < ApplicationRecord
     )
     user.learning_streak_record.update_streak!(Date.current)
     GoalProgressService.update_user_goals(user)
+  end
+
+  def queue_recommendation_update
+    return unless saved_change_to_status? && completed?
+
+    Recommendations::CacheInvalidator.call(user_id)
   end
 end

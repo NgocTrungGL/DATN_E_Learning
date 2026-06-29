@@ -170,6 +170,12 @@ Rails.application.routes.draw do
     end
     resources :quiz_questions, only: [:destroy]
     resources :coupons
+    resources :recommendation_evaluations, only: [:index]
+    resources :personalization_reports, only: [:index] do
+      collection do
+        post :refresh_demo
+      end
+    end
   end
 
   # --- INSTRUCTOR NAMESPACE (GIẢNG VIÊN) ---
@@ -263,6 +269,7 @@ Rails.application.routes.draw do
         post :pause
         post :resume
         post :regenerate
+        post :refresh_focus
       end
     end
     resources :study_plan_items, only: [] do

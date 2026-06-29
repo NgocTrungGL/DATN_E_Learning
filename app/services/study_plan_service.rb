@@ -76,7 +76,10 @@ class StudyPlanService
       activities = user.learning_activities.where("activity_date >= ?", recent_date)
 
       # Calculate average lessons per day
-      total_lessons = activities.lesson_completions.count
+      total_lessons = activities.lesson_completions
+                                .where.not(lesson_id: nil)
+                                .distinct
+                                .count(:lesson_id)
       active_days = activities.select(:activity_date).distinct.count
       avg_lessons_per_day = active_days.positive? ? (total_lessons.to_f / active_days) : 0
 
@@ -130,12 +133,14 @@ class StudyPlanService
 
       profile ||= learning_profile(plan.user)
       daily_capacity ||= calculate_daily_capacity(plan.user, profile)
-      preferred_times ||= plan.preferred_study_times || {}
+      if preferred_times.blank?
+        preferred_times = plan.preferred_study_times || {}
+      end
 
       # Group lessons by module to keep them together
       module_groups = lessons.group_by(&:course_module_id)
 
-      scheduled_date = Date.today
+      scheduled_date = next_available_date(Date.today, preferred_times, profile)
       current_day_minutes = 0
       order_index = 0
 
@@ -149,7 +154,8 @@ class StudyPlanService
           # Check if we need to move to next day
           total_item_minutes = estimated_minutes + quiz_minutes
 
-          if current_day_minutes + total_item_minutes > daily_capacity
+          if current_day_minutes.positive? &&
+             current_day_minutes + total_item_minutes > daily_capacity
             scheduled_date = next_available_date(scheduled_date + 1, preferred_times, profile)
             current_day_minutes = 0
           end
@@ -222,23 +228,25 @@ class StudyPlanService
     end
 
     def feasibility_check(plan)
-      remaining_items = plan.pending_items.count + plan.overdue_items.count
+      remaining_items = plan.pending_items
       remaining_days = plan.days_remaining
       profile = learning_profile(plan.user)
 
       return { feasible: false, reason: :no_deadline } if remaining_days <= 0
 
-      required_per_day = remaining_items.to_f / remaining_days
+      remaining_minutes = remaining_items.sum(:estimated_duration_minutes)
+      required_per_day = remaining_minutes.to_f / remaining_days
       daily_capacity = calculate_daily_capacity(plan.user, profile)
 
       feasible = required_per_day <= daily_capacity * 1.5
-      suggested_deadline = plan.goal_deadline + ((remaining_items - required_per_day * remaining_days) / required_per_day).ceil if !feasible
+      required_days = (remaining_minutes.to_f / daily_capacity).ceil
+      suggested_deadline = Date.current + required_days unless feasible
 
       {
         feasible: feasible,
         required_per_day: required_per_day.round(2),
         daily_capacity: daily_capacity,
-        remaining_items: remaining_items,
+        remaining_items: remaining_items.count,
         remaining_days: remaining_days,
         suggested_deadline: suggested_deadline,
         reason: feasible ? nil : :overloaded
@@ -255,14 +263,18 @@ class StudyPlanService
       total_minutes = lessons.sum { |lesson| estimate_lesson_duration(user, lesson) }
       daily_capacity = calculate_daily_capacity(user, profile)
 
-      # Count available study days until a reasonable deadline
-      study_days = count_available_days(preferred_days, from_date: Date.today, days: 90)
-      estimated_days = (total_minutes / daily_capacity).ceil
+      estimated_study_days = (total_minutes / daily_capacity).ceil
 
       # Add buffer for rest days
-      buffer_days = (estimated_days * 0.2).ceil
+      required_study_days = estimated_study_days +
+                            (estimated_study_days * 0.2).ceil
+      estimated_deadline = date_after_study_days(
+        preferred_days,
+        from_date: Date.current,
+        study_days: required_study_days
+      )
 
-      [Date.today + estimated_days + buffer_days, Date.today + 90].min
+      [estimated_deadline, Date.current + 90].min
     end
 
     private
@@ -274,7 +286,7 @@ class StudyPlanService
             .order("course_modules.order_index ASC", :order_index)
     end
 
-    def calculate_daily_capacity(user, profile)
+    def calculate_daily_capacity(_user, profile)
       return DEFAULT_DAILY_HOURS * 60 if profile[:avg_hours_per_day].zero?
 
       # Base capacity from user's average study time
@@ -300,7 +312,9 @@ class StudyPlanService
 
       # Compare user's average lesson duration to baseline
       baseline_duration = DEFAULT_LESSON_MINUTES * 60
-      baseline_duration.to_f / [profile[:avg_lesson_duration], 60].max
+      observed_ratio = profile[:avg_lesson_duration].to_f /
+                       baseline_duration
+      observed_ratio.clamp(0.5, 2.0)
     end
 
     def calculate_preferred_days(activities)
@@ -341,25 +355,31 @@ class StudyPlanService
     end
 
     def is_preferred_day?(date, preferred_times, profile)
-      return true if preferred_times.empty?
+      if preferred_times.blank?
+        return profile[:preferred_days].blank? ||
+               profile[:preferred_days].include?(date.wday)
+      end
 
       day_name = date.strftime("%A").downcase
-      time_slots = preferred_times[day_name]
+      time_slots = preferred_times[day_name] ||
+                   preferred_times[day_name.to_sym]
 
-      return true if time_slots.blank? || time_slots.empty?
-
-      # Check if preferred_times for this day has any time slots
-      time_slots.is_a?(Array) && time_slots.any?
+      time_slots.is_a?(Array) && time_slots.present?
     end
 
     def determine_start_time(date, preferred_times, current_minutes)
       day_name = date.strftime("%A").downcase
-      time_slots = preferred_times[day_name]
+      time_slots = preferred_times[day_name] ||
+                   preferred_times[day_name.to_sym]
 
       return Time.parse("19:00") if time_slots.blank? || time_slots.empty?
 
-      # Use first time slot from preferred times
-      time_slots.is_a?(Array) ? Time.parse(time_slots.first.split("-").first) : Time.parse("19:00")
+      start_time = if time_slots.is_a?(Array)
+                     Time.parse(time_slots.first.split("-").first)
+                   else
+                     Time.parse("19:00")
+                   end
+      start_time + current_minutes.minutes
     rescue StandardError
       Time.parse("19:00")
     end
@@ -399,7 +419,9 @@ class StudyPlanService
         is_replan_needed: true
       )
 
-      create_adjustment(plan, "late_completion", overdue_items.pluck(:id))
+      create_adjustment(plan, "late_completion", overdue_items.pluck(:id),
+                        old_target_date: plan.goal_deadline,
+                        new_target_date: plan.goal_deadline)
     end
 
     def adjust_moderate(plan, overdue_items, delay_days)
@@ -414,9 +436,12 @@ class StudyPlanService
         is_replan_needed: true
       )
 
+      old_deadline = plan.goal_deadline
       plan.update!(goal_deadline: new_deadline)
 
-      create_adjustment(plan, "late_completion", overdue_items.pluck(:id))
+      create_adjustment(plan, "late_completion", overdue_items.pluck(:id),
+                        old_target_date: old_deadline,
+                        new_target_date: new_deadline)
     end
 
     def adjust_severe(plan, overdue_items, delay_days)
@@ -424,31 +449,35 @@ class StudyPlanService
       # Don't auto-adjust too aggressively
       overdue_items.update_all(is_replan_needed: true)
 
-      create_adjustment(plan, "late_completion", overdue_items.pluck(:id))
+      create_adjustment(plan, "late_completion", overdue_items.pluck(:id),
+                        old_target_date: plan.goal_deadline,
+                        new_target_date: plan.goal_deadline)
     end
 
-    def create_adjustment(plan, reason, item_ids)
+    def create_adjustment(plan, reason, item_ids, old_target_date:,
+                          new_target_date:)
       StudyPlanAdjustment.create!(
         study_plan: plan,
         reason: reason,
-        old_target_date: plan.goal_deadline,
-        new_target_date: plan.goal_deadline,
+        old_target_date: old_target_date,
+        new_target_date: new_target_date,
         replanned_items: item_ids
       )
     end
 
-    def count_available_days(preferred_days, from_date:, days:)
-      count = 0
-      current = from_date
+    def date_after_study_days(preferred_days, from_date:, study_days:)
+      days = Array(preferred_days).map(&:to_i).uniq
+      days = (0..6).to_a if days.empty?
 
-      days.times do
-        if preferred_days.include?(current.wday)
-          count += 1
-        end
-        current += 1
+      current = from_date
+      remaining = [study_days, 1].max
+
+      while remaining.positive?
+        remaining -= 1 if days.include?(current.wday)
+        current += 1 if remaining.positive?
       end
 
-      count
+      current
     end
   end
 end

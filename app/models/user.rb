@@ -91,7 +91,7 @@ dependent: :nullify
   def lesson_completions_count(from_date: nil, to_date: nil)
     query = learning_activities.lesson_completions
     query = query.where(activity_date: from_date..to_date) if from_date && to_date
-    query.count
+    query.where.not(lesson_id: nil).distinct.count(:lesson_id)
   end
 
   def active_goal

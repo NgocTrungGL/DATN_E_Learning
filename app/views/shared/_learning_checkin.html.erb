@@ -1,0 +1,98 @@
+<% risk = checkin[:risk] %>
+<% profile = checkin[:profile] %>
+<% focus_items = checkin[:focus_items] %>
+<% first_focus = focus_items.first %>
+
+<div class="learning-checkin learning-checkin--<%= risk.level %>" data-learning-checkin>
+  <div class="learning-checkin__backdrop" data-learning-checkin-close></div>
+  <section class="learning-checkin__dialog" role="dialog" aria-modal="true" aria-labelledby="learning-checkin-title">
+    <button class="learning-checkin__close" type="button" data-learning-checkin-close aria-label="Close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="learning-checkin__header">
+      <div class="learning-checkin__icon">
+        <i class="bi bi-compass"></i>
+      </div>
+      <div>
+        <p class="learning-checkin__kicker">Learning Check-in</p>
+        <h2 id="learning-checkin-title">Today needs a quick reset</h2>
+      </div>
+      <span class="learning-checkin__status"><%= risk.label %></span>
+    </div>
+
+    <p class="learning-checkin__summary"><%= risk.recommendation %></p>
+
+    <div class="learning-checkin__metrics" aria-label="Study plan signals">
+      <article>
+        <span>Overdue</span>
+        <strong><%= profile.overdue_items_count %></strong>
+      </article>
+      <article>
+        <span>In progress</span>
+        <strong><%= profile.in_progress_items_count %></strong>
+      </article>
+      <article>
+        <span>Daily pace</span>
+        <strong><%= profile.daily_capacity_minutes %>m</strong>
+      </article>
+    </div>
+
+    <% if risk.reasons.present? %>
+      <div class="learning-checkin__signals">
+        <% risk.reasons.first(3).each do |reason| %>
+          <span><i class="bi bi-exclamation-circle"></i> <%= reason %></span>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if focus_items.present? %>
+      <div class="learning-checkin__focus">
+        <div class="learning-checkin__section-heading">
+          <span>Recommended focus</span>
+          <small><%= focus_items.size %> actions</small>
+        </div>
+
+        <% focus_items.each do |item| %>
+          <%= link_to lesson_path(item.lesson), class: "learning-checkin__focus-item" do %>
+            <i class="bi bi-arrow-right-circle"></i>
+            <div>
+              <strong><%= item.action_label %></strong>
+              <span><%= item.lesson.title %></span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="learning-checkin__actions">
+      <% if first_focus %>
+        <%= link_to lesson_path(first_focus.lesson), class: "learning-checkin__primary" do %>
+          <i class="bi bi-play-circle"></i>
+          Start Focus
+        <% end %>
+      <% end %>
+      <%= link_to student_study_plan_path(checkin[:plan]), class: "learning-checkin__secondary" do %>
+        <i class="bi bi-calendar-week"></i>
+        View Plan
+      <% end %>
+      <button type="button" class="learning-checkin__secondary" data-learning-checkin-close>Dismiss</button>
+    </div>
+  </section>
+</div>
+
+<script>
+  function initializeLearningCheckin() {
+    document.querySelectorAll("[data-learning-checkin-close]").forEach(function(trigger) {
+      if (trigger.dataset.learningCheckinBound === "true") return;
+      trigger.dataset.learningCheckinBound = "true";
+      trigger.addEventListener("click", function() {
+        var checkin = document.querySelector("[data-learning-checkin]");
+        if (checkin) checkin.remove();
+      });
+    });
+  }
+
+  document.addEventListener("turbo:load", initializeLearningCheckin);
+  initializeLearningCheckin();
+</script>

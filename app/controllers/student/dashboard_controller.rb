@@ -30,9 +30,28 @@ class Student::DashboardController < Student::BaseController
     @todays_lessons = @active_study_plan&.study_plan_items
                                          &.pending
                                          &.where(scheduled_date: Date.today)
+    load_behavior_personalization
   end
 
   private
+
+  def load_behavior_personalization
+    return unless @active_study_plan
+
+    @behavior_profile = Learning::BehaviorProfileBuilder.new(
+      @user,
+      course: @active_study_plan.course,
+      study_plan: @active_study_plan
+    ).call
+    @study_risk = Learning::StudyRiskDetector.new(@behavior_profile).call
+    @focus_recommendations = Learning::StudyFocusRecommender.new(
+      @behavior_profile
+    ).call(limit: 4)
+    @plan_suggestions = Learning::StudyPlanOptimizer.new(
+      @behavior_profile,
+      risk: @study_risk
+    ).call(limit: 3)
+  end
 
   def build_weekly_progress_chart
     (0..11).map do |week_offset|

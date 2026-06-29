@@ -104,6 +104,82 @@
 
     </section>
 
+    <% if @behavior_profile && @study_risk %>
+      <section class="study-plan-panel study-plan-behavior" aria-labelledby="study-plan-behavior-title">
+        <div class="study-plan-panel__header study-plan-behavior__header">
+          <div>
+            <p class="study-plan-behavior__kicker">Learning behavior</p>
+            <h2 class="study-plan-panel__title" id="study-plan-behavior-title">Pace and Risk</h2>
+            <p class="study-plan-panel__text">Personalization is based on your plan progress, overdue items, and recent activity.</p>
+          </div>
+          <span class="study-plan-behavior__status study-plan-behavior__status--<%= @study_risk.level %>">
+            <%= @study_risk.label %>
+          </span>
+        </div>
+
+        <div class="study-plan-behavior__grid">
+          <article><span>Overdue</span><strong><%= @behavior_profile.overdue_items_count %></strong></article>
+          <article><span>In progress</span><strong><%= @behavior_profile.in_progress_items_count %></strong></article>
+          <article><span>Daily pace</span><strong><%= @behavior_profile.daily_capacity_minutes %> min</strong></article>
+          <article><span>Needed pace</span><strong><%= @behavior_profile.required_daily_minutes %> min</strong></article>
+        </div>
+
+        <% if @study_risk.reasons.present? %>
+          <div class="study-plan-behavior__reasons">
+            <% @study_risk.reasons.first(4).each do |reason| %>
+              <span><i class="bi bi-info-circle"></i> <%= reason %></span>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
+    <% if @focus_recommendations.present? || @plan_suggestions.present? %>
+      <section class="study-plan-panel study-plan-focus" aria-labelledby="study-plan-focus-title">
+        <div class="study-plan-panel__header study-plan-focus__header">
+          <div>
+            <p class="study-plan-focus__kicker">Today focus</p>
+            <h2 class="study-plan-panel__title" id="study-plan-focus-title">Recommended Study Actions</h2>
+            <p class="study-plan-panel__text">These actions help you catch up without changing the instructor-defined course order.</p>
+          </div>
+          <%= button_to refresh_focus_student_study_plan_path(@study_plan),
+                        method: :post,
+                        class: "study-plan-button study-plan-button--secondary",
+                        title: "Refresh focus suggestions" do %>
+            <i class="bi bi-arrow-clockwise"></i>
+            Refresh
+          <% end %>
+        </div>
+
+        <div class="study-plan-focus__grid">
+          <% @focus_recommendations.each do |item| %>
+            <%= link_to lesson_path(item.lesson), class: "study-plan-focus__item" do %>
+              <i class="bi bi-arrow-right-circle"></i>
+              <div>
+                <strong><%= item.title %></strong>
+                <span><%= item.description %></span>
+              </div>
+              <em><%= item.action_label %></em>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @plan_suggestions.present? %>
+          <div class="study-plan-focus__suggestions">
+            <% @plan_suggestions.each do |suggestion| %>
+              <article>
+                <i class="bi bi-calendar2-check"></i>
+                <div>
+                  <strong><%= suggestion.title %></strong>
+                  <span><%= suggestion.description %></span>
+                </div>
+              </article>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
     <%# Schedule timeline %>
     <section class="study-plan-panel">
       <div class="study-plan-panel__header">

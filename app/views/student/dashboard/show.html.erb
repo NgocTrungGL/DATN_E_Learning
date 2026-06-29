@@ -159,6 +159,96 @@
     </section>
     <% end %>
 
+    <% if @behavior_profile && @study_risk %>
+      <section class="student-behavior" aria-labelledby="student-behavior-title">
+        <div class="student-card student-behavior__panel">
+          <div class="student-card__header">
+            <div>
+              <p class="student-card__kicker">Personalized learning</p>
+              <h2 id="student-behavior-title">Learning Pace</h2>
+            </div>
+            <span class="student-behavior__status student-behavior__status--<%= @study_risk.level %>">
+              <%= @study_risk.label %>
+            </span>
+          </div>
+
+          <div class="student-behavior__grid">
+            <article>
+              <span>Overdue</span>
+              <strong><%= @behavior_profile.overdue_items_count %></strong>
+            </article>
+            <article>
+              <span>In progress</span>
+              <strong><%= @behavior_profile.in_progress_items_count %></strong>
+            </article>
+            <article>
+              <span>Daily pace</span>
+              <strong><%= @behavior_profile.daily_capacity_minutes %> min</strong>
+            </article>
+            <article>
+              <span>Needed pace</span>
+              <strong><%= @behavior_profile.required_daily_minutes %> min</strong>
+            </article>
+          </div>
+
+          <% if @study_risk.reasons.present? %>
+            <div class="student-behavior__reasons">
+              <% @study_risk.reasons.first(3).each do |reason| %>
+                <span><i class="bi bi-info-circle"></i> <%= reason %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <% if @focus_recommendations.present? || @plan_suggestions.present? %>
+      <section class="student-focus" aria-labelledby="student-focus-title">
+        <div class="student-card student-focus__panel">
+          <div class="student-card__header">
+            <div>
+              <p class="student-card__kicker">Today</p>
+              <h2 id="student-focus-title">Focus Recommendations</h2>
+            </div>
+            <i class="bi bi-compass"></i>
+          </div>
+
+          <div class="student-focus__layout">
+            <% if @focus_recommendations.present? %>
+              <div class="student-focus__list">
+                <h3>Recommended actions</h3>
+                <% @focus_recommendations.each do |item| %>
+                  <%= link_to lesson_path(item.lesson), class: "student-focus__item" do %>
+                    <i class="bi bi-arrow-right-circle"></i>
+                    <div>
+                      <strong><%= item.title %></strong>
+                      <span><%= item.description %></span>
+                    </div>
+                    <em><%= item.action_label %></em>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+
+            <% if @plan_suggestions.present? %>
+              <div class="student-focus__list">
+                <h3>Plan suggestions</h3>
+                <% @plan_suggestions.each do |suggestion| %>
+                  <article class="student-focus__suggestion">
+                    <i class="bi bi-calendar2-check"></i>
+                    <div>
+                      <strong><%= suggestion.title %></strong>
+                      <span><%= suggestion.description %></span>
+                    </div>
+                  </article>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </section>
+    <% end %>
+
     <div class="student-dashboard__content">
       <section class="student-courses">
         <div class="student-card student-courses__card">

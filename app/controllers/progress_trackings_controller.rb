@@ -1,10 +1,10 @@
 class ProgressTrackingsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_lesson
+  before_action :authorize_lesson_access
 
   # POST /lessons/:lesson_id/complete
   def mark_lesson_complete
-    @lesson = Lesson.find(params[:lesson_id])
-
     progress = current_user.progress_trackings.find_or_initialize_by(
       lesson: @lesson,
       progress_type: "lesson"
@@ -23,8 +23,6 @@ class ProgressTrackingsController < ApplicationController
 
   # POST /lessons/:lesson_id/video_progress
   def video_progress
-    @lesson = Lesson.find(params[:lesson_id])
-
     progress_value = params[:progress].to_i.clamp(0, 100)
 
     progress = current_user.progress_trackings.find_or_initialize_by(
@@ -45,8 +43,6 @@ class ProgressTrackingsController < ApplicationController
   # POST /lessons/:lesson_id/auto_complete
   # Tự động đánh dấu hoàn thành khi xem video > 80%
   def auto_complete
-    @lesson = Lesson.find(params[:lesson_id])
-
     unless @lesson.video?
       head :forbidden and return
     end
@@ -66,10 +62,19 @@ class ProgressTrackingsController < ApplicationController
   # GET /lessons/:lesson_id/progress
   # Tra ve progress percentage cua khoa hoc hien tai
   def get_progress
-    @lesson = Lesson.find(params[:lesson_id])
     course = @lesson.course
     percentage = current_user.course_progress_percentage(course)
 
     render json: { progress: percentage }
+  end
+
+  private
+
+  def set_lesson
+    @lesson = Lesson.find(params[:lesson_id])
+  end
+
+  def authorize_lesson_access
+    authorize! :read, @lesson
   end
 end

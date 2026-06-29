@@ -1,25 +1,29 @@
 module Recommendations
   class ContentFilter
-    attr_reader :user
+    attr_reader :user, :interaction_scorer
 
-    def initialize(user)
+    def initialize(user, interaction_scorer: InteractionScorer.new(user))
       @user = user
+      @interaction_scorer = interaction_scorer
     end
 
     def call(limit: 50)
-      category_ids = collect_category_ids
-      return [] if category_ids.empty?
+      affinities = category_affinities
+      positive_category_ids = affinities.select { |_id, score| score.positive? }.keys
+      return [] if positive_category_ids.empty?
 
       enrolled_ids = user.enrollments.pluck(:course_id)
+      target_ids = positive_category_ids + parent_category_ids(positive_category_ids)
 
       courses = Course.published
                       .where.not(id: enrolled_ids)
-                      .where(category_id: category_ids + parent_category_ids(category_ids))
+                      .where(category_id: target_ids)
                       .includes(:category)
                       .limit(limit * 2)
 
       scored = courses.map do |course|
-        direct_score = category_ids.include?(course.category_id) ? 1.0 : 0.5
+        direct_score = affinities.fetch(course.category_id, 0.0)
+        direct_score = affinities.values.select(&:positive?).max.to_f * 0.5 if direct_score.zero?
         Recommendations::Result.new(
           course_id: course.id,
           course: course,
@@ -33,18 +37,17 @@ module Recommendations
 
     private
 
-    def collect_category_ids
-      ids = []
+    def category_affinities
+      course_scores = interaction_scorer.scores
+      category_by_course = Course.where(id: course_scores.keys)
+                                 .where.not(category_id: nil)
+                                 .pluck(:id, :category_id)
+                                 .to_h
 
-      user.enrollments.includes(:course).each do |e|
-        ids << e.course.category_id if e.course.category_id
+      course_scores.each_with_object(Hash.new(0.0)) do |(course_id, score), affinities|
+        category_id = category_by_course[course_id]
+        affinities[category_id] += score if category_id
       end
-
-      user.wishlists.includes(course: :category).each do |w|
-        ids << w.course.category_id if w.course.category_id
-      end
-
-      ids.uniq
     end
 
     def parent_category_ids(category_ids)

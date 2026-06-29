@@ -25,6 +25,7 @@
 @import "components/lesson_tabs";
 @import "components/question_modal";
 @import "components/ask_modal";
+@import "components/learning_checkin";
 @import "pages/navbar"; // Navbar is a global component
 
 // 5. Layouts (scoped inline styles extracted from views)
@@ -65,6 +66,8 @@
 @import "pages/admin/admin_reviews";
 @import "pages/admin/admin_users";
 @import "pages/admin/admin_enrollments";
+@import "pages/admin/admin_recommendation_evaluations";
+@import "pages/admin/admin_personalization_reports";
 @import "components/notifications";
 @import "components/wishlists";
 @import "pages/subscriptions";

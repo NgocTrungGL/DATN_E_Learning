@@ -1,0 +1,30 @@
+<div class="admin-rec-eval__metric-card">
+  <div class="admin-rec-eval__metric-title">
+    <span><%= title %></span>
+    <strong><%= number_with_precision(metrics[:soft_precision], precision: 3) %></strong>
+  </div>
+
+  <dl class="admin-rec-eval__metric-grid">
+    <div>
+      <dt>Soft hit</dt>
+      <dd><%= number_with_precision(metrics[:soft_hit_rate], precision: 3) %></dd>
+    </div>
+    <div>
+      <dt>Soft recall</dt>
+      <dd><%= number_with_precision(metrics[:soft_recall], precision: 3) %></dd>
+    </div>
+    <div>
+      <dt>Soft NDCG</dt>
+      <dd><%= number_with_precision(metrics[:soft_ndcg], precision: 3) %></dd>
+    </div>
+    <div>
+      <dt>Avg semantic</dt>
+      <dd><%= number_with_precision(metrics[:avg_semantic], precision: 3) %></dd>
+    </div>
+  </dl>
+
+  <div class="admin-rec-eval__exact-row">
+    <span>Exact precision</span>
+    <strong><%= number_with_precision(metrics[:exact_precision], precision: 3) %></strong>
+  </div>
+</div>
