@@ -1,7 +1,7 @@
 class StudyPlanReminderJob < ApplicationJob
   queue_as :default
 
-  def perform(date = Date.today)
+  def perform(date = Date.current)
     # Get all active study plans
     active_plans = StudyPlan.active
                             .includes(:user, :course, :study_plan_items)
@@ -21,8 +21,6 @@ class StudyPlanReminderJob < ApplicationJob
     todays_items = plan.study_plan_items
                        .pending
                        .where(scheduled_date: date)
-
-    return if todays_items.empty?
 
     if todays_items.any?
       create_daily_reminder(plan, user, todays_items)

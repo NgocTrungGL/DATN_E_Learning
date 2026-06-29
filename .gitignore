@@ -31,6 +31,8 @@
 /config/master.key
 /config/database.yml
 /test/*
+!/test/services/
+!/test/services/**
 node_modules/
 
 # Ignore application configuration

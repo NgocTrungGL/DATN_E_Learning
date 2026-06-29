@@ -21,6 +21,7 @@ class Admin::RecommendationEvaluationsController < Admin::BaseController
   def candidate_users
     User.where(role: "student")
         .joins(:enrollments)
+        .where(enrollments: { status: "active" })
         .group("users.id")
         .having("COUNT(enrollments.id) >= 5")
         .order("users.id")

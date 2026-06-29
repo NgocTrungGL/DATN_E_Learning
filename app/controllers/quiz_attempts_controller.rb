@@ -115,18 +115,19 @@ class QuizAttemptsController < ApplicationController
   end
 
   def finalize_attempt!
-    score = QuizScoringService.new(@quiz_attempt).calculate!
+    QuizAttempt.transaction do
+      score = QuizScoringService.new(@quiz_attempt).calculate!
+      is_passed = score >= (@quiz_attempt.quiz.pass_score || 0)
 
-    is_passed = score >= (@quiz_attempt.quiz.pass_score || 0)
+      @quiz_attempt.update!(
+        status: :completed,
+        finished_at: Time.current,
+        score:,
+        is_passed:
+      )
 
-    @quiz_attempt.update!(
-      status: :completed,
-      finished_at: Time.current,
-      score:,
-      is_passed:
-    )
-
-    update_progress if is_passed
+      update_progress if is_passed
+    end
   end
 
   def update_progress

@@ -36,6 +36,7 @@
         <%= yield %>
       </div>
     <% end %>
+    <%= render "shared/learning_checkin", checkin: @learning_checkin if @learning_checkin %>
     <%= yield :page_js %>
   </body>
 </html>

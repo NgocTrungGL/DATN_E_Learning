@@ -1,38 +1,46 @@
 module Recommendations
   class CollaborativeFilter
-    attr_reader :user
+    attr_reader :user, :interaction_scorer
 
-    def initialize(user)
+    def initialize(user, interaction_scorer: InteractionScorer.new(user))
       @user = user
+      @interaction_scorer = interaction_scorer
     end
 
     def call(limit: 50)
-      enrolled_ids = user.enrollments.pluck(:course_id)
-      return [] if enrolled_ids.empty?
+      source_scores = interaction_scorer.scores
+      return [] if source_scores.empty?
 
-      similar_course_ids = CourseSimilarity
-        .where(course_a_id: enrolled_ids)
+      excluded_ids = user.enrollments.pluck(:course_id)
+      similarities = CourseSimilarity
+        .where(course_a_id: source_scores.keys)
         .where("score > 0.05")
-        .order(score: :desc)
-        .pluck(:course_b_id)
-        .uniq - enrolled_ids
+        .to_a
 
-      return [] if similar_course_ids.empty?
+      candidate_scores = similarities.each_with_object(Hash.new(0.0)) do |similarity, scores|
+        scores[similarity.course_b_id] += similarity.score.to_f *
+                                          source_scores[similarity.course_a_id]
+      end
+      candidate_scores.except!(*excluded_ids)
+      candidate_scores.select! { |_course_id, score| score.positive? }
+
+      return [] if candidate_scores.empty?
 
       courses = Course.published
-                      .where(id: similar_course_ids)
+                      .where(id: candidate_scores.keys)
                       .includes(:category)
-                      .limit(limit)
+                      .index_by(&:id)
 
-      sim_map = CourseSimilarity
-        .where(course_a_id: enrolled_ids, course_b_id: similar_course_ids)
-        .index_by(&:course_b_id)
+      normalizer = source_scores.values.sum(&:abs).nonzero? || 1.0
 
-      courses.map do |course|
+      candidate_scores.filter_map do |course_id, score|
+        course = courses[course_id]
+        next unless course
+
         Recommendations::Result.new(
           course_id: course.id,
           course: course,
-          score: sim_map[course.id]&.score.to_f,
+          score: score / normalizer,
           reason_type: "cf"
         )
       end.sort_by { |r| -r.score }.take(limit)

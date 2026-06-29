@@ -2,8 +2,12 @@ class CourseSimilarityJob < ApplicationJob
   queue_as :low
 
   def perform
-    enrollments = Enrollment.select(:user_id, :course_id).to_a
-    return if enrollments.empty?
+    enrollments = Enrollment.active.select(:user_id, :course_id).to_a
+    if enrollments.empty?
+      CourseSimilarity.delete_all
+      invalidate_recommendations
+      return
+    end
 
     # Build interaction matrix: course_id => { user_id => score }
     matrix = build_matrix(enrollments)
@@ -25,15 +29,21 @@ class CourseSimilarityJob < ApplicationJob
       end
     end
 
-    return if similarities.empty?
-
     ActiveRecord::Base.transaction do
       CourseSimilarity.delete_all
-      CourseSimilarity.insert_all(similarities)
+      CourseSimilarity.insert_all(similarities) if similarities.any?
+      invalidate_recommendations
     end
   end
 
   private
+
+  def invalidate_recommendations
+    UserRecommendation.update_all(
+      computed_at: Recommendations::CacheInvalidator::STALE_TIME,
+      updated_at: Time.current
+    )
+  end
 
   def build_matrix(enrollments)
     matrix = Hash.new { |h, k| h[k] = Hash.new(0.0) }

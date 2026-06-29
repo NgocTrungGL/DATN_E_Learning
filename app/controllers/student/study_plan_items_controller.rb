@@ -14,23 +14,12 @@ class Student::StudyPlanItemsController < Student::BaseController
     if @item.status != "completed"
       @item.mark_completed!
 
-      # Track learning activity
-      LearningActivityService.track_activity(
-        user: current_user,
-        course: @item.lesson.course,
-        lesson: @item.lesson,
-        activity_type: :lesson_complete,
-        duration_seconds: @item.estimated_duration_minutes * 60
-      )
-
-      # Update learning streak
-      current_user.learning_streak_record.update_streak!(Date.current)
-
       # Update progress tracking
       tracking = ProgressTracking.find_or_initialize_by(
         user: current_user,
         course: @item.lesson.course,
-        lesson: @item.lesson
+        lesson: @item.lesson,
+        progress_type: :lesson
       )
       tracking.update!(status: :completed, progress_value: 100)
 

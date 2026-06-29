@@ -1,4 +1,21 @@
 class LearningActivityService
+  def self.track_lesson_completion(user:, lesson:)
+    user.with_lock do
+      activity = user.learning_activities.find_or_initialize_by(
+        activity_type: "lesson_complete",
+        lesson: lesson
+      )
+      return false unless activity.new_record?
+
+      activity.assign_attributes(course: lesson.course,
+                                 activity_date: Date.current)
+      activity.save!
+      true
+    end
+  rescue ActiveRecord::RecordNotUnique
+    false
+  end
+
   def self.track_lesson_view(user, lesson)
     activity = user.learning_activities.find_or_initialize_by(
       activity_type: :lesson_view,
@@ -22,8 +39,11 @@ class LearningActivityService
   end
 
   def self.track_activity(user:, course: nil, lesson: nil, activity_type:, duration_seconds: 0, score: nil)
+    unless LearningActivity::ACTIVITY_TYPES.include?(activity_type.to_s)
+      raise ArgumentError, "Unsupported learning activity type: #{activity_type}"
+    end
+
     user.learning_activities.create!(
-      user: user,
       course: course,
       lesson: lesson,
       activity_type: activity_type,

@@ -1,5 +1,9 @@
+require "set"
+
 module Recommendations
   class OfflineEvaluator
+    SimilarityRecord = Struct.new(:course_a_id, :course_b_id, :score,
+                                  keyword_init: true)
     DEFAULT_K = 5
     SEMANTIC_THRESHOLD = 0.80
 
@@ -20,7 +24,12 @@ module Recommendations
       return if split.blank?
 
       hybrid_results = ProfileHybridFilter.new(
-        profile_interactions: split[:profile_interactions]
+        profile_interactions: split[:profile_interactions],
+        course_similarities: leave_one_user_out_similarities(
+          user.id, split[:profile_interactions].keys, split[:training_cutoff]
+        ),
+        evaluation_user_id: user.id,
+        training_cutoff: split[:training_cutoff]
       ).call(limit: k)
 
       ai_results = AiEmbeddingFilter.new(
@@ -49,6 +58,7 @@ module Recommendations
     def evaluation_users
       User.where(role: "student")
           .joins(:enrollments)
+          .where(enrollments: { status: "active" })
           .group("users.id")
           .having("COUNT(enrollments.id) >= 5")
           .order("users.id")
@@ -56,30 +66,39 @@ module Recommendations
     end
 
     def temporal_split(user)
-      interactions = collect_positive_interactions(user)
-      return if interactions.size < 3
+      enrollments = user.enrollments.active.to_a.sort_by do |enrollment|
+        enrollment.enrolled_at || enrollment.created_at
+      end
+      return if enrollments.size < 3
 
-      sorted = interactions.sort_by { |item| item[:created_at] || Time.zone.at(0) }
-      ground_truth = sorted.last([2, (sorted.size * 0.25).ceil].min)
-      history = sorted - ground_truth
-      return if history.empty? || ground_truth.empty?
+      ground_truth = enrollments.last([2, (enrollments.size * 0.25).ceil].min)
+      ground_truth_ids = ground_truth.map(&:course_id).uniq
+      training_cutoff = ground_truth.map do |enrollment|
+        enrollment.enrolled_at || enrollment.created_at
+      end.min
+      history = collect_positive_interactions(user).select do |item|
+        item[:created_at] < training_cutoff &&
+          !ground_truth_ids.include?(item[:course_id])
+      end
+      return if history.empty? || ground_truth_ids.empty?
 
       profile = Hash.new(0.0)
       history.each { |item| profile[item[:course_id]] += item[:weight] }
 
       {
         profile_interactions: profile,
-        ground_truth_ids: ground_truth.map { |item| item[:course_id] }.uniq
+        ground_truth_ids: ground_truth_ids,
+        training_cutoff: training_cutoff
       }
     end
 
     def collect_positive_interactions(user)
       interactions = []
 
-      user.enrollments.where("status IN (?)", %w[active completed]).find_each do |enrollment|
+      user.enrollments.active.find_each do |enrollment|
         interactions << {
           course_id: enrollment.course_id,
-          weight: enrollment.status == "completed" ? AiEmbeddingFilter::WEIGHTS[:completed] : AiEmbeddingFilter::WEIGHTS[:active],
+          weight: AiEmbeddingFilter::WEIGHTS[:active],
           created_at: enrollment.enrolled_at || enrollment.created_at
         }
       end
@@ -101,6 +120,35 @@ module Recommendations
       end
 
       interactions
+    end
+
+    def leave_one_user_out_similarities(user_id, source_course_ids, cutoff)
+      course_users = Hash.new { |hash, key| hash[key] = Set.new }
+      Enrollment.active
+                .where.not(user_id: user_id)
+                .where("COALESCE(enrolled_at, created_at) < ?", cutoff)
+                .pluck(:user_id, :course_id)
+                .each { |enrolled_user_id, course_id| course_users[course_id] << enrolled_user_id }
+
+      source_course_ids.flat_map do |source_course_id|
+        source_users = course_users[source_course_id]
+        next [] if source_users.empty?
+
+        course_users.filter_map do |candidate_course_id, candidate_users|
+          next if candidate_course_id == source_course_id
+
+          shared_count = (source_users & candidate_users).size
+          next if shared_count.zero?
+
+          score = shared_count.to_f /
+                  Math.sqrt(source_users.size * candidate_users.size)
+          next if score <= 0.05
+
+          SimilarityRecord.new(course_a_id: source_course_id,
+                               course_b_id: candidate_course_id,
+                               score: score)
+        end
+      end
     end
 
     def relevance_details(results, ground_truth_ids)

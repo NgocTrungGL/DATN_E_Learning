@@ -1,7 +1,12 @@
 class StudyPlanAdjustment < ApplicationRecord
   belongs_to :study_plan
 
-  VALID_REASONS = %w[late_completion student_request goal_changed system_replan].freeze
+  VALID_REASONS = %w[
+    late_completion
+    student_request
+    goal_changed
+    system_replan
+  ].freeze
 
   validates :reason, presence: true, inclusion: { in: VALID_REASONS }
   validates :old_target_date, presence: true

@@ -1,0 +1,234 @@
+<div class="admin-personalization-report">
+  <header class="admin-personalization-report__header">
+    <div>
+      <p class="admin-personalization-report__kicker">Learning Behavior Demo</p>
+      <h1>Personalization Report</h1>
+      <span>Learning activities, study pace, risk detection, focus recommendations, and plan optimization.</span>
+    </div>
+
+    <div class="admin-personalization-report__toolbar">
+      <%= button_to refresh_demo_admin_personalization_reports_path,
+                    method: :post,
+                    params: { course_id: @report.selected_course&.id },
+                    class: "admin-personalization-report__action admin-personalization-report__action--primary" do %>
+        <i class="bi bi-stars"></i>
+        Refresh Demo Data
+      <% end %>
+
+      <% if @report.learners.any? %>
+        <%= form_with url: admin_personalization_reports_path,
+                      method: :get,
+                      class: "admin-personalization-report__filter" do |form| %>
+          <div>
+            <%= form.label :user_id, "Learner" %>
+            <%= form.collection_select :user_id,
+                                       @report.learners,
+                                       :id,
+                                       :name,
+                                       { selected: @report.selected_user&.id },
+                                       { onchange: "this.form.requestSubmit()" } %>
+          </div>
+          <div>
+            <%= form.label :course_id, "Course" %>
+            <%= form.collection_select :course_id,
+                                       @report.courses,
+                                       :id,
+                                       :title,
+                                       { selected: @report.selected_course&.id },
+                                       { onchange: "this.form.requestSubmit()" } %>
+          </div>
+          <noscript><%= form.submit "View", class: "btn-primary btn--sm" %></noscript>
+        <% end %>
+      <% end %>
+    </div>
+  </header>
+
+  <% if @report.selected_user && @report.selected_course && @report.profile %>
+    <section class="admin-personalization-report__summary" aria-label="Personalization summary">
+      <div>
+        <span>Risk level</span>
+        <strong><%= @report.summary[:risk_label] %></strong>
+      </div>
+      <div>
+        <span>Risk score</span>
+        <strong><%= @report.summary[:risk_score] %></strong>
+      </div>
+      <div>
+        <span>Active days</span>
+        <strong><%= @report.summary[:active_days] %></strong>
+      </div>
+      <div>
+        <span>Overdue items</span>
+        <strong><%= @report.summary[:overdue_items] %></strong>
+      </div>
+      <div>
+        <span>Focus items</span>
+        <strong><%= @report.summary[:focus_items] %></strong>
+      </div>
+      <div>
+        <span>Plan suggestions</span>
+        <strong><%= @report.summary[:plan_suggestions] %></strong>
+      </div>
+    </section>
+
+    <section class="admin-personalization-report__pipeline" aria-label="Personalization pipeline">
+      <article>
+        <i class="bi bi-clock-history"></i>
+        <span>1. Learning Activities</span>
+        <strong><%= @report.recent_activities.size %> recent</strong>
+      </article>
+      <article>
+        <i class="bi bi-person-lines-fill"></i>
+        <span>2. Behavior Profile</span>
+        <strong><%= @report.profile.total_study_minutes %> min</strong>
+      </article>
+      <article>
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>3. Risk Detection</span>
+        <strong><%= @report.risk.label %></strong>
+      </article>
+      <article>
+        <i class="bi bi-compass"></i>
+        <span>4. Focus Ranking</span>
+        <strong><%= @report.focus_items.size %> items</strong>
+      </article>
+      <article>
+        <i class="bi bi-calendar2-check"></i>
+        <span>5. Plan Optimization</span>
+        <strong><%= @report.plan_suggestions.size %> suggestions</strong>
+      </article>
+    </section>
+
+    <div class="admin-personalization-report__grid">
+      <section class="admin-personalization-report__panel">
+        <div class="admin-personalization-report__panel-heading">
+          <div>
+            <p>Behavior Profile</p>
+            <h2><%= @report.selected_user.name %></h2>
+          </div>
+          <span><%= @report.selected_course.title %></span>
+        </div>
+
+        <div class="admin-personalization-report__metric-list">
+          <article><span>Plan progress</span><strong><%= @report.profile.plan_progress_percentage %>%</strong></article>
+          <article><span>Course progress</span><strong><%= @report.profile.course_progress_percentage %>%</strong></article>
+          <article><span>Daily capacity</span><strong><%= @report.profile.daily_capacity_minutes %> min</strong></article>
+          <article><span>Required pace</span><strong><%= @report.profile.required_daily_minutes %> min/day</strong></article>
+          <article><span>In progress</span><strong><%= @report.profile.in_progress_items_count %></strong></article>
+          <article><span>Skipped</span><strong><%= @report.profile.skipped_items_count %></strong></article>
+        </div>
+      </section>
+
+      <section class="admin-personalization-report__panel">
+        <div class="admin-personalization-report__panel-heading">
+          <div>
+            <p>Risk Detection</p>
+            <h2><%= @report.risk.label %></h2>
+          </div>
+          <span>Score <%= @report.risk.score %></span>
+        </div>
+
+        <div class="admin-personalization-report__list">
+          <% @report.risk.reasons.each do |reason| %>
+            <article class="admin-personalization-report__list-item">
+              <div>
+                <strong><%= reason %></strong>
+                <span><%= @report.risk.recommendation %></span>
+              </div>
+              <p><strong><%= @report.risk.label %></strong></p>
+            </article>
+          <% end %>
+        </div>
+      </section>
+    </div>
+
+    <div class="admin-personalization-report__grid">
+      <section class="admin-personalization-report__panel">
+        <div class="admin-personalization-report__panel-heading">
+          <div>
+            <p>Today Focus</p>
+            <h2>Recommended actions</h2>
+          </div>
+          <span><%= @report.focus_items.size %> ranked</span>
+        </div>
+
+        <div class="admin-personalization-report__list">
+          <% @report.focus_items.each do |item| %>
+            <article class="admin-personalization-report__list-item">
+              <div>
+                <strong><%= item.title %></strong>
+                <span><%= item.description %></span>
+              </div>
+              <p>
+                <span><%= item.action_label %></span>
+                <strong><%= item.priority %></strong>
+              </p>
+            </article>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="admin-personalization-report__panel">
+        <div class="admin-personalization-report__panel-heading">
+          <div>
+            <p>Plan Optimization</p>
+            <h2>Suggested adjustments</h2>
+          </div>
+          <span><%= @report.study_plan&.status&.humanize || "No plan" %></span>
+        </div>
+
+        <div class="admin-personalization-report__list">
+          <% @report.plan_suggestions.each do |suggestion| %>
+            <article class="admin-personalization-report__list-item">
+              <div>
+                <strong><%= suggestion.title %></strong>
+                <span><%= suggestion.description %></span>
+              </div>
+              <p>
+                <span><%= suggestion.kind.to_s.humanize %></span>
+                <strong><%= suggestion.priority %></strong>
+              </p>
+            </article>
+          <% end %>
+        </div>
+      </section>
+    </div>
+
+    <section class="admin-personalization-report__panel">
+      <div class="admin-personalization-report__panel-heading">
+        <div>
+          <p>Activity Evidence</p>
+          <h2>Recent learning activities</h2>
+        </div>
+        <span><%= @report.recent_activities.size %> latest</span>
+      </div>
+
+      <div class="admin-personalization-report__list">
+        <% @report.recent_activities.each do |activity| %>
+          <article class="admin-personalization-report__list-item">
+            <div>
+              <strong><%= LearningActivity.activity_type_labels[activity.activity_type] || activity.activity_type.humanize %></strong>
+              <span><%= activity.lesson&.title || activity.course&.title || "Learning session" %></span>
+            </div>
+            <p>
+              <span><%= l(activity.activity_date, format: :short) %></span>
+              <strong><%= (activity.duration_seconds.to_i / 60.0).round %> min</strong>
+            </p>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  <% else %>
+    <section class="admin-personalization-report__empty">
+      <i class="bi bi-calendar2-check"></i>
+      <h2>No behavior data yet</h2>
+      <p>Create demo behavior data or let learners use study plans to generate personalization signals.</p>
+      <%= button_to refresh_demo_admin_personalization_reports_path,
+                    method: :post,
+                    class: "admin-personalization-report__action admin-personalization-report__action--primary" do %>
+        <i class="bi bi-stars"></i>
+        Refresh Demo Data
+      <% end %>
+    </section>
+  <% end %>
+</div>

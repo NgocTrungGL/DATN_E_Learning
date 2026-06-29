@@ -63,6 +63,207 @@ $sp-transition-fast: all 0.15s ease;
   }
 }
 
+.study-plan-behavior,
+.study-plan-focus {
+  margin-bottom: 24px;
+}
+
+.study-plan-behavior__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.study-plan-focus__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.study-plan-behavior__kicker,
+.study-plan-focus__kicker {
+  margin: 0 0 6px;
+  color: $sp-primary;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.study-plan-behavior__status {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  color: $sp-primary;
+  background: $sp-primary-light;
+  border-radius: $sp-radius-sm;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.study-plan-behavior__status--at_risk {
+  color: $sp-danger;
+  background: rgba($sp-danger, 0.10);
+}
+
+.study-plan-behavior__status--behind,
+.study-plan-behavior__status--needs_attention {
+  color: $sp-warning;
+  background: $sp-warning-light;
+}
+
+.study-plan-behavior__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.study-plan-behavior__grid article {
+  padding: 12px;
+  background: $sp-surface-soft;
+  border: 1px solid $sp-border;
+  border-radius: $sp-radius-sm;
+}
+
+.study-plan-behavior__grid span {
+  color: $sp-text-faint;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.study-plan-behavior__grid strong {
+  display: block;
+  margin-top: 3px;
+  color: $sp-text;
+  font-size: 18px;
+}
+
+.study-plan-behavior__reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.study-plan-behavior__reasons span {
+  padding: 6px 8px;
+  color: $sp-text-soft;
+  background: $sp-surface-soft;
+  border: 1px solid $sp-border;
+  border-radius: $sp-radius-sm;
+  font-size: 11px;
+}
+
+.study-plan-focus__grid,
+.study-plan-focus__suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.study-plan-focus__item,
+.study-plan-focus__suggestions article {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  color: $sp-text-soft;
+  background: $sp-surface-soft;
+  border: 1px solid $sp-border;
+  border-radius: $sp-radius-sm;
+  text-decoration: none;
+}
+
+.study-plan-focus__suggestions article {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.study-plan-focus__item strong,
+.study-plan-focus__item span,
+.study-plan-focus__suggestions strong,
+.study-plan-focus__suggestions span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.study-plan-focus__item strong,
+.study-plan-focus__suggestions strong {
+  color: $sp-text;
+  font-size: 13px;
+}
+
+.study-plan-focus__item span,
+.study-plan-focus__suggestions span {
+  color: $sp-text-faint;
+  font-size: 11px;
+}
+
+.study-plan-focus__item em {
+  color: $sp-primary;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.study-plan-adjustment-log {
+  margin-bottom: 24px;
+}
+
+.study-plan-adjustment-log__list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+.study-plan-adjustment-log__item:last-child {
+  border-bottom: 0;
+}
+
+.study-plan-adjustment-log__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid $sp-border;
+}
+
+.study-plan-adjustment-log__item > i {
+  color: $sp-success;
+}
+
+.study-plan-adjustment-log__item > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.study-plan-adjustment-log__item strong {
+  color: $sp-text;
+  font-size: 12px;
+}
+
+.study-plan-adjustment-log__item span,
+.study-plan-adjustment-log__item time {
+  color: $sp-text-faint;
+  font-size: 11px;
+}
+
+@media (max-width: 767px) {
+  .study-plan-behavior__grid,
+  .study-plan-focus__grid,
+  .study-plan-focus__suggestions {
+    grid-template-columns: 1fr;
+  }
+}
+
 // ============================================================
 // HERO SECTION
 // ============================================================

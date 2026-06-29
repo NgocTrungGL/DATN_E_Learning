@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_20_000100) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_24_000600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -285,6 +285,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_20_000100) do
     t.index ["lesson_id"], name: "index_learning_activities_on_lesson_id"
     t.index ["user_id", "activity_date"], name: "index_learning_activities_on_user_id_and_activity_date"
     t.index ["user_id", "activity_type"], name: "index_learning_activities_on_user_id_and_activity_type"
+    t.index ["user_id", "lesson_id", "activity_type"], name: "index_unique_lesson_completion_activities", unique: true, where: "(((activity_type)::text = 'lesson_complete'::text) AND (lesson_id IS NOT NULL))"
     t.index ["user_id"], name: "index_learning_activities_on_user_id"
   end
 

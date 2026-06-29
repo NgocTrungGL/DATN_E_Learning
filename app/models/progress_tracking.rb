@@ -14,6 +14,7 @@ class ProgressTracking < ApplicationRecord
 
   after_commit :check_certificate_issuance, on: [:create, :update]
   after_commit :track_learning_activity, on: [:create, :update]
+  after_commit :queue_recommendation_update, on: [:create, :update]
 
   private
 
@@ -31,16 +32,19 @@ class ProgressTracking < ApplicationRecord
   end
 
   def track_learning_activity
-    return unless saved_change_to_status? && completed?
+    return unless saved_change_to_status? && completed? && lesson?
 
-    LearningActivity.create!(
-      user: user,
-      course: course,
-      lesson: lesson,
-      activity_type: :lesson_complete,
-      activity_date: Date.current
-    )
+    created = LearningActivityService.track_lesson_completion(user: user,
+                                                               lesson: lesson)
+    return unless created
+
     user.learning_streak_record.update_streak!(Date.current)
     GoalProgressService.update_user_goals(user)
+  end
+
+  def queue_recommendation_update
+    return unless saved_change_to_status?
+
+    Recommendations::CacheInvalidator.call(user_id)
   end
 end
