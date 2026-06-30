@@ -12,6 +12,21 @@ module Api
         }
       end
 
+      def ai_embedding
+        limit = params[:limit].to_i.clamp(1, 50)
+        results = Recommendations::AiEmbeddingFilter.new(current_user).call(limit: limit)
+
+        render json: {
+          meta: {
+            algorithm: "ai_embedding",
+            user_id: current_user.id,
+            limit: limit,
+            result_count: results.size
+          },
+          data: results.map { |r| recommendation_json(r) }
+        }
+      end
+
       private
 
       def recommendation_json(result)
