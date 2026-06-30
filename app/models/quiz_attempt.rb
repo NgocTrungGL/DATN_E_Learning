@@ -4,7 +4,10 @@ class QuizAttempt < ApplicationRecord
 
   belongs_to :quiz
   belongs_to :user
+  belongs_to :current_question, class_name: "Question", optional: true
   has_many :quiz_answers, dependent: :destroy
+
+  scope :latest_first, -> { order(started_at: :desc, id: :desc) }
 
   validates :status, presence: true
 

@@ -159,10 +159,17 @@
             <i class="bi bi-check-all"></i> Passed
           </span>
         <% else %>
+          <% resumable_attempt = current_user.resumable_quiz_attempt_for(quiz) %>
           <div class="lesson-quiz__btn-start">
-            <%= button_to "Start now →", quiz_quiz_attempts_path(quiz),
-                  method: :post,
-                  data: { turbo: false } %>
+            <% if resumable_attempt %>
+              <%= link_to quiz_attempt_path(resumable_attempt), data: { turbo: false } do %>
+                Continue exam →
+              <% end %>
+            <% else %>
+              <%= button_to "Start now →", quiz_quiz_attempts_path(quiz),
+                    method: :post,
+                    data: { turbo: false } %>
+            <% end %>
           </div>
         <% end %>
       </div>
@@ -282,10 +289,16 @@
                     <i class="bi bi-check-circle-fill"></i> Completed
                   </div>
                 <% else %>
+                  <% resumable_attempt = current_user.resumable_quiz_attempt_for(quiz) %>
                   <div class="sb-quiz-item__btn sb-quiz-item__btn--start">
-                    <%= button_to "Start now", quiz_quiz_attempts_path(quiz),
-                          method: :post,
-                          data: { turbo: false } %>
+                    <% if resumable_attempt %>
+                      <%= link_to "Continue exam", quiz_attempt_path(resumable_attempt),
+                            data: { turbo: false } %>
+                    <% else %>
+                      <%= button_to "Start now", quiz_quiz_attempts_path(quiz),
+                            method: :post,
+                            data: { turbo: false } %>
+                    <% end %>
                   </div>
                 <% end %>
               </div>

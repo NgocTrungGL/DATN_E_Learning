@@ -72,78 +72,6 @@
     { icon: "bi-infinity", title: "Lifetime Access", text: "Purchase once and access the course forever, including all future updates and improvements.", color: "#67e8f9" }
   ]
 
-  # Instructors Data - Replace with API later
-  instructors = [
-    {
-      initials: "AN",
-      name: "Alex Nguyen",
-      role: "Frontend & React Expert",
-      bio: "10+ years building web apps at Google & Shopify. Passionate about teaching modern JavaScript.",
-      students: "12,400",
-      courses: 8,
-      rating: "4.9"
-    },
-    {
-      initials: "ST",
-      name: "Sarah Tran",
-      role: "Backend & DevOps Engineer",
-      bio: "Senior engineer with expertise in Rails, Node.js & cloud infrastructure. AWS certified.",
-      students: "8,200",
-      courses: 6,
-      rating: "4.8"
-    },
-    {
-      initials: "ML",
-      name: "Minh Le",
-      role: "Data Science & ML",
-      bio: "PhD in Computer Science. Former data scientist at VinAI & Grab. Published AI researcher.",
-      students: "9,700",
-      courses: 5,
-      rating: "4.9"
-    },
-    {
-      initials: "HP",
-      name: "Hana Pham",
-      role: "UI/UX & Product Design",
-      bio: "Product designer with 8 years at startups & enterprise. Figma expert and design system creator.",
-      students: "6,800",
-      courses: 7,
-      rating: "4.7"
-    }
-  ]
-
-  # Testimonials Data - Replace with API later
-  testimonials = [
-    {
-      text: "This platform completely transformed my career. Within 3 months of completing the Fullstack path, I landed a job at a top tech company with a 60% salary increase!",
-      name: "Alex Johnson",
-      title: "Junior → Mid Software Engineer",
-      rating: 5,
-      bg: "linear-gradient(135deg, #2563eb, #4f46e5)"
-    },
-    {
-      text: "The structured learning paths are incredible. I went from zero coding knowledge to building my own web app in just 4 months. The instructors are world-class.",
-      name: "Sarah Parker",
-      title: "Freelance Developer",
-      rating: 5,
-      bg: "linear-gradient(135deg, #0d9488, #2563eb)"
-    },
-    {
-      text: "Best investment I've ever made. The real-world projects are exactly what employers are looking for. I got 3 job offers after completing the Backend path.",
-      name: "Michael Chen",
-      title: "Backend Developer at Startup",
-      rating: 5,
-      bg: "linear-gradient(135deg, #7c3aed, #2563eb)"
-    },
-    {
-      text: "As a designer transitioning to development, this platform gave me everything I needed. The community support is amazing — always someone to help!",
-      name: "Emily Wilson",
-      title: "Full-Stack Designer",
-      rating: 5,
-      bg: "linear-gradient(135deg, #db2777, #9333ea)"
-    }
-  ]
-
   # Pricing Plans Data - Replace with API later
   pricing_plans = [
     {
@@ -568,35 +496,47 @@
       </p>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
-      <% instructors.each_with_index do |instructor, i| %>
-        <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 300].min %>">
-          <div class="instructor-card">
-            <div class="instructor-avatar">
-              <span><%= instructor[:initials] %></span>
-              <div class="instructor-badge"><i class="bi bi-check-lg"></i></div>
-            </div>
-            <div class="instructor-name"><%= instructor[:name] %></div>
-            <div class="instructor-role"><%= instructor[:role] %></div>
-            <p class="instructor-bio"><%= instructor[:bio] %></p>
-            <div class="instructor-stats">
-              <div class="inst-stat">
-                <strong><%= instructor[:students] %></strong>
-                Students
+    <% if @landing_instructors.present? %>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+        <% @landing_instructors.each_with_index do |instructor, i| %>
+          <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 300].min %>">
+            <div class="instructor-card">
+              <div class="instructor-avatar">
+                <% if instructor[:avatar_url].present? %>
+                  <%= image_tag instructor[:avatar_url], alt: instructor[:name] %>
+                <% else %>
+                  <span><%= instructor[:initials] %></span>
+                <% end %>
+                <div class="instructor-badge"><i class="bi bi-check-lg"></i></div>
               </div>
-              <div class="inst-stat">
-                <strong><%= instructor[:courses] %></strong>
-                Courses
-              </div>
-              <div class="inst-stat">
-                <strong>⭐ <%= instructor[:rating] %></strong>
-                Rating
+              <div class="instructor-name"><%= instructor[:name] %></div>
+              <div class="instructor-role"><%= instructor[:role] %></div>
+              <p class="instructor-bio"><%= instructor[:bio] %></p>
+              <div class="instructor-stats">
+                <div class="inst-stat">
+                  <strong><%= number_with_delimiter(instructor[:students]) %></strong>
+                  Students
+                </div>
+                <div class="inst-stat">
+                  <strong><%= instructor[:courses] %></strong>
+                  Courses
+                </div>
+                <div class="inst-stat">
+                  <strong>
+                    <% if instructor[:rating].present? %>
+                      ⭐ <%= number_with_precision(instructor[:rating], precision: 1) %>
+                    <% else %>
+                      New
+                    <% end %>
+                  </strong>
+                  Rating
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      <% end %>
-    </div>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </section>
 
@@ -708,29 +648,35 @@
       </p>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-      <% testimonials.each_with_index do |t, i| %>
-        <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 300].min %>">
-          <div class="testimonial-card">
-            <div class="testimonial-stars">
-              <% t[:rating].times do %>
-                <i class="bi bi-star-fill"></i>
-              <% end %>
-            </div>
-            <p class="testimonial-text">"<%= t[:text] %>"</p>
-            <div class="testimonial-author">
-              <div class="author-avatar" style="background: <%= t[:bg] %>;">
-                <%= t[:name][0] %>
+    <% if @landing_testimonials.present? %>
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        <% @landing_testimonials.each_with_index do |testimonial, i| %>
+          <div class="col" data-reveal data-reveal-delay="<%= [i * 100, 300].min %>">
+            <div class="testimonial-card">
+              <div class="testimonial-stars">
+                <% testimonial[:rating].times do %>
+                  <i class="bi bi-star-fill"></i>
+                <% end %>
               </div>
-              <div class="author-info">
-                <div class="author-name"><%= t[:name] %></div>
-                <div class="author-title"><%= t[:title] %></div>
+              <p class="testimonial-text">"<%= testimonial[:text] %>"</p>
+              <div class="testimonial-author">
+                <div class="author-avatar" style="background: <%= testimonial[:bg] %>;">
+                  <% if testimonial[:avatar_url].present? %>
+                    <%= image_tag testimonial[:avatar_url], alt: testimonial[:name] %>
+                  <% else %>
+                    <%= testimonial[:initials] %>
+                  <% end %>
+                </div>
+                <div class="author-info">
+                  <div class="author-name"><%= testimonial[:name] %></div>
+                  <div class="author-title"><%= testimonial[:title] %></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      <% end %>
-    </div>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </section>
 

@@ -315,11 +315,17 @@
 .bs-card {
   background: $white;
   border: 1px solid $border;
-  border-radius: $radius-lg;
+  border-radius: $radius-md;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  @include card-hover-lift;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+    border-color: rgba($primary, 0.42);
+  }
 
   &__thumb {
     position: relative;
@@ -333,31 +339,41 @@
     }
   }
 
-  &:hover &__thumb img { transform: scale(1.04); }
+  &:hover &__thumb img { transform: scale(1.03); }
 
   &__badge {
     position: absolute;
-    top: 0.6rem; left: 0.6rem;
-    background: $warning;
-    color: #000;
+    top: 0.65rem; left: 0.65rem;
+    background: rgba($white, 0.94);
+    color: $primary;
     font-size: 0.68rem;
     font-weight: 800;
-    padding: 0.2rem 0.55rem;
-    border-radius: $radius-sm;
+    padding: 0.32rem 0.6rem;
+    border-radius: 999px;
+    box-shadow: $shadow-sm;
   }
 
   &__body {
-    padding: 1rem 1.1rem;
+    padding: 1rem 1rem 0.9rem;
     flex: 1;
   }
 
   &__category {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 1.75rem;
+    padding: 0.32rem 0.65rem;
+    overflow: hidden;
+    border-radius: 999px;
+    border: 1px solid rgba($primary, 0.12);
+    background: rgba($primary, 0.1);
     color: $primary;
-    margin-bottom: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.75rem;
   }
 
   &__title {
@@ -383,6 +399,7 @@
     display: flex;
     align-items: center;
     gap: 0.35rem;
+    min-width: 0;
     .bi { color: $primary; }
   }
 
@@ -440,7 +457,7 @@
   }
 
   &__footer {
-    padding: 0.75rem 1.1rem;
+    padding: 0.85rem 1rem 1rem;
     border-top: 1px solid $border;
     display: flex;
     align-items: center;
@@ -458,8 +475,11 @@
   }
 
   &__cart {
-    width: 34px; height: 34px;
-    border-radius: $radius-sm;
+    width: 36px; height: 36px;
+    border: 1px solid $border;
+    border-radius: 10px;
+    background: $white;
+    color: $text-muted;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -468,14 +488,23 @@
     transition: $t-cubic;
 
     &--add {
-      background: $primary;
-      color: $white;
-      &:hover { background: $primary-dark; color: $white; }
+      &:hover {
+        border-color: rgba($primary, 0.35);
+        background: rgba($primary, 0.08);
+        color: $primary;
+      }
     }
 
     &--done {
-      background: #dcfce7;
-      color: #16a34a;
+      border-color: rgba($primary, 0.2);
+      background: rgba($primary, 0.1);
+      color: $primary;
+
+      &:hover {
+        border-color: rgba($primary, 0.35);
+        background: rgba($primary, 0.14);
+        color: $primary;
+      }
     }
   }
 }

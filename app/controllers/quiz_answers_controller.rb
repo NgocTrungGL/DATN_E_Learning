@@ -48,6 +48,7 @@ class QuizAnswersController < ApplicationController
     @answer.update(
       selected_option_ids: normalized_selected_option_ids
     )
+    @quiz_attempt.update_column(:current_question_id, @answer.question_id)
   end
 
   def normalized_selected_option_ids

@@ -39,16 +39,16 @@
           <% else %>
             <%# --- DEFAULT LINKS (ROOT PAGE) --- %>
             <li class="nav-item">
-              <a class="nav-link" href="#learning-paths">Learning Paths</a>
+              <%= link_to "Learning Paths", root_path(anchor: "learning-paths"), class: "nav-link" %>
             </li>
             <li class="nav-item">
               <%= link_to "Pricing", root_path(anchor: "pricing"), class: "nav-link" %>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#instructors">About</a>
+              <%= link_to "About", root_path(anchor: "instructors"), class: "nav-link" %>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#cta">Contact</a>
+              <%= link_to "Contact", root_path(anchor: "cta"), class: "nav-link" %>
             </li>
           <% end %>
           <%# Removed duplicate Pricing link %>
@@ -193,5 +193,39 @@
         navbar.classList.remove('navbar-scrolled');
       }
     });
+
+    const scrollToTarget = function(targetId) {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+
+      const navbarHeight = navbar ? navbar.offsetHeight : 0;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarHeight - 12;
+      window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' });
+    };
+
+    const scrollToHashTarget = function() {
+      if (!window.location.hash) return;
+
+      scrollToTarget(window.location.hash.slice(1));
+    };
+
+    document.querySelectorAll('.lp-navbar .nav-link[href*="#"]').forEach(function(link) {
+      link.addEventListener('click', function(event) {
+        const url = new URL(link.href, window.location.origin);
+        const isSamePage = url.origin === window.location.origin &&
+          url.pathname === window.location.pathname &&
+          url.hash;
+
+        if (!isSamePage) return;
+
+        event.preventDefault();
+        history.pushState(null, '', url.hash);
+        scrollToTarget(url.hash.slice(1));
+        collapse.classList.remove('show');
+        backdrop.classList.remove('show');
+      });
+    });
+
+    window.setTimeout(scrollToHashTarget, 80);
   });
 </script>

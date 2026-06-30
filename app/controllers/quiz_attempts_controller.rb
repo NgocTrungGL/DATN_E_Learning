@@ -6,6 +6,17 @@ class QuizAttemptsController < ApplicationController
   # POST /quizzes/:quiz_id/quiz_attempts
   def create
     @quiz = Quiz.find(params[:quiz_id])
+    @quiz_attempt = current_user.latest_in_progress_quiz_attempt_for(@quiz)
+
+    if @quiz_attempt
+      if @quiz_attempt.expired?
+        handle_expired_attempt
+      else
+        redirect_to quiz_attempt_path(@quiz_attempt),
+                    notice: "You can continue your in-progress quiz."
+      end
+      return
+    end
 
     @quiz_attempt = @quiz.quiz_attempts.new(
       user: current_user,
@@ -86,6 +97,7 @@ class QuizAttemptsController < ApplicationController
     @current_answer = find_current_answer
     @all_questions = @quiz_answers.map(&:question)
     @current_question = @current_answer&.question
+    remember_current_question
     @answered_ids = @quiz_answers.select{|qa| qa.selected_option_ids.present?}.index_by(&:question_id)
     @quiz_is_finished = @quiz_attempt.completed?
     @quiz_answer = @current_answer
@@ -95,9 +107,18 @@ class QuizAttemptsController < ApplicationController
   def find_current_answer
     if params[:question_id]
       @quiz_answers.find_by(question_id: params[:question_id])
+    elsif @quiz_attempt.current_question_id
+      @quiz_answers.find_by(question_id: @quiz_attempt.current_question_id) || @quiz_answers.first
     else
       @quiz_answers.first
     end
+  end
+
+  def remember_current_question
+    return unless @current_question
+    return if @quiz_attempt.current_question_id == @current_question.id
+
+    @quiz_attempt.update_column(:current_question_id, @current_question.id)
   end
 
   def set_quiz_attempt
