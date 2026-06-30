@@ -1,0 +1,203 @@
+// ============================================================
+// Error Pages
+// ============================================================
+
+.error-page-body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba($primary, 0.12), transparent 34rem),
+    linear-gradient(135deg, $bg 0%, $surface 48%, $primary-light 100%);
+  color: $text-dark;
+  font-family: "Inter", sans-serif;
+}
+
+.error-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+
+  &__panel {
+    width: 100%;
+    max-width: 980px;
+    border: 1px solid rgba($primary, 0.16);
+    border-radius: $radius-lg;
+    background: rgba($surface, 0.92);
+    box-shadow: $shadow-lg;
+    overflow: hidden;
+  }
+
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 1.5rem 1.5rem 0;
+    color: $primary;
+    font-size: 1.25rem;
+    font-weight: 900;
+    text-decoration: none;
+  }
+
+  &__content {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+
+  &__visual {
+    min-height: 13rem;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, $bg-dark 0%, $primary-dark 100%);
+    color: $surface;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__visual::after {
+    content: "";
+    position: absolute;
+    inset: 1rem;
+    border: 1px solid rgba($surface, 0.16);
+    border-radius: $radius-md;
+  }
+
+  &__icon {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: rgba($surface, 0.12);
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__code {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 0.5rem;
+    color: rgba($surface, 0.12);
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &__eyebrow {
+    color: $primary;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    margin: 0 0 0.7rem;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    color: $text-dark;
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1.05;
+    margin: 0;
+  }
+
+  &__message {
+    color: $text-mid;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 1rem 0 0;
+    max-width: 34rem;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  &__action {
+    min-height: 3rem;
+    border-radius: $radius-sm;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: $t;
+  }
+
+  &__action--primary {
+    background: $primary;
+    color: $surface;
+    box-shadow: $shadow-blue;
+  }
+
+  &__action--primary:hover {
+    background: $primary-dark;
+    color: $surface;
+    transform: translateY(-2px);
+  }
+
+  &__action--secondary {
+    border: 1px solid $border;
+    background: $surface;
+    color: $text-mid;
+  }
+
+  &__action--secondary:hover {
+    border-color: rgba($primary, 0.32);
+    color: $primary;
+    transform: translateY(-2px);
+  }
+
+  &__meta {
+    border-top: 1px solid $border;
+    color: $text-muted;
+    font-size: 0.8rem;
+    margin: 1.5rem 0 0;
+    padding-top: 1rem;
+  }
+
+  &__meta span {
+    color: $text-mid;
+    font-family: monospace;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (min-width: 768px) {
+  .error-page {
+    padding: 2rem;
+
+    &__brand {
+      padding: 2rem 2rem 0;
+    }
+
+    &__content {
+      grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.1fr);
+      padding: 2rem;
+    }
+
+    &__visual {
+      min-height: 25rem;
+    }
+
+    &__code {
+      font-size: 9rem;
+    }
+
+    &__title {
+      font-size: 3.25rem;
+    }
+  }
+}

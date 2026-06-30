@@ -7,6 +7,11 @@ Rails.application.routes.draw do
     raise error
   } if ENV["ENABLE_SENTRY_TEST_ROUTE"] == "true"
 
+  %w[400 401 403 404 406 422 429 500 503].each do |code|
+    get code, to: "errors#show", code: code
+  end
+  get "error", to: "errors#show", code: "error"
+
   namespace :api do
     namespace :v1 do
       resources :recommendations, only: [:index] do
