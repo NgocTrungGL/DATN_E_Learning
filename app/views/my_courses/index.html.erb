@@ -48,6 +48,10 @@
             </div>
 
             <div class="my-course-card__body">
+              <% if course.category %>
+                <div class="my-course-card__category"><%= course.category.name %></div>
+              <% end %>
+
               <%= link_to course.title, course_path(course), class: "my-course-card__title" %>
               <div class="my-course-card__instructor">
                  <%= course.creator&.name || "E-Learning Team" %>

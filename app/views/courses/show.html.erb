@@ -350,11 +350,21 @@
                       <i class="bi bi-check-circle-fill"></i> Completed
                     </button>
                   <% else %>
-                    <%= button_to quiz_quiz_attempts_path(quiz), method: :post,
-                          class: "cd-btn cd-btn--primary",
-                          style: "width:auto;padding:.5rem 1rem;font-size:.82rem;",
-                          data: { turbo: false } do %>
-                      <i class="bi bi-play-circle-fill"></i> Start Quiz
+                    <% resumable_attempt = current_user&.resumable_quiz_attempt_for(quiz) %>
+                    <% if resumable_attempt %>
+                      <%= link_to quiz_attempt_path(resumable_attempt),
+                            class: "cd-btn cd-btn--primary",
+                            style: "width:auto;padding:.5rem 1rem;font-size:.82rem;",
+                            data: { turbo: false } do %>
+                        <i class="bi bi-play-circle-fill"></i> Continue Quiz
+                      <% end %>
+                    <% else %>
+                      <%= button_to quiz_quiz_attempts_path(quiz), method: :post,
+                            class: "cd-btn cd-btn--primary",
+                            style: "width:auto;padding:.5rem 1rem;font-size:.82rem;",
+                            data: { turbo: false } do %>
+                        <i class="bi bi-play-circle-fill"></i> Start Quiz
+                      <% end %>
                     <% end %>
                   <% end %>
                 <% else %>

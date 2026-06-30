@@ -128,6 +128,16 @@ dependent: :nullify
     progress_trackings.completed.exists?(quiz:)
   end
 
+  def resumable_quiz_attempt_for quiz
+    quiz_attempts.in_progress.where(quiz:).latest_first.detect do |attempt|
+      !attempt.expired?
+    end
+  end
+
+  def latest_in_progress_quiz_attempt_for quiz
+    quiz_attempts.in_progress.where(quiz:).latest_first.first
+  end
+
   def course_progress_percentage course
     total_items = course.lessons.count + course.quizzes.count
     return 0 if total_items.zero?

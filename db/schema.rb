@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_24_000600) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_30_000100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -486,6 +486,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_24_000600) do
     t.boolean "is_passed", default: false
     t.string "status", default: "in_progress"
     t.integer "duration_seconds"
+    t.bigint "current_question_id"
+    t.index ["current_question_id"], name: "index_quiz_attempts_on_current_question_id"
     t.index ["quiz_id"], name: "index_quiz_attempts_on_quiz_id"
     t.index ["user_id"], name: "index_quiz_attempts_on_user_id"
   end
@@ -722,6 +724,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_24_000600) do
   add_foreign_key "quiz_answers", "question_options"
   add_foreign_key "quiz_answers", "questions"
   add_foreign_key "quiz_answers", "quiz_attempts"
+  add_foreign_key "quiz_attempts", "questions", column: "current_question_id", on_delete: :nullify
   add_foreign_key "quiz_attempts", "quizzes"
   add_foreign_key "quiz_attempts", "users"
   add_foreign_key "quiz_questions", "questions"
