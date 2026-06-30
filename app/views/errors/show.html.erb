@@ -1,0 +1,41 @@
+<main class="error-page">
+  <section class="error-page__panel" aria-labelledby="error-page-title">
+    <%= link_to root_path, class: "error-page__brand" do %>
+      <i class="bi bi-mortarboard-fill"></i>
+      <span>E-Learning</span>
+    <% end %>
+
+    <div class="error-page__content">
+      <div class="error-page__visual" aria-hidden="true">
+        <div class="error-page__icon">
+          <i class="bi <%= @error_page[:icon] %>"></i>
+        </div>
+        <div class="error-page__code"><%= @code == "error" ? "ERR" : @code %></div>
+      </div>
+
+      <div class="error-page__copy">
+        <p class="error-page__eyebrow"><%= @error_page[:eyebrow] %></p>
+        <h1 class="error-page__title" id="error-page-title"><%= @error_page[:title] %></h1>
+        <p class="error-page__message"><%= @error_page[:message] %></p>
+
+        <div class="error-page__actions">
+          <%= link_to root_path, class: "error-page__action error-page__action--primary" do %>
+            <i class="bi bi-house-door"></i>
+            <span>Go home</span>
+          <% end %>
+          <%= link_to courses_path, class: "error-page__action error-page__action--secondary" do %>
+            <i class="bi bi-grid"></i>
+            <span>Browse courses</span>
+          <% end %>
+        </div>
+
+        <% if request.request_id.present? %>
+          <p class="error-page__meta">
+            Request ID
+            <span><%= request.request_id %></span>
+          </p>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</main>

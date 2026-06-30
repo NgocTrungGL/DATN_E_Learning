@@ -21,5 +21,6 @@ module ELearning
     config.i18n.default_locale = :en
     config.i18n.available_locales = [:vi, :en]
     config.eager_load_paths << Rails.root.join("active_storage/service")
+    config.exceptions_app = routes
   end
 end
