@@ -154,6 +154,12 @@
                title: t("recommendations.cart.title"),
                modifier: "cart" %>
 
+    <%= render "courses/recommendations",
+               results: @cart_ai_recommendation_results,
+               kicker: "AI Embedding comparison",
+               title: "Semantic picks for your cart",
+               modifier: "cart-ai" %>
+
     <% if @wishlists.any? %>
       <div class="cart-wishlist">
         <div class="cart-wishlist__header">
@@ -227,6 +233,12 @@
                kicker: t("recommendations.cart.kicker"),
                title: t("recommendations.cart.title"),
                modifier: "cart-empty" %>
+
+    <%= render "courses/recommendations",
+               results: @cart_ai_recommendation_results,
+               kicker: "AI Embedding comparison",
+               title: "Semantic picks for your cart",
+               modifier: "cart-ai-empty" %>
 
     <% if @wishlists.any? %>
       <div class="cart-wishlist" style="margin-top: 24px;">
