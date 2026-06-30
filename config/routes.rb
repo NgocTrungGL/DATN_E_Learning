@@ -9,7 +9,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :recommendations, only: [:index]
+      resources :recommendations, only: [:index] do
+        get :ai_embedding, on: :collection
+      end
       get "categories/:id/subcategories", to: "categories#subcategories"
     end
   end
