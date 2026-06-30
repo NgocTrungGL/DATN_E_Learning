@@ -2,7 +2,7 @@
 
 ## 1. Khái niệm cá nhân hóa học tập
 
-Cá nhân hóa học tập là quá trình điều chỉnh nội dung, kế hoạch và gợi ý học tập dựa trên hành vi, tiến độ và nhu cầu riêng của từng người học. Trong một hệ thống E-learning, mỗi người dùng có thể có sở thích, tốc độ học, thời gian học và mức độ tương tác khác nhau. Vì vậy, nếu hệ thống chỉ hiển thị cùng một danh sách khóa học hoặc cùng một lộ trình học cho tất cả người dùng thì trải nghiệm học tập sẽ chưa thật sự tối ưu.
+Cá nhân hóa học tập trong đề tài được hiểu là quá trình điều chỉnh nội dung, kế hoạch và gợi ý học tập dựa trên hành vi, tiến độ và nhu cầu riêng của từng người học. Trong hệ thống E-learning, mỗi người dùng có thể có sở thích, tốc độ học, thời gian học và mức độ tương tác khác nhau. Vì vậy, nếu hệ thống chỉ hiển thị cùng một danh sách khóa học hoặc cùng một lộ trình học cho tất cả người dùng thì trải nghiệm học tập sẽ chưa thật sự tối ưu.
 
 Mục tiêu của cá nhân hóa học tập là giúp người học:
 
@@ -33,13 +33,13 @@ Các dữ liệu đầu vào được sử dụng gồm:
 - Độ tương đồng giữa các khóa học.
 - Mức độ phổ biến của khóa học.
 
-Hệ thống chuyển các hành vi này thành điểm quan tâm. Những hành vi thể hiện mức độ quan tâm mạnh hơn sẽ đóng góp nhiều điểm hơn. Ví dụ, đăng ký khóa học hoặc đánh giá tốt là tín hiệu mạnh hơn so với chỉ thêm khóa học vào giỏ hàng.
+Hệ thống chuyển các hành vi này thành điểm quan tâm. Những hành vi thể hiện mức độ quan tâm mạnh hơn sẽ đóng góp nhiều điểm hơn. Ví dụ, đăng ký khóa học hoặc đánh giá tốt là tín hiệu mạnh hơn so với chỉ thêm khóa học vào giỏ hàng. Cách khai thác hành vi người dùng như tín hiệu sở thích thuộc nhóm implicit feedback trong hệ gợi ý [2], [3].
 
-Các trọng số hành vi trong hệ thống được thiết kế theo hướng heuristic, dựa trên mức độ mạnh yếu của từng tín hiệu. Những trọng số này không được xem là giá trị tối ưu tuyệt đối, mà là bộ trọng số khởi tạo có thể được kiểm chứng thông qua offline evaluation.
+Các trọng số hành vi trong hệ thống được thiết kế theo hướng heuristic, dựa trên mức độ mạnh yếu của từng tín hiệu. Những trọng số này không được xem là giá trị tối ưu tuyệt đối, mà là bộ trọng số khởi tạo có thể được kiểm chứng thông qua offline evaluation [2].
 
 ## 3. Content-based Filtering
 
-Content-based Filtering là phương pháp gợi ý dựa trên nội dung hoặc đặc điểm của khóa học. Trong mô hình của đề tài, đặc trưng nội dung được dùng trực tiếp là danh mục khóa học.
+Content-based Filtering là phương pháp gợi ý dựa trên nội dung hoặc đặc điểm của khóa học. Trong mô hình của đề tài, đặc trưng nội dung được dùng trực tiếp là danh mục khóa học [1].
 
 Ý tưởng chính là: nếu người dùng thường tương tác với các khóa học thuộc một danh mục nhất định, hệ thống sẽ ưu tiên gợi ý thêm các khóa học trong cùng danh mục hoặc danh mục có liên quan.
 
@@ -74,7 +74,7 @@ Hệ số `0.5` được dùng để giảm độ ảnh hưởng của category 
 
 ## 4. Collaborative Filtering
 
-Collaborative Filtering là phương pháp gợi ý dựa trên mối quan hệ giữa các khóa học. Trong hệ thống này, hướng tiếp cận được dùng là item-based collaborative filtering, tức là hệ thống không tìm người dùng giống nhau, mà tìm các khóa học giống nhau.
+Collaborative Filtering là phương pháp gợi ý dựa trên mối quan hệ giữa các khóa học. Trong hệ thống này, hướng tiếp cận được dùng là item-based collaborative filtering, tức là hệ thống không tìm người dùng giống nhau, mà tìm các khóa học giống nhau [1], [2].
 
 Ý tưởng chính là: nếu người dùng đã quan tâm đến khóa học A, và khóa học B có độ tương đồng cao với khóa học A, thì khóa học B có thể được gợi ý.
 
@@ -113,7 +113,7 @@ Ngưỡng `0.05` giúp loại bỏ các quan hệ tương đồng quá yếu gi�
 
 ## 5. Popularity-based Recommendation
 
-Popularity-based Recommendation là phương pháp gợi ý dựa trên độ phổ biến của khóa học. Phương pháp này không cá nhân hóa mạnh, nhưng rất hữu ích trong trường hợp người dùng mới hoặc người dùng có ít hành vi.
+Popularity-based Recommendation là phương pháp gợi ý dựa trên độ phổ biến của khóa học. Phương pháp này không cá nhân hóa mạnh, nhưng rất hữu ích trong trường hợp người dùng mới hoặc người dùng có ít hành vi [1].
 
 Trong mô hình của đề tài, độ phổ biến được tính dựa trên:
 
@@ -161,7 +161,7 @@ Cách tính này giúp hệ thống ưu tiên các khóa học vừa có rating 
 
 ## 6. Hybrid Recommendation
 
-Sau khi đã có ba nguồn điểm từ Content-based Filtering, Collaborative Filtering và Popularity-based Recommendation, hệ thống sử dụng hướng tiếp cận Hybrid Recommendation để kết hợp các điểm này thành kết quả gợi ý cuối cùng.
+Sau khi đã có ba nguồn điểm từ Content-based Filtering, Collaborative Filtering và Popularity-based Recommendation, hệ thống sử dụng hướng tiếp cận Hybrid Recommendation để kết hợp các điểm này thành kết quả gợi ý cuối cùng [4].
 
 Lý do sử dụng hybrid là vì mỗi phương pháp có ưu điểm và hạn chế riêng:
 
@@ -199,9 +199,9 @@ Cách thiết kế này giúp hệ thống thích nghi với từng loại ngư�
 
 ## 7. AI Embedding-based Recommendation
 
-AI Embedding-based Recommendation là phương pháp gợi ý khóa học dựa trên độ tương đồng ngữ nghĩa giữa nội dung khóa học và hồ sơ sở thích của người dùng. Khác với Content-based Filtering trong hệ thống chỉ dựa trực tiếp vào category, phương pháp embedding cố gắng biểu diễn toàn bộ nội dung mô tả khóa học thành vector số để so sánh ở mức ý nghĩa.
+AI Embedding-based Recommendation là phương pháp gợi ý khóa học dựa trên độ tương đồng ngữ nghĩa giữa nội dung khóa học và hồ sơ sở thích của người dùng. Khác với Content-based Filtering trong hệ thống chỉ dựa trực tiếp vào category, phương pháp embedding cố gắng biểu diễn toàn bộ nội dung mô tả khóa học thành vector số để so sánh ở mức ý nghĩa [5].
 
-Embedding là cách chuyển đổi văn bản thành một vector số. Các văn bản có nội dung gần nhau sẽ có xu hướng tạo ra các vector gần nhau trong không gian embedding. Vì vậy, hai khóa học có thể được xem là liên quan nếu vector embedding của chúng gần nhau, dù chúng không nhất thiết phải trùng category.
+Embedding là cách chuyển đổi văn bản thành một vector số. Các văn bản có nội dung gần nhau sẽ có xu hướng tạo ra các vector gần nhau trong không gian embedding. Vì vậy, hai khóa học có thể được xem là liên quan nếu vector embedding của chúng gần nhau, dù chúng không nhất thiết phải trùng category [5].
 
 Trong hệ thống này, AI Embedding không phải thuật toán chính thay thế toàn bộ hệ gợi ý. Nó được dùng như một phương pháp đối chứng để so sánh với thuật toán Hybrid Recommendation do hệ thống tự xây dựng. Cách thiết kế này giúp hệ thống tận dụng AI để đánh giá và so sánh, nhưng vẫn giữ phần đóng góp chính ở thuật toán recommendation được xây dựng trong đề tài.
 
@@ -315,7 +315,7 @@ Trong ví dụ trên, `Ruby on Rails API` và `Backend Security` có thể gần
 
 Sau khi mỗi khóa học đã có embedding, hệ thống cần tạo một vector đại diện cho sở thích của người dùng. Vector này được xây dựng từ các khóa học mà user đã tương tác trước đó.
 
-Không phải tương tác nào cũng có mức độ quan trọng như nhau. Ví dụ, một khóa học đã đăng ký hoặc đánh giá 5 sao thể hiện mức quan tâm mạnh hơn một khóa học chỉ mới nằm trong cart. Vì vậy, hệ thống sử dụng trung bình có trọng số để tạo vector hồ sơ.
+Không phải tương tác nào cũng có mức độ quan trọng như nhau. Ví dụ, một khóa học đã đăng ký hoặc đánh giá 5 sao thể hiện mức quan tâm mạnh hơn một khóa học chỉ mới nằm trong cart. Vì vậy, hệ thống sử dụng trung bình có trọng số để tạo vector hồ sơ, tương tự cách các hệ gợi ý implicit feedback phân biệt cường độ tín hiệu hành vi [2].
 
 Công thức chính:
 
@@ -363,7 +363,7 @@ Trong đó:
 - `B`: vector khóa học ứng viên.
 - Giá trị càng cao thì khóa học càng gần với sở thích của người dùng về mặt ngữ nghĩa.
 
-Cosine similarity phù hợp trong bài toán này vì hệ thống cần so sánh hướng của hai vector hơn là độ lớn tuyệt đối của vector. Nếu hai vector có hướng gần nhau, điều đó cho thấy nội dung khóa học ứng viên gần với sở thích đã học của user.
+Cosine similarity phù hợp trong bài toán này vì hệ thống cần so sánh hướng của hai vector hơn là độ lớn tuyệt đối của vector. Nếu hai vector có hướng gần nhau, điều đó cho thấy nội dung khóa học ứng viên gần với sở thích đã học của user [5].
 
 Các khóa học đã được user tương tác trước đó sẽ bị loại khỏi danh sách ứng viên để tránh gợi ý lại nội dung cũ. Kết quả cuối cùng là danh sách khóa học có cosine similarity cao nhất.
 
@@ -540,7 +540,7 @@ Các điểm ưu tiên được thiết kế theo mức độ khẩn cấp của
 
 ## 11. Offline Evaluation cho hệ gợi ý
 
-Do hệ thống chưa có nhiều người dùng thật để triển khai A/B Testing, hệ thống sử dụng Offline Evaluation để đánh giá thuật toán gợi ý. Đây là phương pháp đánh giá dựa trên dữ liệu lịch sử đã có.
+Hệ thống sử dụng Offline Evaluation để đánh giá thuật toán gợi ý dựa trên dữ liệu lịch sử. Đây là phương pháp phổ biến trong đánh giá recommender systems, trong đó dữ liệu lịch sử được chia thành phần dùng để tạo hồ sơ người dùng và phần dùng làm ground truth để kiểm tra kết quả gợi ý [1].
 
 Ý tưởng chính là dùng một phần lịch sử học tập cũ của user để tạo hồ sơ, sau đó kiểm tra xem thuật toán có gợi ý đúng các khóa học mà user đã học sau đó hay không.
 
@@ -565,7 +565,7 @@ Các chỉ số đánh giá chính:
 
 ### Precision@K
 
-Precision@K đo tỷ lệ kết quả gợi ý trong top K là đúng.
+Precision@K đo tỷ lệ kết quả gợi ý trong top K là đúng [1].
 
 ```text
 Precision@K =
@@ -576,7 +576,7 @@ Precision cao cho thấy danh sách gợi ý ít bị nhiễu.
 
 ### Recall@K
 
-Recall@K đo tỷ lệ khóa học đúng được tìm thấy trong top K.
+Recall@K đo tỷ lệ khóa học đúng được tìm thấy trong top K [1].
 
 ```text
 Recall@K =
@@ -587,7 +587,7 @@ Recall cao cho thấy thuật toán tìm lại được nhiều khóa học mà 
 
 ### NDCG@K
 
-NDCG@K đánh giá chất lượng thứ hạng của danh sách gợi ý. Nếu khóa học đúng xuất hiện ở vị trí càng cao, điểm NDCG càng tốt.
+NDCG@K đánh giá chất lượng thứ hạng của danh sách gợi ý. Nếu khóa học đúng xuất hiện ở vị trí càng cao, điểm NDCG càng tốt [6].
 
 Công thức chính:
 
@@ -622,7 +622,7 @@ Ngoài đánh giá exact match, hệ thống còn có soft relevance. Một khó
 
 Ngưỡng semantic similarity `0.80` được dùng để chỉ xem các khóa học có mức tương đồng ngữ nghĩa cao là liên quan mềm. Nếu đặt ngưỡng quá thấp, nhiều khóa học chỉ hơi giống nhau cũng có thể được tính là liên quan, làm kết quả đánh giá dễ bị lạc quan.
 
-Việc dùng offline evaluation giúp hệ thống có cơ sở định lượng để so sánh thuật toán mà không cần lượng lớn người dùng thật trong giai đoạn demo đồ án.
+Việc dùng offline evaluation giúp hệ thống có cơ sở định lượng để so sánh chất lượng gợi ý của các thuật toán trên cùng một tập dữ liệu lịch sử.
 
 ## 12. Tổng kết
 
@@ -639,9 +639,16 @@ Các thành phần chính gồm:
 
 Điểm mạnh của hướng tiếp cận này là hệ thống không phụ thuộc hoàn toàn vào AI API. Thuật toán chính được xây dựng dựa trên dữ liệu và rule trong hệ thống, còn AI Embedding được dùng để so sánh và hỗ trợ đánh giá. Điều này giúp chức năng cá nhân hóa vừa có tính ứng dụng thực tế, vừa có cơ sở kỹ thuật phù hợp với phạm vi đồ án tốt nghiệp.
 
-## 13. Tài liệu tham khảo đề xuất
+## 13. Tài liệu tham khảo
 
-1. Hu, Y., Koren, Y., & Volinsky, C. (2008). Collaborative Filtering for Implicit Feedback Datasets. ICDM.
-2. Rendle, S., Freudenthaler, C., Gantner, Z., & Schmidt-Thieme, L. (2009). BPR: Bayesian Personalized Ranking from Implicit Feedback. UAI.
-3. Cano, E., & Morisio, M. (2019). Hybrid Recommender Systems: A Systematic Literature Review.
-4. Jarvelin, K., & Kekalainen, J. (2002). Cumulated gain-based evaluation of IR techniques. ACM Transactions on Information Systems.
+[1] Ricci, F., Rokach, L., & Shapira, B. (2015). *Recommender Systems Handbook* (2nd ed.). Springer. https://doi.org/10.1007/978-1-4899-7637-6
+
+[2] Hu, Y., Koren, Y., & Volinsky, C. (2008). *Collaborative Filtering for Implicit Feedback Datasets*. IEEE International Conference on Data Mining (ICDM). https://doi.org/10.1109/ICDM.2008.22
+
+[3] Rendle, S., Freudenthaler, C., Gantner, Z., & Schmidt-Thieme, L. (2009). *BPR: Bayesian Personalized Ranking from Implicit Feedback*. UAI. https://arxiv.org/abs/1205.2618
+
+[4] Burke, R. (2002). *Hybrid Recommender Systems: Survey and Experiments*. User Modeling and User-Adapted Interaction, 12, 331-370. https://doi.org/10.1023/A:1021240730564
+
+[5] Reimers, N., & Gurevych, I. (2019). *Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks*. EMNLP-IJCNLP. https://arxiv.org/abs/1908.10084
+
+[6] Jarvelin, K., & Kekalainen, J. (2002). *Cumulated gain-based evaluation of IR techniques*. ACM Transactions on Information Systems, 20(4), 422-446. https://doi.org/10.1145/582415.582418

@@ -229,6 +229,7 @@ en:
           similar: "Similar to your courses"
           interests: "Based on your interests"
           popular: "Popular with learners"
+          semantic: "Semantic match"
 
   recommendations:
     browse_all: "Browse all"
@@ -242,6 +243,7 @@ en:
       similar: "Similar to your courses"
       interests: "Based on your interests"
       popular: "Popular with learners"
+      semantic: "Semantic match"
     index:
       kicker: "Personalized picks"
       title: "Recommended for You"

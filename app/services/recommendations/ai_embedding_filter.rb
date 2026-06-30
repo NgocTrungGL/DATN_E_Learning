@@ -23,23 +23,33 @@ module Recommendations
       return [] if profile_vector.empty?
 
       excluded_ids = excluded_course_ids | interacted_course_ids
-      embeddings = CourseEmbedding
-                   .joins(:course)
-                   .includes(course: [:category, :creator])
-                   .where(courses: { status: Course.statuses[:published] })
-                   .where.not(course_id: excluded_ids)
-
-      embeddings.map do |course_embedding|
-        score = VectorMath.cosine_similarity(profile_vector, course_embedding.embedding)
+      candidate_scores = CourseEmbedding
+                         .joins(:course)
+                         .where(courses: { status: Course.statuses[:published] })
+                         .where.not(course_id: excluded_ids)
+                         .pluck(:course_id, :embedding)
+                         .filter_map do |course_id, embedding|
+        score = VectorMath.cosine_similarity(profile_vector, embedding)
         next if score <= 0.0
 
+        [course_id, score.round(4)]
+      end.sort_by { |(_, score)| -score }.take(limit)
+
+      courses_by_id = Course.includes(:category, :creator)
+                            .where(id: candidate_scores.map(&:first))
+                            .index_by(&:id)
+
+      candidate_scores.filter_map do |course_id, score|
+        course = courses_by_id[course_id]
+        next unless course
+
         Recommendations::Result.new(
-          course_id: course_embedding.course_id,
-          course: course_embedding.course,
-          score: score.round(4),
+          course_id: course_id,
+          course: course,
+          score: score,
           reason_type: "ai_embedding"
         )
-      end.compact.sort_by { |result| -result.score }.take(limit)
+      end
     end
 
     private

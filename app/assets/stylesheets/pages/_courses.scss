@@ -85,10 +85,13 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
+  align-items: stretch;
 }
 
 .course-rec-card {
   min-width: 0;
+  min-height: 430px;
+  height: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -106,7 +109,8 @@
 }
 
 .course-rec-card__thumb {
-  aspect-ratio: 16 / 9;
+  height: 188px;
+  flex: 0 0 188px;
   position: relative;
   overflow: hidden;
   background: #e2e8f0;
@@ -145,13 +149,15 @@
 .course-rec-card__body {
   flex: 1;
   padding: 0.85rem;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0.55rem;
 }
 
 .course-rec-card__category {
   width: fit-content;
   max-width: 100%;
+  min-height: 1.7rem;
   padding: 0.28rem 0.55rem;
   overflow: hidden;
   border-radius: 999px;
@@ -183,6 +189,7 @@
 }
 
 .course-rec-card__meta {
+  margin-top: auto;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -209,6 +216,7 @@
 }
 
 .course-rec-card__price {
+  min-height: 1.1rem;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -252,6 +260,7 @@
 }
 
 .course-rec-card__actions {
+  min-height: 51px;
   padding: 0 0.85rem 0.85rem;
   display: flex;
   justify-content: flex-end;
@@ -310,6 +319,15 @@
 
   .course-recommendations__grid {
     grid-template-columns: 1fr;
+  }
+
+  .course-rec-card {
+    min-height: 0;
+  }
+
+  .course-rec-card__thumb {
+    height: 190px;
+    flex-basis: 190px;
   }
 }
 

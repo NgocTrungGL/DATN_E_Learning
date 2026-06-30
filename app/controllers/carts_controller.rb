@@ -87,5 +87,9 @@ class CartsController < ApplicationController
 
   def set_cart_recommendations
     @cart_recommendation_results = recommended_course_results(limit: 4)
+    # Tạo danh sách gợi ý bằng AI Embedding để demo so sánh trực tiếp trên trang giỏ hàng.
+    @cart_ai_recommendation_results = Recommendations::AiEmbeddingFilter
+                                      .new(current_user)
+                                      .call(limit: 4)
   end
 end

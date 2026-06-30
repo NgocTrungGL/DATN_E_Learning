@@ -42,12 +42,16 @@
   }
 }
 
-.course-recommendations--cart {
+.course-recommendations--cart,
+.course-recommendations--cart-ai {
+  width: 100%;
+  max-width: 1400px;
   grid-column: 1 / -1;
-  margin-top: 12px;
+  margin: 12px auto 0;
 }
 
-.course-recommendations--cart-empty {
+.course-recommendations--cart-empty,
+.course-recommendations--cart-ai-empty {
   max-width: 1120px;
   margin: 24px auto 0;
 }
