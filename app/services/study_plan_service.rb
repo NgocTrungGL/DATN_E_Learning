@@ -4,10 +4,15 @@ class StudyPlanService
   DEFAULT_LESSON_MINUTES = 15
   QUIZ_MINUTES_PER_QUESTION = 2
   BUFFER_FACTOR = 1.2
+  MAX_DAILY_WORKLOAD_MINUTES = 8 * 60
+
+  PlanValidationError = Class.new(StandardError)
 
   class << self
     def create_plan(user:, course:, goal_deadline:, preferred_study_times: {})
       ActiveRecord::Base.transaction do
+        validate_plan_request!(user, course, preferred_study_times:)
+
         existing_plan = StudyPlan.for_course(user, course).active.first
         return existing_plan if existing_plan.present?
 
@@ -17,7 +22,7 @@ class StudyPlanService
 
         if inactive_plan
           profile = learning_profile(user)
-          lessons = ordered_lessons(course)
+          lessons = remaining_lessons(user, course)
           return nil if lessons.empty?
 
           daily_capacity = calculate_daily_capacity(user, profile)
@@ -38,12 +43,13 @@ class StudyPlanService
                            preferred_times: preferred_study_times,
                            daily_capacity: daily_capacity,
                            profile: profile)
+          validate_scheduled_plan!(inactive_plan)
           return inactive_plan
         end
 
         # No plan exists — create from scratch
         profile = learning_profile(user)
-        lessons = ordered_lessons(course)
+        lessons = remaining_lessons(user, course)
         return nil if lessons.empty?
 
         daily_capacity = calculate_daily_capacity(user, profile)
@@ -64,6 +70,7 @@ class StudyPlanService
                          preferred_times: preferred_study_times,
                          daily_capacity: daily_capacity,
                          profile: profile)
+        validate_scheduled_plan!(plan)
 
         plan
       end
@@ -128,7 +135,7 @@ class StudyPlanService
     end
 
     def schedule_lessons(plan, lessons = nil, preferred_times: {}, daily_capacity: nil, profile: nil)
-      lessons ||= ordered_lessons(plan.course)
+      lessons ||= remaining_lessons(plan.user, plan.course)
       return plan if lessons.empty?
 
       profile ||= learning_profile(plan.user)
@@ -257,7 +264,7 @@ class StudyPlanService
       profile = learning_profile(user)
       preferred_days ||= profile[:preferred_days]
 
-      lessons = ordered_lessons(course)
+      lessons = remaining_lessons(user, course)
       return Date.today + 30 if lessons.empty?
 
       total_minutes = lessons.sum { |lesson| estimate_lesson_duration(user, lesson) }
@@ -277,13 +284,168 @@ class StudyPlanService
       [estimated_deadline, Date.current + 90].min
     end
 
+    def validate_plan_update!(plan, preferred_study_times:)
+      if preferred_time_conflict?(plan.user, preferred_study_times, excluding_plan: plan)
+        raise PlanValidationError, "This study time overlaps with another active plan. Please choose a different time slot."
+      end
+    end
+
+    def validate_scheduled_plan!(plan)
+      conflict = scheduled_time_conflict(plan)
+      if conflict
+        raise PlanValidationError, "This plan conflicts with another active plan on #{conflict.scheduled_date}."
+      end
+
+      overloaded_date, total_minutes = overloaded_day(plan)
+      return unless overloaded_date
+
+      hours = (total_minutes.to_f / 60).round(1)
+      raise PlanValidationError,
+            "Your active study plans require #{hours} hours on #{overloaded_date}, which is over the 8-hour daily limit."
+    end
+
     private
+
+    def validate_plan_request!(user, course, preferred_study_times:)
+      raise PlanValidationError, "Please choose an available enrolled course." unless course
+
+      if course_completed?(user, course)
+        raise PlanValidationError, "This course is already completed, so a new study plan is not needed."
+      end
+
+      if remaining_lessons(user, course).empty?
+        raise PlanValidationError, "All lessons in this course are already completed."
+      end
+
+      if preferred_time_conflict?(user, preferred_study_times)
+        raise PlanValidationError, "This study time overlaps with another active plan. Please choose a different time slot."
+      end
+    end
 
     def ordered_lessons(course)
       course.lessons
             .includes(:course_module, :quizzes)
             .joins(:course_module)
             .order("course_modules.order_index ASC", :order_index)
+    end
+
+    def remaining_lessons(user, course)
+      completed_ids = user.progress_trackings
+                          .lesson
+                          .completed
+                          .where(course: course)
+                          .where.not(lesson_id: nil)
+                          .select(:lesson_id)
+
+      ordered_lessons(course).where.not(id: completed_ids)
+    end
+
+    def course_completed?(user, course)
+      total_lessons = course.lessons.count
+      return false if total_lessons.zero?
+
+      completed_lessons = user.progress_trackings
+                              .lesson
+                              .completed
+                              .where(course: course)
+                              .where.not(lesson_id: nil)
+                              .distinct
+                              .count(:lesson_id)
+
+      completed_lessons >= total_lessons || user.course_progress_percentage(course) >= 100
+    end
+
+    def preferred_time_conflict?(user, preferred_study_times, excluding_plan: nil)
+      new_slots = normalized_weekly_slots(preferred_study_times)
+      return false if new_slots.empty?
+
+      user.study_plans.active.includes(:study_plan_items).any? do |plan|
+        next false if excluding_plan && plan.id == excluding_plan.id
+
+        existing_slots = normalized_weekly_slots(plan.preferred_study_times)
+        slots_overlap?(new_slots, existing_slots)
+      end
+    end
+
+    def normalized_weekly_slots(preferred_study_times)
+      Array(preferred_study_times).flat_map do |day, slots|
+        Array(slots).filter_map do |slot|
+          start_time, end_time = parse_slot(slot)
+          next unless start_time && end_time
+
+          { day: day.to_s, start_time: start_time, end_time: end_time }
+        end
+      end
+    end
+
+    def slots_overlap?(left_slots, right_slots)
+      left_slots.any? do |left|
+        right_slots.any? do |right|
+          left[:day] == right[:day] &&
+            intervals_overlap?(left[:start_time], left[:end_time],
+                               right[:start_time], right[:end_time])
+        end
+      end
+    end
+
+    def parse_slot(slot)
+      start_text, end_text = slot.to_s.split("-", 2).map(&:strip)
+      return [nil, nil] if start_text.blank? || end_text.blank?
+
+      start_time = Time.zone.parse(start_text)
+      end_time = Time.zone.parse(end_text)
+      return [nil, nil] unless start_time && end_time && end_time > start_time
+
+      [start_time, end_time]
+    rescue ArgumentError
+      [nil, nil]
+    end
+
+    def scheduled_time_conflict(plan)
+      plan.study_plan_items.includes(study_plan: :user).detect do |item|
+        item_interval = scheduled_interval(item)
+        next false unless item_interval
+
+        other_active_items(plan, item.scheduled_date).any? do |other_item|
+          other_interval = scheduled_interval(other_item)
+          other_interval &&
+            intervals_overlap?(item_interval.first, item_interval.last,
+                               other_interval.first, other_interval.last)
+        end
+      end
+    end
+
+    def other_active_items(plan, scheduled_date)
+      StudyPlanItem.joins(:study_plan)
+                   .where(study_plans: { user_id: plan.user_id, status: :active })
+                   .where.not(study_plan_id: plan.id)
+                   .where(scheduled_date: scheduled_date)
+    end
+
+    def scheduled_interval(item)
+      return unless item.scheduled_date && item.scheduled_start_time
+
+      start_time = Time.zone.local(
+        item.scheduled_date.year,
+        item.scheduled_date.month,
+        item.scheduled_date.day,
+        item.scheduled_start_time.hour,
+        item.scheduled_start_time.min
+      )
+      [start_time, start_time + item.estimated_duration_minutes.to_i.minutes]
+    end
+
+    def intervals_overlap?(left_start, left_end, right_start, right_end)
+      left_start < right_end && right_start < left_end
+    end
+
+    def overloaded_day(plan)
+      totals = StudyPlanItem.joins(:study_plan)
+                            .where(study_plans: { user_id: plan.user_id, status: :active })
+                            .group(:scheduled_date)
+                            .sum(:estimated_duration_minutes)
+
+      totals.find { |_date, minutes| minutes.to_i > MAX_DAILY_WORKLOAD_MINUTES }
     end
 
     def calculate_daily_capacity(_user, profile)
