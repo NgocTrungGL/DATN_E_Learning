@@ -30,6 +30,14 @@ module Recommendations
       @enrolled_ids ||= user.enrollments.pluck(:course_id).to_set
     end
 
+    def interacted_course_ids
+      @interacted_course_ids ||= begin
+        ids = scores.keys
+        ids |= user.progress_trackings.where.not(course_id: nil).pluck(:course_id)
+        ids.compact.map(&:to_i).uniq
+      end
+    end
+
     def interaction_count
       @interaction_count ||= scores.count { |_course_id, score| !score.zero? }
     end

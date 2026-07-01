@@ -39,10 +39,7 @@ class CourseSimilarityJob < ApplicationJob
   private
 
   def invalidate_recommendations
-    UserRecommendation.update_all(
-      computed_at: Recommendations::CacheInvalidator::STALE_TIME,
-      updated_at: Time.current
-    )
+    UserRecommendation.delete_all
   end
 
   def build_matrix(enrollments)

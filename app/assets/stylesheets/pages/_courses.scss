@@ -302,6 +302,24 @@
   color: #e11d48;
 }
 
+.course-rec-card__action--cart:not(.is-active) {
+  border-color: rgba($primary, 0.28);
+  background: rgba($primary, 0.08);
+  color: $primary;
+
+  &:hover {
+    border-color: rgba($primary, 0.42);
+    background: rgba($primary, 0.12);
+    color: $primary;
+  }
+}
+
+.course-rec-card__action--cart.is-active {
+  border-color: rgba($success, 0.28);
+  background: rgba($success, 0.1);
+  color: $success;
+}
+
 @media (max-width: 1024px) {
   .course-recommendations__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
