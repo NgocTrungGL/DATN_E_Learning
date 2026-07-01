@@ -241,12 +241,29 @@
       }
     }
 
-    .btn-wishlist.is-active,
+    .btn-wishlist.is-active {
+      border-color: rgba($danger, 0.26);
+      background: rgba($danger, 0.08);
+      color: $danger;
+    }
+
+    .btn-cart.btn-cart-add {
+      border-color: rgba($primary, 0.28);
+      background: rgba($primary, 0.08);
+      color: $primary;
+
+      &:hover {
+        border-color: rgba($primary, 0.42);
+        background: rgba($primary, 0.12);
+        color: $primary;
+      }
+    }
+
     .btn-cart.is-active,
     .btn-cart.btn-cart-done {
-      border-color: rgba($primary, 0.2);
-      background: rgba($primary, 0.1);
-      color: $primary;
+      border-color: rgba($success, 0.28);
+      background: rgba($success, 0.1);
+      color: $success;
     }
   }
 

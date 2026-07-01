@@ -12,11 +12,11 @@ module Recommendations
       positive_category_ids = affinities.select { |_id, score| score.positive? }.keys
       return [] if positive_category_ids.empty?
 
-      enrolled_ids = user.enrollments.pluck(:course_id)
+      excluded_ids = interaction_scorer.interacted_course_ids
       target_ids = positive_category_ids + parent_category_ids(positive_category_ids)
 
       courses = Course.published
-                      .where.not(id: enrolled_ids)
+                      .where.not(id: excluded_ids)
                       .where(category_id: target_ids)
                       .includes(:category)
                       .limit(limit * 2)

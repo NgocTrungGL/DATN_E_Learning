@@ -11,10 +11,11 @@ module Recommendations
 
     def call(limit: 20)
       w = @interaction_scorer.weights
+      excluded_ids = @interaction_scorer.interacted_course_ids
 
       if w[:alpha].zero? && w[:beta].zero?
         # Cold start: chi dung popularity
-        PopularityScorer.new(exclude_enrolled_for: user).call(limit: limit)
+        PopularityScorer.new(exclude_course_ids: excluded_ids).call(limit: limit)
       else
         cf_results = CollaborativeFilter.new(
           user, interaction_scorer: @interaction_scorer
@@ -22,7 +23,7 @@ module Recommendations
         content_results = ContentFilter.new(
           user, interaction_scorer: @interaction_scorer
         ).call(limit: limit)
-        pop_results     = PopularityScorer.new(exclude_enrolled_for: user).call(limit: limit)
+        pop_results     = PopularityScorer.new(exclude_course_ids: excluded_ids).call(limit: limit)
 
         ScoreFuser.new(
           cf_results: cf_results,

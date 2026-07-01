@@ -4,18 +4,22 @@ module Recommendations
   class PopularityScorer
     C = 5  # Bayesian prior: gia su co 5 review muc trung binh
 
-    attr_reader :user, :exclude_enrolled_for
+    attr_reader :user, :exclude_enrolled_for, :exclude_course_ids
 
-    def initialize(user: nil, exclude_enrolled_for: nil)
+    def initialize(user: nil, exclude_enrolled_for: nil, exclude_course_ids: [])
       @user = user
       @exclude_enrolled_for = exclude_enrolled_for
+      @exclude_course_ids = Array(exclude_course_ids).compact.map(&:to_i)
     end
 
     def call(limit: 50)
-      enrolled_ids = exclude_enrolled_for ? exclude_enrolled_for.enrollments.pluck(:course_id) : []
+      excluded_ids = exclude_course_ids
+      if exclude_enrolled_for
+        excluded_ids |= InteractionScorer.new(exclude_enrolled_for).interacted_course_ids
+      end
 
       courses = Course.published
-                      .where.not(id: enrolled_ids)
+                      .where.not(id: excluded_ids)
                       .left_joins(:reviews, :enrollments)
                       .group("courses.id")
                       .select(

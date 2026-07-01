@@ -11,7 +11,7 @@ module Recommendations
       source_scores = interaction_scorer.scores
       return [] if source_scores.empty?
 
-      excluded_ids = user.enrollments.pluck(:course_id)
+      excluded_ids = interaction_scorer.interacted_course_ids
       similarities = CourseSimilarity
         .where(course_a_id: source_scores.keys)
         .where("score > 0.05")

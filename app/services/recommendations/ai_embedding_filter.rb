@@ -22,7 +22,7 @@ module Recommendations
       profile_vector = build_profile_vector
       return [] if profile_vector.empty?
 
-      excluded_ids = excluded_course_ids | interacted_course_ids
+      excluded_ids = excluded_course_ids | interacted_course_ids | user_excluded_course_ids
       candidate_scores = CourseEmbedding
                          .joins(:course)
                          .where(courses: { status: Course.statuses[:published] })
@@ -71,6 +71,12 @@ module Recommendations
 
     def interacted_course_ids
       @interacted_course_ids ||= interactions.keys.map(&:to_i)
+    end
+
+    def user_excluded_course_ids
+      return [] unless user && profile_interactions.nil?
+
+      InteractionScorer.new(user).interacted_course_ids
     end
 
     def interactions

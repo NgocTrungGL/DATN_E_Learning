@@ -18,18 +18,22 @@ module Recommendations
 
       # Stale or empty -> enqueue async recompute + return popularity fallback
       RecommendationJob.perform_later(@user.id) unless @user.nil?
-      PopularityScorer.new(exclude_enrolled_for: @user).call(limit: limit)
+      excluded_ids = InteractionScorer.new(@user).interacted_course_ids
+      PopularityScorer.new(exclude_course_ids: excluded_ids).call(limit: limit)
     end
 
     private
 
     def fetch_fresh_recommendations(limit)
+      excluded_ids = InteractionScorer.new(@user).interacted_course_ids
+
       UserRecommendation
         .where(user_id: @user.id)
+        .where.not(course_id: excluded_ids)
         .fresh
         .by_score
         .includes(course: [:category, :creator])
-        .limit(limit)
+        .limit(limit + excluded_ids.size)
         .map do |rec|
           next unless rec.course&.published?
 
@@ -39,7 +43,7 @@ module Recommendations
             score: rec.score,
             reason_type: rec.reason_type
           )
-        end.compact
+        end.compact.first(limit)
     end
 
     def personalization_signal?
