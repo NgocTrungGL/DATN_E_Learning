@@ -32,7 +32,7 @@ module Learning
 
     def inactivity_score(reasons)
       days = profile.inactive_days
-      return 25.tap { reasons << "No learning activity has been recorded yet." } if days.nil?
+      return 0 if days.nil?
       return 35.tap { reasons << "No activity in #{days} days." } if days >= 7
       return 20.tap { reasons << "No activity in #{days} days." } if days >= 3
 
@@ -68,7 +68,7 @@ module Learning
       required = profile.required_daily_minutes.to_i
       capacity = profile.daily_capacity_minutes.to_i
       return 0 if required.zero? || capacity.zero?
-      return 25.tap { reasons << "The remaining plan needs #{required} minutes/day, above the current #{capacity} minute pace." } if required > capacity * 1.5
+      return 20.tap { reasons << "The remaining plan needs #{required} minutes/day, above the current #{capacity} minute pace." } if required > capacity * 1.5
       return 12.tap { reasons << "The remaining plan is slightly above the current study pace." } if required > capacity * 1.15
 
       0

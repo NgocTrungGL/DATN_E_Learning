@@ -59,6 +59,10 @@ class Student::StudyPlansController < Student::BaseController
       flash.now[:alert] = I18n.t("student.study_plans.cannot_create", default: "Could not create a study plan for this course.")
       render :new, status: :unprocessable_entity
     end
+  rescue StudyPlanService::PlanValidationError => e
+    prepare_plan_form(plan_params)
+    flash.now[:alert] = e.message
+    render :new, status: :unprocessable_entity
   end
 
   def edit
@@ -67,6 +71,11 @@ class Student::StudyPlansController < Student::BaseController
   end
 
   def update
+    StudyPlanService.validate_plan_update!(
+      @study_plan,
+      preferred_study_times: plan_params[:preferred_study_times]
+    )
+
     if @study_plan.update(plan_params)
       redirect_to student_study_plan_path(@study_plan),
                   notice: I18n.t("student.study_plans.updated")
@@ -75,12 +84,17 @@ class Student::StudyPlansController < Student::BaseController
       @learning_speed = StudyPlanService.learning_speed(current_user, @study_plan.course)
       render :edit, status: :unprocessable_entity
     end
+  rescue StudyPlanService::PlanValidationError => e
+    @study_plan.assign_attributes(plan_params)
+    @learning_speed = StudyPlanService.learning_speed(current_user, @study_plan.course)
+    flash.now[:alert] = e.message
+    render :edit, status: :unprocessable_entity
   end
 
   def destroy
-    @study_plan.update!(status: :cancelled)
+    @study_plan.destroy!
     redirect_to student_study_plans_path,
-                notice: I18n.t("student.study_plans.cancelled")
+                notice: I18n.t("student.study_plans.deleted", default: "Study plan was deleted.")
   end
 
   def pause
@@ -90,19 +104,31 @@ class Student::StudyPlansController < Student::BaseController
   end
 
   def resume
-    @study_plan.update!(status: :active)
+    ActiveRecord::Base.transaction do
+      StudyPlanService.validate_plan_update!(
+        @study_plan,
+        preferred_study_times: @study_plan.preferred_study_times
+      )
+      @study_plan.update!(status: :active)
+      StudyPlanService.validate_scheduled_plan!(@study_plan)
+    end
     redirect_to student_study_plan_path(@study_plan),
                 notice: I18n.t("student.study_plans.resumed")
+  rescue StudyPlanService::PlanValidationError => e
+    redirect_to student_study_plan_path(@study_plan), alert: e.message
   end
 
   def regenerate
     if @study_plan.active?
-      # Create adjustment record
-      StudyPlanAdjustment.create_for!(@study_plan, "system_replan")
+      ActiveRecord::Base.transaction do
+        # Create adjustment record
+        StudyPlanAdjustment.create_for!(@study_plan, "system_replan")
 
-      # Delete old items and reschedule
-      @study_plan.study_plan_items.destroy_all
-      StudyPlanService.schedule_lessons(@study_plan)
+        # Delete old items and reschedule
+        @study_plan.study_plan_items.destroy_all
+        StudyPlanService.schedule_lessons(@study_plan)
+        StudyPlanService.validate_scheduled_plan!(@study_plan)
+      end
 
       redirect_to student_study_plan_path(@study_plan),
                   notice: I18n.t("student.study_plans.regenerated")
@@ -110,6 +136,8 @@ class Student::StudyPlansController < Student::BaseController
       redirect_to student_study_plan_path(@study_plan),
                   alert: I18n.t("student.study_plans.cannot_regenerate")
     end
+  rescue StudyPlanService::PlanValidationError => e
+    redirect_to student_study_plan_path(@study_plan), alert: e.message
   end
 
   def refresh_focus
@@ -129,7 +157,7 @@ class Student::StudyPlansController < Student::BaseController
 
   def set_course
     course_id = params.dig(:study_plan, :course_id) || params[:course_id]
-    @course = @enrolled_courses.find_by(id: course_id) if course_id.present?
+    @course = @enrolled_courses.detect { |course| course.id.to_s == course_id.to_s } if course_id.present?
   end
 
   def prepare_plan_form(attributes = {})
@@ -145,6 +173,22 @@ class Student::StudyPlansController < Student::BaseController
     current_user.enrolled_courses.available
                 .includes(:category, :creator, course_modules: :lessons)
                 .where.not(id: current_user.study_plans.where(status: %i[active completed]).select(:course_id))
+                .reject { |course| completed_course_for_study_plan?(course) }
+  end
+
+  def completed_course_for_study_plan?(course)
+    total_lessons = course.lessons.size
+    return false if total_lessons.zero?
+
+    completed_lessons = current_user.progress_trackings
+                                    .lesson
+                                    .completed
+                                    .where(course: course)
+                                    .where.not(lesson_id: nil)
+                                    .distinct
+                                    .count(:lesson_id)
+
+    completed_lessons >= total_lessons || current_user.course_progress_percentage(course) >= 100
   end
 
   def plan_params

@@ -42,4 +42,42 @@ class StudyPlanServiceTest < Minitest::Test
 
     assert_equal 2.0, factor
   end
+
+  def test_weekly_slots_overlap_on_same_day
+    left_slots = [
+      {
+        day: "monday",
+        start_time: Time.zone.parse("19:00"),
+        end_time: Time.zone.parse("21:00")
+      }
+    ]
+    right_slots = [
+      {
+        day: "monday",
+        start_time: Time.zone.parse("20:30"),
+        end_time: Time.zone.parse("22:00")
+      }
+    ]
+
+    assert StudyPlanService.send(:slots_overlap?, left_slots, right_slots)
+  end
+
+  def test_weekly_slots_do_not_overlap_on_different_days
+    left_slots = [
+      {
+        day: "monday",
+        start_time: Time.zone.parse("19:00"),
+        end_time: Time.zone.parse("21:00")
+      }
+    ]
+    right_slots = [
+      {
+        day: "tuesday",
+        start_time: Time.zone.parse("19:00"),
+        end_time: Time.zone.parse("21:00")
+      }
+    ]
+
+    refute StudyPlanService.send(:slots_overlap?, left_slots, right_slots)
+  end
 end

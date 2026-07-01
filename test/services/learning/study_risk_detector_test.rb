@@ -29,6 +29,15 @@ class Learning::StudyRiskDetectorTest < Minitest::Test
     assert risk.reasons.any? { |reason| reason.include?("current study pace") }
   end
 
+  def test_new_user_without_activity_is_not_marked_at_risk
+    risk = detect(overdue_items_count: 0, inactive_days: nil,
+                  skipped_items_count: 0, in_progress_items_count: 0,
+                  required_daily_minutes: 68, daily_capacity_minutes: 45)
+
+    assert_equal :needs_attention, risk.level
+    refute risk.reasons.any? { |reason| reason.include?("No learning activity") }
+  end
+
   private
 
   def detect(**attributes)
