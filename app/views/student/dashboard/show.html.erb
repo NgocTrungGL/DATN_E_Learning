@@ -13,10 +13,16 @@
           <h1 class="student-dashboard__title">Chào mừng trở lại, <span><%= @user.name %></span></h1>
           <p class="student-dashboard__subtitle">Theo dõi tiến độ học lập trình, giữ nhịp học mỗi tuần và hoàn thành mục tiêu đúng hạn.</p>
         </div>
-        <%= link_to new_student_study_plan_path, class: "student-dashboard__hero-button" do %>
-          <i class="bi bi-calendar-plus"></i>
-          Create Study Plan
-        <% end %>
+        <div class="student-dashboard__hero-actions">
+          <%= link_to student_study_plans_path, class: "student-dashboard__hero-button student-dashboard__hero-button--secondary" do %>
+            <i class="bi bi-calendar-week"></i>
+            View Study Plans
+          <% end %>
+          <%= link_to new_student_study_plan_path, class: "student-dashboard__hero-button" do %>
+            <i class="bi bi-calendar-plus"></i>
+            Create Study Plan
+          <% end %>
+        </div>
       </div>
     </section>
 
